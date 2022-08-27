@@ -1,0 +1,15 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  max-height: 100vh;
+  height: 100vh;
+  overflow-y: scroll;
+
+  @media only screen and (max-width: 600px) {
+    height: calc(100vh - 60px);
+    min-height: calc(100vh - 60px);
+    max-height: none;
+    padding: 8px;
+    margin: 0 auto;
+  }
+}

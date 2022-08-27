@@ -1,0 +1,46 @@
+@use '../styles/colors.scss' as colors;
+
+.editor-view {
+  .tab {
+    border-radius: 8px 8px 0px 0px;
+    text-decoration: none;
+    padding: 4px 8px;
+    width: 80px;
+    height: 20px;
+    justify-content: center;
+    cursor: pointer;
+    text-align: center;
+
+    &.selected {
+      background-color: white;
+    }
+  }
+
+  .sub-tab {
+    padding: 4px 8px;
+    font-size: 14px;
+    width: 80px;
+    cursor: pointer;
+    background-color: white;
+    justify-content: center;
+
+    &:last-of-type {
+      border-top-right-radius: 8px;
+    }
+
+    &.selected {
+      text-decoration: underline;
+    }
+  }
+
+  .assets {
+    font-family: monospace monospace;
+  }
+
+  .submission-confirmation {
+    padding: 16px;
+    border-radius: 4px;
+    background-color: colors.$light-gray;
+    max-width: 400px;
+  }
+}
