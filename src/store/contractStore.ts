@@ -58,7 +58,7 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
       const projects = await get().getProjects()
 
       if (!get().currentProject) {
-        set({ currentProject: Object.values(projects)[0].title })
+        set({ currentProject: Object.values(projects)[0].title || '' })
       }
 
       set({ loading: undefined })
