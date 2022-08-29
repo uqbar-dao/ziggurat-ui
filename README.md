@@ -1,6 +1,6 @@
-# Contract UI for Uqbar
+# Ziggurat UI for Uqbar
 
-The contract UI for the Uqbar contract.
+The UI for the Uqbar Ziggurat app.
 
 ## Development
 
@@ -9,7 +9,7 @@ Modify the `target` in `/src/setupProxy.js` to point at your urbit ship and then
 ### `yarn start`
 
 Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000/apps/uqbar-contract) to view it in the browser.
+Open [http://localhost:3000](http://localhost:3000/apps/ziggurat) to view it in the browser.
 
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
