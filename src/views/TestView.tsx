@@ -96,7 +96,7 @@ export const TestView = () => {
     }
 
     setLoading('Saving grain...')
-    await addGrain(newGrain as any)
+    await addGrain(newGrain)
 
     setGrainType('')
     setShowGrainModal(false)

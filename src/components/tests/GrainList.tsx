@@ -1,14 +1,14 @@
 import React, { useMemo, useState } from 'react'
 import { Droppable, Draggable } from 'react-beautiful-dnd'
-import { FaChevronDown, FaChevronUp, FaPen, FaCopy, FaTrash } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaPen, FaTrash } from 'react-icons/fa';
 import Col from '../spacing/Col'
 import Row from '../spacing/Row'
 import useContractStore from '../../store/contractStore';
 import { TestGrain } from '../../types/TestGrain';
-import { Values } from './ValuesDisplay';
 import Button from '../form/Button';
 
 import './GrainList.scss'
+import { METADATA_GRAIN_ID, MY_CONTRACT_ID, ZIGS_ACCOUNT_ID } from '../../utils/constants';
 
 interface GrainValueDisplayProps extends GrainListProps {
   grain: TestGrain
@@ -30,6 +30,16 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain }: GrainValueDi
     background: grain.obsolete ? 'rgba(0,0,0,0.05)' : 'white',
   }
 
+  const isZigsGrain = grain.id === ZIGS_ACCOUNT_ID
+  const isContractGrain = grain.id === MY_CONTRACT_ID
+  const isMetadataGrain = grain.id === METADATA_GRAIN_ID
+  const untouchable = isZigsGrain || isContractGrain || isMetadataGrain
+
+  const grainIdDisplay = isZigsGrain ? 'zigs account' :
+    isContractGrain ? 'contract grain' :
+    isMetadataGrain ? 'metadata grain' :
+    grain.id
+
   const grainContent = (
     <Col style={{ ...grainStyle, position: 'relative' }}>
       <Col style={{ width: '100%' }}>
@@ -42,7 +52,7 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain }: GrainValueDi
             icon={expanded ? <FaChevronUp size={16} /> : <FaChevronDown size={16} />}
           />
           <Col style={{ wordBreak: 'break-all', maxWidth: 'calc(100% - 80px)' }}>
-            ID: {grain.id}
+            ID: {grainIdDisplay}
           </Col>
         </Row>
       </Col>
@@ -50,6 +60,7 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain }: GrainValueDi
         <div>Holder: {grain.holder}</div>
         <div>Lord: {grain.lord}</div>
         <div>Town ID: {grain.town_id}</div>
+        <div>Label: {grain.label}</div>
         <div>Data:</div>
         <div>{grain.data}</div>
         {/* <Values values={grainData} /> */}
@@ -64,7 +75,7 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain }: GrainValueDi
             style={{ marginRight: 8 }}
           />
         )} */}
-        {!grain.obsolete && (
+        {!grain.obsolete && !untouchable && (
           <Button
             onClick={() => editGrain(grain)}
             variant='unstyled'
@@ -72,14 +83,16 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain }: GrainValueDi
             icon={<FaPen size={14} />}
           />
         )}
-        <Button
-          onClick={() => { if(window.confirm('Are you sure you want to remove this grain?')) { deleteGrain(grain.id) } }}
-          variant='unstyled'
-          className="delete"
-          style={{ marginLeft: 8 }}
-          iconOnly
-          icon={<FaTrash size={14} />}
-        />
+        {!untouchable && (
+          <Button
+            onClick={() => { if(window.confirm('Are you sure you want to remove this grain?')) { deleteGrain(grain.id) } }}
+            variant='unstyled'
+            className="delete"
+            style={{ marginLeft: 8 }}
+            iconOnly
+            icon={<FaTrash size={14} />}
+          />
+        )}
       </Row>
     </Col>
   )

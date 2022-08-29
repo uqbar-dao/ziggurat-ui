@@ -9,17 +9,25 @@ export type TestGrainField = 'id'
   | 'data'
   | 'contract'
 
-export interface TestGrain {
+export interface GrainTemplate {
   id: string
   holder: string
   lord: string
-  town_id: string
   label?: string
-  salt?: string
   data?: string
   contract?: boolean
 
   // UI-specific fields
   obsolete?: boolean
   riceInvalid?: boolean
+}
+
+export interface TestGrain extends GrainTemplate {
+  town_id: string
+  salt?: string
+}
+
+export interface TestGrainInput extends GrainTemplate {
+  'town-id': string
+  salt: number
 }

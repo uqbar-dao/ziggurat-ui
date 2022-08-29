@@ -19,6 +19,7 @@ export interface Test {
   id: string
   name?: string
   action: string
+  action_text: string
   expected: TestResults
   last_result: TestResults
   errorcode: number

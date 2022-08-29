@@ -10,6 +10,9 @@
     justify-content: center;
     cursor: pointer;
     text-align: center;
+    position: relative;
+    flex-direction: row;
+    display: flex;
 
     &.selected {
       background-color: white;

@@ -1,12 +1,11 @@
 import create from "zustand"
 import { persist } from "zustand/middleware"
 import api from "../api";
-import { RawMetadata } from "../code-text/test-data/fungible";
-import { OpenFiles } from "../types/OpenFiles";
+import { OpenFile } from "../types/OpenFile";
 import { Projects } from "../types/Project";
 import { RunTestPayload } from "../types/TestData";
 import { TestExpectation } from "../types/TestExpectation";
-import { TestGrain } from "../types/TestGrain";
+import { TestGrain, TestGrainInput } from "../types/TestGrain";
 import { generateProjects } from "../utils/project";
 import { handleProjectUpdate, handleTestUpdate } from "./subscriptions/contract";
 import { createSubscription } from "./subscriptions/createSubscription";
@@ -15,22 +14,23 @@ export interface ContractStore {
   loading?: string
   currentProject: string
   projects: Projects
-  openFiles: OpenFiles
+  openFiles: OpenFile[]
   openApps: string[]
   currentApp: string
   setLoading: (loading?: string) => void
   init: () => Promise<Projects>
   getProjects: () => Promise<Projects>
-  createProject: (options: { [key: string]: string }, rawMetadata?: RawMetadata) => Promise<void>
+  createProject: (options: { [key: string]: string }) => Promise<void>
+  populateTemplate: (project: string, template: 'nft' | 'fungible', metadata: TestGrainInput) => Promise<void>
   setCurrentProject: (currentProject: string) => void
   deleteProject: (project: string) => Promise<void>
   setProjectExpanded: (project: string, expanded: boolean) => void
   setProjectText: (project: string, file: string, text: string) => void
   saveFile: (project: string, file: string, text: string) => Promise<void>
   deleteFile: (project: string, file: string) => Promise<void>
-  openFile: (project: string, file: string) => void
+  setOpenFiles: (openFiles: OpenFile[]) => void
 
-  addGrain: (rice: TestGrain) => Promise<void>
+  addGrain: (rice: TestGrainInput) => Promise<void>
   deleteGrain: (riceId: string) => Promise<void>
   addTest: (name: string, action: string) => Promise<void>
   addTestExpectations: (testId: string, expectations: TestExpectation[]) => Promise<void>
@@ -49,7 +49,7 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
     loading: '',
     currentProject: '',
     projects: {},
-    openFiles: {},
+    openFiles: [],
     openApps: ['webterm'],
     currentApp: '',
     route: { route: 'project', subRoute: 'new' },
@@ -78,15 +78,23 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
       set({ projects })
       return projects
     },
-    createProject: async (options: { [key: string]: string }, rawMetadata?: RawMetadata) => {
+    createProject: async (options: { [key: string]: string }) => {
       set({ loading: 'Creating project...' })
 
       const project = options.title
       const json = { project, action: { "new-contract-project": { template: options.token } } }
 
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
-      await get().getProjects()
-      set({ loading: undefined, currentProject: options.title })
+
+      setTimeout(async () => {
+        await get().getProjects()
+        set({ loading: undefined, currentProject: options.title })
+      }, 1000)
+    },
+    populateTemplate: async (project: string, template: 'nft' | 'fungible', metadata: TestGrainInput) => {
+      const json = { project, action: { "populate-template": { template, metadata } } }
+      console.log('POPULATE', json)
+      await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
     },
     setCurrentProject: (currentProject: string) => set({ currentProject }),
     deleteProject: async (project: string) => {
@@ -108,7 +116,6 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
       set({ projects: newProjects })
     },
     saveFile: async (project: string, file: string, text: string) => {
-      set({ loading: 'Saving file(s)...' })
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json: { project, action: { 'save-file': { name: file, text } } } })
     },
     deleteFile: async (project: string, file: string) => {
@@ -122,17 +129,10 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
         set({ projects: newProjects })
       }
     },
-    openFile: (project: string, file: string) => {
-      const { openFiles } = get()
-      if (!openFiles[project] || !openFiles[project].find(f => f === file)) {
-        const newOpenFiles = { ...openFiles }
-        newOpenFiles[project] = (openFiles[project] || []).concat([file])
-        set({ openFiles: newOpenFiles })
-      }
-    },
+    setOpenFiles: (openFiles: OpenFile[]) => set({ openFiles }),
 
 
-    addGrain: async (rice: TestGrain) => {
+    addGrain: async (rice: TestGrainInput) => {
       const project = get().currentProject
       const json = { project, action: { "add-to-state": rice } }
       console.log('SAVING GRAIN:', json)

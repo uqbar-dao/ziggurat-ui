@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react'
 import { FaArrowLeft } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
 import 'codemirror/addon/display/placeholder'
@@ -11,34 +12,59 @@ import Input from '../components/form/Input';
 import { BLANK_METADATA, generateInitialMetadata, RawMetadata } from '../code-text/test-data/fungible';
 import { MetadataForm } from '../components/forms/MetadataForm';
 import LoadingOverlay from '../components/popups/LoadingOverlay';
+import { METADATA_GRAIN_ID, MY_CONTRACT_ID } from '../utils/constants';
 
 import './NewProjectView.scss'
-import { useNavigate } from 'react-router-dom';
+import { numToUd } from '../utils/number';
+import { addHexDots } from '../utils/format';
 
-type CreationStep = 'title' | 'project' | 'gall' | 'token' |  'template' | 'metadata'
-export type CreationOption = 'contract' | 'gall' | 'contract-gall' | 'fungible' | 'nft' | 'blank' | 'issue' | 'wrapper' | 'title' | 'metadata' | 'gall-app-template'
+type CreationStep = 'title' | 'project' | 'gall' | 'token' | 'template' | 'metadata'
+type ProjectOption = 'contract' | 'gall' | 'contract-gall'
+type TokenOption = 'fungible' | 'nft' | 'blank'
+type TemplateOption = 'issue' | 'wrapper'
+export interface CreationOptions {
+  title?: string
+  project?: ProjectOption
+  token?: TokenOption
+  template?: TemplateOption
+  gall?: string
+}
 
 const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
-  const { projects, createProject } = useContractStore()
+  const { projects, createProject, populateTemplate } = useContractStore()
   const nav = useNavigate()
   
   const [step, setStep] = useState<CreationStep>('title')
-  const [options, setOptions] = useState<{ [key: string]: CreationOption | string | undefined }>({ title: '' })
+  const [options, setOptions] = useState<CreationOptions>({ title: '' })
   // TODO: get default minter from the wallet and then figure out the default deployer
   const [metadata, setMetadata] = useState<RawMetadata>(generateInitialMetadata('[0xbeef]', '0x0'))
   const [loading, setLoading] = useState(false)
 
-  const submitNewProject = useCallback(async (options: { [key: string]: string | undefined }, metadata?) => {
+  const submitNewProject = useCallback(async (options: CreationOptions, md?: RawMetadata) => {
     setLoading(true)
-    await createProject(options as { [key: string]: string }, metadata)
-    setLoading(false)
+
+    const metadata = !md ? undefined : {
+      id: METADATA_GRAIN_ID,
+      holder: MY_CONTRACT_ID,
+      lord: MY_CONTRACT_ID,
+      'town-id': '0x0',
+      label: 'token-metadata',
+      salt: Number(md.salt),
+      data: `[name="${md.name}" symbol="${md.symbol}" decimals=${numToUd(md.decimals)} supply=${numToUd(md.supply)} cap=${!md.cap || md.cap === '~' ? '~' : numToUd(md.cap)} mintable=${md.mintable === 't' ? '&' : '|'} minters=${md.minters || '~'} deployer=${addHexDots(md.deployer)} salt=${numToUd(md.salt)}]`
+    }
+
+    await createProject(options as { [key: string]: string })
+    if (metadata && options.token !== 'blank') {
+      await populateTemplate(options.title!, options.token!, metadata)
+    }
     setOptions({})
     setMetadata(generateInitialMetadata('[0xbeef]', '0x0'))
     setStep('title')
-    nav(`${options.title}/main`)
-  }, [nav, createProject])
+    setTimeout(() => nav(`/${options.title}/main`), 1500)
+    setLoading(false)
+  }, [nav, createProject, populateTemplate])
 
-  const onSelect = useCallback((option: CreationOption) => async () => {
+  const onSelect = useCallback((option: string) => async () => {
     switch (step) {
       case 'title':
         if (projects[options.title!]) {
@@ -51,20 +77,20 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
         setStep('project')
         break
       case 'project':
-        setOptions({ ...options, project: option })
+        setOptions({ ...options, project: option as ProjectOption })
         // TODO: if the option is gall-only, then we need to figure out what to show in the next screen
         setStep(option === 'contract' ? 'token' : 'gall')
         break
       case 'gall':
-          setOptions({ ...options, project: option })
+          setOptions({ ...options, project: option as ProjectOption })
           setStep('token')
           break        
       case 'token':
         if (option === 'blank') {
-          submitNewProject({ ...options, token: option })
+          submitNewProject({ ...options, token: option as TokenOption })
           nav('/')
         } else {
-          setOptions({ ...options, token: option })
+          setOptions({ ...options, token: option as TokenOption })
           setStep('metadata')
         }
         break
@@ -74,7 +100,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
           setOptions({ ...options, template: option })
           setStep('metadata')
         } else {
-          submitNewProject({ ...options, template: option })
+          submitNewProject({ ...options, template: option as TemplateOption })
           nav('/')
         }
         break

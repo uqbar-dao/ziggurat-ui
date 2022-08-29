@@ -1,15 +1,15 @@
 import { DEV_MOLDS } from "../types/Molds"
-import { Project, Projects, ProjectState } from "../types/Project"
+import { Project, Projects, ProjectState, ProjectUpdate } from "../types/Project"
 import { Tests } from "../types/TestData"
 import { TestGrain } from "../types/TestGrain"
 
-export const generateState = (p: Project): ProjectState =>
+export const generateState = (p: Project | ProjectUpdate): ProjectState =>
   Object.keys(p.state).reduce((acc, id) => {
     acc[id] = { ...p.state[id], id }
     return acc
   }, {} as ProjectState)
 
-export const generateTests = (p: Project): Tests =>
+export const generateTests = (p: Project | ProjectUpdate): Tests =>
   Object.keys(p.tests).reduce((acc, id) => {
     acc[id] = { ...p.tests[id], id }
     return acc
