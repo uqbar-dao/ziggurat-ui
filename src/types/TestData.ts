@@ -16,10 +16,17 @@ export interface RunTestPayload {
 }
 
 export interface Test {
+  id: string
   name?: string
   action: string
   expected: TestResults
   last_result: TestResults
   errorcode: number
   success: boolean
+  focus?: boolean
+  exclude?: boolean
+}
+
+export interface Tests {
+  [key: string]: Test
 }

@@ -1,5 +1,6 @@
 import React from 'react'
 import Iframe from 'react-iframe';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Col from '../components/spacing/Col';
 import Container from '../components/spacing/Container'
 import useContractStore from '../store/contractStore';
@@ -7,10 +8,12 @@ import useContractStore from '../store/contractStore';
 import './DocsView.scss'
 
 const AppView = ({ hide = false }: { hide?: boolean }) => {
-  const { openApps, currentApp, route, setRoute } = useContractStore()
+  const nav = useNavigate()
+  const { pathname } = useLocation()
+  const { openApps, currentApp } = useContractStore()
 
-  if (!currentApp && route.route === 'app') {
-    setRoute({ route: 'contract', subRoute: 'main' })
+  if (!currentApp && pathname === 'app') {
+    nav('/')
     return null
   }
 

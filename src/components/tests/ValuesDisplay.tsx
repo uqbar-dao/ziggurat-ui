@@ -1,5 +1,4 @@
 import { Droppable } from 'react-beautiful-dnd'
-import { TestAction, TestActionValue } from "../../types/TestExpectation"
 import { Test } from "../../types/TestData"
 import { truncateString } from "../../utils/format"
 import Col from "../spacing/Col"
@@ -9,11 +8,10 @@ import { GrainDisplaySmall } from './GrainDisplay'
 interface ValuesProps {
   values: any
   test?: Test
-  actionMold?: TestAction
   indent?: number
 }
 
-export const Values = ({ values, actionMold, test, indent = 0 }: ValuesProps) => {
+export const Values = ({ values, test, indent = 0 }: ValuesProps) => {
   const indentStyle = { paddingLeft: indent * 8 }
 
   if (typeof values === 'string') {
@@ -22,7 +20,7 @@ export const Values = ({ values, actionMold, test, indent = 0 }: ValuesProps) =>
     return (
       <Col style={indentStyle}>
         {values.map((value) => (
-          <Values key={JSON.stringify(value)} values={value} indent={indent + 1} actionMold={actionMold} />
+          <Values key={JSON.stringify(value)} values={value} indent={indent + 1} />
         ))}
       </Col>
     )
@@ -53,7 +51,7 @@ export const Values = ({ values, actionMold, test, indent = 0 }: ValuesProps) =>
         key === 'type' ? null :
         <Row style={{ ...indentStyle, marginTop: 4 }} key={key}>
           <div style={{ width: 110 }}>{key}:</div>
-          <Values values={(values as any)[key]} indent={indent + 1} actionMold={actionMold} test={test} />
+          <Values values={(values as any)[key]} indent={indent + 1} test={test} />
         </Row>
       )
       })}

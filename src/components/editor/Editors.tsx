@@ -51,7 +51,6 @@ export interface EditorProps {
   editorRef: any
   text: string,
   setText: (inputText: string) => void
-  selected: boolean
   isContract?: boolean
   isTest?: boolean
 }
@@ -60,7 +59,6 @@ export const Editor = ({
   editorRef,
   text,
   setText,
-  selected,
   isContract = false,
   isTest = false,
 }: EditorProps) => {
@@ -111,7 +109,7 @@ export const Editor = ({
 
   return (
     <CodeEditor
-      className={`editor ${isTest ? 'test' : ''} ${!selected ? 'hidden' : ''}`}
+      className={`editor ${isTest ? 'test' : ''}`}
       value={text}
       options={options}
       onBeforeChange={textChange}

@@ -5,8 +5,12 @@ import Container from './components/spacing/Container';
 import Col from './components/spacing/Col';
 import Row from './components/spacing/Row';
 import { Sidebar } from './components/nav/Sidebar';
-import MainView from './views/MainView';
 import LoadingOverlay from './components/popups/LoadingOverlay';
+import EditorView from './views/EditorView';
+import NewProjectView from './views/NewProjectView';
+import AppView from './views/AppView';
+import { TestView } from './views/TestView';
+import { PUBLIC_URL } from './utils/constants';
 
 function App() {
   const { loading, init } = useContractStore()
@@ -17,7 +21,7 @@ function App() {
 
   return (
     <Container>
-      <BrowserRouter basename={process.env.PUBLIC_URL}>
+      <BrowserRouter basename={PUBLIC_URL}>
       <Col style={{ width: '100%', height: '100%' }}>
         <Row style={{ height: '100%', width: '100%' }}>
           <Col style={{ height: '100%', width: '20%', maxWidth: 240, minWidth: 210 }}>
@@ -25,11 +29,13 @@ function App() {
           </Col>
           <Col style={{ minWidth: 'calc(100% - 240px)', width: '80%', maxWidth: 'calc(100% - 210px)', height: '100%', position: 'relative' }}>
             <Routes>
-              <Route path="/" element={<MainView />} />
-              {/* <Route path="/" element={<EditorView />} />
+              <Route path="/" element={<EditorView />} />
               <Route path="/new" element={<NewProjectView />} />
               <Route path="/app" element={<AppView />} />
-              <Route path="/app/:app" element={<AppView />} /> */}
+              <Route path="/app/:app" element={<AppView />} />
+              <Route path="/:projectTitle" element={<EditorView />} />
+              <Route path="/:projectTitle/tests" element={<TestView />} />
+              <Route path="/:projectTitle/:file" element={<EditorView />} />
               <Route
                 path="*"
                 element={

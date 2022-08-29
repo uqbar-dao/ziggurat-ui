@@ -1,24 +1,15 @@
-import { Test } from "./TestData"
+import { Tests } from "./TestData"
+import { TestGrain } from "./TestGrain"
 
 export interface ProjectState {
-  [key: string]: {
-    holder: string
-    lord: string
-    town_id: string
-    contract?: boolean
-    label?: string
-    data?: string
-    salt?: string
-  }
+  [key: string]: TestGrain
 }
 
 export interface ProjectUpdate {
   compiled: boolean
   error: string
   state: ProjectState
-  tests: {
-    [key: string]: Test
-  }
+  tests: Tests
 }
 
 export interface EditorTextState {
@@ -26,7 +17,12 @@ export interface EditorTextState {
 }
 
 export interface Project extends ProjectUpdate {
-  
+  title: string
+  libs: {
+    [filename: string]: string
+  }
+  main: string
+  expanded: boolean
 }
 
 export interface Projects {

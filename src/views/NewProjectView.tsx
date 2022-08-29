@@ -13,12 +13,14 @@ import { MetadataForm } from '../components/forms/MetadataForm';
 import LoadingOverlay from '../components/popups/LoadingOverlay';
 
 import './NewProjectView.scss'
+import { useNavigate } from 'react-router-dom';
 
 type CreationStep = 'title' | 'project' | 'gall' | 'token' |  'template' | 'metadata'
 export type CreationOption = 'contract' | 'gall' | 'contract-gall' | 'fungible' | 'nft' | 'blank' | 'issue' | 'wrapper' | 'title' | 'metadata' | 'gall-app-template'
 
 const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
-  const { projects, createProject, setRoute } = useContractStore()
+  const { projects, createProject } = useContractStore()
+  const nav = useNavigate()
   
   const [step, setStep] = useState<CreationStep>('title')
   const [options, setOptions] = useState<{ [key: string]: CreationOption | string | undefined }>({ title: '' })
@@ -33,13 +35,17 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     setOptions({})
     setMetadata(generateInitialMetadata('[0xbeef]', '0x0'))
     setStep('title')
-  }, [createProject])
+    nav(`${options.title}/main`)
+  }, [nav, createProject])
 
   const onSelect = useCallback((option: CreationOption) => async () => {
     switch (step) {
       case 'title':
-        if (projects.find(({ title }) => title === options.title)) {
+        if (projects[options.title!]) {
           window.alert('You already have a project with that name')
+          break
+        } else if (options.title === 'app' || options.title === 'new') {
+          window.alert('You cannot name your project "app" or "new"')
           break
         }
         setStep('project')
@@ -56,7 +62,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       case 'token':
         if (option === 'blank') {
           submitNewProject({ ...options, token: option })
-          setRoute({ route: 'contract', subRoute: 'main' })
+          nav('/')
         } else {
           setOptions({ ...options, token: option })
           setStep('metadata')
@@ -69,20 +75,20 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
           setStep('metadata')
         } else {
           submitNewProject({ ...options, template: option })
-          setRoute({ route: 'contract', subRoute: 'main' })
+          nav('/')
         }
         break
       default:
         submitNewProject(options, metadata)
-        setRoute({ route: 'contract', subRoute: 'main' })
+        nav('/')
         break
     }
-  }, [step, setStep, options, setOptions, projects, submitNewProject, metadata, setRoute])
+  }, [step, setStep, options, setOptions, projects, submitNewProject, metadata, nav])
 
   const onBack = useCallback(() => {
     switch (step) {
       case 'title':
-        setRoute({ route: 'contract', subRoute: 'main' })
+        nav('/')
         break
       case 'project':
         setOptions({ ...options, title: '' })
@@ -107,7 +113,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
         setStep('token')
         break
     }
-  }, [step, setStep, options, setOptions, setRoute])
+  }, [step, setStep, options, setOptions, nav])
 
   const renderContent = () => {
     const buttonStyle = {
@@ -124,7 +130,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       return (
         <>
           <Row style={{ width: '100%', position: 'relative', justifyContent: 'center' }}>
-            {projects.length > 0 && backButton}
+            {Object.keys(projects).length > 0 && backButton}
             <h3>Create a Project:</h3>
           </Row>
           <Input

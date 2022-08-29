@@ -4,7 +4,7 @@ import Container from '../components/spacing/Container'
 
 import './DocsView.scss'
 
-const docsUrl = '/~/scry/docs/usr/citadel/overview.html'
+const docsUrl = '/~/scry/docs/usr/ziggurat/overview.html'
 
 const DocsView = () => {
   useEffect(() => {

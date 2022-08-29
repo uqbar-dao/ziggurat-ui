@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from "react"
 import { FaMinusCircle } from "react-icons/fa"
 import { FormValues } from "../../types/FormValues"
-import { Molds } from "../../types/Molds"
 import { UqbarType, UQBAR_TYPES } from "../../types/UqbarType"
 import Button from "../form/Button"
 import Input from "../form/Input"
@@ -13,12 +12,9 @@ import Row from "../spacing/Row"
 interface TestModalProps {
   showTestModal: boolean
   hideTestModal: () => void
-  actionType: string
-  selectAction: (action: string) => void
   isEdit: boolean
-  molds: Molds
-  testFormValues: FormValues
-  setTestFormValues: (values: FormValues) => void
+  testFormValues: { [key: string]: string }
+  setTestFormValues: (values: { [key: string]: string }) => void
   updateTestFormValue: (key: string, value: string) => void
   submitTest: (isUpdate: boolean) => () => void
 }
@@ -26,43 +22,47 @@ interface TestModalProps {
 export const TestModal = ({
   showTestModal,
   hideTestModal,
-  actionType,
-  selectAction,
   isEdit,
-  molds,
   testFormValues,
   setTestFormValues,
   updateTestFormValue,
   submitTest,
 }: TestModalProps) => {
-  const [newTestField, setNewTestField] = useState('')
-  const [newTestFieldType, setNewTestFieldType] = useState(`@ux`)
+  // const [newTestField, setNewTestField] = useState('')
+  // const [newTestFieldType, setNewTestFieldType] = useState(`@ux`)
 
-  const addTestField = useCallback(() => {
-    const newValues = { ...testFormValues }
-    newValues[newTestField] = { value: '', type: newTestFieldType as UqbarType }
-    setTestFormValues(newValues)
-    setNewTestField('')
-  }, [newTestField, newTestFieldType, testFormValues, setTestFormValues])
+  // const addTestField = useCallback(() => {
+  //   const newValues = { ...testFormValues }
+  //   newValues[newTestField] = { value: '', type: newTestFieldType as UqbarType }
+  //   setTestFormValues(newValues)
+  //   setNewTestField('')
+  // }, [newTestField, newTestFieldType, testFormValues, setTestFormValues])
 
-  const removeTestField = useCallback((key: string) => () => {
-    const newValues = { ...testFormValues }
-    delete newValues[key]
-    setTestFormValues(newValues)
-  }, [testFormValues, setTestFormValues])
+  // const removeTestField = useCallback((key: string) => () => {
+  //   const newValues = { ...testFormValues }
+  //   delete newValues[key]
+  //   setTestFormValues(newValues)
+  // }, [testFormValues, setTestFormValues])
 
-  const testFieldPlaceHolder = useMemo(() => `field${Object.keys(testFormValues).length}`, [testFormValues])
+  // const testFieldPlaceHolder = useMemo(() => `field${Object.keys(testFormValues).length}`, [testFormValues])
 
   return (
     <Modal show={showTestModal} hide={hideTestModal}>
       <Col style={{ minWidth: 320, maxHeight: 'calc(100vh - 80px)', overflow: 'scroll' }}>
         <h3 style={{ marginTop: 0 }}>Add New Test</h3>
-
         <Input
+          label="Name"
+          onChange={(e) => updateTestFormValue('name', e.target.value)}
+          placeholder="Nickname for test"
+          value={testFormValues.name}
+          required
+        />
+        <Input
+          containerStyle={{ marginTop: 8 }}
           label="Test (in Hoon)"
-          onChange={(e) => updateTestFormValue('testString', e.target.value)}
+          onChange={(e) => updateTestFormValue('action', e.target.value)}
           placeholder="Your test here"
-          value={testFormValues.testString?.value}
+          value={testFormValues.action}
           required
         />
 

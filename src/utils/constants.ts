@@ -1,3 +1,5 @@
+export const PUBLIC_URL = '/apps/ziggurat/develop'
+
 export const STATUS_CODES : { [key: number] : string } = {
   0: 'succeeded',
   1: 'no account info',

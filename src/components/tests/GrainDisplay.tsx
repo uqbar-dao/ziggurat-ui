@@ -18,8 +18,7 @@ export const GrainDisplaySmall = ({ grain, field, test }: { grain: string, field
     //   newTest.input.cart.grains = newTest.input.cart.grains.filter((g) => g !== grain)
     // }
 
-    updateTest(newTest)
-  }, [test, updateTest])
+  }, [test])
 
   return (
     <Row style={{ justifyContent: 'space-between', margin: 4, padding: '2px 6px', background: 'white', borderRadius: 4 }}>

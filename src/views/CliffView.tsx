@@ -4,7 +4,7 @@ import Container from '../components/spacing/Container'
 
 import './CliffView.scss'
 
-const cliffUrl = '/cliff/view/our/citadel/now'
+const cliffUrl = '/cliff/view/our/ziggurat/now'
 
 const CliffView = () => {
   useEffect(() => {

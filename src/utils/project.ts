@@ -1,6 +1,31 @@
 import { DEV_MOLDS } from "../types/Molds"
-import { Project } from "../types/Project"
+import { Project, Projects, ProjectState } from "../types/Project"
+import { Tests } from "../types/TestData"
 import { TestGrain } from "../types/TestGrain"
+
+export const generateState = (p: Project): ProjectState =>
+  Object.keys(p.state).reduce((acc, id) => {
+    acc[id] = { ...p.state[id], id }
+    return acc
+  }, {} as ProjectState)
+
+export const generateTests = (p: Project): Tests =>
+  Object.keys(p.tests).reduce((acc, id) => {
+    acc[id] = { ...p.tests[id], id }
+    return acc
+  }, {} as Tests)
+
+export const generateProjects = (rawProjects: Projects, existingProjects: Projects) =>
+  Object.keys(rawProjects).reduce((acc, key) => {
+    acc[key] = {
+      ...rawProjects[key],
+      title: key,
+      expanded: Boolean(existingProjects[key]?.expanded),
+      state: generateState(rawProjects[key]),
+      tests: generateTests(rawProjects[key])
+    }
+    return acc
+  }, {} as Projects)
 
 const parseTestData = (title: string, rawTestData: { [key: string]: string }[]) => {
   try {
@@ -11,24 +36,6 @@ const parseTestData = (title: string, rawTestData: { [key: string]: string }[]) 
   } catch (e) {}
   
   return { "tests": [], "grains": [] }
-}
-
-export const parseRawProject = (rawProject: any, projects: Project[], rawTestData: { [key: string]: string }[]): Project => {
-  const title = Object.keys(rawProject)[0]
-  const files = rawProject[title]
-  
-  // const storedProject = projects.find((p) => p.title === title)
-  const text = files.reduce((acc:  { [key: string]: string }, cur: any) => {
-      acc[`contract_${cur.scroll.path.split('/').slice(0, -1).join('')}`] = cur.scroll.text
-      return acc
-    }, {})
-
-  return {
-    title,
-    text,
-    molds: DEV_MOLDS, // TODO: figure out how to do molds
-    testData: parseTestData(title, rawTestData)
-  }
 }
 
 export const parseRawGrains = (rawGrains: any[]): TestGrain[] => {

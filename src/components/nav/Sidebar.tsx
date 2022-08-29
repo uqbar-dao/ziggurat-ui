@@ -1,43 +1,97 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { FaRegPlusSquare, FaRegMinusSquare, FaSave, FaDownload, FaTrash } from 'react-icons/fa';
+import { useLocation, useNavigate } from 'react-router-dom';
 import useContractStore from '../../store/contractStore'
+import { Project } from '../../types/Project';
 import Button from '../form/Button';
 import Input from '../form/Input';
-import { Select } from '../form/Select';
 import Modal from '../popups/Modal';
 import Col from '../spacing/Col'
 import Row from '../spacing/Row'
 import Text from '../text/Text'
 import Link from './Link';
 
+interface FileLinkProps {
+  project: string
+  file: string
+}
+
+const FileLink = ({ project, file }: FileLinkProps) => {
+  const { pathname } = useLocation()
+  const { currentProject, setCurrentProject, openFile } = useContractStore()
+  const isTests = file === 'tests'
+
+  const selectFile = useCallback(() => {
+    if (!isTests) {
+      openFile(project, file)
+    }
+    if (project !== currentProject) {
+      setCurrentProject(project)
+    }
+  }, [project, isTests, currentProject, file, openFile, setCurrentProject])
+
+  return (
+    <Link onClick={selectFile} underline={pathname === `/${project}/${file}`} href={`/${project}/${file}`} style={{ padding: 2 }}>
+      {file}{!isTests ? '.hoon' : ''}
+    </Link>
+  )
+}
+
+interface DirectoryProps {
+  project: Project
+}
+
+const Directory = ({ project }: DirectoryProps) => {
+  const { deleteProject, setProjectExpanded } = useContractStore()
+  const buttonStyle = { marginLeft: 6, padding: 2 }
+
+  const { title, libs, expanded } = project
+  // TODO: download icon should save all project files in a zip
+
+  return (
+    <Col style={{ padding: '0px 4px', fontSize: 14 }}>
+      <Row style={{ padding: 2, marginBottom: 2, cursor: 'pointer', justifyContent: 'space-between' }} onClick={() => setProjectExpanded(title, !expanded)}>
+        <Row>
+          <Button style={buttonStyle} variant="unstyled" iconOnly icon={expanded ? <FaRegMinusSquare size={12} /> : <FaRegPlusSquare size={12} />} />
+          <Text style={{ marginLeft: 4, marginBottom: 2, }}>{title}</Text>
+        </Row>
+        <Row>
+          <Button style={buttonStyle} variant="unstyled" iconOnly icon={<FaDownload size={14} />} onClick={() => null} />
+          <Button style={buttonStyle} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={() => {
+            if (window.confirm(`Are you sure you want to delete the ${title} project?`)) {
+              deleteProject(title)
+            }
+          }} />
+        </Row>
+      </Row>
+      {expanded && (
+        <Col style={{ paddingLeft: 28 }}>
+          <FileLink project={title} file='main' />
+          {Object.keys(libs).map((file) => <FileLink key={file} project={title} file={file} /> )}
+          <FileLink project={title} file='tests' />
+        </Col>
+      )}
+    </Col>
+  )
+}
+
 export const Sidebar = () => {
-  const { projects, currentProject, currentApp, openApps, route, setRoute, saveFiles, setCurrentProject, addApp, setCurrentApp, removeApp, deleteProject } = useContractStore()
+  const { projects, currentProject, currentApp, openApps, addApp, setCurrentApp, removeApp, saveFile } = useContractStore()
   const [showAppModal, setShowAppModal] = useState(false)
   const [appToAdd, setAppToAdd] = useState('')
-  const [contractExpanded, setContractExpanded] = useState(true)
+  const nav = useNavigate()
 
-  const project = useMemo(() => projects.find(() => projects.find(({ title }) => title === currentProject)), [projects, currentProject])
+  const project = useMemo(() => projects[currentProject], [projects, currentProject])
+  const saveFiles = useCallback(() => {
 
-  const buttonStyle = {
-    marginLeft: 6,
-    padding: 2,
-  }
+  }, [])
+
+  const buttonStyle = { marginLeft: 6, padding: 2 }
 
   const buttons = [
-    [<FaRegPlusSquare />, () => setRoute({ route: 'project', subRoute: 'new' })],
-    [<FaSave />, () => saveFiles()],
-    [<FaDownload />, () => null],
-    [<FaTrash />, () => {
-      if (window.confirm(`Are you sure you want to delete the ${currentProject} project?`)) {
-        deleteProject()
-      }
-    }]
+    [<FaRegPlusSquare />, () => nav('/new')],
+    [<FaSave />, saveFiles],
   ]
-
-  const selectProject = useCallback((p: string) => {
-    setCurrentProject(p)
-    setRoute({ route: 'contract', subRoute: 'main' })
-  }, [setCurrentProject, setRoute])
 
   const openApp = useCallback(() => {
     // TODO: check if app is valid
@@ -46,17 +100,15 @@ export const Sidebar = () => {
     } else {
       setCurrentApp(appToAdd)
     }
-    setRoute({ route: 'app', subRoute: appToAdd })
+    nav('/app')
     setShowAppModal(false)
     setAppToAdd('')
-  }, [appToAdd, addApp, setRoute, openApps, setCurrentApp])
+  }, [appToAdd, addApp, nav, openApps, setCurrentApp])
 
   const setApp = useCallback((app: string) => {
     setCurrentApp(app)
-    setRoute({ route: 'app', subRoute: app })
-  }, [setCurrentApp, setRoute])
-
-  const isContractRoute = route.route === 'contract'
+    nav('/app')
+  }, [setCurrentApp, nav])
 
   return (
     <Col style={{ height: '100%', width: 'calc(100% - 1px)', maxWidth: 239, minWidth: 209, borderRight: '1px solid black' }}>
@@ -68,29 +120,7 @@ export const Sidebar = () => {
             <Button key={i} style={buttonStyle} variant="unstyled" onClick={onClick} iconOnly icon={icon} />
           ))}
         </Row>
-        {projects.length > 0 && (
-          <Select style={{ margin: '0 12px 16px', fontSize: 14, width: 'calc(100% - 24px)', backgroundColor: 'rgba(0,0,0,0.08)', border: 'none' }}
-            value={currentProject} onChange={(e) => selectProject(e.target.value)}>
-            {projects.map(({ title }) => (
-              <option key={title} value={title}>{title}</option>
-            ))}
-          </Select>
-        )}
-        {project && (
-          <Col style={{ padding: '0px 4px', fontSize: 14 }}>
-            <Row style={{ padding: 2, marginBottom: 2, cursor: 'pointer' }} onClick={() => setContractExpanded(!contractExpanded)}>
-              <Button style={buttonStyle} variant="unstyled" iconOnly icon={contractExpanded ? <FaRegMinusSquare size={12} /> : <FaRegPlusSquare size={12} />} />
-              <Text style={{ marginLeft: 4 }}>Contract</Text>
-            </Row>
-            {contractExpanded && (
-              <Col style={{ paddingLeft: 28 }}>
-                <Link underline={isContractRoute && route.subRoute === 'main'} href='/contract/main' style={{ padding: 2 }}>- main</Link>
-                <Link underline={isContractRoute && route.subRoute === 'types'} href='/contract/types' style={{ padding: 2 }}>- types</Link>
-                <Link underline={isContractRoute && route.subRoute === 'tests'} href='/contract/tests' style={{ padding: 2 }}>- tests</Link>
-              </Col>
-            )}
-          </Col>
-        )}
+        {Object.values(projects).map((p) => <Directory key={project.title} project={project} />)}
       </Col>
       <Col style={{ width: '100%', height: 'calc(30% - 1px)', borderTop: '1px solid black', overflow: 'scroll' }}>
         <Row style={{ padding: '8px 12px' }}>

@@ -6,7 +6,7 @@ export const sortTest = (a: Test, b: Test) => {
   //   return parseInt(a.id, 16) - parseInt(b.id, 16)
   // }
 
-  return a.id === b.id ? 0 : a.id > b.id ? -1 : 1
+  return a.action === b.action ? 0 : a.action > b.action ? -1 : 1
 }
 
 export const sortGrain = (a: TestGrain, b: TestGrain) => {

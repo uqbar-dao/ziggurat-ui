@@ -1,13 +1,12 @@
 import React, { useMemo, useState } from 'react'
 import { Droppable, Draggable } from 'react-beautiful-dnd'
-import { FaChevronDown, FaChevronUp, FaPen, FaCopy } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaPen, FaCopy, FaTrash } from 'react-icons/fa';
 import Col from '../spacing/Col'
 import Row from '../spacing/Row'
 import useContractStore from '../../store/contractStore';
 import { TestGrain } from '../../types/TestGrain';
 import { Values } from './ValuesDisplay';
 import Button from '../form/Button';
-import { EMPTY_PROJECT } from '../../types/Project';
 
 import './GrainList.scss'
 
@@ -17,7 +16,7 @@ interface GrainValueDisplayProps extends GrainListProps {
 }
 
 export const GrainValueDisplay = ({ grain, grainIndex, editGrain }: GrainValueDisplayProps) => {
-  const { removeGrain, saveFiles } = useContractStore()
+  const { deleteGrain } = useContractStore()
   const [expanded, setExpanded] = useState(false)
 
   const grainStyle = {
@@ -31,15 +30,10 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain }: GrainValueDi
     background: grain.obsolete ? 'rgba(0,0,0,0.05)' : 'white',
   }
 
-  // const grainData = useMemo(() => Object.keys(grain.data).reduce((acc, key) => {
-  //   acc[key] = grain.data[key].value
-  //   return acc
-  // }, {} as { [key: string]: string }), [grain])
-
   const grainContent = (
     <Col style={{ ...grainStyle, position: 'relative' }}>
-      <Col>
-        <Row>
+      <Col style={{ width: '100%' }}>
+        <Row style={{ width: '100%' }}>
           <Button
             onClick={() => setExpanded(!expanded)}
             variant='unstyled'
@@ -47,21 +41,21 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain }: GrainValueDi
             iconOnly
             icon={expanded ? <FaChevronUp size={16} /> : <FaChevronDown size={16} />}
           />
-          <Col>
-            <div>ID: {grain.id}</div>
+          <Col style={{ wordBreak: 'break-all', maxWidth: 'calc(100% - 80px)' }}>
+            ID: {grain.id}
           </Col>
         </Row>
       </Col>
       {expanded && <Col>
         <div>Holder: {grain.holder}</div>
         <div>Lord: {grain.lord}</div>
-        <div>Town ID: {grain['town-id']}</div>
+        <div>Town ID: {grain.town_id}</div>
         <div>Data:</div>
         <div>{grain.data}</div>
         {/* <Values values={grainData} /> */}
       </Col>}
       <Row style={{ position: 'absolute', top: 4, right: 4, padding: 4 }}>
-        {!grain.obsolete && (
+        {/* {!grain.obsolete && (
           <Button
             onClick={() => editGrain(grain, true)}
             variant='unstyled'
@@ -69,7 +63,7 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain }: GrainValueDi
             icon={<FaCopy size={14} />}
             style={{ marginRight: 8 }}
           />
-        )}
+        )} */}
         {!grain.obsolete && (
           <Button
             onClick={() => editGrain(grain)}
@@ -79,19 +73,19 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain }: GrainValueDi
           />
         )}
         <Button
-          onClick={() => { if(window.confirm('Are you sure you want to remove this grain?')) { removeGrain(grainIndex); saveFiles() } }}
+          onClick={() => { if(window.confirm('Are you sure you want to remove this grain?')) { deleteGrain(grain.id) } }}
           variant='unstyled'
           className="delete"
-          style={{ fontSize: 20, marginLeft: 8 }}
-        >
-          &times;
-        </Button>
+          style={{ marginLeft: 8 }}
+          iconOnly
+          icon={<FaTrash size={14} />}
+        />
       </Row>
     </Col>
   )
 
   return (
-    <Draggable draggableId={grain.id} index={grainIndex} isDragDisabled={Boolean(grain.obsolete)}>
+    <Draggable draggableId={grain.id} index={grainIndex} isDragDisabled/*={Boolean(grain.obsolete)}*/>
       {(provided: any, snapshot: any) => (
         <>
           <Row key={grain.id} className="grain" innerRef={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
@@ -110,14 +104,14 @@ interface GrainListProps {
 
 export const GrainList = ({ editGrain }: GrainListProps) => {
   const { projects, currentProject } = useContractStore()
-  const project = useMemo(() => projects.find(p => p.title === currentProject), [currentProject, projects])
-  const { testData } = useMemo(() => project || EMPTY_PROJECT, [project])
+  const project = useMemo(() => projects[currentProject], [currentProject, projects])
+  const grains = Object.values(project.state)
 
   return (
     <Droppable droppableId="grains" style={{ width: '100%', height: '100%' }}>
       {(provided: any) => (
         <Col className='grains' {...provided.droppableProps} innerRef={provided.innerRef} style={{ ...provided.droppableProps.style,  width: '100%', overflow: 'scroll' }}>
-          {testData.grains.map((grain, i) => (
+          {grains.map((grain, i) => (
             <GrainValueDisplay key={grain.id} grain={grain} grainIndex={i} editGrain={editGrain} />
           ))}
           {provided.placeholder}

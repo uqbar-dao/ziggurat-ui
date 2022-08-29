@@ -2,10 +2,12 @@ import create from "zustand"
 import { persist } from "zustand/middleware"
 import api from "../api";
 import { RawMetadata } from "../code-text/test-data/fungible";
+import { OpenFiles } from "../types/OpenFiles";
 import { Projects } from "../types/Project";
-import { RunTestPayload, Test } from "../types/TestData";
+import { RunTestPayload } from "../types/TestData";
 import { TestExpectation } from "../types/TestExpectation";
-import { TestRice } from "../types/TestGrain";
+import { TestGrain } from "../types/TestGrain";
+import { generateProjects } from "../utils/project";
 import { handleProjectUpdate, handleTestUpdate } from "./subscriptions/contract";
 import { createSubscription } from "./subscriptions/createSubscription";
 
@@ -13,25 +15,33 @@ export interface ContractStore {
   loading?: string
   currentProject: string
   projects: Projects
+  openFiles: OpenFiles
   openApps: string[]
   currentApp: string
   setLoading: (loading?: string) => void
-  init: () => Promise<void>
-  getProjects: () => Promise<void>
+  init: () => Promise<Projects>
+  getProjects: () => Promise<Projects>
   createProject: (options: { [key: string]: string }, rawMetadata?: RawMetadata) => Promise<void>
   setCurrentProject: (currentProject: string) => void
   deleteProject: (project: string) => Promise<void>
-  saveFile: (project: string, name: string, text: string) => Promise<void>
-  deleteFile: (project: string, name: string) => Promise<void>
+  setProjectExpanded: (project: string, expanded: boolean) => void
+  setProjectText: (project: string, file: string, text: string) => void
+  saveFile: (project: string, file: string, text: string) => Promise<void>
+  deleteFile: (project: string, file: string) => Promise<void>
+  openFile: (project: string, file: string) => void
 
-  addRice: (project: string, rice: TestRice) => Promise<void>
-  deleteRice: (project: string, riceId: string) => Promise<void>
-  addTest: (project: string, name: string, action: string) => Promise<void>
-  addTestExpectations: (project: string, testId: string, expectations: TestExpectation[]) => Promise<void>
-  deleteTest: (project: string, testId: string) => Promise<void>
-  updateTest: (project: string, testId: string, name: string, action: string) => Promise<void>
-  runTests: (project: string, payload: RunTestPayload[]) => Promise<void>
-  deployContract: (project: string, location: string, town: string) => Promise<void>
+  addGrain: (rice: TestGrain) => Promise<void>
+  deleteGrain: (riceId: string) => Promise<void>
+  addTest: (name: string, action: string) => Promise<void>
+  addTestExpectations: (testId: string, expectations: TestExpectation[]) => Promise<void>
+  deleteTest: (testId: string) => Promise<void>
+  updateTest: (testId: string, name: string, action: string) => Promise<void>
+  runTests: (payload: RunTestPayload[]) => Promise<void>
+  deployContract: (location: string, town: string) => Promise<void>
+
+  addApp: (app: string) => void
+  setCurrentApp: (currentApp: string) => void
+  removeApp: (app: string) => void
 }
 
 const useContractStore = create<ContractStore>(persist<ContractStore>(
@@ -39,70 +49,107 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
     loading: '',
     currentProject: '',
     projects: {},
+    openFiles: {},
     openApps: ['webterm'],
     currentApp: '',
     route: { route: 'project', subRoute: 'new' },
     setLoading: (loading?: string) => set({ loading }),
     init: async () => {
-      get().getProjects()
+      const projects = await get().getProjects()
+
+      if (!get().currentProject) {
+        set({ currentProject: Object.values(projects)[0].title })
+      }
 
       set({ loading: undefined })
+
+      return projects
     },
     getProjects: async () => {
-      const projects = await api.scry({ app: 'citadel', path: '/all-projects/json' })
+      const rawProjects = await api.scry({ app: 'ziggurat', path: '/all-projects' })
+      const projects = generateProjects(rawProjects, get().projects)
       console.log('PROJECTS:', projects)
-
+      
       Object.keys(projects).forEach((p) => {
         api.subscribe(createSubscription('ziggurat', `/contract-project/${p}`, handleProjectUpdate(get, set, p)))
         api.subscribe(createSubscription('ziggurat', `/test-updates/${p}`, handleTestUpdate(get, set, p)))
       })
 
       set({ projects })
+      return projects
     },
     createProject: async (options: { [key: string]: string }, rawMetadata?: RawMetadata) => {
       set({ loading: 'Creating project...' })
 
       const project = options.title
-      const json = { project, action: { "new-contract-project": options.token } }
+      const json = { project, action: { "new-contract-project": { template: options.token } } }
 
-      await api.poke({ app: 'ziggurat', mark: 'ziggurat-poke', json })
+      await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
       await get().getProjects()
-      set({ loading: undefined })
+      set({ loading: undefined, currentProject: options.title })
     },
-    setCurrentProject: (currentProject: string) => {
-      set({ currentProject })
-    },
+    setCurrentProject: (currentProject: string) => set({ currentProject }),
     deleteProject: async (project: string) => {
-      await api.poke({ app: 'ziggurat', mark: 'ziggurat-poke', json: { project, action: { "delete-project": null } } })
+      await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json: { project, action: { "delete-project": null } } })
+      set({ currentProject: Object.keys(get().projects)[0] || '' })
     },
-    saveFile: async (project: string, name: string, text: string) => {
+    setProjectExpanded: (project: string, expanded: boolean) => {
+      const newProjects = { ...get().projects }
+      newProjects[project].expanded = expanded
+      set({ projects: newProjects })
+    },
+    setProjectText: (project: string, file: string, text: string) => {
+      const newProjects = { ...get().projects }
+      if (file === 'main') {
+        newProjects[project].main = text
+      } else {
+        newProjects[project].libs[file] = text
+      }
+      set({ projects: newProjects })
+    },
+    saveFile: async (project: string, file: string, text: string) => {
       set({ loading: 'Saving file(s)...' })
-      await api.poke({ app: 'ziggurat', mark: 'ziggurat-poke', json: { project, action: { 'save-file': { name, text } } } })
+      await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json: { project, action: { 'save-file': { name: file, text } } } })
     },
-    deleteFile: async (project: string, name: string) => {
-      if (project === name) {
+    deleteFile: async (project: string, file: string) => {
+      if (project === file || project === 'main') {
         return alert('You cannot delete the main contract file. Delete the project instead.')
       }
-      if (window.confirm(`Are you sure you want to delete ${name} in project ${project}?`)) {
-        await api.poke({ app: 'ziggurat', mark: 'ziggurat-poke', json: { project, action: { 'delete-file': { name } } } })
+      if (window.confirm(`Are you sure you want to delete ${file}.hoon in project "${project}"?`)) {
+        await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json: { project, action: { 'delete-file': { name: file } } } })
+        const newProjects = { ...get().projects }
+        delete newProjects[project].libs[file]
+        set({ projects: newProjects })
       }
-      // TODO: remove file from project
+    },
+    openFile: (project: string, file: string) => {
+      const { openFiles } = get()
+      if (!openFiles[project] || !openFiles[project].find(f => f === file)) {
+        const newOpenFiles = { ...openFiles }
+        newOpenFiles[project] = (openFiles[project] || []).concat([file])
+        set({ openFiles: newOpenFiles })
+      }
     },
 
 
-    addRice: async (project: string, rice: TestRice) => {
+    addGrain: async (rice: TestGrain) => {
+      const project = get().currentProject
       const json = { project, action: { "add-to-state": rice } }
-      await api.poke({ app: 'ziggurat', mark: 'ziggurat-poke', json })
+      console.log('SAVING GRAIN:', json)
+      await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
     },
-    deleteRice: async (project: string, riceId: string) => {
+    deleteGrain: async (riceId: string) => {
+      const project = get().currentProject
       const json = {project, action: { "delete-from-state": { id: riceId } } }
-      await api.poke({ app: 'ziggurat', mark: 'ziggurat-poke', json })
+      await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
     },
-    addTest: async (project: string, name: string, action: string) => {
+    addTest: async (name: string, action: string) => {
+      const project = get().currentProject
       const json = {project, action: { "add-test": { name, action } } }
-      await api.poke({ app: 'ziggurat', mark: 'ziggurat-poke', json })
+      await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
     },
-    addTestExpectations: async (project: string, testId: string, expected: TestExpectation[]) => {
+    addTestExpectations: async (testId: string, expected: TestExpectation[]) => {
+      const project = get().currentProject
       const json = {
         project,
         action: {
@@ -110,22 +157,37 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
         }
       }
 
-      await api.poke({ app: 'ziggurat', mark: 'ziggurat-poke', json })
+      await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
     },
-    deleteTest: async (project: string, testId: string) => {
+    deleteTest: async (testId: string) => {
+      const project = get().currentProject
       const json = { project, action: { "delete-test": { id: testId } } }
-      await api.poke({ app: 'ziggurat', mark: 'ziggurat-poke', json })
+      await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
     },
-    updateTest: async (project: string, testId: string, name: string, action: string) => {
+    updateTest: async (testId: string, name: string, action: string) => {
+      const project = get().currentProject
       const json = { project, action: { "edit-test": { id: testId, name, action } } }
-      await api.poke({ app: 'ziggurat', mark: 'ziggurat-poke', json })
+      await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
     },
-    runTests: async (project: string, payload: RunTestPayload[]) => {
-      const json = { project, action: { "run-tests": payload } }
-      await api.poke({ app: 'ziggurat', mark: 'ziggurat-poke', json })
+    runTests: async (payload: RunTestPayload[]) => {
+      const project = get().currentProject
+      
+      const json = payload.length === 1 ?
+        { project, action: { "run-test": payload[0] } } :
+        { project, action: { "run-tests": payload } }
+      console.log('RUNNING TESTS:', json)
+      await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
+      console.log('DONE')
     },
-    deployContract: async (project: string, location: string, town: string) => {
+    deployContract: async (location: string, town: string) => {
+      const project = get().currentProject
 
+    },
+    addApp: (app: string) => set({ openApps: get().openApps.concat([app]), currentApp: app }),
+    setCurrentApp: (currentApp: string) => set({ currentApp }),
+    removeApp: (app: string) => {
+      const { openApps, currentApp } = get()
+      set({ openApps: openApps.filter(a => a !== app), currentApp: currentApp === app ? openApps[0] || '' : currentApp })
     },
   }),
   {

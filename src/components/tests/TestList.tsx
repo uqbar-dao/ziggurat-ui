@@ -6,11 +6,7 @@ import Row from '../spacing/Row'
 import useContractStore from '../../store/contractStore';
 import Button from '../form/Button';
 import { Test } from '../../types/TestData';
-import { EMPTY_PROJECT } from '../../types/Project';
-import { Molds } from '../../types/Molds';
-import { Values } from './ValuesDisplay';
 import Input from '../form/Input';
-import { truncateString } from '../../utils/format';
 import Loader from '../popups/Loader';
 import { getStatus } from '../../utils/constants';
 
@@ -19,12 +15,10 @@ export const DROPPABLE_DIVIDER = '___'
 interface TestEntryProps extends TestListProps {
   test: Test
   testIndex: number
-  molds: Molds
 }
 
-export const TestEntry = ({ test, testIndex, editTest, molds }: TestEntryProps) => {
-  // need to handle action recursively
-  const { currentProject, testOutput, removeTest, updateTest } = useContractStore()
+export const TestEntry = ({ test, testIndex, editTest }: TestEntryProps) => {
+  const { deleteTest } = useContractStore()
   const [expandInput, setExpandInput] = useState(false)
   const [expandOutput, setExpandOutput] = useState(false)
 
@@ -36,15 +30,14 @@ export const TestEntry = ({ test, testIndex, editTest, molds }: TestEntryProps) 
     borderRadius: 4,
   }
 
+  // TODO: modify the test at the store level
   const toggleTestFocus = useCallback(() => {
-    updateTest({ ...test, focus: !test.focus })
-  }, [test, updateTest])
+    test.focus = !test.focus
+  }, [test])
 
   const toggleTestExclude = useCallback(() => {
-    updateTest({ ...test, exclude: !test.exclude })
-  }, [test, updateTest])
-
-  const output = testOutput.find(({ id, project }) => id === test.id && project === currentProject)
+    test.exclude = !test.exclude
+  }, [test])
 
   return (
     <Col className="action" style={{ ...testStyle, position: 'relative' }}>
@@ -60,12 +53,12 @@ export const TestEntry = ({ test, testIndex, editTest, molds }: TestEntryProps) 
           </Row>
         </Row>
         <Row style={{ marginRight: 4, marginTop: -4 }}>
-          <Button
+          {/* <Button
             onClick={() => editTest(test, true)}
             variant='unstyled'
             iconOnly
             icon={<FaCopy size={14} />}
-          />
+          /> */}
           <Button
             onClick={() => editTest(test)}
             variant='unstyled'
@@ -74,10 +67,10 @@ export const TestEntry = ({ test, testIndex, editTest, molds }: TestEntryProps) 
             style={{ marginLeft: 8 }}
           />
           <Button
-            onClick={() => { if(window.confirm('Are you sure you want to remove this test?')) removeTest(testIndex) }}
+            onClick={() => { if(window.confirm('Are you sure you want to remove this test?')) deleteTest(test.id) }}
             variant='unstyled'
             style={{ marginLeft: 8 }}
-            icon={<FaTrash size={16} />}
+            icon={<FaTrash size={14} />}
             iconOnly
           />
         </Row>
@@ -91,7 +84,7 @@ export const TestEntry = ({ test, testIndex, editTest, molds }: TestEntryProps) 
             iconOnly
             icon={expandInput ? <FaChevronUp size={16} /> : <FaChevronDown size={16} />}
           />
-          Action: {test.input.value.split(' ')[0].slice(1)}
+          {test.name ? test.name : `Action: ${test.action.split(' ')[0].slice(1)}`}
         </Row>
         {expandInput && (
           <Col style={{ width: '100%', marginBottom: 6 }}>
@@ -106,24 +99,24 @@ export const TestEntry = ({ test, testIndex, editTest, molds }: TestEntryProps) 
                 </Row>
               )
             })} */}
-            {test.input.value}
+            {test.action}
           </Col>
         )}
       </Col>
-      {output !== undefined && <Col className="output" style={{ flex: 1, marginTop: 4, paddingTop: 8, borderTop: '1px solid gray' }}>
+      {test.last_result !== undefined && <Col className="output" style={{ flex: 1, marginTop: 4, paddingTop: 8, borderTop: '1px solid gray' }}>
         <Row style={{ marginBottom: 4 }}>
-          {!!test.output && (<Button
+          {!!test.last_result && (<Button
             onClick={() => setExpandOutput(!expandOutput)}
             variant='unstyled'
             style={{ marginRight: 8, marginTop: 2, alignSelf: 'flex-start' }}
             iconOnly
             icon={expandOutput ? <FaChevronUp size={16} /> : <FaChevronDown size={16} />}
           />)}
-          {test.output ? 'Expected' : ''} Output: {output.status === -1 ? <Loader size='small' style={{ marginLeft: 8 }} dark /> : getStatus(output.status)}
+          {test.last_result ? 'Expected' : ''} Output: {test.errorcode === -1 ? <Loader size='small' style={{ marginLeft: 8 }} dark /> : getStatus(test.errorcode)}
         </Row>
         {expandOutput && (
           <Col>
-            {JSON.stringify(test.output) || 'null'}
+            {JSON.stringify(test.last_result) || 'null'}
           </Col>
         )}
       </Col>}
@@ -133,17 +126,15 @@ export const TestEntry = ({ test, testIndex, editTest, molds }: TestEntryProps) 
 
 interface TestListProps {
   editTest: (test: Test, copyFormat?: boolean) => void
-  molds: Molds
 }
 
-export const TestList = ({ editTest, molds }: TestListProps) => {
+export const TestList = ({ editTest }: TestListProps) => {
   const { projects, currentProject } = useContractStore()
-  const project = useMemo(() => projects.find(p => p.title === currentProject), [currentProject, projects])
-  const { testData } = useMemo(() => project || EMPTY_PROJECT, [project])
+  const project = useMemo(() => projects[currentProject], [currentProject, projects])
 
   return (
     <Col className="test-list">
-      {testData.tests.map((test, i) => <TestEntry key={test.id} test={test} testIndex={i} editTest={editTest} molds={molds} />)}
+      {Object.values(project.tests).map((test, i) => <TestEntry key={test.id} test={test} testIndex={i} editTest={editTest} />)}
     </Col>
   )
 }

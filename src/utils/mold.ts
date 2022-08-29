@@ -1,4 +1,4 @@
-import { Molds } from "../types/Molds"
+// import { Molds } from "../types/Molds"
 import { Test } from "../types/TestData"
 import { TestGrain } from "../types/TestGrain"
 
@@ -21,20 +21,20 @@ import { TestGrain } from "../types/TestGrain"
 //   , test)
 // }
 
-export const isRiceValid = (newMolds: Molds, oldMolds: Molds, grain: TestGrain) : TestGrain => {
-  // if rice type does not exist in newMolds, set obsolete: true
-  if (!grain.label || !newMolds.rice[grain.label]) {
-    return { ...grain, obsolete: true, riceInvalid: true }
-  }
+// export const isRiceValid = (newMolds: Molds, oldMolds: Molds, grain: TestGrain) : TestGrain => {
+//   // if rice type does not exist in newMolds, set obsolete: true
+//   if (!grain.label || !newMolds.rice[grain.label]) {
+//     return { ...grain, obsolete: true, riceInvalid: true }
+//   }
 
-  const newMold = newMolds.rice[grain.label]
-  const oldMold = oldMolds.rice[grain.label]
+//   const newMold = newMolds.rice[grain.label]
+//   const oldMold = oldMolds.rice[grain.label]
 
-  if (!oldMold) {
-    return grain
-  }
+//   if (!oldMold) {
+//     return grain
+//   }
 
-  return Object.keys(newMold).reduce(
-    (acc: TestGrain, key: string) => ({ ...acc, riceInvalid: acc.riceInvalid || newMold[key] !== oldMold[key] })
-  , grain)
-}
+//   return Object.keys(newMold).reduce(
+//     (acc: TestGrain, key: string) => ({ ...acc, riceInvalid: acc.riceInvalid || newMold[key] !== oldMold[key] })
+//   , grain)
+// }

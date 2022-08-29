@@ -25,11 +25,11 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>Contracts - Uqbar</title>
+    <title>Ziggurat - Uqbar</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <div id="ziggurat-root"></div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
@@ -41,5 +41,17 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
     <script src="/session.js"></script>
+
+    <script>
+      const zigguratAppId = 'ziggurat-root'
+
+      if (window.location.pathname.includes('/apps/ziggurat/develop') && !document.getElementById(zigguratAppId)) {
+        const zigguratApp = document.createElement('div');
+        zigguratApp.id = zigguratAppId
+        document.getElementsByTagName('body')[0].appendChild(zigguratApp);
+      } else if (!window.location.pathname.includes('/apps/ziggurat/develop')) {
+        window.location.pathname = '/apps/ziggurat/develop';
+      }
+    </script>
   </body>
 </html>
