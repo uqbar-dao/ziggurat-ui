@@ -32,6 +32,7 @@
   },
   "proxy": "http://localhost:8080",
   "scripts": {
+    "start": "sed -i.bak -e 's/compress: true/compress: false/' ./node_modules/react-scripts/config/webpackDevServer.config.js && react-app-rewired start",
     "start:mac": "sed -i '' -e 's/compress: true/compress: false/' ./node_modules/react-scripts/config/webpackDevServer.config.js && react-scripts start",
     "start:linux": "echo $(pwd) && sed -i -e 's/compress: true/compress: false/' ./node_modules/react-scripts/config/webpackDevServer.config.js && react-scripts start",
     "build": "react-scripts build",
