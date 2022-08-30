@@ -118,7 +118,7 @@ interface GrainListProps {
 export const GrainList = ({ editGrain }: GrainListProps) => {
   const { projects, currentProject } = useContractStore()
   const project = useMemo(() => projects[currentProject], [currentProject, projects])
-  const grains = Object.values(project.state)
+  const grains = Object.values(project?.state || {})
 
   return (
     <Droppable droppableId="grains" style={{ width: '100%', height: '100%' }}>

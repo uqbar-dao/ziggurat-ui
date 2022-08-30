@@ -55,7 +55,7 @@ interface DirectoryProps {
 const Directory = ({ project }: DirectoryProps) => {
   const { deleteProject, setProjectExpanded } = useContractStore()
   const [showButtons, setShowButtons] = useState(false)
-  
+  const nav = useNavigate()
 
   const { title, libs, expanded } = project
   // TODO: download icon should save all project files in a zip
@@ -73,9 +73,14 @@ const Directory = ({ project }: DirectoryProps) => {
               <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaDownload size={14} />} onClick={() => null} />
             </Tooltip>
             <Tooltip tip="delete" right>
-              <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={() => {
+              <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={async () => {
                 if (window.confirm(`Are you sure you want to delete the ${title} project?`)) {
-                  deleteProject(title)
+                  const navigateTo = await deleteProject(title)
+                  if (navigateTo) {
+                    nav(`/${navigateTo}/main`)
+                  } else if (navigateTo === '') {
+                    nav('/')
+                  }
                 }
               }} />
             </Tooltip>
@@ -101,13 +106,14 @@ export const Sidebar = () => {
 
   const project = useMemo(() => projects[currentProject], [projects, currentProject])
   const saveFiles = useCallback(async () => {
-    setLoading('Saving files...')
-    await Promise.all(
-      Object.keys(project.libs)
-      .map((file) => saveFile(project.title, file, project.libs[file]))
-      .concat([saveFile(project.title, 'main', project.main)])
-    )
-    setLoading()
+    if (project.modifiedFiles.size) {
+      setLoading('Saving project...')
+      await Promise.all(
+        Array.from(project.modifiedFiles.values())
+          .map((file) => saveFile(project.title, file, file === 'main' ? project.main : project.libs[file]))
+      )
+      setLoading()
+    }
   }, [project, saveFile, setLoading])
 
   useEffect(() => {

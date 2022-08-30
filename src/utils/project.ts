@@ -9,9 +9,9 @@ export const generateState = (p: Project | ProjectUpdate): ProjectState =>
     return acc
   }, {} as ProjectState)
 
-export const generateTests = (p: Project | ProjectUpdate): Tests =>
+export const generateTests = (p: Project | ProjectUpdate, oldP?: Project): Tests =>
   Object.keys(p.tests).reduce((acc, id) => {
-    acc[id] = { ...p.tests[id], id }
+    acc[id] = { ...p.tests[id], id, selected: oldP?.tests[id]?.selected === undefined ? true : oldP?.tests[id]?.selected }
     return acc
   }, {} as Tests)
 
@@ -22,7 +22,8 @@ export const generateProjects = (rawProjects: Projects, existingProjects: Projec
       title: key,
       expanded: Boolean(existingProjects[key]?.expanded),
       state: generateState(rawProjects[key]),
-      tests: generateTests(rawProjects[key])
+      tests: generateTests(rawProjects[key], existingProjects[key]),
+      modifiedFiles: new Set<string>(),
     }
     return acc
   }, {} as Projects)

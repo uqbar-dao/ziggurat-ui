@@ -15,10 +15,17 @@ const Button: React.FC<ButtonProps> = ({
   icon,
   iconOnly = false,
   type,
+  style,
   ...props
 }) => {
   return (
-    <button {...props} className={`button ${props.className || ''} ${variant || ''}`} type={type || "button"}>
+    <button
+      {...props}
+      className={`button ${props.className || ''}
+      ${variant || ''}`}
+      type={type || "button"}
+      style={{ ...style, justifyContent: 'space-evenly' }}
+    >
       {icon}
       {!iconOnly && props.children}
     </button>

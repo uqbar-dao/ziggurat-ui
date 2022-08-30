@@ -25,6 +25,7 @@ export interface Test {
   errorcode: number
   success: boolean
   running?: boolean
+  selected?: boolean
 }
 
 export interface Tests {

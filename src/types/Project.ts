@@ -23,6 +23,7 @@ export interface Project extends ProjectUpdate {
   }
   main: string
   expanded: boolean
+  modifiedFiles: Set<string>
 }
 
 export interface Projects {

@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import Iframe from 'react-iframe';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { FaPlay } from 'react-icons/fa';
 import { isMobileCheck } from '../utils/dimensions'
@@ -20,14 +19,16 @@ import { OpenFileHeader } from '../components/nav/OpenFileHeader';
 
 import './TestView.scss'
 import { DEFAULT_BUDGET, DEFAULT_RATE } from '../utils/constants';
+import { Tooltip } from '../components/popups/Tooltip';
 
 export interface TestViewProps {}
 
 export const TestView = () => {
-  const { projects, currentProject, focusedTests, setLoading, addTest, updateTest, addGrain, runTests } = useContractStore()
+  const { projects, currentProject, focusedTests, setLoading, addTest, updateTest, addGrain, runTest, runTests } = useContractStore()
 
   const [showTestModal, setShowTestModal] = useState(false)
   const [showGrainModal, setShowGrainModal] = useState(false)
+  const [showRunModal, setShowRunModal] = useState(false)
   const [grainFormValues, setGrainFormValues] = useState<FormValues>({})
   const [testFormValues, setTestFormValues] = useState<{ [key: string]: string }>({ name: '', action: '' })
   const [grainType, setGrainType] = useState('')
@@ -138,20 +139,24 @@ export const TestView = () => {
     }
   }
 
-  const runSelectedTests = useCallback(() => {
-    let testsToRun = Object.keys(focusedTests).filter(key => focusedTests[key].focus)
-
-    if (!testsToRun.length) {
-      const excluded = Object.keys(focusedTests).filter(key => focusedTests[key].exclude)
-      testsToRun = Object.values(project.tests).map(({ id }) => id).filter(id => !excluded.includes(id))
-    }
-
+  const runAllTests = useCallback((runSequentially: boolean) => () => {
+    const testsToRun = (Object.values(project.tests) || [])
+      .filter(({ selected }) => selected)
+      .map(({ id }) => id)
+    setShowRunModal(false)
+    
     if (testsToRun.length) {
-      runTests(testsToRun.map(id => ({ id, rate: DEFAULT_RATE, bud: DEFAULT_BUDGET })))
+      setLoading('Running tests...')
+      if (runSequentially) {
+        runTests(testsToRun.map(id => ({ id, rate: DEFAULT_RATE, bud: DEFAULT_BUDGET })))
+      } else {
+        testsToRun.map(id => runTest({ id, rate: DEFAULT_RATE, bud: DEFAULT_BUDGET }))
+      }
+      setLoading(undefined)
     } else {
-      window.alert('You have excluded all tests.')
+      window.alert('Please select some tests to run.')
     }
-  }, [project, focusedTests, runTests])
+  }, [project, focusedTests, runTest, runTests, setLoading, setShowRunModal])
 
   const isEdit = Boolean(edit)
 
@@ -163,9 +168,14 @@ export const TestView = () => {
           <Row className="section-header">
             <Row>
               <Row className="title" style={{ marginRight: 8 }}>Tests</Row>
-              <Button onClick={runSelectedTests} variant='unstyled' iconOnly icon={<FaPlay size={14} />} />
+              
             </Row>
-            <Row className="action" onClick={() => setShowTestModal(true)}>+ Add Test</Row>
+            <Row>
+              <Button style={{ width: 124 }} onClick={() => setShowRunModal(true)} variant='unstyled' icon={<FaPlay size={14} />}>
+                Run Selected
+              </Button>
+              <Row className="action" onClick={() => setShowTestModal(true)}>+ Add Test</Row>
+            </Row>
           </Row>
           <TestList editTest={editTest} />
         </Col>
@@ -199,6 +209,15 @@ export const TestView = () => {
             ))}
             <Button onClick={submitGrain(isEdit)} style={{ alignSelf: 'center', marginTop: 16 }}>{isEdit ? 'Update' : 'Add'} Grain</Button>
           </Col>
+        </Modal>
+        <Modal show={showRunModal} hide={() => setShowRunModal(false)}>
+          <h3 style={{ marginTop: 0 }}>Run selected tests:</h3>
+          <Tooltip tip="Test results will affect subsequent tests">
+            <Button style={{ width: 180, justifyContent: 'center' }} onClick={runAllTests(true)}>Sequentially</Button>
+          </Tooltip>
+          <Tooltip tip="Each test will run separately">
+            <Button style={{ width: 180, justifyContent: 'center', marginTop: 16 }} onClick={runAllTests(false)}>Independently</Button>
+          </Tooltip>
         </Modal>
       </Row>
     </DragDropContext>

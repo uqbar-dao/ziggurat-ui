@@ -1,4 +1,4 @@
-import React, { FormEvent, useCallback, useEffect, useMemo, useRef } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
@@ -16,29 +16,20 @@ import { OpenFileHeader } from '../components/nav/OpenFileHeader'
 const EditorView = ({ hide = false }: { hide?: boolean }) => {
   const editorRef = useRef<CodeMirrorShim>()
   const nav = useNavigate()
-  const { file } = useParams()
-  const { projects, currentProject, setLoading, runTests, setProjectText } = useContractStore()
+  const { projectTitle, file } = useParams()
+  const { projects, setProjectText } = useContractStore()
 
-  const project = useMemo(() => projects[currentProject], [currentProject, projects])
-  const text = !file ? '' : file === 'main' ? project.main : project.libs[file] || ''
+  const project = useMemo(() => projects[projectTitle || ''], [projectTitle, projects])
+  const text = !file ? '' : file === 'main' ? project?.main : project?.libs[file] || ''
 
   useEffect(() => {
-    if (Object.keys(projects).length < 1) {
-      nav ('/new')
+    if (Object.keys(projects).length < 1 || !text) {
+      nav ('/')
     }
-  }, [projects, nav])
+  }, [projects, text, nav])
 
-  const submit = useCallback(async (e: FormEvent) => {
-    e.preventDefault()
-
-    setLoading('Running tests...')
-    // await runTests(currentProject)
-    setLoading(undefined)
-  }, [currentProject, runTests, setLoading])
-  
   const setText = useCallback((inputText: string) => {
-    console.log(file)
-    if (file) {
+    if (file && project?.title) {
       setProjectText(project.title, file, inputText)
     }
   }, [project, file, setProjectText])
@@ -46,7 +37,7 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
   const isMobile = isMobileCheck()
 
   return (
-    <Form className="editor-view" onSubmit={submit} style={{ visibility: hide ? 'hidden' : 'visible', padding: 0, height: '100%', width: '100%', background: 'white', position: 'absolute' }}>
+    <Form className="editor-view" style={{ visibility: hide ? 'hidden' : 'visible', padding: 0, height: '100%', width: '100%', background: 'white', position: 'absolute' }}>
       <OpenFileHeader />
       <Row style={{ height: 'calc(100% - 28px)', width: 'calc(100% - 2px)' }}>
         <Col style={{ height: '100%', width: '100%', borderBottom: isMobile ? '1px solid lightgray' : undefined }}>

@@ -20,8 +20,8 @@ export const Tooltip = ({ tip, right = false, children, tipStyle = {}, ...props 
         left: right ? undefined: 0,
         color: 'gray',
         whiteSpace: 'nowrap',
-        padding: '2px 4px',
-        borderRadius: 2,
+        padding: '2px 6px',
+        borderRadius: 4,
       ...tipStyle }}
       >
         {tip}

@@ -63,7 +63,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     setTimeout(() => {
       setOpenFiles(openFiles.concat([{ project: options.title!, file: 'main' }]))
       nav(`/${options.title}/main`)
-    }, 1500)
+    }, 1000)
     setLoading(false)
   }, [nav, createProject, populateTemplate, openFiles, setOpenFiles])
 

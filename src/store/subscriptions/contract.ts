@@ -7,8 +7,14 @@ export const handleProjectUpdate = (get: GetState<ContractStore>, set: SetState<
   // if the project doesn't exist, create it
   console.log('PROJECT UPDATE FOR:', project, update)
   const newProjects = { ...get().projects }
-  newProjects[project] = { ...(newProjects[project] || {}), ...update, state: generateState(update), tests: generateTests(update) }
-  set({ projects: newProjects })
+  newProjects[project] = {
+    ...(newProjects[project] || {}),
+    ...update,
+    state: generateState(update),
+    tests: generateTests(update, newProjects[project]),
+    modifiedFiles: new Set<string>()
+  }
+  set({ projects: newProjects, compilationError: update.error ? { project, error: update.error } : undefined })
 }
 
 export const handleTestUpdate = (get: GetState<ContractStore>, set: SetState<ContractStore>, project: string) => (update: ProjectState) => {

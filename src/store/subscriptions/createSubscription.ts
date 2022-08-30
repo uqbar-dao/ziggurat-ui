@@ -1,5 +1,9 @@
 import { SubscriptionRequestInterface } from "@urbit/http-api";
 
+export interface Subscriptions {
+  [project: string]: Promise<number>[]
+}
+
 export function createSubscription(app: string, path: string, e: (data: any) => void): SubscriptionRequestInterface {
   const request = {
     app,

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import useContractStore from './store/contractStore';
 import Container from './components/spacing/Container';
@@ -12,13 +12,21 @@ import AppView from './views/AppView';
 import { TestView } from './views/TestView';
 import { PUBLIC_URL } from './utils/constants';
 import WelcomeView from './views/WelcomeView';
+import Modal from './components/popups/Modal';
 
 function App() {
-  const { loading, init } = useContractStore()
+  const { loading, compilationError, init } = useContractStore()
+  const [showError, setShowError] = useState(false)
 
   useEffect(() => {
     init()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (compilationError) {
+      setShowError(true)
+    }
+  }, [compilationError])
 
   return (
     <Container>
@@ -52,6 +60,10 @@ function App() {
       </Col>
       </BrowserRouter>
       <LoadingOverlay loading={loading !== undefined} text={loading} />
+      <Modal style={{ width: '60%', minWidth: 400 }} show={showError && !!compilationError} hide={() => setShowError(false)}>
+        <h3 style={{ marginTop: 0, color: 'red' }}>Error compiling "{compilationError?.project}"</h3>
+        <p>{compilationError?.error}</p>
+      </Modal>
     </Container>
   );
 }
