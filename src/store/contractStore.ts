@@ -142,9 +142,7 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
       set({ projects: newProjects })
     },
     saveFile: async (project: string, file: string, text: string) => {
-      const json = { project, action: { 'save-file': { name: file === 'main' ? project : file, text } } }
-      console.log('SAVING FILE:', json)
-      await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
+      await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json: { project, action: { 'save-file': { name: file, text } } } })
     },
     deleteFile: async (project: string, file: string) => {
       if (project === file || project === 'main') {

@@ -90,7 +90,7 @@ const Directory = ({ project }: DirectoryProps) => {
       {expanded && (
         <Col style={{ paddingLeft: 28 }}>
           <FileLink project={title} file='main' />
-          {Object.keys(libs).map((file) => <FileLink key={file} project={title} file={file} /> )}
+          {Object.keys(libs).filter(file => file !== 'main').map((file) => <FileLink key={file} project={title} file={file} /> )}
           <FileLink project={title} file='tests' />
         </Col>
       )}
