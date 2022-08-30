@@ -142,6 +142,10 @@ export const TestList = ({ editTest }: TestListProps) => {
   const { projects, currentProject } = useContractStore()
   const project = useMemo(() => projects[currentProject], [currentProject, projects])
 
+  if (!project || !project.tests) {
+    return null
+  }
+
   return (
     <Col className="test-list">
       {Object.values(project.tests).map(test => <TestEntry key={test.id} test={test} editTest={editTest} />)}
