@@ -1,13 +1,11 @@
 import React, { useCallback } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import useContractStore from '../../store/contractStore'
-import Col from '../spacing/Col'
 import Row from '../spacing/Row'
 import Link from '../nav/Link'
+import Button from '../form/Button'
 
 import './OpenFileHeader.scss'
-import Text from '../text/Text'
-import Button from '../form/Button'
 
 export const OpenFileHeader = () => {
   const { pathname } = useLocation()
@@ -28,27 +26,29 @@ export const OpenFileHeader = () => {
   }, [openFiles, setOpenFiles, nav, pathname])
 
   return (
-    <Row className='open-file-header' style={{ justifyContent: 'space-between', background: 'lightgray', height: 28 }}>
-      <Col>
-        <Row>
-          {openFiles.map(({ project, file }) => (
-            <Link key={project + file} className={`tab ${pathname.includes(`/${project}/${file}`) ? 'selected' : ''}`} href={`/${project}/${file}`}>
-              <Text>{file}</Text>
-              <Button
-                variant='unstyled'
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  removeFile(project, file)
-                }}
-                style={{ fontSize: 10, position: 'absolute', right: 6, top: 10 }}
-              >
-                &#10005;
-              </Button>
-            </Link>
-          ))}
-        </Row>
-      </Col>
+    <Row className='open-file-header' style={{ justifyContent: 'space-between', background: 'lightgray', height: 32, overflowX: 'scroll', width: '100%' }}>
+      {openFiles.map(({ project, file }) => {
+        const prependProject = openFiles.find(of => of.project !== project && of.file === file)
+
+        return (
+          <Link key={project + file} className={`tab ${pathname.includes(`/${project}/${file}`) ? 'selected' : ''}`} href={`/${project}/${file}`}>
+            <div style={{ fontSize: 12, whiteSpace: 'nowrap', marginTop: 2 }}>
+              {file}{prependProject ? ` - ${project}` : ''}
+            </div>
+            <Button
+              variant='unstyled'
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                removeFile(project, file)
+              }}
+              style={{ fontSize: 10, marginLeft: 6, marginTop: 4 }}
+            >
+              &#10005;
+            </Button>
+          </Link>
+        )
+      })}
     </Row>
   )
 }

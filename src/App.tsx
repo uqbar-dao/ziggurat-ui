@@ -11,6 +11,7 @@ import NewProjectView from './views/NewProjectView';
 import AppView from './views/AppView';
 import { TestView } from './views/TestView';
 import { PUBLIC_URL } from './utils/constants';
+import WelcomeView from './views/WelcomeView';
 
 function App() {
   const { loading, init } = useContractStore()
@@ -30,7 +31,7 @@ function App() {
           <Col style={{ minWidth: 'calc(100% - 240px)', width: '80%', maxWidth: 'calc(100% - 210px)', height: '100%', position: 'relative' }}>
             <Routes>
               {/* TODO: this should be something other than EditorView */}
-              <Route path="/" element={<EditorView />} />
+              <Route path="/" element={<WelcomeView />} />
               <Route path="/new" element={<NewProjectView />} />
               <Route path="/app" element={<AppView />} />
               <Route path="/app/:app" element={<AppView />} />

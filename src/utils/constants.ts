@@ -9,8 +9,11 @@ export const DUMMY_METADATA = {
   town_id: '0x0',
   label: 'token-metadata',
   salt: '3859435834985',
-  data: `[ZOG ZIG 18 1.000.000 ~ | ~ 0x0 385.9435.834.985]`
+  data: `['ZOG' 'ZIG' 18 1.000.000 ~ | ~ 0x0 385.9435.834.985]`
 }
+
+export const DEFAULT_RATE = 1
+export const DEFAULT_BUDGET = 10000
 
 export const STATUS_CODES : { [key: number] : string } = {
   0: 'succeeded',

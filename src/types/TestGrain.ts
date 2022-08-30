@@ -25,6 +25,7 @@ export interface GrainTemplate {
 export interface TestGrain extends GrainTemplate {
   town_id: string
   salt?: string
+  data_text: string
 }
 
 export interface TestGrainInput extends GrainTemplate {

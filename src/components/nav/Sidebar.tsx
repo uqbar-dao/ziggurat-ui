@@ -5,7 +5,7 @@ import useContractStore from '../../store/contractStore'
 import { Project } from '../../types/Project';
 import Button from '../form/Button';
 import Input from '../form/Input';
-import { Tooltip } from '../hooks/Tooltip';
+import { Tooltip } from '../popups/Tooltip';
 import Modal from '../popups/Modal';
 import Col from '../spacing/Col'
 import Row from '../spacing/Row'
@@ -17,9 +17,12 @@ interface FileLinkProps {
   file: string
 }
 
+const BUTTON_STYLE = { marginLeft: 6, padding: 2 }
+
 const FileLink = ({ project, file }: FileLinkProps) => {
   const { pathname } = useLocation()
   const { currentProject, openFiles, setCurrentProject, setOpenFiles } = useContractStore()
+  const [showButtons, setShowButtons] = useState(false)
   const isTests = file === 'tests'
 
   const selectFile = useCallback(() => {
@@ -32,9 +35,16 @@ const FileLink = ({ project, file }: FileLinkProps) => {
   }, [project, currentProject, file, openFiles, setOpenFiles, setCurrentProject])
 
   return (
-    <Link onClick={selectFile} underline={pathname === `/${project}/${file}`} href={`/${project}/${file}`} style={{ padding: 2 }}>
-      {file}{!isTests ? '.hoon' : ''}
-    </Link>
+    <Row onMouseEnter={() => setShowButtons(true)} onMouseLeave={() => setShowButtons(false)}>
+      <Link onClick={selectFile} underline={pathname === `/${project}/${file}`} href={`/${project}/${file}`} style={{ padding: 2 }}>
+        {file}{!isTests ? '.hoon' : ''}
+      </Link>
+      {showButtons && !isTests && file !== 'main' && (
+        <Tooltip tip="delete">
+          <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={() => null} />
+        </Tooltip>
+      )}
+    </Row>
   )
 }
 
@@ -44,28 +54,33 @@ interface DirectoryProps {
 
 const Directory = ({ project }: DirectoryProps) => {
   const { deleteProject, setProjectExpanded } = useContractStore()
-  const buttonStyle = { marginLeft: 6, padding: 2 }
+  const [showButtons, setShowButtons] = useState(false)
+  
 
   const { title, libs, expanded } = project
   // TODO: download icon should save all project files in a zip
 
   return (
-    <Col style={{ padding: '0px 4px', fontSize: 14 }}>
+    <Col style={{ padding: '0px 4px', fontSize: 14 }} onMouseEnter={() => setShowButtons(true)} onMouseLeave={() => setShowButtons(false)}>
       <Row style={{ padding: 2, marginBottom: 2, cursor: 'pointer', justifyContent: 'space-between' }} onClick={() => setProjectExpanded(title, !expanded)}>
         <Row>
-          <Button style={buttonStyle} variant="unstyled" iconOnly icon={expanded ? <FaRegMinusSquare size={12} /> : <FaRegPlusSquare size={12} />} />
+          <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={expanded ? <FaRegMinusSquare size={12} /> : <FaRegPlusSquare size={12} />} />
           <Text style={{ marginLeft: 4, marginBottom: 2, }}>{title}</Text>
         </Row>
-        <Row>
-          <Tooltip tip="download">
-            <Button style={buttonStyle} variant="unstyled" iconOnly icon={<FaDownload size={14} />} onClick={() => null} />
-          </Tooltip>
-          <Button style={buttonStyle} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={() => {
-            if (window.confirm(`Are you sure you want to delete the ${title} project?`)) {
-              deleteProject(title)
-            }
-          }} />
-        </Row>
+        {showButtons && (
+          <Row>
+            <Tooltip tip="download" right>
+              <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaDownload size={14} />} onClick={() => null} />
+            </Tooltip>
+            <Tooltip tip="delete" right>
+              <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={() => {
+                if (window.confirm(`Are you sure you want to delete the ${title} project?`)) {
+                  deleteProject(title)
+                }
+              }} />
+            </Tooltip>
+          </Row>
+        )}
       </Row>
       {expanded && (
         <Col style={{ paddingLeft: 28 }}>
@@ -108,11 +123,11 @@ export const Sidebar = () => {
     return () => document.removeEventListener('keydown', keydownFunc)
   }, [saveFiles])
 
-  const buttonStyle = { marginLeft: 6, padding: 2 }
+  const BUTTON_STYLE = { marginLeft: 6, padding: 2 }
 
   const buttons = [
-    [<FaRegPlusSquare />, () => nav('/new')],
-    [<FaSave />, saveFiles],
+    [<FaRegPlusSquare />, () => nav('/new'), 'new project'],
+    [<FaSave />, saveFiles, 'save project'],
   ]
 
   const openApp = useCallback(() => {
@@ -134,12 +149,14 @@ export const Sidebar = () => {
 
   return (
     <Col style={{ height: '100%', width: 'calc(100% - 1px)', maxWidth: 239, minWidth: 209, borderRight: '1px solid black' }}>
-      <Col style={{ width: '100%', height: '100%', overflow: 'scroll' }}>
+      <Col style={{ width: '100%', height: '100%', overflowY: 'scroll' }}>
         <Text style={{ fontSize: 16, fontWeight: 600, padding: '16px 24px' }}>PROJECT EXPLORER</Text>
         <Row style={{ padding: '8px 12px' }}>
           <div style={{ fontSize: 14, padding: 2, marginRight: 6 }}>Projects</div>
-          {buttons.map(([icon, onClick]: any, i: number) => (
-            <Button key={i} style={buttonStyle} variant="unstyled" onClick={onClick} iconOnly icon={icon} />
+          {buttons.map(([icon, onClick, tip]: any, i: number) => (
+            <Tooltip key={tip} tip={tip}>
+              <Button key={i} style={BUTTON_STYLE} variant="unstyled" onClick={onClick} iconOnly icon={icon} />
+            </Tooltip>
           ))}
         </Row>
         {Object.values(projects).map((p) => <Directory key={p.title} project={p} />)}
@@ -147,7 +164,7 @@ export const Sidebar = () => {
       {/* <Col style={{ width: '100%', height: 'calc(30% - 1px)', borderTop: '1px solid black', overflow: 'scroll' }}>
         <Row style={{ padding: '8px 12px' }}>
           <div style={{ fontSize: 14, padding: 2, marginRight: 0 }}>Tools</div>
-          <Button style={buttonStyle} variant="unstyled" onClick={() => setShowAppModal(true)} iconOnly icon={<FaRegPlusSquare />} />
+          <Button style={BUTTON_STYLE} variant="unstyled" onClick={() => setShowAppModal(true)} iconOnly icon={<FaRegPlusSquare />} />
         </Row>
         <Col>
           {openApps.map(app => (

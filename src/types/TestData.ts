@@ -24,8 +24,7 @@ export interface Test {
   last_result: TestResults
   errorcode: number
   success: boolean
-  focus?: boolean
-  exclude?: boolean
+  running?: boolean
 }
 
 export interface Tests {

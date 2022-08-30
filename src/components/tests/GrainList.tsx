@@ -62,7 +62,7 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain }: GrainValueDi
         <div>Town ID: {grain.town_id}</div>
         <div>Label: {grain.label}</div>
         <div>Data:</div>
-        <div>{grain.data}</div>
+        <div>{grain.data_text}</div>
         {/* <Values values={grainData} /> */}
       </Col>}
       <Row style={{ position: 'absolute', top: 4, right: 4, padding: 4 }}>

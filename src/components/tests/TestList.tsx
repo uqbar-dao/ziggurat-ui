@@ -9,18 +9,22 @@ import { Test } from '../../types/TestData';
 import Input from '../form/Input';
 import Loader from '../popups/Loader';
 import { getStatus } from '../../utils/constants';
+import { TestFocus } from '../../types/TestFocus';
+import { parseAction } from '../../utils/tests';
+import Text from '../text/Text';
 
 export const DROPPABLE_DIVIDER = '___'
 
 interface TestEntryProps extends TestListProps {
   test: Test
-  testIndex: number
 }
 
-export const TestEntry = ({ test, testIndex, editTest }: TestEntryProps) => {
-  const { deleteTest } = useContractStore()
+export const TestEntry = ({ test, editTest }: TestEntryProps) => {
+  const { focusedTests, setFocusedTests, deleteTest } = useContractStore()
   const [expandInput, setExpandInput] = useState(false)
   const [expandOutput, setExpandOutput] = useState(false)
+
+  const testFocus = useMemo(() => focusedTests[test.id], [test, focusedTests])
 
   const testStyle = {
     justifyContent: 'space-between',
@@ -30,25 +34,35 @@ export const TestEntry = ({ test, testIndex, editTest }: TestEntryProps) => {
     borderRadius: 4,
   }
 
-  // TODO: modify the test at the store level
-  const toggleTestFocus = useCallback(() => {
-    test.focus = !test.focus
-  }, [test])
-
-  const toggleTestExclude = useCallback(() => {
-    test.exclude = !test.exclude
-  }, [test])
+  const toggleTestFocus = useCallback((key: 'focus' | 'exclude') => () => {
+    const newFocusedTests = { ...focusedTests }
+    if (!newFocusedTests[test.id]) {
+      const focus: TestFocus = {}
+      focus[key] = true
+      newFocusedTests[test.id] = focus
+    } else {
+      newFocusedTests[test.id][key] = !newFocusedTests[test.id][key]
+      if (focusedTests[test.id][key]) {
+        if (key === 'exclude' && focusedTests[test.id].focus) {
+          focusedTests[test.id].focus = false
+        } else if (key === 'focus' && focusedTests[test.id].exclude) {
+          focusedTests[test.id].exclude = false
+        }
+      }
+    }
+    setFocusedTests(newFocusedTests)
+  }, [test, focusedTests, setFocusedTests])
 
   return (
     <Col className="action" style={{ ...testStyle, position: 'relative' }}>
       <Row style={{ justifyContent: 'space-between', borderBottom: '1px solid gray', paddingBottom: 2, marginBottom: 4 }}>
         <Row style={{ marginBottom: 4, marginLeft: -4 }}>
           <Row>
-            <Input type="checkbox" checked={Boolean(test.focus)} onChange={toggleTestFocus} />
+            <Input type="checkbox" checked={Boolean(testFocus?.focus)} onChange={toggleTestFocus('focus')} />
             <div>Focus</div>
           </Row>
           <Row style={{ marginLeft: 4 }}>
-            <Input type="checkbox" checked={Boolean(test.exclude)} onChange={toggleTestExclude} />
+            <Input type="checkbox" checked={Boolean(testFocus?.exclude)} onChange={toggleTestFocus('exclude')} />
             <div>Exclude</div>
           </Row>
         </Row>
@@ -84,22 +98,13 @@ export const TestEntry = ({ test, testIndex, editTest }: TestEntryProps) => {
             iconOnly
             icon={expandInput ? <FaChevronUp size={16} /> : <FaChevronDown size={16} />}
           />
-          {test.name ? test.name : `Action: ${test.action.split(' ')[0].slice(1)}`}
+          {test.name ? test.name : parseAction(test)}
         </Row>
         {expandInput && (
           <Col style={{ width: '100%', marginBottom: 6 }}>
-            {/* display the formValues */}
-            {/* {Object.keys(test.input.formValues).map(key => {
-              const value = test.input.formValues[key].value
-
-              return (
-                <Row style={{ marginTop: 4 }} key={key}>
-                  <div style={{ width: 110 }}>{key}:</div>
-                  <div>{value.length > 11 ? truncateString(value) : value}</div>
-                </Row>
-              )
-            })} */}
-            {test.action}
+            {test.action_text.slice(1, -1).split(' ').map((line) => (
+              <Text style={{ wordBreak: 'break-all', marginTop: 4 }}>{line}</Text>
+            ))}
           </Col>
         )}
       </Col>
@@ -112,7 +117,8 @@ export const TestEntry = ({ test, testIndex, editTest }: TestEntryProps) => {
             iconOnly
             icon={expandOutput ? <FaChevronUp size={16} /> : <FaChevronDown size={16} />}
           />)}
-          {test.last_result ? 'Expected' : ''} Output: {test.errorcode === -1 ? <Loader size='small' style={{ marginLeft: 8 }} dark /> : getStatus(test.errorcode)}
+          {/* isRunning ? <Loader size='small' style={{ marginLeft: 8 }} dark /> :  */}
+          Output: {getStatus(test.errorcode)}
         </Row>
         {expandOutput && (
           <Col>
@@ -134,7 +140,7 @@ export const TestList = ({ editTest }: TestListProps) => {
 
   return (
     <Col className="test-list">
-      {Object.values(project.tests).map((test, i) => <TestEntry key={test.id} test={test} testIndex={i} editTest={editTest} />)}
+      {Object.values(project.tests).map(test => <TestEntry key={test.id} test={test} editTest={editTest} />)}
     </Col>
   )
 }

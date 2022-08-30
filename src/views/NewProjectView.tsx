@@ -31,7 +31,7 @@ export interface CreationOptions {
 }
 
 const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
-  const { projects, createProject, populateTemplate } = useContractStore()
+  const { projects, createProject, populateTemplate, openFiles, setOpenFiles } = useContractStore()
   const nav = useNavigate()
   
   const [step, setStep] = useState<CreationStep>('title')
@@ -50,7 +50,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       'town-id': '0x0',
       label: 'token-metadata',
       salt: Number(md.salt),
-      data: `[name="${md.name}" symbol="${md.symbol}" decimals=${numToUd(md.decimals)} supply=${numToUd(md.supply)} cap=${!md.cap || md.cap === '~' ? '~' : numToUd(md.cap)} mintable=${md.mintable === 't' ? '&' : '|'} minters=${md.minters || '~'} deployer=${addHexDots(md.deployer)} salt=${numToUd(md.salt)}]`
+      data: `[name='${md.name}' symbol='${md.symbol}' decimals=${numToUd(md.decimals)} supply=${numToUd(md.supply)} cap=${!md.cap || md.cap === '~' ? '~' : numToUd(md.cap)} mintable=${md.mintable === 't' ? '&' : '|'} minters=~ deployer=${addHexDots(md.deployer)} salt=${numToUd(md.salt)}]`
     }
 
     await createProject(options as { [key: string]: string })
@@ -60,9 +60,12 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     setOptions({})
     setMetadata(generateInitialMetadata('[0xbeef]', '0x0'))
     setStep('title')
-    setTimeout(() => nav(`/${options.title}/main`), 1500)
+    setTimeout(() => {
+      setOpenFiles(openFiles.concat([{ project: options.title!, file: 'main' }]))
+      nav(`/${options.title}/main`)
+    }, 1500)
     setLoading(false)
-  }, [nav, createProject, populateTemplate])
+  }, [nav, createProject, populateTemplate, openFiles, setOpenFiles])
 
   const onSelect = useCallback((option: string) => async () => {
     switch (step) {

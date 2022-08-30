@@ -5,7 +5,8 @@ import { OpenFile } from "../types/OpenFile";
 import { Projects } from "../types/Project";
 import { RunTestPayload } from "../types/TestData";
 import { TestExpectation } from "../types/TestExpectation";
-import { TestGrain, TestGrainInput } from "../types/TestGrain";
+import { TestFocus } from "../types/TestFocus";
+import { TestGrainInput } from "../types/TestGrain";
 import { generateProjects } from "../utils/project";
 import { handleProjectUpdate, handleTestUpdate } from "./subscriptions/contract";
 import { createSubscription } from "./subscriptions/createSubscription";
@@ -15,6 +16,7 @@ export interface ContractStore {
   currentProject: string
   projects: Projects
   openFiles: OpenFile[]
+  focusedTests: { [id: string]: TestFocus }
   openApps: string[]
   currentApp: string
   setLoading: (loading?: string) => void
@@ -38,6 +40,7 @@ export interface ContractStore {
   updateTest: (testId: string, name: string, action: string) => Promise<void>
   runTests: (payload: RunTestPayload[]) => Promise<void>
   deployContract: (location: string, town: string) => Promise<void>
+  setFocusedTests: (focusedTests: { [id: string]: TestFocus }) => void
 
   addApp: (app: string) => void
   setCurrentApp: (currentApp: string) => void
@@ -50,6 +53,7 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
     currentProject: '',
     projects: {},
     openFiles: [],
+    focusedTests: {},
     openApps: ['webterm'],
     currentApp: '',
     route: { route: 'project', subRoute: 'new' },
@@ -183,6 +187,7 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
       const project = get().currentProject
 
     },
+    setFocusedTests: (focusedTests: { [id: string]: TestFocus }) => set({ focusedTests }),
     addApp: (app: string) => set({ openApps: get().openApps.concat([app]), currentApp: app }),
     setCurrentApp: (currentApp: string) => set({ currentApp }),
     removeApp: (app: string) => {

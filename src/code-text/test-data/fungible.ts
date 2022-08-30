@@ -36,7 +36,8 @@ export const genFungibleMetadata = (id: string, { name, symbol, decimals, supply
     town_id: DEFAULT_TOWN_ID,
     label: "token-metadata",
     salt,
-    data: `["${name}" "${symbol}" ${numToUd(decimals)} ${numToUd(supply)} ${!cap || cap === '~' ? '~' : numToUd(cap)} ${mintable === 't' ? '&' : '|'} ${minters || '~'} ${deployer} ${numToUd(salt)}]`
+    data: `["${name}" "${symbol}" ${numToUd(decimals)} ${numToUd(supply)} ${!cap || cap === '~' ? '~' : numToUd(cap)} ${mintable === 't' ? '&' : '|'} ${minters || '~'} ${deployer} ${numToUd(salt)}]`,
+    data_text: `["${name}" "${symbol}" ${numToUd(decimals)} ${numToUd(supply)} ${!cap || cap === '~' ? '~' : numToUd(cap)} ${mintable === 't' ? '&' : '|'} ${minters || '~'} ${deployer} ${numToUd(salt)}]`
     // data: {
     //   name: { type: '@t', value: name },
     //   symbol: { type: '@t', value: symbol },

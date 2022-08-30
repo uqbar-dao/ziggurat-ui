@@ -1,24 +1,24 @@
 import React from 'react'
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import './Link.scss'
 
-interface NavLinkProps extends React.HTMLAttributes<HTMLAnchorElement> {
+interface LinkProps extends React.HTMLAttributes<HTMLAnchorElement> {
   href: string;
   type?: string;
   underline?: boolean
 }
 
-const NavLink: React.FC<NavLinkProps> = ({
+const Link: React.FC<LinkProps> = ({
   href,
   type = '',
   underline = false,
   ...props
 }) => {
   return (
-    <Link to={href} {...props} className={`link ${props.className || ''} ${type} ${underline ? 'underline' : ''}`}>
+    <RouterLink to={href} {...props} className={`link ${props.className || ''} ${type} ${underline ? 'underline' : ''}`}>
       {props.children}
-    </Link>
+    </RouterLink>
   )
 }
 
-export default NavLink
+export default Link

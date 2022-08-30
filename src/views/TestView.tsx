@@ -19,11 +19,12 @@ import { FormValues } from '../types/FormValues';
 import { OpenFileHeader } from '../components/nav/OpenFileHeader';
 
 import './TestView.scss'
+import { DEFAULT_BUDGET, DEFAULT_RATE } from '../utils/constants';
 
 export interface TestViewProps {}
 
 export const TestView = () => {
-  const { projects, currentProject, setLoading, addTest, updateTest, addGrain, runTests } = useContractStore()
+  const { projects, currentProject, focusedTests, setLoading, addTest, updateTest, addGrain, runTests } = useContractStore()
 
   const [showTestModal, setShowTestModal] = useState(false)
   const [showGrainModal, setShowGrainModal] = useState(false)
@@ -47,7 +48,7 @@ export const TestView = () => {
   }, [setEdit, setGrainFormValues, setShowGrainModal])
 
   const editTest = useCallback((test: Test) => {
-    setTestFormValues({ name: test.name || '', action: test.action })
+    setTestFormValues({ name: test.name || '', action: test.action_text })
     setEdit(test)
     setShowTestModal(true)
   }, [setTestFormValues, setShowTestModal])
@@ -138,10 +139,19 @@ export const TestView = () => {
   }
 
   const runSelectedTests = useCallback(() => {
-    // TODO: take the tests that have been selected or not excluded and run them
-    const testsToRun = Object.values(project.tests).map(({ id }) => ({ id, rate: 1, bud: 10000 }))
-    runTests(testsToRun)
-  }, [project, runTests])
+    let testsToRun = Object.keys(focusedTests).filter(key => focusedTests[key].focus)
+
+    if (!testsToRun.length) {
+      const excluded = Object.keys(focusedTests).filter(key => focusedTests[key].exclude)
+      testsToRun = Object.values(project.tests).map(({ id }) => id).filter(id => !excluded.includes(id))
+    }
+
+    if (testsToRun.length) {
+      runTests(testsToRun.map(id => ({ id, rate: DEFAULT_RATE, bud: DEFAULT_BUDGET })))
+    } else {
+      window.alert('You have excluded all tests.')
+    }
+  }, [project, focusedTests, runTests])
 
   const isEdit = Boolean(edit)
 
