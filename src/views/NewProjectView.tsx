@@ -61,8 +61,8 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     setMetadata(generateInitialMetadata('[0xbeef]', '0x0'))
     setStep('title')
     setTimeout(() => {
-      setOpenFiles(openFiles.concat([{ project: options.title!, file: 'main' }]))
-      nav(`/${options.title}/main`)
+      setOpenFiles(openFiles.concat([{ project: options.title!, file: options.title! }]))
+      nav(`/${options.title}/${options.title}`)
     }, 1000)
     setLoading(false)
   }, [nav, createProject, populateTemplate, openFiles, setOpenFiles])

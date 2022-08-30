@@ -21,7 +21,7 @@ const BUTTON_STYLE = { marginLeft: 6, padding: 2 }
 
 const FileLink = ({ project, file }: FileLinkProps) => {
   const { pathname } = useLocation()
-  const { currentProject, openFiles, setCurrentProject, setOpenFiles } = useContractStore()
+  const { currentProject, openFiles, setCurrentProject, setOpenFiles, deleteFile } = useContractStore()
   const [showButtons, setShowButtons] = useState(false)
   const isTests = file === 'tests'
 
@@ -39,9 +39,9 @@ const FileLink = ({ project, file }: FileLinkProps) => {
       <Link onClick={selectFile} underline={pathname === `/${project}/${file}`} href={`/${project}/${file}`} style={{ padding: 2 }}>
         {file}{!isTests ? '.hoon' : ''}
       </Link>
-      {showButtons && !isTests && file !== 'main' && (
+      {showButtons && !isTests && file !== project && (
         <Tooltip tip="delete">
-          <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={() => null} />
+          <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={() => deleteFile(project, file)} />
         </Tooltip>
       )}
     </Row>
@@ -89,8 +89,8 @@ const Directory = ({ project }: DirectoryProps) => {
       </Row>
       {expanded && (
         <Col style={{ paddingLeft: 28 }}>
-          <FileLink project={title} file='main' />
-          {Object.keys(libs).filter(file => file !== 'main').map((file) => <FileLink key={file} project={title} file={file} /> )}
+          <FileLink project={title} file={title} />
+          {Object.keys(libs).map((file) => <FileLink key={file} project={title} file={file} /> )}
           <FileLink project={title} file='tests' />
         </Col>
       )}
@@ -110,7 +110,7 @@ export const Sidebar = () => {
       setLoading('Saving project...')
       await Promise.all(
         Array.from(project.modifiedFiles.values())
-          .map((file) => saveFile(project.title, file, file === 'main' ? project.main : project.libs[file]))
+          .map((file) => saveFile(project.title, file, file === project.title ? project.main : project.libs[file]))
       )
       setLoading()
     }

@@ -20,7 +20,7 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
   const { projects, setProjectText } = useContractStore()
 
   const project = useMemo(() => projects[projectTitle || ''], [projectTitle, projects])
-  const text = !file ? '' : file === 'main' ? project?.main : project?.libs[file] || ''
+  const text = !file ? '' : file === projectTitle ? project?.main : project?.libs[file] || ''
 
   useEffect(() => {
     if (Object.keys(projects).length < 1 || !text) {

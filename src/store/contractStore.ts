@@ -133,7 +133,7 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
     },
     setProjectText: (project: string, file: string, text: string) => {
       const newProjects = { ...get().projects }
-      if (file === 'main') {
+      if (file === project) {
         newProjects[project].main = text
       } else {
         newProjects[project].libs[file] = text
@@ -145,7 +145,7 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json: { project, action: { 'save-file': { name: file, text } } } })
     },
     deleteFile: async (project: string, file: string) => {
-      if (project === file || project === 'main') {
+      if (project === file) {
         return alert('You cannot delete the main contract file. Delete the project instead.')
       }
       if (window.confirm(`Are you sure you want to delete ${file}.hoon in project "${project}"?`)) {
