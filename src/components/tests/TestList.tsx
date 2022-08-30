@@ -103,7 +103,7 @@ export const TestEntry = ({ test, editTest }: TestEntryProps) => {
         {expandInput && (
           <Col style={{ width: '100%', marginBottom: 6 }}>
             {test.action_text.slice(1, -1).split(' ').map((line) => (
-              <Text style={{ wordBreak: 'break-all', marginTop: 4 }}>{line}</Text>
+              <Text key={line} style={{ wordBreak: 'break-all', marginTop: 4 }}>{line}</Text>
             ))}
           </Col>
         )}
