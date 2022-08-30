@@ -13,7 +13,7 @@ export const DUMMY_METADATA = {
 }
 
 export const DEFAULT_RATE = 1
-export const DEFAULT_BUDGET = 10000
+export const DEFAULT_BUDGET = 1000000 // 1 million
 
 export const STATUS_CODES : { [key: number] : string } = {
   0: 'succeeded',
