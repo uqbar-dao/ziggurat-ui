@@ -20,11 +20,11 @@ interface TestEntryProps extends TestListProps {
 }
 
 export const TestEntry = ({ test, editTest }: TestEntryProps) => {
-  const { focusedTests, setFocusedTests, deleteTest } = useContractStore()
+  const { focusedTests, currentProject, setFocusedTests, deleteTest } = useContractStore()
   const [expandInput, setExpandInput] = useState(false)
   const [expandOutput, setExpandOutput] = useState(false)
 
-  const testFocus = useMemo(() => focusedTests[test.id], [test, focusedTests])
+  const testFocus = useMemo(() => (focusedTests[currentProject] && focusedTests[currentProject][test.id]) || {}, [currentProject, test, focusedTests])
 
   const testStyle = {
     justifyContent: 'space-between',
@@ -36,22 +36,26 @@ export const TestEntry = ({ test, editTest }: TestEntryProps) => {
 
   const toggleTestFocus = useCallback((key: 'focus' | 'exclude') => () => {
     const newFocusedTests = { ...focusedTests }
-    if (!newFocusedTests[test.id]) {
+    if (!newFocusedTests[currentProject]) {
+      newFocusedTests[currentProject] = {}
+    }
+    if (!newFocusedTests[currentProject][test.id]) {
       const focus: TestFocus = {}
       focus[key] = true
-      newFocusedTests[test.id] = focus
+      newFocusedTests[currentProject][test.id] = focus
     } else {
-      newFocusedTests[test.id][key] = !newFocusedTests[test.id][key]
-      if (focusedTests[test.id][key]) {
-        if (key === 'exclude' && focusedTests[test.id].focus) {
-          focusedTests[test.id].focus = false
-        } else if (key === 'focus' && focusedTests[test.id].exclude) {
-          focusedTests[test.id].exclude = false
+      const targetFocus = newFocusedTests[currentProject][test.id]
+      targetFocus[key] = !targetFocus[key]
+      if (targetFocus[key]) {
+        if (key === 'exclude' && targetFocus.focus) {
+          targetFocus.focus = false
+        } else if (key === 'focus' && targetFocus.exclude) {
+          targetFocus.exclude = false
         }
       }
     }
     setFocusedTests(newFocusedTests)
-  }, [test, focusedTests, setFocusedTests])
+  }, [test, focusedTests, currentProject, setFocusedTests])
 
   return (
     <Col className="action" style={{ ...testStyle, position: 'relative' }}>

@@ -16,7 +16,7 @@ export interface ContractStore {
   currentProject: string
   projects: Projects
   openFiles: OpenFile[]
-  focusedTests: { [id: string]: TestFocus }
+  focusedTests: { [project: string]: { [id: string]: TestFocus } }
   openApps: string[]
   currentApp: string
   setLoading: (loading?: string) => void
@@ -40,7 +40,7 @@ export interface ContractStore {
   updateTest: (testId: string, name: string, action: string) => Promise<void>
   runTests: (payload: RunTestPayload[]) => Promise<void>
   deployContract: (location: string, town: string) => Promise<void>
-  setFocusedTests: (focusedTests: { [id: string]: TestFocus }) => void
+  setFocusedTests: (focusedTests: { [project: string]: { [id: string]: TestFocus } }) => void
 
   addApp: (app: string) => void
   setCurrentApp: (currentApp: string) => void
@@ -175,6 +175,8 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
     },
     runTests: async (payload: RunTestPayload[]) => {
       const project = get().currentProject
+
+      console.log('RUNNING TESTS:', project, get().projects)
       
       const json = payload.length === 1 ?
         { project, action: { "run-test": payload[0] } } :
@@ -187,7 +189,7 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
       const project = get().currentProject
 
     },
-    setFocusedTests: (focusedTests: { [id: string]: TestFocus }) => set({ focusedTests }),
+    setFocusedTests: (focusedTests: { [project: string]: { [id: string]: TestFocus } } ) => set({ focusedTests }),
     addApp: (app: string) => set({ openApps: get().openApps.concat([app]), currentApp: app }),
     setCurrentApp: (currentApp: string) => set({ currentApp }),
     removeApp: (app: string) => {

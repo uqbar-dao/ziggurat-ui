@@ -10,7 +10,7 @@ import './OpenFileHeader.scss'
 export const OpenFileHeader = () => {
   const { pathname } = useLocation()
   const nav = useNavigate()
-  const { openFiles, setOpenFiles } = useContractStore()
+  const { openFiles, setOpenFiles, setCurrentProject } = useContractStore()
 
   const removeFile = useCallback((p: string, f: string) => {
     const newOpenFiles = openFiles.filter(({ project, file }) => !(p === project && f === file) )
@@ -26,12 +26,12 @@ export const OpenFileHeader = () => {
   }, [openFiles, setOpenFiles, nav, pathname])
 
   return (
-    <Row className='open-file-header' style={{ justifyContent: 'space-between', background: 'lightgray', height: 32, overflowX: 'scroll', width: '100%' }}>
+    <Row className='open-file-header' style={{ background: 'lightgray', height: 32, overflowX: 'scroll', width: '100%' }}>
       {openFiles.map(({ project, file }) => {
         const prependProject = openFiles.find(of => of.project !== project && of.file === file)
 
         return (
-          <Link key={project + file} className={`tab ${pathname.includes(`/${project}/${file}`) ? 'selected' : ''}`} href={`/${project}/${file}`}>
+          <Link key={project + file} className={`tab ${pathname.includes(`/${project}/${file}`) ? 'selected' : ''}`} href={`/${project}/${file}`} onClick={() => setCurrentProject(project)}>
             <div style={{ fontSize: 12, whiteSpace: 'nowrap', marginTop: 2 }}>
               {file}{prependProject ? ` - ${project}` : ''}
             </div>
