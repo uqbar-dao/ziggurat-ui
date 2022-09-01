@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { FaRegPlusSquare, FaRegMinusSquare, FaSave, FaDownload, FaTrash } from 'react-icons/fa';
+import React, { useCallback, useEffect, useState } from 'react'
+import { FaRegPlusSquare, FaRegMinusSquare, FaSave, FaDownload, FaTrash, FaUpload } from 'react-icons/fa';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useContractStore from '../../store/contractStore'
 import { Project } from '../../types/Project';
@@ -11,6 +11,7 @@ import Col from '../spacing/Col'
 import Row from '../spacing/Row'
 import Text from '../text/Text'
 import Link from './Link';
+import { DEFAULT_BUDGET, DEFAULT_RATE, MY_CONTRACT_ID } from '../../utils/constants';
 
 interface FileLinkProps {
   project: string
@@ -53,12 +54,16 @@ interface DirectoryProps {
 }
 
 const Directory = ({ project }: DirectoryProps) => {
-  const { deleteProject, setProjectExpanded } = useContractStore()
+  const { deleteProject, setProjectExpanded, deployContract } = useContractStore()
   const [showButtons, setShowButtons] = useState(false)
   const nav = useNavigate()
 
   const { title, libs, expanded } = project
   // TODO: download icon should save all project files in a zip
+
+  const deployProjectContract = useCallback(() => {
+    deployContract(title, MY_CONTRACT_ID, 'testnet', '0x0', DEFAULT_RATE, DEFAULT_BUDGET, true)
+  }, [title, deployContract])
 
   return (
     <Col style={{ padding: '0px 4px', fontSize: 14 }} onMouseEnter={() => setShowButtons(true)} onMouseLeave={() => setShowButtons(false)}>
@@ -69,7 +74,10 @@ const Directory = ({ project }: DirectoryProps) => {
         </Row>
         {showButtons && (
           <Row>
-            <Tooltip tip="download" right>
+            <Tooltip tip="deploy contract" right>
+              <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaUpload size={14} />} onClick={deployProjectContract} />
+            </Tooltip>
+            <Tooltip tip="download zip" right>
               <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaDownload size={14} />} onClick={() => null} />
             </Tooltip>
             <Tooltip tip="delete" right>
@@ -99,41 +107,29 @@ const Directory = ({ project }: DirectoryProps) => {
 }
 
 export const Sidebar = () => {
-  const { projects, currentProject, currentApp, openApps, setLoading, addApp, setCurrentApp, removeApp, saveFile } = useContractStore()
+  const { projects, currentProject, currentApp, openApps, addApp, setCurrentApp, removeApp, saveFiles } = useContractStore()
   const [showAppModal, setShowAppModal] = useState(false)
   const [appToAdd, setAppToAdd] = useState('')
   const nav = useNavigate()
-
-  const project = useMemo(() => projects[currentProject], [projects, currentProject])
-  const saveFiles = useCallback(async () => {
-    if (project.modifiedFiles.size) {
-      setLoading('Saving project...')
-      await Promise.all(
-        Array.from(project.modifiedFiles.values())
-          .map((file) => saveFile(project.title, file, file === project.title ? project.main : project.libs[file]))
-      )
-      setLoading()
-    }
-  }, [project, saveFile, setLoading])
 
   useEffect(() => {
     const keydownFunc = (e: any) => {
       if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault()
         e.stopPropagation()
-        saveFiles()
+        saveFiles(currentProject)
       }
     }
 
     document.addEventListener('keydown', keydownFunc)
     return () => document.removeEventListener('keydown', keydownFunc)
-  }, [saveFiles])
+  }, [currentProject, saveFiles])
 
   const BUTTON_STYLE = { marginLeft: 6, padding: 2 }
 
   const buttons = [
     [<FaRegPlusSquare />, () => nav('/new'), 'new project'],
-    [<FaSave />, saveFiles, 'save project'],
+    [<FaSave />, () => saveFiles(currentProject), 'save project'],
   ]
 
   const openApp = useCallback(() => {
@@ -155,7 +151,7 @@ export const Sidebar = () => {
 
   return (
     <Col style={{ height: '100%', width: 'calc(100% - 1px)', maxWidth: 239, minWidth: 209, borderRight: '1px solid black' }}>
-      <Col style={{ width: '100%', height: '100%', overflowY: 'scroll' }}>
+      <Col style={{ width: '100%', height: '80%', overflowY: 'scroll' }}>
         <Text style={{ fontSize: 16, fontWeight: 600, padding: '16px 24px' }}>PROJECT EXPLORER</Text>
         <Row style={{ padding: '8px 12px' }}>
           <div style={{ fontSize: 14, padding: 2, marginRight: 6 }}>Projects</div>
@@ -167,7 +163,7 @@ export const Sidebar = () => {
         </Row>
         {Object.values(projects).map((p) => <Directory key={p.title} project={p} />)}
       </Col>
-      {/* <Col style={{ width: '100%', height: 'calc(30% - 1px)', borderTop: '1px solid black', overflow: 'scroll' }}>
+      <Col style={{ width: '100%', height: 'calc(20% - 1px)', borderTop: '1px solid black', overflow: 'scroll' }}>
         <Row style={{ padding: '8px 12px' }}>
           <div style={{ fontSize: 14, padding: 2, marginRight: 0 }}>Tools</div>
           <Button style={BUTTON_STYLE} variant="unstyled" onClick={() => setShowAppModal(true)} iconOnly icon={<FaRegPlusSquare />} />
@@ -190,7 +186,7 @@ export const Sidebar = () => {
             </Row>
           ))}
         </Col>
-      </Col> */}
+      </Col>
       <Modal show={showAppModal} hide={() => {setShowAppModal(false)}}>
         <h3 style={{ marginTop: 0 }}>Enter App URL (i.e. "webterm"):</h3>
         <Input onChange={(e) => setAppToAdd(e.target.value)} value={appToAdd} placeholder='app url' />

@@ -1,20 +1,18 @@
 import { useCallback, useMemo, useState } from "react"
-import { FaMinusCircle } from "react-icons/fa"
-import { FormValues } from "../../types/FormValues"
-import { UqbarType, UQBAR_TYPES } from "../../types/UqbarType"
+import useContractStore from "../../store/contractStore"
 import Button from "../form/Button"
 import Input from "../form/Input"
 import { Select } from "../form/Select"
+import TextArea from "../form/TextArea"
 import Modal from "../popups/Modal"
 import Col from "../spacing/Col"
-import Row from "../spacing/Row"
+import Text from "../text/Text"
 
 interface TestModalProps {
   showTestModal: boolean
   hideTestModal: () => void
   isEdit: boolean
   testFormValues: { [key: string]: string }
-  setTestFormValues: (values: { [key: string]: string }) => void
   updateTestFormValue: (key: string, value: string) => void
   submitTest: (isUpdate: boolean) => () => void
 }
@@ -24,32 +22,26 @@ export const TestModal = ({
   hideTestModal,
   isEdit,
   testFormValues,
-  setTestFormValues,
   updateTestFormValue,
   submitTest,
 }: TestModalProps) => {
-  // const [newTestField, setNewTestField] = useState('')
-  // const [newTestFieldType, setNewTestFieldType] = useState(`@ux`)
+  const { projects, currentProject } = useContractStore()
+  const project = useMemo(() => projects[currentProject], [projects, currentProject])
 
-  // const addTestField = useCallback(() => {
-  //   const newValues = { ...testFormValues }
-  //   newValues[newTestField] = { value: '', type: newTestFieldType as UqbarType }
-  //   setTestFormValues(newValues)
-  //   setNewTestField('')
-  // }, [newTestField, newTestFieldType, testFormValues, setTestFormValues])
+  const [mold, setMold] = useState('other')
 
-  // const removeTestField = useCallback((key: string) => () => {
-  //   const newValues = { ...testFormValues }
-  //   delete newValues[key]
-  //   setTestFormValues(newValues)
-  // }, [testFormValues, setTestFormValues])
-
-  // const testFieldPlaceHolder = useMemo(() => `field${Object.keys(testFormValues).length}`, [testFormValues])
+  const selectMold = useCallback((action: string) => {
+    setMold(action)
+    const { mold } = project.molds.actions.find(m => m.name === action) || {}
+    if (mold) {
+      updateTestFormValue('action', mold[0] === '[' ? mold : `[${mold}]`)
+    }
+  }, [project, setMold, updateTestFormValue])
 
   return (
-    <Modal show={showTestModal} hide={hideTestModal}>
-      <Col style={{ minWidth: 320, maxHeight: 'calc(100vh - 80px)', overflow: 'scroll' }}>
-        <h3 style={{ marginTop: 0 }}>Add New Test</h3>
+    <Modal show={showTestModal} hide={hideTestModal} style={{ minWidth: 320, width: '60%', maxWidth: 500 }}>
+      <Col style={{ maxHeight: 'calc(100vh - 80px)', overflow: 'scroll' }}>
+        <h3 style={{ marginTop: 0 }}>{isEdit ? 'Edit' : 'Add New'} Test</h3>
         <Input
           label="Name"
           onChange={(e) => updateTestFormValue('name', e.target.value)}
@@ -57,51 +49,25 @@ export const TestModal = ({
           value={testFormValues.name}
           required
         />
-        <Input
-          containerStyle={{ marginTop: 8 }}
-          label="Test (in Hoon)"
+        {!!project?.molds?.actions?.length && !isEdit && (
+          <>
+            <Text style={{ marginTop: 12, marginBottom: 2 }}>Action</Text>
+            <Select value={mold} onChange={(e) => selectMold(e.target.value)}>
+              <option key="other" value="other">other</option>
+              {project.molds.actions.map(({ name }) => (
+                <option key={name} value={name}>{name}</option>
+              ))}
+            </Select>
+          </>
+        )}
+        <TextArea
+          style={{ marginTop: 16 }}
           onChange={(e) => updateTestFormValue('action', e.target.value)}
+          label="Test (in Hoon)"
           placeholder="Your test here"
           value={testFormValues.action}
           required
         />
-
-        {/* <Select onChange={(e) => selectAction(e.target.value)} value={actionType} disabled={isEdit}>
-          <option>Select an Action Type</option>
-          {Object.keys(molds.actions).map(key => (
-            <option key={key} value={key}>{key}</option>
-          ))}
-        </Select>
-        {Object.keys(testFormValues).map((key) => (
-          <Row key={key}>
-            <Input
-              disabled={key === 'id' && isEdit}
-              onChange={(e) => updateTestFormValue(key, e.target.value)}
-              value={testFormValues[key].value}
-              label={`${key} (${JSON.stringify(testFormValues[key].type).replace(/"/g, '')})`}
-              placeholder={key}
-              containerStyle={{ marginTop: 4, width: '100%' }}
-            />
-            <Button onClick={removeTestField(key)} style={{ marginTop: 24, marginLeft: 8 }} variant="unstyled" iconOnly icon={<FaMinusCircle />} />
-          </Row>
-        ))}
-        <Row style={{ marginTop: 12, borderTop: '1px solid black', paddingTop: 12 }}>
-          <Input
-            onChange={(e) => setNewTestField(e.target.value)}
-            value={newTestField}
-            placeholder={testFieldPlaceHolder}
-            containerStyle={{ width: 'calc(100% - 176px)' }}
-          />
-          <Select onChange={(e) => setNewTestFieldType(e.target.value)}
-            value={newTestFieldType}
-            style={{ marginLeft: 8, width: 60, padding: '6px' }}>
-            {UQBAR_TYPES.map(t => (
-              <option key={t}>{t}</option>
-            ))}
-          </Select>
-          <Button onClick={addTestField} style={{ marginLeft: 8, padding: '4px 8px', width: 100, justifyContent: 'center' }} variant="dark">Add Field</Button>
-        </Row> */}
-        
         <Button onClick={submitTest(isEdit)} style={{ alignSelf: 'center', marginTop: 16 }}>{isEdit ? 'Update' : 'Add'} Test</Button>
       </Col>
     </Modal>

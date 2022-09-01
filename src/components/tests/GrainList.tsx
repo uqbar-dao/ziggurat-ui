@@ -10,12 +10,14 @@ import Button from '../form/Button';
 import './GrainList.scss'
 import { METADATA_GRAIN_ID, MY_CONTRACT_ID, ZIGS_ACCOUNT_ID } from '../../utils/constants';
 
-interface GrainValueDisplayProps extends GrainListProps {
+interface GrainValueDisplayProps {
   grain: TestGrain
   grainIndex: number
+  editGrain: (grain: TestGrain) => void
+  testId?: string
 }
 
-export const GrainValueDisplay = ({ grain, grainIndex, editGrain }: GrainValueDisplayProps) => {
+export const GrainValueDisplay = ({ grain, grainIndex, editGrain, testId }: GrainValueDisplayProps) => {
   const { deleteGrain } = useContractStore()
   const [expanded, setExpanded] = useState(false)
 
@@ -59,10 +61,10 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain }: GrainValueDi
       {expanded && <Col>
         <div>Holder: {grain.holder}</div>
         <div>Lord: {grain.lord}</div>
-        <div>Town ID: {grain.town_id}</div>
+        <div>Town: {grain.town_id}</div>
         <div>Label: {grain.label}</div>
         <div>Data:</div>
-        <div>{grain.data_text}</div>
+        <div>{grain.data_text || grain.data}</div>
         {/* <Values values={grainData} /> */}
       </Col>}
       <Row style={{ position: 'absolute', top: 4, right: 4, padding: 4 }}>
@@ -85,7 +87,7 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain }: GrainValueDi
         )}
         {!untouchable && (
           <Button
-            onClick={() => { if(window.confirm('Are you sure you want to remove this grain?')) { deleteGrain(grain.id) } }}
+            onClick={() => { if(window.confirm('Are you sure you want to remove this grain?')) { deleteGrain(grain.id, testId) } }}
             variant='unstyled'
             className="delete"
             style={{ marginLeft: 8 }}
@@ -112,24 +114,19 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain }: GrainValueDi
 }
 
 interface GrainListProps {
-  editGrain: (grain: TestGrain, copyFormat?: boolean) => void
+  editGrain: (grain: TestGrain) => void
+  grains: TestGrain[]
+  testId?: string
 }
 
-export const GrainList = ({ editGrain }: GrainListProps) => {
-  const { projects, currentProject } = useContractStore()
-  const project = useMemo(() => projects[currentProject], [currentProject, projects])
-  const grains = Object.values(project?.state || {})
-
-  return (
-    <Droppable droppableId="grains" style={{ width: '100%', height: '100%' }}>
-      {(provided: any) => (
-        <Col className='grains' {...provided.droppableProps} innerRef={provided.innerRef} style={{ ...provided.droppableProps.style,  width: '100%', overflow: 'scroll' }}>
-          {grains.map((grain, i) => (
-            <GrainValueDisplay key={grain.id} grain={grain} grainIndex={i} editGrain={editGrain} />
-          ))}
-          {provided.placeholder}
-        </Col>
-      )}
-    </Droppable>
-  )
-}
+export const GrainList = ({ grains, editGrain, testId }: GrainListProps) =>
+  <Droppable droppableId="grains" style={{ width: '100%', height: '100%' }}>
+    {(provided: any) => (
+      <Col className='grains' {...provided.droppableProps} innerRef={provided.innerRef} style={{ ...provided.droppableProps.style,  width: '100%', overflow: 'scroll' }}>
+        {grains.map((grain, i) => (
+          <GrainValueDisplay key={grain.id} grain={grain} grainIndex={i} editGrain={editGrain} testId={testId} />
+        ))}
+        {provided.placeholder}
+      </Col>
+    )}
+  </Droppable>

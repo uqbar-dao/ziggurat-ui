@@ -61,8 +61,12 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     setMetadata(generateInitialMetadata('[0xbeef]', '0x0'))
     setStep('title')
     setTimeout(() => {
-      setOpenFiles(openFiles.concat([{ project: options.title!, file: options.title! }]))
-      nav(`/${options.title}/${options.title}`)
+      if (options?.project === 'contract') {
+        setOpenFiles(openFiles.concat([{ project: options.title!, file: options.title! }]))
+        nav(`/${options.title}/${options.title}`)
+      } else if (options?.project === 'gall') {
+
+      }
     }, 1000)
     setLoading(false)
   }, [nav, createProject, populateTemplate, openFiles, setOpenFiles])
@@ -82,7 +86,12 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       case 'project':
         setOptions({ ...options, project: option as ProjectOption })
         // TODO: if the option is gall-only, then we need to figure out what to show in the next screen
-        setStep(option === 'contract' ? 'token' : 'gall')
+
+        if (option === 'gall') {
+          submitNewProject({ ...options, project: option as ProjectOption })
+        } else {
+          setStep(option === 'contract' ? 'token' : 'gall')
+        }
         break
       case 'gall':
           setOptions({ ...options, project: option as ProjectOption })
@@ -91,7 +100,6 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       case 'token':
         if (option === 'blank') {
           submitNewProject({ ...options, token: option as TokenOption })
-          nav('/')
         } else {
           setOptions({ ...options, token: option as TokenOption })
           setStep('metadata')

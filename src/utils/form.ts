@@ -11,7 +11,7 @@ export const GRAIN_FORM_VALUES_COMMON: { [key: string]: any } = {
   town_id: '@ux',
   salt: '@',
   label: '@tas',
-  data: 'any',
+  data: 'raw hoon',
 }
 
 export const TEST_FORM_VALUES_COMMON: { [key: string]: any } = {
@@ -109,7 +109,7 @@ export const grainFromForm = (testGrainValues: FormValues) => ({
   'town-id': formatType(testGrainValues.town_id.type, testGrainValues.town_id.value),
   label: formatType(testGrainValues.label.type, testGrainValues.label.value),
   salt: Number(removeDots(testGrainValues.salt.value)),
-  data: testGrainValues.data.value,
+  data: testGrainValues.data.value.replace(/\n/g, ' '),
   // data: Object.keys(testGrainValues).reduce((acc, key) => {
   //   if (!Object.keys(GRAIN_FORM_VALUES_COMMON).includes(key)) {
   //     acc[key] = { type: testGrainValues[key].type, value: formatType(testGrainValues[key].type, testGrainValues[key].value) }

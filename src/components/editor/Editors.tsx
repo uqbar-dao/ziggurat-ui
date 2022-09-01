@@ -116,7 +116,7 @@ export const Editor = ({
       editorDidMount={(codeEditor: any) => {
         editorRef.current = codeEditor
       }}
-      onPaste={onPaste}
+      // onPaste={onPaste}
       onChange={textChange}
     />
   )

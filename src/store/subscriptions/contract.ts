@@ -12,7 +12,6 @@ export const handleProjectUpdate = (get: GetState<ContractStore>, set: SetState<
     ...update,
     state: generateState(update),
     tests: generateTests(update, newProjects[project]),
-    modifiedFiles: new Set<string>()
   }
   set({ projects: newProjects, compilationError: update.error ? { project, error: update.error } : undefined })
 }

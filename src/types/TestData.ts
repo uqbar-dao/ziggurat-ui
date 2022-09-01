@@ -1,13 +1,4 @@
-export interface TestResults {
-  [grainId: string]: {
-    holder: string
-    data: string
-    lord: string
-    town_id: string
-    salt: string
-    label: string
-  }
-}
+import { TestGrain } from "./TestGrain"
 
 export interface RunTestPayload {
   id: string
@@ -15,14 +6,31 @@ export interface RunTestPayload {
   bud: number
 }
 
+export interface TestExpectation {
+  match: boolean | null
+  expected: TestGrain | null
+  made: TestGrain | null
+}
+
+export interface TestResult {
+  fee: number
+  errorcode: number
+  success?: boolean
+  grains: {
+    [grainId: string]: TestGrain
+  }
+}
+
 export interface Test {
   id: string
   name?: string
   action: string
   action_text: string
-  expected: TestResults
-  last_result: TestResults
-  errorcode: number
+  expected: {
+    [grainId: string]: TestGrain
+  }
+  result: TestResult
+  events: any
   success: boolean
   running?: boolean
   selected?: boolean

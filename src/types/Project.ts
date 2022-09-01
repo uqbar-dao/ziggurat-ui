@@ -1,3 +1,4 @@
+import { ProjectMold } from "./ProjectMold"
 import { Tests } from "./TestData"
 import { TestGrain } from "./TestGrain"
 
@@ -24,6 +25,7 @@ export interface Project extends ProjectUpdate {
   main: string
   expanded: boolean
   modifiedFiles: Set<string>
+  molds: ProjectMold
 }
 
 export interface Projects {

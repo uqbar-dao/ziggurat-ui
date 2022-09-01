@@ -7,7 +7,6 @@ import Row from '../components/spacing/Row'
 import useContractStore from '../store/contractStore';
 import Modal from '../components/popups/Modal';
 import Button from '../components/form/Button';
-import Input from '../components/form/Input';
 import { formValuesForGrain, formValuesFromGrain, grainFromForm, updateField, validateFormValues } from '../utils/form';
 import { TestList } from '../components/tests/TestList';
 import { GrainList } from '../components/tests/GrainList';
@@ -16,22 +15,23 @@ import { Test } from '../types/TestData';
 import { TestModal } from '../components/tests/TestModal';
 import { FormValues } from '../types/FormValues';
 import { OpenFileHeader } from '../components/nav/OpenFileHeader';
-
-import './TestView.scss'
 import { DEFAULT_BUDGET, DEFAULT_RATE } from '../utils/constants';
 import { Tooltip } from '../components/popups/Tooltip';
+import { GrainModal } from '../components/tests/GrainModal';
+
+import './TestView.scss'
 
 export interface TestViewProps {}
 
 export const TestView = () => {
-  const { projects, currentProject, focusedTests, setLoading, addTest, updateTest, addGrain, runTest, runTests } = useContractStore()
+  const { projects, currentProject, setLoading, addTest, updateTest, addGrain, runTest, runTests, addTestExpectations } = useContractStore()
 
   const [showTestModal, setShowTestModal] = useState(false)
+  const [testExpectation, setTestExpecation] = useState('')
   const [showGrainModal, setShowGrainModal] = useState(false)
   const [showRunModal, setShowRunModal] = useState(false)
   const [grainFormValues, setGrainFormValues] = useState<FormValues>({})
   const [testFormValues, setTestFormValues] = useState<{ [key: string]: string }>({ name: '', action: '' })
-  const [grainType, setGrainType] = useState('')
   const [edit, setEdit] = useState<Test | TestGrain | undefined>()
 
   const project = useMemo(() => projects[currentProject], [projects, currentProject])
@@ -70,9 +70,9 @@ export const TestView = () => {
     setLoading('Saving test...')
 
     if (!edit) {
-      await addTest(testFormValues.name, testFormValues.action)
+      await addTest(testFormValues.name, testFormValues.action.replace(/\n/g, ' '))
     } else {
-      await updateTest(edit.id, testFormValues.name, testFormValues.action)
+      await updateTest(edit.id, testFormValues.name, testFormValues.action.replace(/\n/g, ' '))
     }
     
     setShowTestModal(false)
@@ -81,31 +81,32 @@ export const TestView = () => {
     setLoading(undefined)
   }, [testFormValues, edit, addTest, updateTest, setLoading])
 
-  const submitGrain = useCallback((isUpdate = false) => async () => {
+  const submitGrain = useCallback(async () => {
     const validationError = validateFormValues(grainFormValues)
-
-    if (validationError) {
+    if (validationError)
       return window.alert(validationError)
-    }
 
     const newGrain = grainFromForm(grainFormValues)
 
     const targetProject = projects[currentProject]
-    if (targetProject) {
+    if (targetProject && !testExpectation) {
       if (targetProject?.state[newGrain.id] && !edit) {
         return window.alert('You already have a grain with this ID, please change the ID.')
       }
     }
 
     setLoading('Saving grain...')
-    await addGrain(newGrain)
+    if (testExpectation) {
+      await addTestExpectations(testExpectation, [newGrain])
+    } else {
+      await addGrain(newGrain)
+    }
 
-    setGrainType('')
     setShowGrainModal(false)
     setGrainFormValues({})
     setEdit(undefined)
     setLoading(undefined)
-  }, [edit, currentProject, projects, grainFormValues, addGrain, setLoading])
+  }, [edit, currentProject, projects, grainFormValues, testExpectation, addTestExpectations, addGrain, setLoading])
 
   const handleDragAndDropGrain = useCallback(({ source, destination }) => {
     if (!destination)
@@ -135,9 +136,14 @@ export const TestView = () => {
       setGrainFormValues({})
       setShowGrainModal(false)
       setEdit(undefined)
-      setGrainType('')
+      setTestExpecation('')
     }
   }
+
+  const showTestExpectationModal = useCallback((testId: string) => (grain?: TestGrain) => {
+    setTestExpecation(testId)
+    populateGrainForm(grain)
+  }, [setTestExpecation, populateGrainForm])
 
   const runAllTests = useCallback((runSequentially: boolean) => () => {
     const testsToRun = (Object.values(project.tests) || [])
@@ -156,7 +162,7 @@ export const TestView = () => {
     } else {
       window.alert('Please select some tests to run.')
     }
-  }, [project, focusedTests, runTest, runTests, setLoading, setShowRunModal])
+  }, [project, runTest, runTests, setLoading, setShowRunModal])
 
   const isEdit = Boolean(edit)
 
@@ -177,7 +183,7 @@ export const TestView = () => {
               <Row className="action" onClick={() => setShowTestModal(true)}>+ Add Test</Row>
             </Row>
           </Row>
-          <TestList editTest={editTest} />
+          <TestList editTest={editTest} showTestExpectationModal={showTestExpectationModal} />
         </Col>
         <Col style={{ height: isMobile ? 600 : '100%', width: isMobile ? '100%' : '50%', borderLeft: '1px solid lightgray' }}>
           <Row className="section-header">
@@ -187,29 +193,13 @@ export const TestView = () => {
               <Row className="action" onClick={() => populateGrainForm()}>+ Add Grain</Row>
             </Row>
           </Row>
-          <GrainList editGrain={populateGrainForm} />
+          <GrainList grains={Object.values(project?.state || {})} editGrain={populateGrainForm} />
         </Col>
 
-        <TestModal {...{ showTestModal, hideTestModal, isEdit, testFormValues, setTestFormValues, updateTestFormValue, submitTest }} />
+        <TestModal {...{ showTestModal, hideTestModal, isEdit, testFormValues, updateTestFormValue, submitTest }} />
 
-        <Modal show={showGrainModal} hide={hideGrainModal}>
-          <Col style={{ minWidth: 320, maxHeight: 'calc(100vh - 80px)', overflow: 'scroll' }}>
-            <h3 style={{ marginTop: 0 }}>{isEdit ? 'Update' : 'Add New'} Grain</h3>
-            {Object.keys(grainFormValues).map((key) => (
-              <Row key={key}>
-                <Input
-                  disabled={key === 'id' && isEdit}
-                  onChange={(e) => updateGrainFormValue(key, e.target.value)}
-                  value={grainFormValues[key].value}
-                  label={`${key} (${JSON.stringify(grainFormValues[key].type).replace(/"/g, '')})`}
-                  placeholder={key}
-                  containerStyle={{ marginTop: 4, width: '100%' }}
-                />
-              </Row>
-            ))}
-            <Button onClick={submitGrain(isEdit)} style={{ alignSelf: 'center', marginTop: 16 }}>{isEdit ? 'Update' : 'Add'} Grain</Button>
-          </Col>
-        </Modal>
+        <GrainModal {...{ showGrainModal, hideGrainModal, isEdit, grainFormValues, updateGrainFormValue, setGrainFormValues, submitGrain, testExpectation }} />
+
         <Modal show={showRunModal} hide={() => setShowRunModal(false)}>
           <h3 style={{ marginTop: 0 }}>Run selected tests:</h3>
           <Tooltip tip="Test results will affect subsequent tests">

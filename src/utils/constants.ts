@@ -16,7 +16,7 @@ export const DEFAULT_RATE = 1
 export const DEFAULT_BUDGET = 1000000 // 1 million
 
 export const STATUS_CODES : { [key: number] : string } = {
-  0: 'succeeded',
+  0: 'executed',
   1: 'no account info',
   2: 'bad signature',
   3: 'incorrect nonce',
