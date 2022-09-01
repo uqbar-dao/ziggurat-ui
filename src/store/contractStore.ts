@@ -5,6 +5,7 @@ import { OpenFile } from "../types/OpenFile";
 import { Projects } from "../types/Project";
 import { RunTestPayload } from "../types/TestData";
 import { TestGrainInput } from "../types/TestGrain";
+import { STORAGE_VERSION } from "../utils/constants";
 import { generateMolds, generateProjects } from "../utils/project";
 import { grainToGrainInput } from "../utils/tests";
 import { handleProjectUpdate, handleTestUpdate } from "./subscriptions/contract";
@@ -249,7 +250,8 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
     setCompilationError: (project: string, error: string) => set({ compilationError: { project, error } })
   }),
   {
-    name: 'contractStore'
+    name: 'contractStore',
+    version: STORAGE_VERSION,
   }
 ));
 

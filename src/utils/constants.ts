@@ -14,6 +14,7 @@ export const DUMMY_METADATA = {
 
 export const DEFAULT_RATE = 1
 export const DEFAULT_BUDGET = 1000000 // 1 million
+export const STORAGE_VERSION = 1
 
 export const STATUS_CODES : { [key: number] : string } = {
   0: 'executed',
