@@ -11,7 +11,7 @@ import Col from '../spacing/Col'
 import Row from '../spacing/Row'
 import Text from '../text/Text'
 import Link from './Link';
-import { DEFAULT_BUDGET, DEFAULT_RATE, MY_CONTRACT_ID } from '../../utils/constants';
+import { DeployModal } from './DeployModal';
 
 interface FileLinkProps {
   project: string
@@ -54,16 +54,14 @@ interface DirectoryProps {
 }
 
 const Directory = ({ project }: DirectoryProps) => {
-  const { deleteProject, setProjectExpanded, deployContract } = useContractStore()
-  const [showButtons, setShowButtons] = useState(false)
   const nav = useNavigate()
+  const { deleteProject, setProjectExpanded } = useContractStore()
+  const [showButtons, setShowButtons] = useState(false)
+  const [showDeployModal, setShowDeployModal] = useState(false)
 
   const { title, libs, expanded } = project
-  // TODO: download icon should save all project files in a zip
 
-  const deployProjectContract = useCallback(() => {
-    deployContract(title, MY_CONTRACT_ID, 'testnet', '0x0', DEFAULT_RATE, DEFAULT_BUDGET, true)
-  }, [title, deployContract])
+  // TODO: download icon should save all project files in a zip
 
   return (
     <Col style={{ padding: '0px 4px', fontSize: 14 }} onMouseEnter={() => setShowButtons(true)} onMouseLeave={() => setShowButtons(false)}>
@@ -75,7 +73,7 @@ const Directory = ({ project }: DirectoryProps) => {
         {showButtons && (
           <Row>
             <Tooltip tip="deploy contract" right>
-              <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaUpload size={14} />} onClick={deployProjectContract} />
+              <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaUpload size={14} />} onClick={() => setShowDeployModal(true)} />
             </Tooltip>
             <Tooltip tip="download zip" right>
               <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaDownload size={14} />} onClick={() => null} />
@@ -102,6 +100,7 @@ const Directory = ({ project }: DirectoryProps) => {
           <FileLink project={title} file='tests' />
         </Col>
       )}
+      <DeployModal project={title} show={showDeployModal} hide={() => setShowDeployModal(false)} />
     </Col>
   )
 }

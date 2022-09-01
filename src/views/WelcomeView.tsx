@@ -9,7 +9,6 @@ import Col from '../components/spacing/Col'
 import Row from '../components/spacing/Row'
 import useContractStore from '../store/contractStore';
 import Input from '../components/form/Input';
-import { BLANK_METADATA, generateInitialMetadata, RawMetadata } from '../code-text/test-data/fungible';
 import { MetadataForm } from '../components/forms/MetadataForm';
 import LoadingOverlay from '../components/popups/LoadingOverlay';
 import { METADATA_GRAIN_ID, MY_CONTRACT_ID } from '../utils/constants';

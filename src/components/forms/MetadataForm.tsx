@@ -1,4 +1,4 @@
-import { RawMetadata } from "../../code-text/test-data/fungible"
+import { RawMetadata } from "../../types/Metadata"
 import Button from "../form/Button"
 import Form from "../form/Form"
 import Input from "../form/Input"

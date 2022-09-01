@@ -110,7 +110,6 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
   }
 
   const runSingleTest = useCallback(() => runTest({ id: test.id, rate: DEFAULT_RATE, bud: DEFAULT_BUDGET }), [test, runTest])
-  console.log(test)
 
   return (
     <Col className="test-list" style={{ ...testStyle, position: 'relative' }}>

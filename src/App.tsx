@@ -38,7 +38,6 @@ function App() {
           </Col>
           <Col style={{ minWidth: 'calc(100% - 240px)', width: '80%', maxWidth: 'calc(100% - 210px)', height: '100%', position: 'relative' }}>
             <Routes>
-              {/* TODO: this should be something other than EditorView */}
               <Route path="/" element={<WelcomeView />} />
               <Route path="/new" element={<NewProjectView />} />
               <Route path="/app" element={<AppView />} />
