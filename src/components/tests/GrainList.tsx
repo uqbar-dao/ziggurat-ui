@@ -9,6 +9,7 @@ import Button from '../form/Button';
 
 import './GrainList.scss'
 import { METADATA_GRAIN_ID, MY_CONTRACT_ID, ZIGS_ACCOUNT_ID } from '../../utils/constants';
+import { displayPubKey } from '../../utils/account';
 
 interface GrainValueDisplayProps {
   grain: TestGrain
@@ -37,10 +38,11 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain, testId }: Grai
   const isMetadataGrain = grain.id === METADATA_GRAIN_ID
   const untouchable = isZigsGrain || isContractGrain || isMetadataGrain
 
-  const grainIdDisplay = isZigsGrain ? 'zigs account' :
-    isContractGrain ? 'contract grain' :
-    isMetadataGrain ? 'metadata grain' :
-    grain.id
+  const grainIdDisplay = expanded ? grain.id :
+    isZigsGrain ? `${displayPubKey(grain.id)} - zigs account` :
+    isContractGrain ? `${displayPubKey(grain.id)} - contract grain` :
+    isMetadataGrain ? `${displayPubKey(grain.id)} - metadata grain` :
+    displayPubKey(grain.id)
 
   const grainContent = (
     <Col style={{ ...grainStyle, position: 'relative' }}>

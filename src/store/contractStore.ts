@@ -7,7 +7,6 @@ import { RunTestPayload } from "../types/TestData";
 import { TestGrainInput } from "../types/TestGrain";
 import { STORAGE_VERSION } from "../utils/constants";
 import { generateMolds, generateProjects } from "../utils/project";
-import { grainToGrainInput } from "../utils/tests";
 import { handleProjectUpdate, handleTestUpdate } from "./subscriptions/contract";
 import { createSubscription, Subscriptions } from "./subscriptions/createSubscription";
 
@@ -198,7 +197,6 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
     addTestExpectation: async (testId: string, expected: TestGrainInput) => {
       const project = get().currentProject
       const json = { project, action: { "add-test-expectation": { id: testId, expected } } }
-      console.log('ADD')
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
     },
     deleteTest: async (testId: string) => {
@@ -226,6 +224,8 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
       console.log('DONE')
     },
     deployContract: async (project: string, address: string, location: string, town: string, rate: number, bud: number, upgradable: boolean) => {
+      // address is the public key address of the user's wallet
+      // location is either "local" or the urbit ship running the testnet
       set({ loading: 'Deploying contract...' })
       const json = {
         project,

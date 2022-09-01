@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import { Droppable } from 'react-beautiful-dnd'
-import { FaPen, FaTrash, FaChevronDown, FaChevronUp, FaCopy, FaPlay } from 'react-icons/fa';
+import { FaPen, FaTrash, FaChevronDown, FaChevronUp, FaPlay } from 'react-icons/fa';
 import Col from '../spacing/Col'
 import Row from '../spacing/Row'
 import useContractStore from '../../store/contractStore';
@@ -12,10 +11,10 @@ import { getGrainDiff, parseAction } from '../../utils/tests';
 import Text from '../text/Text';
 import { TestGrain } from '../../types/TestGrain';
 import { GrainList } from './GrainList';
+import { displayPubKey } from '../../utils/account';
 import Modal from '../popups/Modal';
 
 import './TestList.scss'
-import { displayPubKey } from '../../utils/account';
 
 export const DROPPABLE_DIVIDER = '___'
 
@@ -34,28 +33,35 @@ const TestStatus = ({ errorCode, success }: { errorCode: number, success?: boole
   </Text>
 
 const ResultRow = ({ label, value, }: { label: string, value: string }) =>
-  <Row>
-    <Text style={{ width: 84, marginBottom: 2 }}>{label}:</Text>
-    <Text>{value}</Text>
+  <Row style={{ alignItems: 'flex-start' }}>
+    <div style={{ width: 84, marginBottom: 2 }}>{label}:</div>
+    <div style={{ wordBreak: 'break-word', width: 'calc(100% - 84px)' }}>{value}</div>
   </Row>
 
 const TestResultDisplay = ({ result }: { result?: TestResult }) => {
-  // console.log(result)
+  const [showAllResultsModal, setShowAllResultsModal] = useState(false)
+
+  console.log(result)
   return (
     <Col>
       <ResultRow label='Gas Used' value={String(result?.fee)} />
-      {!!result && !result.success && (
+      {!!result && result.success === false && (
         <Col>
           <Text style={{ width: 120, marginBottom: 2 }}>Test Failures:</Text>
           {Object.keys(result?.grains).filter(id => result.grains[id].match === false)
             .map(id => {
+              if (result.grains[id].expected && !result.grains[id].made) {
+                return (
+                  <Col key={id}>
+                    <ResultRow label='ID' value={displayPubKey(id)} />
+                    <ResultRow label='Error' value='No grain matching that expectation' />
+                  </Col>
+                )
+              }
               const diff = getGrainDiff(result.grains[id].expected, result.grains[id].made)
               return (
                 <Col key={id}>
-                  <Row>
-                    <Text style={{ width: 84, marginBottom: 2 }}>ID: </Text>
-                    <Text>{displayPubKey(id)}</Text>
-                  </Row>
+                  <ResultRow label='ID' value={displayPubKey(id)} />
                   {Object.keys(diff).map(field => (
                     <Col key={field}>
                       <ResultRow label='Field' value={field} />
@@ -69,6 +75,22 @@ const TestResultDisplay = ({ result }: { result?: TestResult }) => {
           }
         </Col>
       )}
+      <Button onClick={() => setShowAllResultsModal(true)} variant="dark" style={{ fontSize: 14, padding: '2px 6px', margin: '6px 0' }}>Show full test output</Button>
+      <Modal show={showAllResultsModal} hide={() => setShowAllResultsModal(false)}>
+        <h3>Full Test Results</h3>
+        {result?.grains && Object.keys(result.grains).length ? (
+          Object.keys(result.grains).map(id => (
+            <Col key={id}>
+              <ResultRow label='Grain ID' value={displayPubKey(id)} />
+              <ResultRow label='Match' value={JSON.stringify(result.grains[id].match)} />
+              <ResultRow label='Expected' value={JSON.stringify(result.grains[id].expected)} />
+              <ResultRow label='Result' value={JSON.stringify(result.grains[id].made)} />
+            </Col>
+          ))
+        ) : (
+          <Text>This test did not modify chain state.</Text>
+        )}
+      </Modal>
     </Col>
   )
 }
@@ -78,7 +100,6 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
   const [expandInput, setExpandInput] = useState(false)
   const [expandOutput, setExpandOutput] = useState(false)
   const [expandExpectations, setExpandExpectations] = useState(false)
-  const [showResultsModal, setShowResultsModal] = useState(false)
 
   const testStyle = {
     justifyContent: 'space-between',
@@ -89,9 +110,7 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
   }
 
   const runSingleTest = useCallback(() => runTest({ id: test.id, rate: DEFAULT_RATE, bud: DEFAULT_BUDGET }), [test, runTest])
-
-  // TODO: add button to show the modal and to edit existing grains
-  console.log(test.result.grains)
+  console.log(test)
 
   return (
     <Col className="test-list" style={{ ...testStyle, position: 'relative' }}>
@@ -156,7 +175,7 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
               icon={expandOutput ? <FaChevronUp size={16} /> : <FaChevronDown size={16} />}
             />)}
             {/* isRunning ? <Loader size='small' style={{ marginLeft: 8 }} dark /> :  */}
-            <Row onClick={() => setShowResultsModal(true)} className='result'>
+            <Row>
               <Text style={{ width: 56 }}>Result:</Text>
               <TestStatus errorCode={test?.result?.errorcode} success={test?.result?.success} />
             </Row>
@@ -183,9 +202,6 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
         </Row>
         {expandExpectations && <GrainList testId={test.id} grains={Object.values(test?.expected || {})} editGrain={showTestExpectationModal(test.id)} />}
       </Col>
-      <Modal show={showResultsModal} hide={() => setShowResultsModal(false)}>
-        {JSON.stringify(test.result?.grains)}
-      </Modal>
     </Col>
   )
 }

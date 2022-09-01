@@ -50,7 +50,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       'town-id': '0x0',
       label: 'token-metadata',
       salt: Number(md.salt),
-      data: `[name='${md.name}' symbol='${md.symbol}' decimals=${numToUd(md.decimals)} supply=${numToUd(md.supply)} cap=${!md.cap || md.cap === '~' ? '~' : numToUd(md.cap)} mintable=${md.mintable === 't' ? '&' : '|'} minters=~ deployer=${addHexDots(md.deployer)} salt=${numToUd(md.salt)}]`
+      data: `[name='${md.name}' symbol='${md.symbol}' decimals=${numToUd(md.decimals)} supply=${numToUd(md.supply)} cap=${!md.cap || md.cap === '~' ? '~' : `\`${numToUd(md.cap)}`} mintable=${md.mintable === 't' ? '&' : '|'} minters=~ deployer=${addHexDots(md.deployer)} salt=${numToUd(md.salt)}]`
     }
 
     await createProject(options as { [key: string]: string })
