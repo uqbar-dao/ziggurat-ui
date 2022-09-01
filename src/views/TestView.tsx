@@ -24,7 +24,7 @@ import './TestView.scss'
 export interface TestViewProps {}
 
 export const TestView = () => {
-  const { projects, currentProject, setLoading, addTest, updateTest, addGrain, runTest, runTests, addTestExpectations } = useContractStore()
+  const { projects, currentProject, setLoading, addTest, updateTest, addGrain, runTest, runTests, addTestExpectation } = useContractStore()
 
   const [showTestModal, setShowTestModal] = useState(false)
   const [testExpectation, setTestExpecation] = useState('')
@@ -97,7 +97,7 @@ export const TestView = () => {
 
     setLoading('Saving grain...')
     if (testExpectation) {
-      await addTestExpectations(testExpectation, [newGrain])
+      await addTestExpectation(testExpectation, newGrain)
     } else {
       await addGrain(newGrain)
     }
@@ -106,7 +106,7 @@ export const TestView = () => {
     setGrainFormValues({})
     setEdit(undefined)
     setLoading(undefined)
-  }, [edit, currentProject, projects, grainFormValues, testExpectation, addTestExpectations, addGrain, setLoading])
+  }, [edit, currentProject, projects, grainFormValues, testExpectation, addTestExpectation, addGrain, setLoading])
 
   const handleDragAndDropGrain = useCallback(({ source, destination }) => {
     if (!destination)

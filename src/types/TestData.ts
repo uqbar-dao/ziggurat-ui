@@ -15,9 +15,13 @@ export interface TestExpectation {
 export interface TestResult {
   fee: number
   errorcode: number
-  success?: boolean
+  success?: boolean | null
   grains: {
-    [grainId: string]: TestGrain
+    [grainId: string]: {
+      expected: TestGrain
+      made: TestGrain
+      match: boolean | null
+    }
   }
 }
 
@@ -34,6 +38,10 @@ export interface Test {
   success: boolean
   running?: boolean
   selected?: boolean
+}
+
+export interface TestExpectationDiff {
+  [key: string]: { expected?: string | boolean, result?: string | boolean }
 }
 
 export interface Tests {

@@ -38,7 +38,7 @@ export interface ContractStore {
   addGrain: (rice: TestGrainInput) => Promise<void>
   deleteGrain: (riceId: string, testId?: string) => Promise<void>
   addTest: (name: string, action: string) => Promise<void>
-  addTestExpectations: (testId: string, expectations: TestGrainInput[]) => Promise<void>
+  addTestExpectation: (testId: string, expectations: TestGrainInput) => Promise<void>
   deleteTest: (testId: string) => Promise<void>
   updateTest: (testId: string, name: string, action: string) => Promise<void>
   runTest: (payload: RunTestPayload) => Promise<void>
@@ -181,22 +181,24 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
     },
     deleteGrain: async (riceId: string, testId?: string) => {
-      // TODO: if isExpected, modify the test expectations
       const project = get().currentProject
-      const json = {project, action: { "delete-from-state": { id: riceId } } }
-      await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
+      if (testId) {
+        const json = { project, action: { "delete-test-expectation": { id: testId, delete: riceId } } }
+        await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
+      } else {
+        const json = { project, action: { "delete-from-state": { id: riceId } } }
+        await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
+      }
     },
     addTest: async (name: string, action: string) => {
       const project = get().currentProject
       const json = {project, action: { "add-test": { name, action } } }
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
     },
-    addTestExpectations: async (testId: string, expected: TestGrainInput[]) => {
-      const { currentProject, projects } = get()
-      const newExpected = Object.values(projects[currentProject].tests[testId].expected)
-        .map(grainToGrainInput)
-        .concat(expected)
-      const json = { project: currentProject, action: { "add-test-expectations": { id: testId, expected: newExpected } } }
+    addTestExpectation: async (testId: string, expected: TestGrainInput) => {
+      const project = get().currentProject
+      const json = { project, action: { "add-test-expectation": { id: testId, expected } } }
+      console.log('ADD')
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
     },
     deleteTest: async (testId: string) => {

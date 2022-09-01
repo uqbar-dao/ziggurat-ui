@@ -8,13 +8,14 @@ import Button from '../form/Button';
 import { Test, TestResult } from '../../types/TestData';
 import Input from '../form/Input';
 import { DEFAULT_BUDGET, DEFAULT_RATE, getStatus } from '../../utils/constants';
-import { parseAction } from '../../utils/tests';
+import { getGrainDiff, parseAction } from '../../utils/tests';
 import Text from '../text/Text';
 import { TestGrain } from '../../types/TestGrain';
 import { GrainList } from './GrainList';
 import Modal from '../popups/Modal';
 
 import './TestList.scss'
+import { displayPubKey } from '../../utils/account';
 
 export const DROPPABLE_DIVIDER = '___'
 
@@ -27,24 +28,50 @@ interface TestEntryProps extends TestListProps {
   test: Test
 }
 
-const TestStatus = ({ errorCode, success }: { errorCode: number, success?: boolean }) =>
-  <Text style={{ marginLeft: 4, color: errorCode === 0 && success ? 'green' : 'red', fontWeight: 'bold' }}>
-    {getStatus(errorCode)}{errorCode === 0 ? ` - ${success ? 'passed' : 'did not pass'}` : ''}
+const TestStatus = ({ errorCode, success }: { errorCode: number, success?: boolean | null }) =>
+  <Text style={{ marginLeft: 4, color: errorCode === 0 && (success || success === null)  ? 'green' : 'red', fontWeight: 'bold' }}>
+    {getStatus(errorCode)}{errorCode === 0 && typeof success === 'boolean' ? ` - ${success ? 'passed' : 'did not pass'}` : ''}
   </Text>
 
-const TestResultDisplay = ({ result }: { result: TestResult }) =>
-  <Col>
-    <Row>
-      <Text style={{ width: 84 }}>Gas Used:</Text>
-      <Text>{result.fee}</Text>
-    </Row>
-    {/* TODO: insert diff between expected and actual */}
-    {/* {Object.keys(result).map(id => (
-      <p key={id} style={{ wordBreak: 'break-word' }}>
-        {JSON.stringify({ ...result[id], id, data_text: undefined })}
-      </p>
-    ))} */}
-  </Col>
+const ResultRow = ({ label, value, }: { label: string, value: string }) =>
+  <Row>
+    <Text style={{ width: 84, marginBottom: 2 }}>{label}:</Text>
+    <Text>{value}</Text>
+  </Row>
+
+const TestResultDisplay = ({ result }: { result?: TestResult }) => {
+  // console.log(result)
+  return (
+    <Col>
+      <ResultRow label='Gas Used' value={String(result?.fee)} />
+      {!!result && !result.success && (
+        <Col>
+          <Text style={{ width: 120, marginBottom: 2 }}>Test Failures:</Text>
+          {Object.keys(result?.grains).filter(id => result.grains[id].match === false)
+            .map(id => {
+              const diff = getGrainDiff(result.grains[id].expected, result.grains[id].made)
+              return (
+                <Col key={id}>
+                  <Row>
+                    <Text style={{ width: 84, marginBottom: 2 }}>ID: </Text>
+                    <Text>{displayPubKey(id)}</Text>
+                  </Row>
+                  {Object.keys(diff).map(field => (
+                    <Col key={field}>
+                      <ResultRow label='Field' value={field} />
+                      <ResultRow label='Expected' value={String(diff[field].expected)} />
+                      <ResultRow label='Actual' value={String(diff[field].result)} />
+                    </Col>
+                  ))}
+                </Col>
+              )
+            })
+          }
+        </Col>
+      )}
+    </Col>
+  )
+}
 
 export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntryProps) => {
   const { currentProject, toggleTest, deleteTest, runTest } = useContractStore()
@@ -64,6 +91,7 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
   const runSingleTest = useCallback(() => runTest({ id: test.id, rate: DEFAULT_RATE, bud: DEFAULT_BUDGET }), [test, runTest])
 
   // TODO: add button to show the modal and to edit existing grains
+  console.log(test.result.grains)
 
   return (
     <Col className="test-list" style={{ ...testStyle, position: 'relative' }}>
