@@ -1,0 +1,10 @@
+@use '../../styles/colors.scss' as colors;
+
+.test-list {
+  .result {
+    cursor: pointer;
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}

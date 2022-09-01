@@ -14,6 +14,8 @@ import { TestGrain } from '../../types/TestGrain';
 import { GrainList } from './GrainList';
 import Modal from '../popups/Modal';
 
+import './TestList.scss'
+
 export const DROPPABLE_DIVIDER = '___'
 
 interface TestListProps {
@@ -64,7 +66,7 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
   // TODO: add button to show the modal and to edit existing grains
 
   return (
-    <Col className="action" style={{ ...testStyle, position: 'relative' }}>
+    <Col className="test-list" style={{ ...testStyle, position: 'relative' }}>
       <Row style={{ justifyContent: 'space-between', borderBottom: '1px solid gray', paddingBottom: 2, marginBottom: 4 }}>
         <Row style={{ marginBottom: 4, marginLeft: -4 }}>
           <Row>
@@ -126,7 +128,7 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
               icon={expandOutput ? <FaChevronUp size={16} /> : <FaChevronDown size={16} />}
             />)}
             {/* isRunning ? <Loader size='small' style={{ marginLeft: 8 }} dark /> :  */}
-            <Row onClick={() => setShowResultsModal(true)} style={{ cursor: 'pointer' }}>
+            <Row onClick={() => setShowResultsModal(true)} className='result'>
               <Text style={{ width: 56 }}>Result:</Text>
               <TestStatus errorCode={test?.result?.errorcode} success={test?.result?.success} />
             </Row>
@@ -154,7 +156,7 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
         {expandExpectations && <GrainList testId={test.id} grains={Object.values(test?.expected || {})} editGrain={showTestExpectationModal(test.id)} />}
       </Col>
       <Modal show={showResultsModal} hide={() => setShowResultsModal(false)}>
-        {JSON.stringify(test.result.grains)}
+        {JSON.stringify(test.result?.grains)}
       </Modal>
     </Col>
   )
