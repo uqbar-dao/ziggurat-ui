@@ -1,4 +1,3 @@
-
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   innerRef?: any
 }

@@ -1,6 +1,5 @@
 import create from "zustand"
 import { persist } from "zustand/middleware"
-import { toast } from 'react-toastify';
 import api from "../api";
 import { OpenFile } from "../types/OpenFile";
 import { Projects } from "../types/Project";
@@ -36,10 +35,10 @@ export interface ContractStore {
 
   addGrain: (rice: TestGrainInput) => Promise<void>
   deleteGrain: (riceId: string, testId?: string) => Promise<void>
-  addTest: (name: string, action: string) => Promise<void>
+  addTest: (name: string, action: string, expectedError: number) => Promise<void>
   addTestExpectation: (testId: string, expectations: TestGrainInput) => Promise<void>
   deleteTest: (testId: string) => Promise<void>
-  updateTest: (testId: string, name: string, action: string) => Promise<void>
+  updateTest: (testId: string, name: string, action: string, expectedError: number) => Promise<void>
   runTest: (payload: RunTestPayload) => Promise<void>
   runTests: (payload: RunTestPayload[]) => Promise<void>
   deployContract: (project: string, address: string, location: string, town: string, rate: number, bud: number, upgradable: boolean) => Promise<void>
@@ -74,6 +73,7 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
     },
     getProjects: async () => {
       const rawProjects = await api.scry({ app: 'ziggurat', path: '/all-projects' })
+      console.log(rawProjects)
       const projects = generateProjects(rawProjects, get().projects)
       console.log('PROJECTS:', projects)
       
@@ -190,9 +190,10 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
         await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
       }
     },
-    addTest: async (name: string, action: string) => {
+    addTest: async (name: string, action: string, expectedError: number) => {
       const project = get().currentProject
-      const json = {project, action: { "add-test": { name, action } } }
+      const json = {project, action: { "add-test": { name, action, 'expected-error': expectedError } } }
+      console.log('ADDING TEST:', json)
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
     },
     addTestExpectation: async (testId: string, expected: TestGrainInput) => {
@@ -205,9 +206,10 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
       const json = { project, action: { "delete-test": { id: testId } } }
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
     },
-    updateTest: async (testId: string, name: string, action: string) => {
+    updateTest: async (testId: string, name: string, action: string, expectedError: number) => {
       const project = get().currentProject
-      const json = { project, action: { "edit-test": { id: testId, name, action } } }
+      const json = { project, action: { "edit-test": { id: testId, name, action, 'expected-error': expectedError } } }
+      console.log('UPDATING TEST:', json)
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
     },
     runTest: async (payload: RunTestPayload) => {

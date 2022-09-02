@@ -20,6 +20,7 @@ import { Tooltip } from '../components/popups/Tooltip';
 import { GrainModal } from '../components/tests/GrainModal';
 
 import './TestView.scss'
+import { BLANK_TEST_FORM, TestFormField, TestFormValues } from '../types/TestForm';
 
 export interface TestViewProps {}
 
@@ -31,7 +32,7 @@ export const TestView = () => {
   const [showGrainModal, setShowGrainModal] = useState(false)
   const [showRunModal, setShowRunModal] = useState(false)
   const [grainFormValues, setGrainFormValues] = useState<FormValues>({})
-  const [testFormValues, setTestFormValues] = useState<{ [key: string]: string }>({ name: '', action: '' })
+  const [testFormValues, setTestFormValues] = useState<TestFormValues>(BLANK_TEST_FORM)
   const [edit, setEdit] = useState<Test | TestGrain | undefined>()
 
   const project = useMemo(() => projects[currentProject], [projects, currentProject])
@@ -49,7 +50,7 @@ export const TestView = () => {
   }, [setEdit, setGrainFormValues, setShowGrainModal])
 
   const editTest = useCallback((test: Test) => {
-    setTestFormValues({ name: test.name || '', action: test.action_text })
+    setTestFormValues({ name: test.name || '', action: test.action_text, expectedError: String(test.expected_error || 0) })
     setEdit(test)
     setShowTestModal(true)
   }, [setTestFormValues, setShowTestModal])
@@ -60,23 +61,23 @@ export const TestView = () => {
     setGrainFormValues(newValues)
   }, [grainFormValues, setGrainFormValues])
 
-  const updateTestFormValue = useCallback((key: string, value: string) => {
+  const updateTestFormValue = useCallback((key: TestFormField, value: string) => {
     const newValues = { ...testFormValues }
     newValues[key] = value
     setTestFormValues(newValues)
   }, [testFormValues, setTestFormValues])
 
-  const submitTest = useCallback((isUpdate = false) => async () => {
+  const submitTest = useCallback(async () => {
     setLoading('Saving test...')
 
     if (!edit) {
-      await addTest(testFormValues.name, testFormValues.action.replace(/\n/g, ' '))
+      await addTest(testFormValues.name, testFormValues.action.replace(/\n/g, ' '), Number(testFormValues.expectedError))
     } else {
-      await updateTest(edit.id, testFormValues.name, testFormValues.action.replace(/\n/g, ' '))
+      await updateTest(edit.id, testFormValues.name, testFormValues.action.replace(/\n/g, ' '), Number(testFormValues.expectedError))
     }
     
     setShowTestModal(false)
-    setTestFormValues({})
+    setTestFormValues(BLANK_TEST_FORM)
     setEdit(undefined)
     setLoading(undefined)
   }, [testFormValues, edit, addTest, updateTest, setLoading])
@@ -125,7 +126,7 @@ export const TestView = () => {
 
   const hideTestModal = () => {
     if (window.confirm('Are you sure you want to discard your changes?')) {
-      setTestFormValues({})
+      setTestFormValues(BLANK_TEST_FORM)
       setShowTestModal(false)
       setEdit(undefined)
     }

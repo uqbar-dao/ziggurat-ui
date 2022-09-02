@@ -1,5 +1,7 @@
 import { useCallback, useMemo, useState } from "react"
 import useContractStore from "../../store/contractStore"
+import { TestFormField, TestFormValues } from "../../types/TestForm"
+import { STATUS_CODES } from "../../utils/constants"
 import Button from "../form/Button"
 import Input from "../form/Input"
 import { Select } from "../form/Select"
@@ -12,9 +14,9 @@ interface TestModalProps {
   showTestModal: boolean
   hideTestModal: () => void
   isEdit: boolean
-  testFormValues: { [key: string]: string }
-  updateTestFormValue: (key: string, value: string) => void
-  submitTest: (isUpdate: boolean) => () => void
+  testFormValues: TestFormValues
+  updateTestFormValue: (key: TestFormField, value: string) => void
+  submitTest: () => void
 }
 
 export const TestModal = ({
@@ -60,15 +62,21 @@ export const TestModal = ({
             </Select>
           </>
         )}
+        <Text style={{ marginTop: 12, marginBottom: 2 }}>Expected Status Code</Text>
+        <Select value={testFormValues.expectedError} onChange={(e) => updateTestFormValue('expectedError', e.target.value)}>
+          {Object.keys(STATUS_CODES).map(code => (
+            <option key={code} value={code}>{STATUS_CODES[Number(code)]}</option>
+          ))}
+        </Select>
         <TextArea
-          style={{ marginTop: 16 }}
+          containerStyle={{ marginTop: 12 }}
           onChange={(e) => updateTestFormValue('action', e.target.value)}
           label="Test (in Hoon)"
           placeholder="Your test here"
           value={testFormValues.action}
           required
         />
-        <Button onClick={submitTest(isEdit)} style={{ alignSelf: 'center', marginTop: 16 }}>{isEdit ? 'Update' : 'Add'} Test</Button>
+        <Button onClick={submitTest} style={{ alignSelf: 'center', marginTop: 16 }}>{isEdit ? 'Update' : 'Add'} Test</Button>
       </Col>
     </Modal>
   )

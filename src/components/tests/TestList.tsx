@@ -6,7 +6,7 @@ import useContractStore from '../../store/contractStore';
 import Button from '../form/Button';
 import { Test, TestResult } from '../../types/TestData';
 import Input from '../form/Input';
-import { DEFAULT_BUDGET, DEFAULT_RATE, getStatus } from '../../utils/constants';
+import { DEFAULT_BUDGET, DEFAULT_RATE, getStatus, STATUS_CODES } from '../../utils/constants';
 import { getGrainDiff, parseAction } from '../../utils/tests';
 import Text from '../text/Text';
 import { TestGrain } from '../../types/TestGrain';
@@ -27,27 +27,41 @@ interface TestEntryProps extends TestListProps {
   test: Test
 }
 
-const TestStatus = ({ errorCode, success }: { errorCode: number, success?: boolean | null }) =>
-  <Text style={{ marginLeft: 4, color: errorCode === 0 && (success || success === null)  ? 'green' : 'red', fontWeight: 'bold' }}>
-    {getStatus(errorCode)}{errorCode === 0 && typeof success === 'boolean' ? ` - ${success ? 'passed' : 'did not pass'}` : ''}
-  </Text>
+interface TestStatusProps { errorCode: number, success?: boolean | null, expectedError: number }
+
+const TestStatus = ({ errorCode, success, expectedError }: TestStatusProps) => {
+  const correctStatus = errorCode === expectedError
+  const statusInfo = correctStatus && typeof success === 'boolean' ?
+    ` - ${success ? 'passed' : 'did not pass'}` :
+    !correctStatus && errorCode !== undefined ? ' - wrong status code' :
+    ''
+
+  return (
+    <Text style={{ marginLeft: 4, color: correctStatus && (success || success === null)  ? 'green' : 'red', fontWeight: 'bold' }}>
+      {getStatus(errorCode)}{statusInfo}
+    </Text>
+  )
+}
+  
 
 const ResultRow = ({ label, value, }: { label: string, value: string }) =>
   <Row style={{ alignItems: 'flex-start' }}>
-    <div style={{ width: 84, marginBottom: 2 }}>{label}:</div>
-    <div style={{ wordBreak: 'break-word', width: 'calc(100% - 84px)' }}>{value}</div>
+    <div style={{ width: 100, marginBottom: 2 }}>{label}:</div>
+    <div style={{ wordBreak: 'break-word', width: 'calc(100% - 100px)' }}>{value}</div>
   </Row>
 
-const TestResultDisplay = ({ result }: { result?: TestResult }) => {
+const TestResultDisplay = ({ result, expectedError }: { result?: TestResult, expectedError: number }) => {
   const [showAllResultsModal, setShowAllResultsModal] = useState(false)
 
-  console.log(result)
   return (
     <Col>
       <ResultRow label='Gas Used' value={String(result?.fee)} />
       {!!result && result.success === false && (
         <Col>
           <Text style={{ width: 120, marginBottom: 2 }}>Test Failures:</Text>
+          {result?.errorcode !== expectedError && (
+            <ResultRow label="Status Code" value={`expected: ${STATUS_CODES[expectedError]}, got: ${STATUS_CODES[result.errorcode]}`} />
+          )}
           {Object.keys(result?.grains).filter(id => result.grains[id].match === false)
             .map(id => {
               if (result.grains[id].expected && !result.grains[id].made) {
@@ -157,6 +171,7 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
         </Row>
         {expandInput && (
           <Col style={{ width: '100%', marginBottom: 6 }}>
+            <Text>Expected Status Code: {STATUS_CODES[test.expected_error]}</Text>
             {test.action_text.slice(1, -1).split(' ').map((line) => (
               <Text key={line} style={{ wordBreak: 'break-all', marginTop: 4 }}>{line}</Text>
             ))}
@@ -176,10 +191,10 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
             {/* isRunning ? <Loader size='small' style={{ marginLeft: 8 }} dark /> :  */}
             <Row>
               <Text style={{ width: 56 }}>Result:</Text>
-              <TestStatus errorCode={test?.result?.errorcode} success={test?.result?.success} />
+              <TestStatus errorCode={test?.result?.errorcode} success={test?.result?.success} expectedError={test.expected_error} />
             </Row>
           </Row>
-          {expandOutput && <TestResultDisplay result={test.result} />}
+          {expandOutput && <TestResultDisplay result={test.result} expectedError={test.expected_error} />}
         </Col>
       )}
       <Col className="expectations" style={{ flex: 1, marginTop: 4, paddingTop: 8, borderTop: '1px solid gray' }}>

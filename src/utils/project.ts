@@ -16,7 +16,8 @@ export const generateTests = (p: Project | ProjectUpdate, oldP?: Project) =>
       ...p.tests[id],
       id,
       selected: oldP?.tests[id]?.selected === undefined ? true : oldP?.tests[id]?.selected,
-      expected: generateExpected(p.tests[id].expected)
+      expected: generateExpected(p.tests[id].expected),
+      expected_error: p.tests[id]?.expected_error || 0
     }
     return acc
   },

@@ -30,6 +30,7 @@ export interface Test {
   name?: string
   action: string
   action_text: string
+  expected_error: number
   expected: {
     [grainId: string]: TestGrain
   }
