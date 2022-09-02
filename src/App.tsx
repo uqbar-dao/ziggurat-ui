@@ -13,20 +13,16 @@ import { TestView } from './views/TestView';
 import { PUBLIC_URL } from './utils/constants';
 import WelcomeView from './views/WelcomeView';
 import Modal from './components/popups/Modal';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
-  const { loading, compilationError, init } = useContractStore()
+  const { loading, init } = useContractStore()
   const [showError, setShowError] = useState(false)
 
   useEffect(() => {
     init()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (compilationError) {
-      setShowError(true)
-    }
-  }, [compilationError])
 
   return (
     <Container>
@@ -59,10 +55,15 @@ function App() {
       </Col>
       </BrowserRouter>
       <LoadingOverlay loading={loading !== undefined} text={loading} />
-      <Modal style={{ width: '60%', minWidth: 400 }} show={showError && !!compilationError} hide={() => setShowError(false)}>
-        <h3 style={{ marginTop: 0, color: 'red' }}>Error compiling "{compilationError?.project}"</h3>
-        <p>{compilationError?.error}</p>
-      </Modal>
+      <ToastContainer
+        autoClose={false}
+        hideProgressBar
+        closeOnClick
+        rtl={false}
+        draggable
+        theme='colored'
+        style={{ fontSize: 14 }}
+      />
     </Container>
   );
 }

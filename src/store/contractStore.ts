@@ -1,5 +1,6 @@
 import create from "zustand"
 import { persist } from "zustand/middleware"
+import { toast } from 'react-toastify';
 import api from "../api";
 import { OpenFile } from "../types/OpenFile";
 import { Projects } from "../types/Project";
@@ -18,7 +19,7 @@ export interface ContractStore {
   openApps: string[]
   currentApp: string
   subscriptions: Subscriptions
-  compilationError?: { project: string, error: string }
+  toastMessages: { project: string, message: string, id: number | string }[]
   setLoading: (loading?: string) => void
   init: () => Promise<Projects>
   getProjects: () => Promise<Projects>
@@ -32,7 +33,6 @@ export interface ContractStore {
   deleteFile: (project: string, file: string) => Promise<void>
   setOpenFiles: (openFiles: OpenFile[]) => void
   toggleTest: (project: string, testId: string) => void
-  setCompilationError: (project: string, error: string) => void
 
   addGrain: (rice: TestGrainInput) => Promise<void>
   deleteGrain: (riceId: string, testId?: string) => Promise<void>
@@ -47,6 +47,7 @@ export interface ContractStore {
   addApp: (app: string) => void
   setCurrentApp: (currentApp: string) => void
   removeApp: (app: string) => void
+  addToastMessage: (project: string, message: string, id: number | string) => void
 }
 
 const useContractStore = create<ContractStore>(persist<ContractStore>(
@@ -58,7 +59,7 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
     subscriptions: {},
     openApps: ['webterm'],
     currentApp: '',
-    compilationError: undefined,
+    toastMessages: [],
     setLoading: (loading?: string) => set({ loading }),
     init: async () => {
       const projects = await get().getProjects()
@@ -249,7 +250,7 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
       newProjects[project].tests[testId].selected = !newProjects[project].tests[testId].selected
       set({ projects: newProjects })
     },
-    setCompilationError: (project: string, error: string) => set({ compilationError: { project, error } })
+    addToastMessage: (project: string, message: string, id: number | string) => set({ toastMessages: get().toastMessages.concat([{ project, message, id }]) }),
   }),
   {
     name: 'contractStore',

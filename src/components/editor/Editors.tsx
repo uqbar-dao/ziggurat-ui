@@ -43,6 +43,7 @@ const defaultOptions = {
   mode: 'hoon',
   lineNumbers: true,
   lineWrapping: true,
+  styleSelectedText: true,
   scrollbarStyle: 'native',
   cursorHeight: 0.85,
 }
@@ -116,7 +117,7 @@ export const Editor = ({
       editorDidMount={(codeEditor: any) => {
         editorRef.current = codeEditor
       }}
-      // onPaste={onPaste}
+      onPaste={onPaste}
       onChange={textChange}
     />
   )
