@@ -1,27 +1,33 @@
 import create from "zustand"
 import { persist } from "zustand/middleware"
 import api from "../api";
+import { HardwareWallet, HardwareWalletType, HotWallet, processAccount, RawAccount } from "../types/Accounts";
+import { GallApps } from "../types/GallApp";
 import { OpenFile } from "../types/OpenFile";
-import { Projects } from "../types/Project";
+import { Contracts } from "../types/Contracts";
 import { RunTestPayload } from "../types/TestData";
 import { TestGrainInput } from "../types/TestGrain";
-import { STORAGE_VERSION } from "../utils/constants";
+import { DEFAULT_USER_ADDRESS, STORAGE_VERSION } from "../utils/constants";
 import { generateMolds, generateProjects } from "../utils/project";
-import { handleProjectUpdate, handleTestUpdate } from "./subscriptions/contract";
+import { handleGallUpdate, handleContractUpdate, handleTestUpdate } from "./subscriptions/project";
 import { createSubscription, Subscriptions } from "./subscriptions/createSubscription";
 
-export interface ContractStore {
+export interface ProjectStore {
   loading?: string
   currentProject: string
-  projects: Projects
+  accounts: HotWallet[]
+  importedAccounts: HardwareWallet[]
+  contracts: Contracts
+  gallApps: GallApps
   openFiles: OpenFile[]
-  openApps: string[]
-  currentApp: string
+  openTools: string[]
+  currentTool: string
   subscriptions: Subscriptions
   toastMessages: { project: string, message: string, id: number | string }[]
+  userAddress: string
   setLoading: (loading?: string) => void
-  init: () => Promise<Projects>
-  getProjects: () => Promise<Projects>
+  init: () => Promise<Contracts>
+  getProjects: () => Promise<Contracts>
   createProject: (options: { [key: string]: string }) => Promise<void>
   populateTemplate: (project: string, template: 'nft' | 'fungible', metadata: TestGrainInput) => Promise<void>
   setCurrentProject: (currentProject: string) => void
@@ -29,6 +35,7 @@ export interface ContractStore {
   setProjectExpanded: (project: string, expanded: boolean) => void
   setProjectText: (project: string, file: string, text: string) => void
   saveFiles: (projectTitle: string) => Promise<void>
+  addFile: (project: string, filename: string, isContract: boolean) => Promise<void>
   deleteFile: (project: string, file: string) => Promise<void>
   setOpenFiles: (openFiles: OpenFile[]) => void
   toggleTest: (project: string, testId: string) => void
@@ -43,57 +50,83 @@ export interface ContractStore {
   runTests: (payload: RunTestPayload[]) => Promise<void>
   deployContract: (project: string, address: string, location: string, town: string, rate: number, bud: number, upgradable: boolean) => Promise<void>
 
-  addApp: (app: string) => void
-  setCurrentApp: (currentApp: string) => void
-  removeApp: (app: string) => void
+  addTool: (tool: string) => void
+  setCurrentTool: (currentTool: string) => void
+  removeTool: (tool: string) => void
   addToastMessage: (project: string, message: string, id: number | string) => void
+  setUserAddress: (userAddress: string) => void
 }
 
-const useContractStore = create<ContractStore>(persist<ContractStore>(
+const useProjectStore = create<ProjectStore>(persist<ProjectStore>(
   (set, get) => ({
     loading: '',
+    accounts: [],
+    importedAccounts: [],
     currentProject: '',
-    projects: {},
+    contracts: {},
+    gallApps: {},
     openFiles: [],
     subscriptions: {},
-    openApps: ['webterm'],
-    currentApp: '',
+    openTools: ['webterm'],
+    currentTool: '',
     toastMessages: [],
+    userAddress: DEFAULT_USER_ADDRESS,
     setLoading: (loading?: string) => set({ loading }),
     init: async () => {
-      const projects = await get().getProjects()
+      const contracts = await get().getProjects()
 
-      if (!get().currentProject && Object.values(projects)[0]) {
-        set({ currentProject: Object.values(projects)[0].title || '' })
+      if (!get().currentProject && Object.values(contracts)[0]) {
+        set({ currentProject: Object.values(contracts)[0].title || '' })
       }
 
       set({ loading: undefined })
 
-      return projects
+      return contracts
+    },
+    getAccounts: async () => {
+      const accountData = await api.scry<{[key: string]: RawAccount}>({ app: 'wallet', path: '/accounts' }) || {}
+      const allAccounts = Object.values(accountData).map(processAccount).sort((a, b) => a.nick.localeCompare(b.nick))
+
+      const { accounts, importedAccounts } = allAccounts.reduce(({ accounts, importedAccounts }, cur) => {
+        if (cur.imported) {
+          const [nick, type] = cur.nick.split('//')
+          importedAccounts.push({ ...cur, type: type as HardwareWalletType, nick })
+        } else {
+          accounts.push(cur)
+        }
+        return { accounts, importedAccounts }
+      }, { accounts: [] as HotWallet[], importedAccounts: [] as HardwareWallet[] })
+
+      set({ accounts, importedAccounts })
     },
     getProjects: async () => {
       const rawProjects = await api.scry({ app: 'ziggurat', path: '/all-projects' })
-      console.log(rawProjects)
-      const projects = generateProjects(rawProjects, get().projects)
-      console.log('PROJECTS:', projects)
+      const { contracts, gallApps } = generateProjects(rawProjects, get().contracts, get().gallApps)
+      console.log('PROJECTS:', contracts, gallApps)
       
-      const subscriptions = Object.keys(projects).reduce((subs, p) => {
+      const subscriptions = Object.keys(contracts).reduce((subs, p) => {
         subs[p] = [
-          api.subscribe(createSubscription('ziggurat', `/contract-project/${p}`, handleProjectUpdate(get, set, p))),
+          api.subscribe(createSubscription('ziggurat', `/contract-project/${p}`, handleContractUpdate(get, set, p))),
           api.subscribe(createSubscription('ziggurat', `/test-updates/${p}`, handleTestUpdate(get, set, p))),
         ]
         return subs
       }, {} as Subscriptions)
 
-      set({ projects, subscriptions })
-      return projects
+      Object.keys(gallApps).forEach((gp) => subscriptions[gp] = [
+        api.subscribe(createSubscription('ziggurat', `/app-project/${gp}`, handleGallUpdate(get, set, gp)))
+      ])
+
+      set({ contracts, subscriptions, gallApps })
+      return contracts
     },
     createProject: async (options: { [key: string]: string }) => {
       set({ loading: 'Creating project...' })
       const project = options.title
+      console.log(1, get().userAddress)
 
       if (options?.project === 'contract') {
-        const json = { project, action: { "new-contract-project": { template: options.token } } }
+        const json = { project, action: { "new-contract-project": { template: options.token, 'user-address': get().userAddress } } }
+        console.log(2, json)
         await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
       } else if (options?.project === 'gall') {
         const json = { project, action: { "new-app-project": null } }
@@ -114,7 +147,7 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
     deleteProject: async (project: string) => {
       (get().subscriptions[project] || []).map(subPromise => subPromise.then(sub => api.unsubscribe(sub)).catch(console.warn))
 
-      await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json: { project, action: { "delete-project": null } } })
+      await api.poke({ app: 'ziggurat', mark: `ziggurat-${get().contracts[project] ? 'contract' : 'app'}-action`, json: { project, action: { "delete-project": null } } })
 
       const openFiles = get().openFiles.filter(of => of.project !== project)
       set({ openFiles })
@@ -122,7 +155,7 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
       get().getProjects()
 
       if (project === get().currentProject) {
-        const nextProject = Object.keys(get().projects)[0] || ''
+        const nextProject = Object.keys(get().contracts)[0] || ''
         set({ currentProject: nextProject })
         return nextProject
       }
@@ -130,22 +163,29 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
       return null
     },
     setProjectExpanded: (project: string, expanded: boolean) => {
-      const newProjects = { ...get().projects }
-      newProjects[project].expanded = expanded
-      set({ projects: newProjects })
+      const newProjects = { ...get().contracts }
+      const newApps = { ...get().gallApps }
+
+      if (newProjects[project]) {
+        newProjects[project].expanded = expanded
+        set({ contracts: newProjects })
+      } else if (newApps[project]) {
+        newApps[project].expanded = expanded
+        set({ gallApps: newApps })
+      }
     },
     setProjectText: (project: string, file: string, text: string) => {
-      const newProjects = { ...get().projects }
+      const newProjects = { ...get().contracts }
       if (file === project) {
         newProjects[project].main = text
       } else {
         newProjects[project].libs[file] = text
       }
       newProjects[project].modifiedFiles.add(file)
-      set({ projects: newProjects })
+      set({ contracts: newProjects })
     },
     saveFiles: async (projectTitle: string) => {
-      const project = get().projects[projectTitle]
+      const project = get().contracts[projectTitle]
       if (project && project.modifiedFiles.size) {
         set({ loading: 'Saving project...' })
         await Promise.all(
@@ -154,11 +194,19 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
             await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json: { project: projectTitle, action: { 'save-file': { name, text } } } })
           })
         )
-        const newProjects = { ...get().projects }
+        const newProjects = { ...get().contracts }
         newProjects[projectTitle].modifiedFiles = new Set<string>()
         newProjects[projectTitle].molds = generateMolds(newProjects[projectTitle])
-        set({ projects: newProjects, loading: undefined })
+        set({ contracts: newProjects, loading: undefined })
       }
+    },
+    addFile: async (project: string, filename: string, isContract: boolean) => {
+      if (isContract) {
+        await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json: { project, action: { 'save-file': { name: filename, text: '' } } } })
+      } else {
+        await api.poke({ app: 'ziggurat', mark: 'ziggurat-app-action', json: { project, action: { "save-file": { file: filename, text: '' } } } })
+      }
+      await get().getProjects()
     },
     deleteFile: async (project: string, file: string) => {
       if (project === file) {
@@ -166,9 +214,9 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
       }
       if (window.confirm(`Are you sure you want to delete ${file}.hoon in project "${project}"?`)) {
         await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json: { project, action: { 'delete-file': { name: file } } } })
-        const newProjects = { ...get().projects }
+        const newProjects = { ...get().contracts }
         delete newProjects[project].libs[file]
-        set({ projects: newProjects })
+        set({ contracts: newProjects })
       }
     },
     setOpenFiles: (openFiles: OpenFile[]) => set({ openFiles }),
@@ -241,18 +289,19 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
       console.log('DONE')
       set({ loading: undefined })
     },
-    addApp: (app: string) => set({ openApps: get().openApps.concat([app]), currentApp: app }),
-    setCurrentApp: (currentApp: string) => set({ currentApp }),
-    removeApp: (app: string) => {
-      const { openApps, currentApp } = get()
-      set({ openApps: openApps.filter(a => a !== app), currentApp: currentApp === app ? openApps[0] || '' : currentApp })
+    addTool: (tool: string) => set({ openTools: get().openTools.concat([tool]), currentTool: tool }),
+    setCurrentTool: (currentTool: string) => set({ currentTool }),
+    removeTool: (tool: string) => {
+      const { openTools, currentTool } = get()
+      set({ openTools: openTools.filter(a => a !== tool), currentTool: currentTool === tool ? openTools[0] || '' : currentTool })
     },
     toggleTest: (project: string, testId: string) => {
-      const newProjects = { ...get().projects }
+      const newProjects = { ...get().contracts }
       newProjects[project].tests[testId].selected = !newProjects[project].tests[testId].selected
-      set({ projects: newProjects })
+      set({ contracts: newProjects })
     },
     addToastMessage: (project: string, message: string, id: number | string) => set({ toastMessages: get().toastMessages.concat([{ project, message, id }]) }),
+    setUserAddress: (userAddress: string) => set({ userAddress }),
   }),
   {
     name: 'contractStore',
@@ -260,4 +309,4 @@ const useContractStore = create<ContractStore>(persist<ContractStore>(
   }
 ));
 
-export default useContractStore;
+export default useProjectStore;

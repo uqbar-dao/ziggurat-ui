@@ -1,5 +1,5 @@
 import { useCallback } from "react"
-import useContractStore from "../../store/contractStore"
+import useProjectStore from "../../store/projectStore"
 import { Test } from "../../types/TestData"
 import { truncateString } from "../../utils/format"
 import Button from "../form/Button"
@@ -7,7 +7,7 @@ import Row from "../spacing/Row"
 import Text from "../text/Text"
 
 export const GrainDisplaySmall = ({ grain, field, test }: { grain: string, field?: string, test: Test }) => {
-  const { updateTest } = useContractStore()
+  const { updateTest } = useProjectStore()
 
   const removeGrain = useCallback(() => {
     const newTest = { ...test }

@@ -7,7 +7,7 @@ import Form from '../components/form/Form'
 import Col from '../components/spacing/Col'
 import Row from '../components/spacing/Row'
 import { CodeMirrorShim, Editor } from '../components/editor/Editors'
-import useContractStore from '../store/contractStore'
+import useProjectStore from '../store/projectStore'
 import { isMobileCheck } from '../utils/dimensions';
 
 import './EditorView.scss'
@@ -17,16 +17,16 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
   const editorRef = useRef<CodeMirrorShim>()
   const nav = useNavigate()
   const { projectTitle, file } = useParams()
-  const { projects, setProjectText } = useContractStore()
+  const { contracts, setProjectText } = useProjectStore()
 
-  const project = useMemo(() => projects[projectTitle || ''], [projectTitle, projects])
+  const project = useMemo(() => contracts[projectTitle || ''], [projectTitle, contracts])
   const text = !file ? '' : file === projectTitle ? project?.main : project?.libs[file] || ''
 
   useEffect(() => {
-    if (Object.keys(projects).length < 1 || !text) {
+    if (Object.keys(contracts).length < 1 || !text) {
       nav ('/')
     }
-  }, [projects, text, nav])
+  }, [contracts, text, nav])
 
   const setText = useCallback((inputText: string) => {
     if (file && project?.title) {

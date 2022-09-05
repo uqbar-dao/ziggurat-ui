@@ -4,7 +4,7 @@ import { FaPlay } from 'react-icons/fa';
 import { isMobileCheck } from '../utils/dimensions'
 import Col from '../components/spacing/Col'
 import Row from '../components/spacing/Row'
-import useContractStore from '../store/contractStore';
+import useProjectStore from '../store/projectStore';
 import Modal from '../components/popups/Modal';
 import Button from '../components/form/Button';
 import { formValuesForGrain, formValuesFromGrain, grainFromForm, updateField, validateFormValues } from '../utils/form';
@@ -25,7 +25,7 @@ import { BLANK_TEST_FORM, TestFormField, TestFormValues } from '../types/TestFor
 export interface TestViewProps {}
 
 export const TestView = () => {
-  const { projects, currentProject, setLoading, addTest, updateTest, addGrain, runTest, runTests, addTestExpectation } = useContractStore()
+  const { contracts, currentProject, setLoading, addTest, updateTest, addGrain, runTest, runTests, addTestExpectation } = useProjectStore()
 
   const [showTestModal, setShowTestModal] = useState(false)
   const [testExpectation, setTestExpecation] = useState('')
@@ -35,7 +35,7 @@ export const TestView = () => {
   const [testFormValues, setTestFormValues] = useState<TestFormValues>(BLANK_TEST_FORM)
   const [edit, setEdit] = useState<Test | TestGrain | undefined>()
 
-  const project = useMemo(() => projects[currentProject], [projects, currentProject])
+  const project = useMemo(() => contracts[currentProject], [contracts, currentProject])
 
   const isMobile = isMobileCheck()
 
@@ -89,7 +89,7 @@ export const TestView = () => {
 
     const newGrain = grainFromForm(grainFormValues)
 
-    const targetProject = projects[currentProject]
+    const targetProject = contracts[currentProject]
     if (targetProject && !testExpectation) {
       if (targetProject?.state[newGrain.id] && !edit) {
         return window.alert('You already have a grain with this ID, please change the ID.')
@@ -107,7 +107,7 @@ export const TestView = () => {
     setGrainFormValues({})
     setEdit(undefined)
     setLoading(undefined)
-  }, [edit, currentProject, projects, grainFormValues, testExpectation, addTestExpectation, addGrain, setLoading])
+  }, [edit, currentProject, contracts, grainFormValues, testExpectation, addTestExpectation, addGrain, setLoading])
 
   const handleDragAndDropGrain = useCallback(({ source, destination }) => {
     if (!destination)
@@ -115,14 +115,14 @@ export const TestView = () => {
 
     if (source.droppableId === 'grains') {
       if (destination.droppableId === 'grains') {
-        const newGrains = [ ...Object.values(projects[currentProject].state) ]
+        const newGrains = [ ...Object.values(contracts[currentProject].state) ]
         const reorderedItem = newGrains.splice(source.index, 1)[0];
         newGrains.splice(destination.index, 0, reorderedItem);
         
         // TODO: update the grain order (is this even possible now?)
       }
     }
-  }, [projects, currentProject]);
+  }, [contracts, currentProject]);
 
   const hideTestModal = () => {
     if (window.confirm('Are you sure you want to discard your changes?')) {

@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react"
-import useContractStore from "../../store/contractStore"
+import useProjectStore from "../../store/projectStore"
 import { FormValues } from "../../types/FormValues"
 import { METADATA_GRAIN_ID, MY_CONTRACT_ID, ZIGS_ACCOUNT_ID } from "../../utils/constants"
 import { formValuesFromGrain } from "../../utils/form"
@@ -33,8 +33,8 @@ export const GrainModal = ({
   submitGrain,
   testExpectation,
 }: GrainModalProps) => {
-  const { projects, currentProject } = useContractStore()
-  const project = useMemo(() => projects[currentProject], [projects, currentProject])
+  const { contracts, currentProject } = useProjectStore()
+  const project = useMemo(() => contracts[currentProject], [contracts, currentProject])
 
   const [mold, setMold] = useState('other')
   const [selectedGrainId, setSelectedGrainId] = useState('other')

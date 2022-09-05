@@ -1,16 +1,18 @@
-import { Project, Projects, ProjectState, ProjectUpdate } from "../types/Project"
-import { ProjectMold } from "../types/ProjectMold"
+import { GallApp, GallApps } from "../types/GallApp"
+import { Contract, Contracts, ContractState, ContractUpdate } from "../types/Contracts"
+import { ContractMold } from "../types/ContractMold"
 import { Tests } from "../types/TestData"
 import { TestGrain } from "../types/TestGrain"
+import { mapFilesToFolders } from "./gall"
 import { ACTION_CENCOL_REGEX, ACTION_NOUN_LIST_REGEX, MOLD_REGEX } from "./regex"
 
-export const generateState = (p: Project | ProjectUpdate) =>
+export const generateState = (p: Contract | ContractUpdate) =>
   Object.keys(p.state).reduce((acc, id) => {
     acc[id] = { ...p.state[id], id }
     return acc
-  }, {} as ProjectState)
+  }, {} as ContractState)
 
-export const generateTests = (p: Project | ProjectUpdate, oldP?: Project) =>
+export const generateTests = (p: Contract | ContractUpdate, oldP?: Contract) =>
   Object.keys(p.tests).reduce((acc, id) => {
     acc[id] = {
       ...p.tests[id],
@@ -32,7 +34,7 @@ export const generateExpected = (expected: { [grainId: string]: TestGrain }) =>
     return acc
   }, {} as { [grainId: string]: TestGrain })
 
-export const generateMolds = (p: Project): ProjectMold =>
+export const generateMolds = (p: Contract): ContractMold =>
   Object.keys(p.libs).reduce((acc, file) => {
     const text = p.libs[file]
     const parseRice = (mold: string) => mold.replace(/(\+\$)|(\$:)|(::.*?$)/gm, '').split('\n').slice(0, -1).map(line => line.trim())
@@ -59,18 +61,27 @@ export const generateMolds = (p: Project): ProjectMold =>
     acc.actions = acc.actions.concat(actions)
 
     return acc
-  }, { actions: [], rice: [] } as ProjectMold)
+  }, { actions: [], rice: [] } as ContractMold)
 
-export const generateProjects = (rawProjects: Projects, existingProjects: Projects) =>
-  Object.keys(rawProjects).reduce((acc, key) => {
-    acc[key] = {
-      ...rawProjects[key],
-      title: key,
-      expanded: Boolean(existingProjects[key]?.expanded),
-      state: generateState(rawProjects[key]),
-      tests: generateTests(rawProjects[key], existingProjects[key]),
-      modifiedFiles: new Set<string>(),
-      molds: generateMolds(rawProjects[key])
+export const generateProjects = (rawContracts: { [key: string]: Contract | GallApp }, existingContracts: Contracts, existingApps: GallApps) =>
+  Object.keys(rawContracts).reduce((acc, key) => {
+    if ('libs' in rawContracts[key]) {
+      acc.contracts[key] = {
+        ...(rawContracts[key] as Contract),
+        title: key,
+        expanded: Boolean((existingContracts[key] as Contract)?.expanded),
+        state: generateState(rawContracts[key] as Contract),
+        tests: generateTests(rawContracts[key] as Contract, existingContracts[key] as Contract),
+        modifiedFiles: new Set<string>(),
+        molds: generateMolds(rawContracts[key] as Contract),
+      }
+    } else if ('dir' in rawContracts[key]) {
+      acc.gallApps[key] = {
+        ...(rawContracts[key] as GallApp),
+        title: key,
+        folders: mapFilesToFolders(key, (rawContracts[key] as GallApp).dir),
+        expanded: Boolean((existingApps[key] as GallApp)?.expanded),
+      }
     }
     return acc
-  }, {} as Projects)
+  }, { contracts: {}, gallApps: {} } as { contracts: Contracts, gallApps: GallApps })

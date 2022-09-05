@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import useContractStore from './store/contractStore';
+import useProjectStore from './store/projectStore';
 import Container from './components/spacing/Container';
 import Col from './components/spacing/Col';
 import Row from './components/spacing/Row';
-import { Sidebar } from './components/nav/Sidebar';
+import { Sidebar } from './components/sidebar/Sidebar';
 import LoadingOverlay from './components/popups/LoadingOverlay';
 import EditorView from './views/EditorView';
 import NewProjectView from './views/NewProjectView';
@@ -17,7 +17,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
-  const { loading, init } = useContractStore()
+  const { loading, init } = useProjectStore()
   const [showError, setShowError] = useState(false)
 
   useEffect(() => {

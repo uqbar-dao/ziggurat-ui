@@ -3,7 +3,7 @@ import { Droppable, Draggable } from 'react-beautiful-dnd'
 import { FaChevronDown, FaChevronUp, FaPen, FaTrash } from 'react-icons/fa';
 import Col from '../spacing/Col'
 import Row from '../spacing/Row'
-import useContractStore from '../../store/contractStore';
+import useProjectStore from '../../store/projectStore';
 import { TestGrain } from '../../types/TestGrain';
 import Button from '../form/Button';
 
@@ -19,7 +19,7 @@ interface GrainValueDisplayProps {
 }
 
 export const GrainValueDisplay = ({ grain, grainIndex, editGrain, testId }: GrainValueDisplayProps) => {
-  const { deleteGrain } = useContractStore()
+  const { deleteGrain } = useProjectStore()
   const [expanded, setExpanded] = useState(false)
 
   const grainStyle = {

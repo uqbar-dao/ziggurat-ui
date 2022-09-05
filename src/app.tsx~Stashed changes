@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import useContractStore from './store/contractStore';
+import useProjectStore from './store/contractStore';
 import Container from './components/spacing/Container';
 import Col from './components/spacing/Col';
 import Row from './components/spacing/Row';
@@ -8,7 +8,7 @@ import { Sidebar } from './components/nav/Sidebar';
 import MainView from './views/MainView';
 
 function App() {
-  const { init } = useContractStore()
+  const { init } = useProjectStore()
 
   useEffect(() => {
     init()

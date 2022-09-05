@@ -2,6 +2,7 @@ import { RawMetadata } from "../../types/Metadata"
 import Button from "../form/Button"
 import Form from "../form/Form"
 import Input from "../form/Input"
+import { ListInput } from "../form/ListInput"
 
 interface MetadataFormProps {
   metadata: RawMetadata
@@ -24,6 +25,7 @@ export const MetadataForm = ({ metadata, setMetadata, onSubmit }: MetadataFormPr
         onChange={(e) => setMetadata({ ...metadata, name: e.target.value })}
         value={metadata.name}
         label="Name (longform)"
+        maxLength={60}
         autoFocus
         required
       />
@@ -41,24 +43,36 @@ export const MetadataForm = ({ metadata, setMetadata, onSubmit }: MetadataFormPr
         style={{ width: 300 }}
         onChange={(e) => setMetadata({ ...metadata, salt: e.target.value.replace(/[^0-9]/gi, '') })}
         value={metadata.salt}
-        label="Salt (integer, at least 10 digits)"
-        required
-        minLength={10}
-      />
-      <Input
-        containerStyle={{ marginTop: 8 }}
-        style={{ width: 300 }}
-        onChange={(e) => setMetadata({ ...metadata, decimals: e.target.value.replace(/[^0-9]/gi, '') })}
-        value={metadata.decimals}
-        label="Decimals (integer)"
+        label="Salt (integer)"
+        maxLength={20}
         required
       />
+      {metadata.decimals !== undefined && (
+        <Input
+          containerStyle={{ marginTop: 8 }}
+          style={{ width: 300 }}
+          onChange={(e) => setMetadata({ ...metadata, decimals: e.target.value.replace(/[^0-9]/gi, '') })}
+          value={metadata.decimals}
+          label="Decimals (integer)"
+          maxLength={2}
+          required
+        />
+      )}
+      {metadata.properties !== undefined && (
+        <ListInput
+          containerStyle={{ marginTop: 8 }}
+          label="Properties (text)"
+          values={metadata.properties}
+          setValues={(values: string[]) => setMetadata({ ...metadata, properties: values })}
+        />
+      )}
       <Input
         containerStyle={{ marginTop: 8 }}
         style={{ width: 300 }}
         onChange={(e) => setMetadata({ ...metadata, supply: e.target.value.replace(/[^0-9]/gi, '') })}
         value={metadata.supply}
         label="Supply (integer)"
+        maxLength={15}
         required
       />
       <Input
@@ -66,7 +80,7 @@ export const MetadataForm = ({ metadata, setMetadata, onSubmit }: MetadataFormPr
         style={{ width: 300 }}
         onChange={(e) => setMetadata({ ...metadata, cap: e.target.value.replace(/[^0-9]/gi, '') })}
         value={metadata.cap}
-        label="Cap (optional, integer)"
+        label="Cap (optional, integer, must be >= supply)"
       />
       <Input
         label="Mintable"
@@ -76,13 +90,14 @@ export const MetadataForm = ({ metadata, setMetadata, onSubmit }: MetadataFormPr
         value={metadata.mintable}
         checked={Boolean(metadata.mintable)}
       />
-      {Boolean(metadata.mintable) && <Input
-        containerStyle={{ marginTop: 8 }}
-        style={{ width: 300 }}
-        onChange={(e) => setMetadata({ ...metadata, minters: e.target.value.replace(/[^0-9a-fA-Fx,]/gi, '') })}
-        value={metadata.minters}
-        label="Minters (comma-separated addresses)"
-      />}
+      {Boolean(metadata.mintable) && (
+        <ListInput
+          containerStyle={{ marginTop: 8 }}
+          label="Minters (addresses)"
+          values={metadata.minters}
+          setValues={(values: string[]) => setMetadata({ ...metadata, minters: values })}
+        />
+      )}
       <Input
         containerStyle={{ marginTop: 8 }}
         style={{ width: 300 }}
@@ -99,7 +114,7 @@ export const MetadataForm = ({ metadata, setMetadata, onSubmit }: MetadataFormPr
         label="salt"
         required
       /> */}
-      <Button variant='dark' type="submit" style={{ margin: '16px 0px 8px', width: 240, justifyContent: 'center' }}>
+      <Button variant='dark' type="submit" style={{ margin: '16px 0px 8px', width: '100%', justifyContent: 'center' }}>
         Next
       </Button>
     </Form>

@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import useContractStore from '../../store/contractStore'
+import useProjectStore from '../../store/projectStore'
 import Row from '../spacing/Row'
 import Link from '../nav/Link'
 import Button from '../form/Button'
@@ -10,7 +10,7 @@ import './OpenFileHeader.scss'
 export const OpenFileHeader = () => {
   const { pathname } = useLocation()
   const nav = useNavigate()
-  const { openFiles, setOpenFiles, setCurrentProject } = useContractStore()
+  const { openFiles, setOpenFiles, setCurrentProject } = useProjectStore()
 
   const removeFile = useCallback((p: string, f: string) => {
     const newOpenFiles = openFiles.filter(({ project, file }) => !(p === project && f === file) )

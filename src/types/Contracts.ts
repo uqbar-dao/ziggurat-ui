@@ -1,15 +1,15 @@
-import { ProjectMold } from "./ProjectMold"
+import { ContractMold } from "./ContractMold"
 import { Tests } from "./TestData"
 import { TestGrain } from "./TestGrain"
 
-export interface ProjectState {
+export interface ContractState {
   [key: string]: TestGrain
 }
 
-export interface ProjectUpdate {
+export interface ContractUpdate {
   compiled: boolean
   error: string
-  state: ProjectState
+  state: ContractState
   tests: Tests
 }
 
@@ -17,7 +17,7 @@ export interface EditorTextState {
   [key: string]: string
 }
 
-export interface Project extends ProjectUpdate {
+export interface Contract extends ContractUpdate {
   title: string
   libs: {
     [filename: string]: string
@@ -25,9 +25,9 @@ export interface Project extends ProjectUpdate {
   main: string
   expanded: boolean
   modifiedFiles: Set<string>
-  molds: ProjectMold
+  molds: ContractMold
 }
 
-export interface Projects {
-  [project: string]: Project
+export interface Contracts {
+  [project: string]: Contract
 }

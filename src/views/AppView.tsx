@@ -3,24 +3,24 @@ import Iframe from 'react-iframe';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Col from '../components/spacing/Col';
 import Container from '../components/spacing/Container'
-import useContractStore from '../store/contractStore';
+import useProjectStore from '../store/projectStore';
 
 import './DocsView.scss'
 
 const AppView = ({ hide = false }: { hide?: boolean }) => {
   const nav = useNavigate()
   const { pathname } = useLocation()
-  const { openApps, currentApp } = useContractStore()
+  const { openTools, currentTool } = useProjectStore()
 
-  if (!currentApp && pathname === 'app') {
+  if (!currentTool && pathname === 'app') {
     nav('/')
     return null
   }
 
   return (
     <Container className='docs-view' style={{ visibility: hide ? 'hidden' : 'visible', position: hide ? 'absolute' : 'relative' }}>
-      {openApps.map(app => (
-        <Col key={app} style={{ position: 'absolute', visibility: app === currentApp ? 'visible' : 'hidden', width: '100%', height: '100%' }}>
+      {openTools.map(app => (
+        <Col key={app} style={{ position: 'absolute', visibility: app === currentTool ? 'visible' : 'hidden', width: '100%', height: '100%' }}>
           <Iframe url={`/apps/${app}`} height='100%' width='100%' />
         </Col>
       ))}

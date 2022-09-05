@@ -7,9 +7,9 @@ import 'codemirror/addon/display/placeholder'
 import Button from '../components/form/Button'
 import Col from '../components/spacing/Col'
 import Row from '../components/spacing/Row'
-import useContractStore from '../store/contractStore';
+import useProjectStore from '../store/projectStore';
 import Input from '../components/form/Input';
-import { BLANK_METADATA, generateInitialMetadata } from '../utils/fungible';
+import { generateInitialMetadata } from '../utils/fungible';
 import { MetadataForm } from '../components/forms/MetadataForm';
 import LoadingOverlay from '../components/popups/LoadingOverlay';
 import { METADATA_GRAIN_ID, MY_CONTRACT_ID } from '../utils/constants';
@@ -32,13 +32,13 @@ export interface CreationOptions {
 }
 
 const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
-  const { projects, createProject, populateTemplate, openFiles, setOpenFiles } = useContractStore()
+  const { userAddress, contracts, createProject, populateTemplate, openFiles, setOpenFiles } = useProjectStore()
   const nav = useNavigate()
-  
+
   const [step, setStep] = useState<CreationStep>('title')
   const [options, setOptions] = useState<CreationOptions>({ title: '' })
   // TODO: get default minter from the wallet and then figure out the default deployer
-  const [metadata, setMetadata] = useState<RawMetadata>(generateInitialMetadata('[0xbeef]', '0x0'))
+  const [metadata, setMetadata] = useState<RawMetadata>(generateInitialMetadata([userAddress], userAddress, 'fungible'))
   const [loading, setLoading] = useState(false)
 
   const submitNewProject = useCallback(async (options: CreationOptions, md?: RawMetadata) => {
@@ -51,7 +51,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       'town-id': '0x0',
       label: 'token-metadata',
       salt: Number(md.salt),
-      data: `[name='${md.name}' symbol='${md.symbol}' decimals=${numToUd(md.decimals)} supply=${numToUd(md.supply)} cap=${!md.cap || md.cap === '~' ? '~' : `\`${numToUd(md.cap)}`} mintable=${md.mintable === 't' ? '&' : '|'} minters=~ deployer=${addHexDots(md.deployer)} salt=${numToUd(md.salt)}]`
+      data: `[name='${md.name}' symbol='${md.symbol}' ${md.decimals ? `decimals=${numToUd(md.decimals)}` : `properties=(~(gas pn *(pset @tas) ~[${md.properties?.map(p => `%${p}`).join(' ') || ''}])`} supply=${numToUd(md.supply)} cap=${!md.cap || md.cap === '~' ? '~' : `\`${numToUd(Math.max(Number(md.cap), Number(md.supply)))}`} mintable=${md.mintable === 't' ? '&' : '|'} minters=(~(gas pn *(pset address) ~[${md.minters.join(' ')}]) deployer=${addHexDots(md.deployer)} salt=${numToUd(md.salt)}]`
     }
 
     await createProject(options as { [key: string]: string })
@@ -59,23 +59,21 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       await populateTemplate(options.title!, options.token!, metadata)
     }
     setOptions({})
-    setMetadata(generateInitialMetadata('[0xbeef]', '0x0'))
+    setMetadata(generateInitialMetadata([userAddress], userAddress, 'fungible'))
     setStep('title')
-    setTimeout(() => {
-      if (options?.project === 'contract') {
-        setOpenFiles(openFiles.concat([{ project: options.title!, file: options.title! }]))
-        nav(`/${options.title}/${options.title}`)
-      } else if (options?.project === 'gall') {
-
-      }
-    }, 1000)
+    if (options?.project === 'contract') {
+      setOpenFiles(openFiles.concat([{ project: options.title!, file: options.title! }]))
+      nav(`/${options.title}/${options.title}`)
+    } else if (options?.project === 'gall') {
+      nav('/')
+    }
     setLoading(false)
-  }, [nav, createProject, populateTemplate, openFiles, setOpenFiles])
+  }, [userAddress, nav, createProject, populateTemplate, openFiles, setOpenFiles])
 
   const onSelect = useCallback((option: string) => async () => {
     switch (step) {
       case 'title':
-        if (projects[options.title!]) {
+        if (contracts[options.title!]) {
           window.alert('You already have a project with that name')
           break
         } else if (options.title === 'app' || options.title === 'new') {
@@ -103,6 +101,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
           submitNewProject({ ...options, token: option as TokenOption })
         } else {
           setOptions({ ...options, token: option as TokenOption })
+          setMetadata(generateInitialMetadata([userAddress], userAddress, option as TokenOption))
           setStep('metadata')
         }
         break
@@ -121,7 +120,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
         nav('/')
         break
     }
-  }, [step, setStep, options, setOptions, projects, submitNewProject, metadata, nav])
+  }, [userAddress, step, setStep, options, setOptions, contracts, submitNewProject, metadata, setMetadata, nav])
 
   const onBack = useCallback(() => {
     switch (step) {
@@ -146,7 +145,6 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
         break
       case 'metadata':
         setOptions({ ...options, template: undefined })
-        setMetadata(BLANK_METADATA)
         // TODO: skipping template, we may not want it
         setStep('token')
         break
@@ -168,7 +166,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       return (
         <>
           <Row style={{ width: '100%', position: 'relative', justifyContent: 'center' }}>
-            {Object.keys(projects).length > 0 && backButton}
+            {Object.keys(contracts).length > 0 && backButton}
             <h3>Create a Project:</h3>
           </Row>
           <Input
@@ -190,13 +188,13 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
             <h3>Select Your Project Type:</h3>
           </Row>
           <Row style={{ flexWrap: 'wrap', width: '100%', justifyContent: 'space-between', marginTop: 12 }}>
-            <Button style={{ ...buttonStyle, width: '32%', minWidth: 160 }} onClick={onSelect('contract')}>
+            <Button style={{ ...buttonStyle, width: '48%', minWidth: 240 }} onClick={onSelect('contract')}>
               Uqbar Contract
             </Button>
-            <Button style={{ ...buttonStyle, width: '32%', minWidth: 160 }} onClick={onSelect('contract-gall')}>
+            {/* <Button style={{ ...buttonStyle, width: '48%', minWidth: 240 }} onClick={onSelect('contract-gall')}>
               Uqbar Contract + Gall App
-            </Button>
-            <Button style={{ ...buttonStyle, width: '32%', minWidth: 160 }} onClick={onSelect('gall')}>
+            </Button> */}
+            <Button style={{ ...buttonStyle, width: '48%', minWidth: 240 }} onClick={onSelect('gall')}>
               Gall App
             </Button>
           </Row>

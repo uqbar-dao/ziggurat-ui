@@ -12,6 +12,7 @@ export const DUMMY_METADATA = {
   data: `['ZOG' 'ZIG' 18 1.000.000 ~ | ~ 0x0 385.9435.834.985]`
 }
 
+export const DEFAULT_USER_ADDRESS = '0xdead.beef'
 export const DEFAULT_RATE = 1
 export const DEFAULT_BUDGET = 1000000 // 1 million
 export const STORAGE_VERSION = 1

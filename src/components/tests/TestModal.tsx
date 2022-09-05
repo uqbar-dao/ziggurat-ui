@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react"
-import useContractStore from "../../store/contractStore"
+import useProjectStore from "../../store/projectStore"
 import { TestFormField, TestFormValues } from "../../types/TestForm"
 import { STATUS_CODES } from "../../utils/constants"
 import Button from "../form/Button"
@@ -27,8 +27,8 @@ export const TestModal = ({
   updateTestFormValue,
   submitTest,
 }: TestModalProps) => {
-  const { projects, currentProject } = useContractStore()
-  const project = useMemo(() => projects[currentProject], [projects, currentProject])
+  const { contracts, currentProject } = useProjectStore()
+  const project = useMemo(() => contracts[currentProject], [contracts, currentProject])
 
   const [mold, setMold] = useState('other')
 

@@ -7,7 +7,7 @@ import 'codemirror/addon/display/placeholder'
 import Button from '../components/form/Button'
 import Col from '../components/spacing/Col'
 import Row from '../components/spacing/Row'
-import useContractStore from '../store/contractStore';
+import useProjectStore from '../store/projectStore';
 import Input from '../components/form/Input';
 import { MetadataForm } from '../components/forms/MetadataForm';
 import LoadingOverlay from '../components/popups/LoadingOverlay';
