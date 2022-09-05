@@ -76,7 +76,7 @@ export const GallAppDirectory = ({ project }: GallAppDirectoryProps) => {
         </Row>
         {showButtons && (
           <Row>
-            <Tooltip tip="deploy contract" right>
+            <Tooltip tip="publish app" right>
               <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaUpload size={14} />} onClick={() => setShowPublishModal(true)} />
             </Tooltip>
             <Tooltip tip="download zip" right>

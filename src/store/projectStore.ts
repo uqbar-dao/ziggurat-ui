@@ -53,6 +53,7 @@ export interface ProjectStore {
   runTest: (payload: RunTestPayload) => Promise<void>
   runTests: (payload: RunTestPayload[]) => Promise<void>
   deployContract: (project: string, address: string, location: string, town: string, rate: number, bud: number, upgradable: boolean) => Promise<void>
+  publishGallApp: (project: string, title: string, info: string, color: string, image: string, version: number[], website: string, license: string) => Promise<void>
 
   addTool: (tool: string) => void
   setCurrentTool: (currentTool: string) => void
@@ -348,6 +349,14 @@ const useProjectStore = create<ProjectStore>(persist<ProjectStore>(
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
       console.log('DONE')
       set({ loading: undefined })
+    },
+    publishGallApp: async (project: string, title: string, info: string, color: string, image: string, version: number[], website: string, license: string) => {
+      const json = {
+        project,
+        "action": { "publish-app": { title, info, color, image, version, website, license } }
+      }
+      console.log('PUBLISHING GALL APP:', json)
+      await api.poke({ app: 'ziggurat', mark: 'ziggurat-app-action', json })
     },
     addTool: (tool: string) => set({ openTools: get().openTools.concat([tool]), currentTool: tool }),
     setCurrentTool: (currentTool: string) => set({ currentTool }),

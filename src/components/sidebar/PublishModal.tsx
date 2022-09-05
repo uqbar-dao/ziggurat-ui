@@ -1,13 +1,30 @@
 import { useCallback, useState } from "react"
 import useProjectStore from "../../store/projectStore"
-import { DEFAULT_BUDGET, DEFAULT_RATE } from "../../utils/constants"
 import Button from "../form/Button"
 import Form from "../form/Form"
 import Input from "../form/Input"
 import Modal from "../popups/Modal"
 
-type PublishFormField = 'address' | 'location' | 'town' | 'rate' | 'budget'
-const BLANK_DEPLOY_FORM = { address: '', location: '', town: '0x0', rate: DEFAULT_RATE.toString(), budget: DEFAULT_BUDGET.toString() }
+type PublishFormField = 'title' | 'info' | 'color' | 'image' | 'version' | 'website' | 'license'
+const BLANK_DEPLOY_FORM = {
+  title: '',
+  info: '',
+  color: '',
+  image: '',
+  version: '',
+  website: '',
+  license: '',
+}
+
+const FORM_LABELS = {
+  title: '',
+  info: '',
+  color: '(6-digit hexadecimal)',
+  image: '(URL)',
+  version: '(space-separated list of integers)',
+  website: '(URL)',
+  license: '(e.g. MIT)',
+}
 
 interface PublishModalProps {
   project: string
@@ -16,15 +33,15 @@ interface PublishModalProps {
 }
 
 export const PublishModal = ({ project, show, hide }: PublishModalProps) => {
-  const { deployContract } = useProjectStore()
+  const { publishGallApp } = useProjectStore()
   const [deployForm, setPublishForm] = useState(BLANK_DEPLOY_FORM)
 
-  const deployProjectContract = useCallback(async () => {
-    const { address, location, town, rate, budget } = deployForm
-    await deployContract(project, address, location, town, Number(rate), Number(budget), true)
+  const publishApp = useCallback(async () => {
+    const { title, info, color, image, version, website, license } = deployForm
+    await publishGallApp(project, title, info, color, image, version.split(' ').map(Number).filter(v => !isNaN(v)), website, license)
     hide()
     setPublishForm(BLANK_DEPLOY_FORM)
-  }, [deployForm, project, hide, deployContract])
+  }, [deployForm, project, hide, publishGallApp])
 
   const updateField = useCallback((key: PublishFormField, value: string) => {
     const newForm = { ...deployForm }
@@ -34,12 +51,12 @@ export const PublishModal = ({ project, show, hide }: PublishModalProps) => {
 
   return (
     <Modal show={show} hide={hide}>
-      <Form onSubmit={deployProjectContract} style={{ minWidth: 320 }}>
-        <h3 style={{ marginTop: 0 }}>Publish Contract</h3>
-        {(['address', 'location', 'town', 'rate', 'budget'] as PublishFormField[]).map(field => (
+      <Form onSubmit={publishApp} style={{ minWidth: 320 }}>
+        <h3 style={{ marginTop: 0 }}>Publish App</h3>
+        {(['title', 'info', 'color', 'image', 'version', 'website', 'license'] as PublishFormField[]).map(field => (
           <Input
             key={field}
-            label={field}
+            label={`${field} ${FORM_LABELS[field]}`}
             value={deployForm[field]}
             onChange={(e) => updateField(field, e.target.value)}
           />

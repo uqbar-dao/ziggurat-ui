@@ -70,10 +70,10 @@ export const Sidebar = () => {
   }, [setCurrentTool, nav])
 
   const addNewFile = useCallback(() => {
-    addFile(currentProject, newFile, Boolean(contracts[currentProject]))
+    addFile(currentProject, newFile, Boolean(gallApps[currentProject]))
     setNewFile('')
     setShowAddFileModal(false)
-  }, [contracts, currentProject, newFile, addFile, setNewFile, setShowAddFileModal])
+  }, [gallApps, currentProject, newFile, addFile, setNewFile, setShowAddFileModal])
 
   const userAddresses = useMemo(
     () => accounts.map(({ address }) => address).concat(importedAccounts.map(({ address }) => address)).concat([DEFAULT_USER_ADDRESS]),

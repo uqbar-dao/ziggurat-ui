@@ -177,7 +177,7 @@ export const TestView = () => {
               <Row className="title" style={{ marginRight: 8 }}>Test Actions</Row>
             </Row>
             <Row>
-              <Button style={{ width: 124 }} onClick={() => setShowRunModal(true)} variant='unstyled' icon={<FaPlay size={14} />}>
+              <Button style={{ width: 60 }} onClick={() => setShowRunModal(true)} variant='unstyled' icon={<FaPlay size={14} />}>
                 Run
               </Button>
               <Row className="action" onClick={() => setShowTestModal(true)}>+ Add Test</Row>

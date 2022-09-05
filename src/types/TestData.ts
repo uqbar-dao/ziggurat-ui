@@ -25,6 +25,10 @@ export interface TestResult {
   }
 }
 
+export interface TestResultUpdate {
+  result: { [grain: string]: TestGrain }
+}
+
 export interface Test {
   id: string
   name?: string
