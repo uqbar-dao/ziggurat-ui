@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { FaRegPlusSquare, FaRegMinusSquare, FaDownload, FaTrash, FaUpload } from 'react-icons/fa';
+import { FaChevronRight, FaChevronDown, FaDownload, FaTrash, FaUpload } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import useProjectStore from '../../store/projectStore'
 import { Contract } from '../../types/Contracts';
@@ -8,7 +8,7 @@ import { Tooltip } from '../popups/Tooltip';
 import Col from '../spacing/Col'
 import Row from '../spacing/Row'
 import Text from '../text/Text'
-import { DeployModal } from '../nav/DeployModal';
+import { DeployModal } from './DeployModal';
 import { BUTTON_STYLE, FileLink } from './FileLink';
 
 interface ContractDirectoryProps {
@@ -29,7 +29,7 @@ export const ContractDirectory = ({ project }: ContractDirectoryProps) => {
     <Col style={{ padding: '0px 4px', fontSize: 14 }} onMouseEnter={() => setShowButtons(true)} onMouseLeave={() => setShowButtons(false)}>
       <Row style={{ padding: 2, marginBottom: 2, cursor: 'pointer', justifyContent: 'space-between' }} onClick={() => setProjectExpanded(title, !expanded)}>
         <Row>
-          <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={expanded ? <FaRegMinusSquare size={12} /> : <FaRegPlusSquare size={12} />} />
+          <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={expanded ? <FaChevronDown size={12} /> : <FaChevronRight size={12} />} />
           <Text style={{ marginLeft: 4, marginBottom: 2, }}>{title}</Text>
         </Row>
         {showButtons && (
@@ -56,7 +56,7 @@ export const ContractDirectory = ({ project }: ContractDirectoryProps) => {
         )}
       </Row>
       {expanded && (
-        <Col style={{ paddingLeft: 28 }}>
+        <Col style={{ paddingLeft: 20 }}>
           <FileLink project={title} file={title} />
           {Object.keys(libs).map((file) => <FileLink key={file} project={title} file={file} /> )}
           <FileLink project={title} file='tests' />

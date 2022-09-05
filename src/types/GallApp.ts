@@ -4,8 +4,9 @@ export interface GallApp {
   compiled: boolean
   error: string
   dir: string[]
-  folders: Folder
+  folder: Folder
   title: string
+  modifiedFiles: Set<string>
   expanded?: boolean
 }
 

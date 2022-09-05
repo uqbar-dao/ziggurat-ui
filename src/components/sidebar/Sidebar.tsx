@@ -16,7 +16,7 @@ import { ContractDirectory } from './ContractDirectory';
 import { GallAppDirectory } from './GallAppDirectory';
 
 export const Sidebar = () => {
-  const { userAddress, contracts, gallApps, currentProject, currentTool, openTools, accounts, importedAccounts,
+  const { userAddress, contracts, gallApps, currentProject, currentFolder, currentTool, openTools, accounts, importedAccounts,
     addTool, setCurrentTool, removeTool, saveFiles, setUserAddress, addFile } = useProjectStore()
   const [showToolModal, setShowToolModal] = useState(false)
   const [toolToAdd, setToolToAdd] = useState('')
@@ -39,10 +39,17 @@ export const Sidebar = () => {
 
   const BUTTON_STYLE = { marginLeft: 6, padding: 2 }
 
+  const isGall = useMemo(() => Boolean(gallApps[currentProject]), [gallApps, currentProject])
+
   const buttons = [
     [<FaRegPlusSquare />, () => nav('/new'), 'new project'],
     [<FaSave />, () => saveFiles(currentProject), 'save project'],
-    [<FaFileAlt size={15} />, () => setShowAddFileModal(true), 'new file'],
+    [<FaFileAlt size={15} />, () => {
+      if (isGall) {
+        setNewFile(`/${currentFolder}/`)
+      }
+      setShowAddFileModal(true)
+    }, 'new file'],
   ]
 
   const openTool = useCallback(() => {
@@ -120,12 +127,17 @@ export const Sidebar = () => {
       </Col>
       <Modal show={showToolModal} hide={() => setShowToolModal(false)}>
         <h3 style={{ marginTop: 0 }}>Enter App URL (i.e. "webterm"):</h3>
-        <Input onChange={(e) => setToolToAdd(e.target.value)} value={toolToAdd} placeholder='app url' />
+        <Input onChange={(e) => setToolToAdd(e.target.value)} value={toolToAdd} placeholder='app url' autoFocus />
         <Button style={{ margin: '16px auto 0' }} variant='dark' onClick={openTool}>Open App</Button>
       </Modal>
-      <Modal show={showAddFileModal} hide={() => setShowAddFileModal(false)}>
-        <h3 style={{ marginTop: 0 }}>Add New File</h3>
-        <Input onChange={(e) => setNewFile(e.target.value)} value={newFile} placeholder='file name' />
+      <Modal show={showAddFileModal} hide={() => setShowAddFileModal(false)} style={{ minWidth: 300 }}>
+        <h3 style={{ margin: 0 }}>Add New File</h3>
+        <div style={{ marginBottom: 12 }}>(adding to project "{currentProject}")</div>
+        <Input onChange={(e) => setNewFile(e.target.value)}
+          value={newFile} placeholder='file name'
+          label={isGall ? 'Please include the full file path' : undefined}
+          autoFocus
+        />
         <Button style={{ margin: '16px auto 0', width: '100%' }} variant='dark' onClick={addNewFile}>Add</Button>
       </Modal>
     </Col>

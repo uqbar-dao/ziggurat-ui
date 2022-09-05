@@ -48,7 +48,7 @@ export const handleGallUpdate = (get: GetState<ProjectStore>, set: SetState<Proj
   newContracts[project] = {
     ...(newContracts[project] || {}),
     ...update,
-    folders: mapFilesToFolders(project, update.dir),
+    folder: mapFilesToFolders(project, update.dir, get().gallApps[project]),
   }
   set({ gallApps: newContracts })
 }

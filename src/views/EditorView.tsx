@@ -12,27 +12,38 @@ import { isMobileCheck } from '../utils/dimensions';
 
 import './EditorView.scss'
 import { OpenFileHeader } from '../components/nav/OpenFileHeader'
+import { getFileText } from '../utils/gall'
 
 const EditorView = ({ hide = false }: { hide?: boolean }) => {
   const editorRef = useRef<CodeMirrorShim>()
   const nav = useNavigate()
   const { projectTitle, file } = useParams()
-  const { contracts, setProjectText } = useProjectStore()
+  const { contracts, gallApps, setProjectText, getGallFile } = useProjectStore()
 
-  const project = useMemo(() => contracts[projectTitle || ''], [projectTitle, contracts])
-  const text = !file ? '' : file === projectTitle ? project?.main : project?.libs[file] || ''
+  const contract = useMemo(() => contracts[projectTitle || ''], [projectTitle, contracts])
+  const gallApp = useMemo(() => gallApps[projectTitle || ''], [projectTitle, gallApps])
 
   useEffect(() => {
-    if (Object.keys(contracts).length < 1 || !text) {
+    if (gallApp && file && projectTitle) {
+      getGallFile(projectTitle, decodeURIComponent(file))
+    }
+  }, [gallApp, projectTitle, file, getGallFile])
+
+  const text = !file ? '' :
+    gallApp ? getFileText(gallApp.folder, decodeURIComponent(file).split('/').slice(1), decodeURIComponent(file)) || '' :
+    file === projectTitle ? contract?.main : contract?.libs[file] || ''
+
+  useEffect(() => {
+    if ((Object.keys(contracts).length < 1 && Object.keys(gallApps).length < 0 )) {
       nav ('/')
     }
-  }, [contracts, text, nav])
+  }, [contracts, contract, gallApps, gallApp, text, nav])
 
   const setText = useCallback((inputText: string) => {
-    if (file && project?.title) {
-      setProjectText(project.title, file, inputText)
+    if (file && (contract?.title || gallApp?.title)) {
+      setProjectText(contract?.title || gallApp?.title, file, inputText)
     }
-  }, [project, file, setProjectText])
+  }, [contract, gallApp, file, setProjectText])
 
   const isMobile = isMobileCheck()
 

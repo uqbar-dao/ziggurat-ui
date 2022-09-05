@@ -174,12 +174,11 @@ export const TestView = () => {
         <Col style={{ height: isMobile ? 600 : '100%', width: isMobile ? '100%' : '50%' }}>
           <Row className="section-header">
             <Row>
-              <Row className="title" style={{ marginRight: 8 }}>Tests</Row>
-              
+              <Row className="title" style={{ marginRight: 8 }}>Test Actions</Row>
             </Row>
             <Row>
               <Button style={{ width: 124 }} onClick={() => setShowRunModal(true)} variant='unstyled' icon={<FaPlay size={14} />}>
-                Run Selected
+                Run
               </Button>
               <Row className="action" onClick={() => setShowTestModal(true)}>+ Add Test</Row>
             </Row>

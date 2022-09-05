@@ -79,8 +79,9 @@ export const generateProjects = (rawContracts: { [key: string]: Contract | GallA
       acc.gallApps[key] = {
         ...(rawContracts[key] as GallApp),
         title: key,
-        folders: mapFilesToFolders(key, (rawContracts[key] as GallApp).dir),
+        folder: mapFilesToFolders(key, (rawContracts[key] as GallApp).dir, existingApps[key] as GallApp),
         expanded: Boolean((existingApps[key] as GallApp)?.expanded),
+        modifiedFiles: new Set<string>(),
       }
     }
     return acc

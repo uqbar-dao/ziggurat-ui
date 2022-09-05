@@ -51,7 +51,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       'town-id': '0x0',
       label: 'token-metadata',
       salt: Number(md.salt),
-      data: `[name='${md.name}' symbol='${md.symbol}' ${md.decimals ? `decimals=${numToUd(md.decimals)}` : `properties=(~(gas pn *(pset @tas) ~[${md.properties?.map(p => `%${p}`).join(' ') || ''}])`} supply=${numToUd(md.supply)} cap=${!md.cap || md.cap === '~' ? '~' : `\`${numToUd(Math.max(Number(md.cap), Number(md.supply)))}`} mintable=${md.mintable === 't' ? '&' : '|'} minters=(~(gas pn *(pset address) ~[${md.minters.join(' ')}]) deployer=${addHexDots(md.deployer)} salt=${numToUd(md.salt)}]`
+      data: `[name='${md.name}' symbol='${md.symbol}' ${md.decimals ? `decimals=${numToUd(md.decimals)}` : `properties=(~(gas pn *(pset @tas)) ~[${md.properties?.map(p => `%${p}`).join(' ') || ''}])`} supply=${numToUd(md.supply)} cap=${!md.cap || md.cap === '~' ? '~' : `\`${numToUd(Math.max(Number(md.cap), Number(md.supply)))}`} mintable=${md.mintable === 't' ? '&' : '|'} minters=(~(gas pn *(pset address)) ~[${md.minters.join(' ')}]) deployer=${addHexDots(md.deployer)} salt=${numToUd(md.salt)}]`
     }
 
     await createProject(options as { [key: string]: string })
@@ -61,13 +61,15 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     setOptions({})
     setMetadata(generateInitialMetadata([userAddress], userAddress, 'fungible'))
     setStep('title')
-    if (options?.project === 'contract') {
-      setOpenFiles(openFiles.concat([{ project: options.title!, file: options.title! }]))
-      nav(`/${options.title}/${options.title}`)
-    } else if (options?.project === 'gall') {
-      nav('/')
-    }
-    setLoading(false)
+    setTimeout(() => {
+      if (options?.project === 'contract') {
+        setOpenFiles(openFiles.concat([{ project: options.title!, file: options.title! }]))
+        nav(`/${options.title}/${options.title}`)
+      } else if (options?.project === 'gall') {
+        nav('/')
+      }
+      setLoading(false)
+    }, 500)
   }, [userAddress, nav, createProject, populateTemplate, openFiles, setOpenFiles])
 
   const onSelect = useCallback((option: string) => async () => {

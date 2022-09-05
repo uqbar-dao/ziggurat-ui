@@ -11,10 +11,12 @@ import { DEFAULT_USER_ADDRESS, STORAGE_VERSION } from "../utils/constants";
 import { generateMolds, generateProjects } from "../utils/project";
 import { handleGallUpdate, handleContractUpdate, handleTestUpdate } from "./subscriptions/project";
 import { createSubscription, Subscriptions } from "./subscriptions/createSubscription";
+import { getFilename, getFileText, getFolder, getFolderForFile, mapFilesToFolders } from "../utils/gall";
 
 export interface ProjectStore {
   loading?: string
   currentProject: string
+  currentFolder: string
   accounts: HotWallet[]
   importedAccounts: HardwareWallet[]
   contracts: Contracts
@@ -31,11 +33,13 @@ export interface ProjectStore {
   createProject: (options: { [key: string]: string }) => Promise<void>
   populateTemplate: (project: string, template: 'nft' | 'fungible', metadata: TestGrainInput) => Promise<void>
   setCurrentProject: (currentProject: string) => void
+  setCurrentFolder: (currentFolder: string) => void
   deleteProject: (project: string) => Promise<string | null>
   setProjectExpanded: (project: string, expanded: boolean) => void
+  toggleGallFolder: (project: string, folder: string) => void
   setProjectText: (project: string, file: string, text: string) => void
   saveFiles: (projectTitle: string) => Promise<void>
-  addFile: (project: string, filename: string, isContract: boolean) => Promise<void>
+  addFile: (project: string, filename: string, isGall: boolean) => Promise<void>
   deleteFile: (project: string, file: string) => Promise<void>
   setOpenFiles: (openFiles: OpenFile[]) => void
   toggleTest: (project: string, testId: string) => void
@@ -55,6 +59,7 @@ export interface ProjectStore {
   removeTool: (tool: string) => void
   addToastMessage: (project: string, message: string, id: number | string) => void
   setUserAddress: (userAddress: string) => void
+  getGallFile: (project: string, file: string) => Promise<void>
 }
 
 const useProjectStore = create<ProjectStore>(persist<ProjectStore>(
@@ -63,6 +68,7 @@ const useProjectStore = create<ProjectStore>(persist<ProjectStore>(
     accounts: [],
     importedAccounts: [],
     currentProject: '',
+    currentFolder: '',
     contracts: {},
     gallApps: {},
     openFiles: [],
@@ -144,6 +150,7 @@ const useProjectStore = create<ProjectStore>(persist<ProjectStore>(
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
     },
     setCurrentProject: (currentProject: string) => set({ currentProject }),
+    setCurrentFolder: (currentFolder: string) => set({ currentFolder }),
     deleteProject: async (project: string) => {
       (get().subscriptions[project] || []).map(subPromise => subPromise.then(sub => api.unsubscribe(sub)).catch(console.warn))
 
@@ -174,54 +181,107 @@ const useProjectStore = create<ProjectStore>(persist<ProjectStore>(
         set({ gallApps: newApps })
       }
     },
-    setProjectText: (project: string, file: string, text: string) => {
-      const newProjects = { ...get().contracts }
-      if (file === project) {
-        newProjects[project].main = text
-      } else {
-        newProjects[project].libs[file] = text
-      }
-      newProjects[project].modifiedFiles.add(file)
-      set({ contracts: newProjects })
+    toggleGallFolder: (project: string, folder: string) => {
+      const newApps = { ...get().gallApps }
+      const targetApp = newApps[project]
+      const targetFolder = getFolder(targetApp.folder, folder.split('/'))
+      if (targetFolder)
+        targetFolder.expanded = !targetFolder.expanded
+      
+      set({ gallApps: newApps })
     },
-    saveFiles: async (projectTitle: string) => {
-      const project = get().contracts[projectTitle]
-      if (project && project.modifiedFiles.size) {
-        set({ loading: 'Saving project...' })
+    setProjectText: (project: string, file: string, text: string) => {
+      const { contracts, gallApps } = get()
+      if (contracts[project]) {
+        const newProjects = { ...contracts }
+        if (file === project) {
+          newProjects[project].main = text
+        } else {
+          newProjects[project].libs[file] = text
+        }
+        newProjects[project].modifiedFiles.add(file)
+        set({ contracts: newProjects })
+      } else if (gallApps[project]) {
+        const newApps = { ...gallApps }
+        const folder = getFolderForFile(newApps[project].folder, file)
+        if (folder) {
+          folder.contents[file] = text
+          newApps[project].modifiedFiles.add(file)
+          set({ gallApps: newApps })
+        }
+      }
+    },
+    saveFiles: async (project: string) => {
+      const contract = get().contracts[project]
+      const gallApp = get().gallApps[project]
+      set({ loading: `Saving ${gallApp ? 'gall app' : 'contract'}...` })
+      if (contract && contract.modifiedFiles.size) {
+        console.log(2)
         await Promise.all(
-          Array.from(project.modifiedFiles.values()).map(async (name) => {
-            const text = name === projectTitle ? project.main : project.libs[name]
-            await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json: { project: projectTitle, action: { 'save-file': { name, text } } } })
+          Array.from(contract.modifiedFiles.values()).map(async (name) => {
+            const text = name === project ? contract.main : contract.libs[name]
+            await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json: { project, action: { 'save-file': { name, text } } } })
           })
         )
-        const newProjects = { ...get().contracts }
-        newProjects[projectTitle].modifiedFiles = new Set<string>()
-        newProjects[projectTitle].molds = generateMolds(newProjects[projectTitle])
-        set({ contracts: newProjects, loading: undefined })
+        const newContracts = { ...get().contracts }
+        newContracts[project].modifiedFiles = new Set<string>()
+        newContracts[project].molds = generateMolds(newContracts[project])
+        set({ contracts: newContracts })
+      } else if (gallApp && gallApp.modifiedFiles.size) {
+        const files = await Promise.all(
+          Array.from(gallApp.modifiedFiles.values()).map(async (file) => {
+            const text = getFileText(gallApp.folder, file.split('/').slice(1), file)
+            await api.poke({ app: 'ziggurat', mark: 'ziggurat-app-action', json: { project, action: { 'save-file': { file, text } } } })
+            return file
+          })
+        )
+        const newApps = { ...get().gallApps }
+        newApps[project].modifiedFiles = new Set<string>()
+        set({ gallApps: newApps })
+        await Promise.all(files.map(file => get().getGallFile(project, file)))
       }
+      set({ loading: undefined })
     },
-    addFile: async (project: string, filename: string, isContract: boolean) => {
-      if (isContract) {
-        await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json: { project, action: { 'save-file': { name: filename, text: '' } } } })
+    addFile: async (project: string, filename: string, isGall: boolean) => {
+      set({ loading: 'Saving file...' })
+      if (isGall) {
+        const file = filename[0] === '/' ? filename.replace(/\./g, '/') : `/${filename.replace(/\./g, '/')}`
+        await api.poke({ app: 'ziggurat', mark: 'ziggurat-app-action', json: { project, action: { "save-file": { file, text: '' } } } })
       } else {
-        await api.poke({ app: 'ziggurat', mark: 'ziggurat-app-action', json: { project, action: { "save-file": { file: filename, text: '' } } } })
+        await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json: { project, action: { 'save-file': { name: filename, text: '' } } } })
       }
       await get().getProjects()
+      set({ loading: undefined })
     },
     deleteFile: async (project: string, file: string) => {
+      const isGall = Boolean(get().gallApps[project])
+      const filename = isGall ? getFilename(file) : `${file}.hoon`
       if (project === file) {
         return alert('You cannot delete the main contract file. Delete the project instead.')
       }
-      if (window.confirm(`Are you sure you want to delete ${file}.hoon in project "${project}"?`)) {
-        await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json: { project, action: { 'delete-file': { name: file } } } })
-        const newProjects = { ...get().contracts }
-        delete newProjects[project].libs[file]
-        set({ contracts: newProjects })
+      if (window.confirm(`Are you sure you want to delete ${filename} in project "${project}"?`)) {
+        if (isGall) {
+          await api.poke({ app: 'ziggurat', mark: 'ziggurat-app-action', json: { project, action: { 'delete-file': { file } } } })
+          const newApps = { ...get().gallApps }
+          const newDir = newApps[project].dir.filter(f => f !== file)
+          const newModified = newApps[project].modifiedFiles
+          newModified.delete(file)
+          newApps[project] = {
+            ...newApps[project],
+            dir: newDir,
+            folder: mapFilesToFolders(project, newDir, newApps[project]),
+            modifiedFiles:  newModified,
+          }
+          set({ gallApps: newApps })
+        } else {
+          await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json: { project, action: { 'delete-file': { name: file } } } })
+          const newContracts = { ...get().contracts }
+          delete newContracts[project].libs[file]
+          set({ contracts: newContracts })
+        }
       }
     },
     setOpenFiles: (openFiles: OpenFile[]) => set({ openFiles }),
-
-
     addGrain: async (rice: TestGrainInput) => {
       const project = get().currentProject
       const json = { project, action: { "add-to-state": rice } }
@@ -302,6 +362,16 @@ const useProjectStore = create<ProjectStore>(persist<ProjectStore>(
     },
     addToastMessage: (project: string, message: string, id: number | string) => set({ toastMessages: get().toastMessages.concat([{ project, message, id }]) }),
     setUserAddress: (userAddress: string) => set({ userAddress }),
+    getGallFile: async (project: string, file: string) => {
+      const text = await api.scry<string>({ app: 'ziggurat', path: `/read-file/${project}${file}` })
+      const newApps = { ...get().gallApps }
+      const targetApp = newApps[project]
+      const folder = getFolderForFile(targetApp.folder, file)
+      if (folder)
+        folder.contents[file] = text
+      
+      set({ gallApps: newApps })
+    }
   }),
   {
     name: 'contractStore',

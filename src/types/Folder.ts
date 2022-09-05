@@ -1,4 +1,7 @@
+export type FolderContents = { [name: string]: Folder | string }
+
 export interface Folder {
   name: string
-  contents: (string | Folder)[]
+  contents: FolderContents
+  expanded: boolean
 }
