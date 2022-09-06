@@ -66,7 +66,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
         setOpenFiles(openFiles.concat([{ project: options.title!, file: options.title! }]))
         nav(`/${options.title}/${options.title}`)
       } else if (options?.project === 'gall') {
-        nav('/')
+        nav(`/${options.title}/${encodeURIComponent(`/app/${options.title}/hoon`)}`)
       }
       setLoading(false)
     }, 500)
