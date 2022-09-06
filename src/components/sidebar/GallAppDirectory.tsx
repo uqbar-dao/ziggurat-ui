@@ -77,13 +77,14 @@ export const GallAppDirectory = ({ project }: GallAppDirectoryProps) => {
         {showButtons && (
           <Row>
             <Tooltip tip="publish app" right>
-              <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaUpload size={14} />} onClick={() => setShowPublishModal(true)} />
+              <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaUpload size={14} />} onClick={(e) => {e.stopPropagation(); setShowPublishModal(true)}} />
             </Tooltip>
             <Tooltip tip="download zip" right>
               <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaDownload size={14} />} onClick={() => null} />
             </Tooltip>
             <Tooltip tip="delete" right>
-              <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={async () => {
+              <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={async (e) => {
+                e.stopPropagation()
                 if (window.confirm(`Are you sure you want to delete the ${title} project?`)) {
                   const navigateTo = await deleteProject(title)
                   if (navigateTo) {
