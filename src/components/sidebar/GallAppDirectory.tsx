@@ -23,6 +23,7 @@ const SubDirectory = ({ projectTitle, folder, indent }: SubDirectoryProps) => {
 
   const { name, expanded, contents } = folder
   const selected = currentFolder === name && currentProject === projectTitle
+  const displayName = name.split('/').slice(-1)[0]
 
   return (
     <Col style={{ padding: '0px 4px', fontSize: 14 }} onClick={() => setCurrentFolder(name)}>
@@ -36,13 +37,13 @@ const SubDirectory = ({ projectTitle, folder, indent }: SubDirectoryProps) => {
             e.stopPropagation()
             toggleGallFolder(projectTitle, name)
           }} variant="unstyled" iconOnly icon={expanded ? <FaChevronDown size={12} /> : <FaChevronRight size={12} />} />
-          <Text style={{ marginLeft: 4, textDecorationLine: selected ? 'underline' : undefined }}>{name}</Text>
+          <Text style={{ marginLeft: 4, textDecorationLine: selected ? 'underline' : undefined }}>{displayName}</Text>
         </Row>
       </Row>
       {expanded && (
         <Col style={{ paddingLeft: indent * 9 }}>
           {Object.keys(contents).map((item) => {
-            if (typeof item === 'string') {
+            if (typeof contents[item] === 'string') {
               return <FileLink key={item} isGall project={projectTitle} file={item} />
             }
             return <SubDirectory key={item} projectTitle={projectTitle} folder={contents[item] as Folder} indent={1} />
