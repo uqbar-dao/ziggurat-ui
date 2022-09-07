@@ -12,7 +12,7 @@ import { deriveTrezorAddress, getTrezorAddress } from "../utils/trezor"
 import { addHexDots } from "../utils/number"
 import { mockData, PUBLIC_URL, WALLET_STORAGE_VERSION } from "../utils/constants"
 import { mockAccounts, mockAssets, mockMetadata, mockTransactions } from "../mocks/wallet-mocks"
-import { createSubscription } from "./createSubscription"
+import { createSubscription } from "./subscriptions/createSubscription"
 import { Assets } from "../types/wallet/Assets"
 import { generateSendTokenPayload } from "./util"
 
@@ -25,6 +25,7 @@ export interface WalletStore {
   selectedTown: number,
   transactions: Transaction[],
   pathname: string,
+  mostRecentTransaction?: Transaction,
   init: () => Promise<void>,
   setLoading: (loadingText: string | null) => void,
   getAccounts: () => Promise<void>,

@@ -23,20 +23,23 @@ export const WALLET_STORAGE_VERSION = 1
 
 export const ORIGIN = window.location.origin
 export const BASENAME = '/apps/ziggurat'
+export const WEBTERM_PATH = '/apps/webterm'
 
 export const STATUS_CODES : { [key: number] : string } = {
-  0: 'confirmed',
-  1: 'no account info',
-  2: 'bad signature',
-  3: 'incorrect nonce',
-  4: 'insufficient budget',
-  5: 'contract not found',
-  6: 'crash in contract execution',
-  7: 'rice validation failed',
-  100: 'submitted',
-  101: 'pending',
-  103: 'rejected',
-  105: 'sent-to-us',
+  100: 'transaction pending in wallet',
+  101: 'transaction submitted to sequencer',
+  102: 'transaction received by sequencer',
+  103: 'failure: transaction rejected by sequencer',
+  200: 'successfully performed',
+  201: 'submitted with raw id / no account info',
+  202: 'bad signature',
+  203: 'incorrect nonce',
+  204: 'lack zigs to fulfill budget',
+  205: 'couldn\'t find contract',
+  206: 'crash in contract execution',
+  207: 'validation of changed/issued/burned rice failed',
+  208: 'ran out of gas',
+  209: 'superceded by another egg in batch',
 }
 
 export const getStatus = (status: number) => STATUS_CODES[status] || 'unknown'

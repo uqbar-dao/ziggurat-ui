@@ -1,11 +1,8 @@
 .splash {
-
   background: url('./assets/img/roadmap-bg.png');
   padding: 40px 48px 80px;
   flex-basis: content;
   margin: 0 -48px;
-
-  
 
   @media only screen and (max-width: 600px) {
     margin-top: -16px;

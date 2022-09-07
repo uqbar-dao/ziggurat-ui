@@ -1,18 +1,21 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { Resizable } from 're-resizable'
+import Iframe from 'react-iframe'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
 import 'codemirror/addon/display/placeholder'
+import useZigguratStore from '../../stores/zigguratStore'
 import Form from '../../components-zig/form/Form'
 import Col from '../../components-zig/spacing/Col'
 import Row from '../../components-zig/spacing/Row'
 import { CodeMirrorShim, Editor } from '../../components-zig/editor/Editors'
-import useZigguratStore from '../../stores/zigguratStore'
+import { OpenFileHeader } from '../../components-zig/nav/OpenFileHeader'
 import { isMobileCheck } from '../../utils/dimensions';
+import { getFileText } from '../../utils/gall'
+import { WEBTERM_PATH } from '../../utils/constants'
 
 import './EditorView.scss'
-import { OpenFileHeader } from '../../components-zig/nav/OpenFileHeader'
-import { getFileText } from '../../utils/gall'
 
 const EditorView = ({ hide = false }: { hide?: boolean }) => {
   const editorRef = useRef<CodeMirrorShim>()
@@ -22,6 +25,7 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
 
   const contract = useMemo(() => contracts[projectTitle || ''], [projectTitle, contracts])
   const gallApp = useMemo(() => gallApps[projectTitle || ''], [projectTitle, gallApps])
+  const isGall = useMemo(() => Boolean(gallApp), [gallApp])
 
   useEffect(() => {
     if (gallApp && file && projectTitle) {
@@ -59,32 +63,12 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
             isContract
           />
         </Col>
-        {/* <Col style={{ height: isMobile ? 400 : '100%', width: isMobile ? '100%' : '40%' }}>
-          <Iframe url={WEBTERM_PATH} height={isMobile? 400 : '100%'} width='100%' />
-        </Col> */}
+        {isGall && <Resizable defaultSize={{ width:320, height:200 }}>
+          <Iframe url={WEBTERM_PATH} height="100%" width='100%' />
+        </Resizable>}
       </Row>
     </Form>
   )
 }
 
 export default EditorView
-
-// import Iframe from 'react-iframe'
-// import { Resizable, ResizeCallback } from 're-resizable'
-// import create from 'zustand'
-// import { persist } from 'zustand/middleware'
-// const termUrl = '/apps/webterm'
-
-// const windowSettings = create(persist((set, get) => ({
-//   termRatio: .66
-// }), {
-//   name: 'ziggurat-settings'
-// }))
-
-// const Resizer = () => (
-//   <div className='absolute right-0 top-0 px-2 -mr-2'>
-//     <div className='flex items-center h-screen bg-gray-200'>
-//       <SelectorIcon className='h-6 w-6 text-gray-800 rotate-90' />
-//     </div>
-//   </div>
-// )
