@@ -1,16 +1,16 @@
 import React, { useState } from 'react'
-import Button from '../form/Button'
+import Button from '../../components/form/Button'
 import Link from '../nav/Link'
-import Loader from './Loader'
-import Col from '../spacing/Col'
-import Row from '../spacing/Row'
-import Text from '../text/Text'
+import Loader from '../../components/popups/Loader'
+import Col from '../../components/spacing/Col'
+import Row from '../../components/spacing/Row'
+import Text from '../../components/text/Text'
 import { abbreviateHex } from '../../utils/format'
-import CopyIcon from '../transactions/CopyIcon';
+import CopyIcon from '../../components/text/CopyIcon';
 import { getStatus } from '../../utils/constants'
 import SendTokenForm from '../forms/SendTokenForm'
 import SendCustomTransactionForm from '../forms/SendCustomTransactionForm'
-import Modal, { ModalProps } from './Modal'
+import Modal, { ModalProps } from '../../components/popups/Modal'
 import useWalletStore from '../../stores/walletStore'
 
 import './SendModal.scss'
@@ -22,7 +22,9 @@ interface SendModalProps extends ModalProps {
   from?: string
   nftId?: number
   formType: SendType
-  title: string
+  title: string,
+  show: boolean,
+  hide: () => void
 }
 
 const SendModal = ({

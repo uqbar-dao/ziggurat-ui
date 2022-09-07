@@ -1,8 +1,8 @@
 import { RawMetadata } from "../../types/ziggurat/Metadata"
-import Button from "../form/Button"
-import Form from "../form/Form"
-import Input from "../form/Input"
-import { ListInput } from "../form/ListInput"
+import Button from "../../components/form/Button"
+import Form from "../../components/form/Form"
+import Input from "../../components/form/Input"
+import { ListInput } from "../../components/form/ListInput"
 
 interface MetadataFormProps {
   metadata: RawMetadata

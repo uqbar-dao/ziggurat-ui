@@ -1,7 +1,7 @@
 import React from 'react'
 import './CardHeader.scss'
-import Text from '../text/Text'
-import Row from '../spacing/Row'
+import Text from '../../components/text/Text'
+import Row from '../../components/spacing/Row'
 
 interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string,

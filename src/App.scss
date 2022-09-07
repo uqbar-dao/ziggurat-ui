@@ -1,15 +1,4 @@
-.splash {
-  background: url('./assets/img/roadmap-bg.png');
-  padding: 40px 48px 80px;
-  flex-basis: content;
-  margin: 0 -48px;
 
-  @media only screen and (max-width: 600px) {
-    margin-top: -16px;
-    margin: -16px -16px 0;
-    padding: 40px 16px 80px;
-  }
-}
 
 .address-selector {
   width: 140px;
@@ -22,12 +11,16 @@
   }
 }
 
-.mb1 {
-  margin-bottom: 1em;
+.mt1 {
+  margin-top: 1em;
 }
 
 .mr1 {
   margin-right: 1em;
+}
+
+.mb1 {
+  margin-bottom: 1em;
 }
 
 .ml1 {

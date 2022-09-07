@@ -2,11 +2,11 @@ import React from 'react'
 import { Transaction } from '../../types/wallet/Transaction';
 import { getStatus } from '../../utils/constants';
 import { abbreviateHex } from '../../utils/format';
-import Field from '../form/Field';
+import Field from '../../components/spacing/Field';
 import Link from '../nav/Link';
-import Col from '../spacing/Col';
-import Text from '../text/Text';
-import CopyIcon from './CopyIcon';
+import Col from '../../components/spacing/Col';
+import Text from '../../components/text/Text';
+import CopyIcon from '../../components/text/CopyIcon';
 import './TransactionShort.scss'
 
 interface TransactionShortProps extends React.HTMLAttributes<HTMLDivElement> {

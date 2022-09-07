@@ -6,8 +6,8 @@ import BlocksView from './indexer/BlocksView';
 import BlockView from './indexer/BlockView';
 import TransactionView from './indexer/TransactionView';
 import AddressView from './indexer/AddressView';
-import Navbar from '../components-indexer/nav/Navbar';
-import LoadingOverlay from '../components-indexer/popups/LoadingOverlay';
+import IndexerNavbar from '../components-indexer/nav/IndexerNavbar';
+import LoadingOverlay from '../components/popups/LoadingOverlay';
 import { PUBLIC_URL } from '../utils/constants';
 // import TransactionsView from './views/TransactionsView';
 // import PendingTransactionsView from './views/PendingTransactionsView';
@@ -23,7 +23,7 @@ function IndexerMain() {
 
   return (
     <BrowserRouter basename={`${PUBLIC_URL}/indexer`}>
-      <Navbar />
+      <IndexerNavbar />
       <Routes>
         <Route path="/" element={<HomeView />} />
         <Route path="latest-blocks/:numBlocks" element={<BlocksView />} />

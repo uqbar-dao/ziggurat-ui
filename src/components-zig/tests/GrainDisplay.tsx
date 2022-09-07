@@ -2,9 +2,9 @@ import { useCallback } from "react"
 import useZigguratStore from "../../stores/zigguratStore"
 import { Test } from "../../types/ziggurat/TestData"
 import { truncateString } from "../../utils/format"
-import Button from "../form/Button"
-import Row from "../spacing/Row"
-import Text from "../text/Text"
+import Button from "../../components/form/Button"
+import Row from "../../components/spacing/Row"
+import Text from "../../components/text/Text"
 
 export const GrainDisplaySmall = ({ grain, field, test }: { grain: string, field?: string, test: Test }) => {
   const { updateTest } = useZigguratStore()

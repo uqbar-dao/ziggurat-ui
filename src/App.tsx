@@ -3,8 +3,8 @@ import { PUBLIC_URL } from './utils/constants';
 import ZigguratMain from './views/ZigguratMain';
 import IndexerMain from './views/IndexerMain';
 import WalletMain from './views/WalletMain';
-import Col from './components-zig/spacing/Col';
-import Container from './components-zig/spacing/Container';
+import Col from './components/spacing/Col';
+import Container from './components/spacing/Container';
 
 import './App.scss'
 
@@ -13,9 +13,9 @@ const SelectAppView = () => {
     <Container>
       <Col style={{ justifyContent: 'center' }}>
         <h3>What are you looking for?</h3>
-        <a style={{ marginTop: 16 }} href={`${PUBLIC_URL}/develop`}>Contract & App Development</a>
-        <a style={{ marginTop: 16 }} href={`${PUBLIC_URL}/wallet`}>Uqbar Wallet</a>
-        <a style={{ marginTop: 16 }} href={`${PUBLIC_URL}/indexer`}>Block Explorer (Indexer)</a>
+        <a className='mt1' href={`${PUBLIC_URL}/develop`}>Contract & App Development</a>
+        <a className='mt1' href={`${PUBLIC_URL}/wallet`}>Uqbar Wallet</a>
+        <a className='mt1' href={`${PUBLIC_URL}/indexer`}>Block Explorer (Indexer)</a>
       </Col>
     </Container>
   )

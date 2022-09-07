@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import useZigguratStore from '../../stores/zigguratStore'
-import Row from '../spacing/Row'
+import Row from '../../components/spacing/Row'
 import Link from './Link'
-import Button from '../form/Button'
+import Button from '../../components/form/Button'
 
 import './OpenFileHeader.scss'
 import { genHref } from '../../utils/nav'

@@ -2,7 +2,7 @@ import React  from 'react'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
 import 'codemirror/addon/display/placeholder'
-import Col from '../../components-zig/spacing/Col'
+import Col from '../../components/spacing/Col'
 import Link from '../../components-zig/nav/Link';
 
 import './WelcomeView.scss'

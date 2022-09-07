@@ -4,14 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
 import 'codemirror/addon/display/placeholder'
-import Button from '../../components-zig/form/Button'
-import Col from '../../components-zig/spacing/Col'
-import Row from '../../components-zig/spacing/Row'
+import Button from '../../components/form/Button'
+import Col from '../../components/spacing/Col'
+import Row from '../../components/spacing/Row'
 import useZigguratStore from '../../stores/zigguratStore';
-import Input from '../../components-zig/form/Input';
+import Input from '../../components/form/Input';
 import { generateInitialMetadata } from '../../utils/fungible';
 import { MetadataForm } from '../../components-zig/forms/MetadataForm';
-import LoadingOverlay from '../../components-zig/popups/LoadingOverlay';
+import LoadingOverlay from '../../components/popups/LoadingOverlay';
 import { METADATA_GRAIN_ID, MY_CONTRACT_ID } from '../../utils/constants';
 import { numToUd } from '../../utils/number';
 import { addHexDots } from '../../utils/format';

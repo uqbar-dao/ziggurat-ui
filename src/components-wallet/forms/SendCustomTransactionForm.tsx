@@ -1,11 +1,11 @@
 import React, { FormEvent, useState } from 'react'
-import Button from '../form/Button'
-import Form from '../form/Form'
-import Input from '../form/Input'
-import Row from '../spacing/Row'
+import Button from '../../components/form/Button'
+import Form from '../../components/form/Form'
+import Input from '../../components/form/Input'
+import Row from '../../components/spacing/Row'
 import useWalletStore from '../../stores/walletStore'
 import { removeDots } from '../../utils/format'
-import TextArea from '../form/TextArea'
+import TextArea from '../../components/form/TextArea'
 
 import './SendTokenForm.scss'
 

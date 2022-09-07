@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react"
 import useZigguratStore from "../../stores/zigguratStore"
-import Button from "../form/Button"
-import Form from "../form/Form"
-import Input from "../form/Input"
-import Modal from "../popups/Modal"
+import Button from "../../components/form/Button"
+import Form from "../../components/form/Form"
+import Input from "../../components/form/Input"
+import Modal from "../../components/popups/Modal"
 
 type PublishFormField = 'title' | 'info' | 'color' | 'image' | 'version' | 'website' | 'license'
 const BLANK_DEPLOY_FORM = {
@@ -50,9 +50,8 @@ export const PublishModal = ({ project, show, hide }: PublishModalProps) => {
   }, [deployForm, setPublishForm])
 
   return (
-    <Modal show={show} hide={hide}>
+    <Modal title='Publish App' show={show} hide={hide}>
       <Form onSubmit={publishApp} style={{ minWidth: 320 }}>
-        <h3 style={{ marginTop: 0 }}>Publish App</h3>
         {(['title', 'info', 'color', 'image', 'version', 'website', 'license'] as PublishFormField[]).map(field => (
           <Input
             key={field}

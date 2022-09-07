@@ -2,11 +2,11 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { DragDropContext } from 'react-beautiful-dnd';
 import { FaPlay } from 'react-icons/fa';
 import { isMobileCheck } from '../../utils/dimensions'
-import Col from '../../components-zig/spacing/Col'
-import Row from '../../components-zig/spacing/Row'
+import Col from '../../components/spacing/Col'
+import Row from '../../components/spacing/Row'
 import useZigguratStore from '../../stores/zigguratStore';
-import Modal from '../../components-zig/popups/Modal';
-import Button from '../../components-zig/form/Button';
+import Modal from '../../components/popups/Modal';
+import Button from '../../components/form/Button';
 import { formValuesForGrain, formValuesFromGrain, grainFromForm, updateField, validateFormValues } from '../../utils/form';
 import { TestList } from '../../components-zig/tests/TestList';
 import { GrainList } from '../../components-zig/tests/GrainList';
@@ -16,9 +16,9 @@ import { TestModal } from '../../components-zig/tests/TestModal';
 import { FormValues } from '../../types/ziggurat/FormValues';
 import { OpenFileHeader } from '../../components-zig/nav/OpenFileHeader';
 import { DEFAULT_BUDGET, DEFAULT_RATE } from '../../utils/constants';
-import { Tooltip } from '../../components-zig/popups/Tooltip';
+import { Tooltip } from '../../components/popups/Tooltip';
 import { GrainModal } from '../../components-zig/tests/GrainModal';
-import Text from '../../components-zig/text/Text'
+import Text from '../../components/text/Text'
 import { BLANK_TEST_FORM, TestFormField, TestFormValues } from '../../types/ziggurat/TestForm';
 
 import './TestView.scss'
@@ -178,11 +178,11 @@ export const TestView = () => {
               <Row className='title' style={{ marginRight: 8 }}>Test Actions</Row>
             </Row>
             <Row>
-              <Button mr1 variant='unstyled' onClick={() => setShowRunModal(true)}>
+              <Button className='mr1' variant='unstyled' onClick={() => setShowRunModal(true)}>
                 <FaPlay size={'0.75em'} style={{marginRight: '0.5em'}} />
                 Run
               </Button>
-              <Button mr1 variant='unstyled' className='action' onClick={() => setShowTestModal(true)}>+ Add Test</Button>
+              <Button variant='unstyled' className='action mr1' onClick={() => setShowTestModal(true)}>+ Add Test</Button>
             </Row>
           </Row>
           <TestList editTest={editTest} showTestExpectationModal={showTestExpectationModal} />
@@ -190,7 +190,7 @@ export const TestView = () => {
         <Col style={{ height: isMobile ? 600 : '100%', width: isMobile ? '100%' : '50%', borderLeft: '1px solid lightgray' }}>
           <Row className='section-header'>
             <Row className='title'>Chain State (Granary)</Row>
-            <Button mr1 variant='unstyled' className='action' onClick={() => populateGrainForm()}>+ Add Grain</Button>
+            <Button variant='unstyled' className='action mr1' onClick={() => populateGrainForm()}>+ Add Grain</Button>
           </Row>
           <GrainList grains={Object.values(project?.state || {})} editGrain={populateGrainForm} />
         </Col>
@@ -199,8 +199,7 @@ export const TestView = () => {
 
         <GrainModal {...{ showGrainModal, hideGrainModal, isEdit, grainFormValues, updateGrainFormValue, setGrainFormValues, submitGrain, testExpectation }} />
 
-        <Modal show={showRunModal} hide={() => setShowRunModal(false)}>
-          <h3 style={{ marginTop: 0 }}>Run selected tests:</h3>
+        <Modal title='Run selected tests:' show={showRunModal} hide={() => setShowRunModal(false)}>
           <Tooltip tip='Test results will affect subsequent tests'>
             <Button style={{ width: 180, justifyContent: 'center' }} onClick={runAllTests(true)}>Sequentially</Button>
           </Tooltip>

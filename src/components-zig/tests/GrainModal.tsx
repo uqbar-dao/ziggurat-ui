@@ -3,14 +3,14 @@ import useZigguratStore from "../../stores/zigguratStore"
 import { FormValues } from "../../types/ziggurat/FormValues"
 import { METADATA_GRAIN_ID, MY_CONTRACT_ID, ZIGS_ACCOUNT_ID } from "../../utils/constants"
 import { formValuesFromGrain } from "../../utils/form"
-import Button from "../form/Button"
-import Input from "../form/Input"
-import { Select } from "../form/Select"
-import TextArea from "../form/TextArea"
-import Modal from "../popups/Modal"
-import Col from "../spacing/Col"
-import Row from "../spacing/Row"
-import Text from "../text/Text"
+import Button from "../../components/form/Button"
+import Input from "../../components/form/Input"
+import { Select } from "../../components/form/Select"
+import TextArea from "../../components/form/TextArea"
+import Modal from "../../components/popups/Modal"
+import Col from "../../components/spacing/Col"
+import Row from "../../components/spacing/Row"
+import Text from "../../components/text/Text"
 
 interface GrainModalProps {
   showGrainModal: boolean
@@ -55,9 +55,8 @@ export const GrainModal = ({
   }, [project, setSelectedGrainId, setGrainFormValues])
 
   return (
-    <Modal show={showGrainModal} hide={hideGrainModal}>
+    <Modal title={ (isEdit ? 'Update' : 'Add New') + ' Grain'} show={showGrainModal} hide={hideGrainModal}>
       <Col style={{ minWidth: 320, maxHeight: 'calc(100vh - 80px)', overflow: 'scroll' }}>
-        <h3 style={{ marginTop: 0 }}>{isEdit ? 'Update' : 'Add New'} Grain</h3>
         {!!project?.molds?.rice?.length && !isEdit && !testExpectation && (
           <>
             <Text style={{ marginTop: 12, marginBottom: 2 }}>grain type</Text>

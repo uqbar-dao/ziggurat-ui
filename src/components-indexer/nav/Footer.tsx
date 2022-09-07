@@ -1,7 +1,7 @@
 import React from 'react'
 import './Footer.scss'
-import Col from '../spacing/Col'
-import Row from '../spacing/Row'
+import Col from '../../components/spacing/Col'
+import Row from '../../components/spacing/Row'
 
 interface FooterProps extends React.HTMLAttributes<HTMLDivElement> {
 
