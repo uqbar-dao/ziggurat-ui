@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { FaDownload, FaTrash, FaUpload, FaChevronDown, FaChevronRight } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import useProjectStore from '../../store/projectStore'
+import useZigguratStore from '../../stores/zigguratStore'
 import Button from '../form/Button';
 import { Tooltip } from '../popups/Tooltip';
 import Col from '../spacing/Col'
@@ -19,7 +19,7 @@ interface SubDirectoryProps {
 }
 
 const SubDirectory = ({ projectTitle, folder, indent }: SubDirectoryProps) => {
-  const { currentFolder, currentProject, toggleGallFolder, setCurrentFolder } = useProjectStore()
+  const { currentFolder, currentProject, toggleGallFolder, setCurrentFolder } = useZigguratStore()
 
   const { name, expanded, contents } = folder
   const selected = currentFolder === name && currentProject === projectTitle
@@ -60,7 +60,7 @@ interface GallAppDirectoryProps {
 
 export const GallAppDirectory = ({ project }: GallAppDirectoryProps) => {
   const nav = useNavigate()
-  const { deleteProject, setProjectExpanded, setCurrentProject } = useProjectStore()
+  const { deleteProject, setProjectExpanded, setCurrentProject } = useZigguratStore()
   const [showButtons, setShowButtons] = useState(false)
   const [showPublishModal, setShowPublishModal] = useState(false)
 

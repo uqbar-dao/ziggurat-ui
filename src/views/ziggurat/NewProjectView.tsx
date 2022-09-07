@@ -7,7 +7,7 @@ import 'codemirror/addon/display/placeholder'
 import Button from '../../components-zig/form/Button'
 import Col from '../../components-zig/spacing/Col'
 import Row from '../../components-zig/spacing/Row'
-import useProjectStore from '../../store/projectStore';
+import useZigguratStore from '../../stores/zigguratStore';
 import Input from '../../components-zig/form/Input';
 import { generateInitialMetadata } from '../../utils/fungible';
 import { MetadataForm } from '../../components-zig/forms/MetadataForm';
@@ -32,7 +32,7 @@ export interface CreationOptions {
 }
 
 const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
-  const { userAddress, contracts, createProject, populateTemplate, openFiles, setOpenFiles } = useProjectStore()
+  const { userAddress, contracts, createProject, populateTemplate, openFiles, setOpenFiles } = useZigguratStore()
   const nav = useNavigate()
 
   const [step, setStep] = useState<CreationStep>('title')

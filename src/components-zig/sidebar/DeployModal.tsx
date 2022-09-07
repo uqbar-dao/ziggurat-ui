@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-import useProjectStore from "../../store/projectStore"
+import useZigguratStore from "../../stores/zigguratStore"
 import { DEFAULT_BUDGET, DEFAULT_RATE } from "../../utils/constants"
 import Button from "../form/Button"
 import Form from "../form/Form"
@@ -16,7 +16,7 @@ interface DeployModalProps {
 }
 
 export const DeployModal = ({ project, show, hide }: DeployModalProps) => {
-  const { deployContract } = useProjectStore()
+  const { deployContract } = useZigguratStore()
   const [deployForm, setDeployForm] = useState(BLANK_DEPLOY_FORM)
 
   const deployProjectContract = useCallback(async () => {

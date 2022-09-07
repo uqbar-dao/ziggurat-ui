@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { FaTrash } from 'react-icons/fa';
 import { useLocation } from 'react-router-dom';
-import useProjectStore from '../../store/projectStore'
+import useZigguratStore from '../../stores/zigguratStore'
 import Button from '../form/Button';
 import { Tooltip } from '../popups/Tooltip';
 import Row from '../spacing/Row'
@@ -18,7 +18,7 @@ interface FileLinkProps {
 
 export const FileLink = ({ project, file, isGall = false }: FileLinkProps) => {
   const { pathname } = useLocation()
-  const { currentProject, openFiles, setCurrentProject, setOpenFiles, deleteFile } = useProjectStore()
+  const { currentProject, openFiles, setCurrentProject, setOpenFiles, deleteFile } = useZigguratStore()
   const [showButtons, setShowButtons] = useState(false)
   const isTests = file === 'tests'
   const fileName = isGall ? file.split('/').slice(-2).join('.') :

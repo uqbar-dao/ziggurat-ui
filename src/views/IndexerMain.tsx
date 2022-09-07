@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import useExplorerStore from '../store/explorerStore';
+import useIndexerStore from '../stores/indexerStore';
 import HomeView from './indexer/HomeView';
 import BlocksView from './indexer/BlocksView';
 import BlockView from './indexer/BlockView';
@@ -15,7 +15,7 @@ import { PUBLIC_URL } from '../utils/constants';
 // import AccountsView from './views/AccountsView';
 
 function IndexerMain() {
-  const { init, loadingText } = useExplorerStore()
+  const { init, loadingText } = useIndexerStore()
 
   useEffect(() => {
     init()

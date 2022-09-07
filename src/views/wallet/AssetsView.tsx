@@ -7,7 +7,7 @@ import Col from '../../components-wallet/spacing/Col'
 import Container from '../../components-wallet/spacing/Container'
 import Row from '../../components-wallet/spacing/Row'
 import Text from '../../components-wallet/text/Text'
-import useWalletStore from '../../store/walletStore'
+import useWalletStore from '../../stores/walletStore'
 import { displayPubKey } from '../../utils/account';
 
 import './AssetsView.scss'

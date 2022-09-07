@@ -4,7 +4,7 @@ import { FaPlay } from 'react-icons/fa';
 import { isMobileCheck } from '../../utils/dimensions'
 import Col from '../../components-zig/spacing/Col'
 import Row from '../../components-zig/spacing/Row'
-import useProjectStore from '../../store/projectStore';
+import useZigguratStore from '../../stores/zigguratStore';
 import Modal from '../../components-zig/popups/Modal';
 import Button from '../../components-zig/form/Button';
 import { formValuesForGrain, formValuesFromGrain, grainFromForm, updateField, validateFormValues } from '../../utils/form';
@@ -26,7 +26,7 @@ import './TestView.scss'
 export interface TestViewProps {}
 
 export const TestView = () => {
-  const { contracts, currentProject, setLoading, addTest, updateTest, addGrain, runTest, runTests, addTestExpectation } = useProjectStore()
+  const { contracts, currentProject, setLoading, addTest, updateTest, addGrain, runTest, runTests, addTestExpectation } = useZigguratStore()
 
   const [showTestModal, setShowTestModal] = useState(false)
   const [testExpectation, setTestExpecation] = useState('')

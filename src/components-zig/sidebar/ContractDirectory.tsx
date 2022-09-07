@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { FaChevronRight, FaChevronDown, FaDownload, FaTrash, FaUpload } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import useProjectStore from '../../store/projectStore'
+import useZigguratStore from '../../stores/zigguratStore'
 import { Contract } from '../../types/ziggurat/Contracts';
 import Button from '../form/Button';
 import { Tooltip } from '../popups/Tooltip';
@@ -17,7 +17,7 @@ interface ContractDirectoryProps {
 
 export const ContractDirectory = ({ project }: ContractDirectoryProps) => {
   const nav = useNavigate()
-  const { deleteProject, setProjectExpanded } = useProjectStore()
+  const { deleteProject, setProjectExpanded } = useZigguratStore()
   const [showButtons, setShowButtons] = useState(false)
   const [showDeployModal, setShowDeployModal] = useState(false)
 

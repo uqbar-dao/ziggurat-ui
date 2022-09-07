@@ -3,7 +3,7 @@ import { Droppable, Draggable } from 'react-beautiful-dnd'
 import { FaChevronDown, FaChevronUp, FaPen, FaTrash } from 'react-icons/fa';
 import Col from '../spacing/Col'
 import Row from '../spacing/Row'
-import useProjectStore from '../../store/projectStore';
+import useZigguratStore from '../../stores/zigguratStore';
 import { TestGrain } from '../../types/ziggurat/TestGrain';
 import Button from '../form/Button';
 import HexNum from '../text/HexNum'
@@ -23,7 +23,7 @@ interface GrainValueDisplayProps {
 }
 
 export const GrainValueDisplay = ({ grain, grainIndex, editGrain, testId }: GrainValueDisplayProps) => {
-  const { deleteGrain } = useProjectStore()
+  const { deleteGrain } = useZigguratStore()
   const [expanded, setExpanded] = useState(false)
 
   const grainStyle = {

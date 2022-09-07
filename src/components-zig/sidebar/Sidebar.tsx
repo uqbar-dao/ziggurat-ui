@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { FaRegPlusSquare, FaSave, FaFileAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import useProjectStore from '../../store/projectStore'
+import useZigguratStore from '../../stores/zigguratStore'
 import Button from '../form/Button';
 import Input from '../form/Input';
 import { Tooltip } from '../popups/Tooltip';
@@ -17,7 +17,7 @@ import { GallAppDirectory } from './GallAppDirectory';
 
 export const Sidebar = () => {
   const { userAddress, contracts, gallApps, currentProject, currentFolder, currentTool, openTools, accounts, importedAccounts,
-    addTool, setCurrentTool, removeTool, saveFiles, setUserAddress, addFile } = useProjectStore()
+    addTool, setCurrentTool, removeTool, saveFiles, setUserAddress, addFile } = useZigguratStore()
   const [showToolModal, setShowToolModal] = useState(false)
   const [toolToAdd, setToolToAdd] = useState('')
   const [showAddFileModal, setShowAddFileModal] = useState(false)

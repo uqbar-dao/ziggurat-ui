@@ -3,9 +3,9 @@ import { Slot, RawSlot } from "../../types/indexer/Slot";
 import { HashTransaction } from "../../types/indexer/Transaction";
 import { THIRTY_SECONDS } from "../../utils/constants";
 import { processRawData } from "../../utils/object";
-import { ExplorerStore } from "../explorerStore";
+import { IndexerStore } from "../indexerStore";
 
-export const handleLatestBlock = (get: GetState<ExplorerStore>, set: SetState<ExplorerStore>) => async (blockHeader: { slots: { [key: string]: RawSlot } }) => {
+export const handleLatestBlock = (get: GetState<IndexerStore>, set: SetState<IndexerStore>) => async (blockHeader: { slots: { [key: string]: RawSlot } }) => {
   set({ nextBlockTime: new Date().getTime() + THIRTY_SECONDS })
   const ib: Slot = processRawData(Object.values(blockHeader.slots)[0])
 

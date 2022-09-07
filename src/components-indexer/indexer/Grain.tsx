@@ -1,4 +1,4 @@
-import useExplorerStore from '../../store/explorerStore'
+import useIndexerStore from '../../stores/indexerStore'
 import { Grain } from '../../types/indexer/Grain'
 import { removeDots } from '../../utils/format'
 import CopyIcon from '../card/CopyIcon'
@@ -21,7 +21,7 @@ export const GrainEntry = ({
   isRiceView = false,
   isWalletAddress = false,
 }: GrainEntryProps) => {
-  const { metadata } = useExplorerStore()
+  const { metadata } = useIndexerStore()
   const tokenMetadata = grain.salt ? metadata[grain.salt] : null
 
   return (

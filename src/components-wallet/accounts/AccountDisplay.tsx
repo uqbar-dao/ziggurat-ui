@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {  FaRegTrashAlt,  } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import useWalletStore from '../../store/walletStore';
+import useWalletStore from '../../stores/walletStore';
 import { HotWallet, HardwareWallet } from '../../types/wallet/Accounts';
 import { displayPubKey } from '../../utils/account';
 import Input from '../form/Input';

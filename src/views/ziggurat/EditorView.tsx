@@ -7,7 +7,7 @@ import Form from '../../components-zig/form/Form'
 import Col from '../../components-zig/spacing/Col'
 import Row from '../../components-zig/spacing/Row'
 import { CodeMirrorShim, Editor } from '../../components-zig/editor/Editors'
-import useProjectStore from '../../store/projectStore'
+import useZigguratStore from '../../stores/zigguratStore'
 import { isMobileCheck } from '../../utils/dimensions';
 
 import './EditorView.scss'
@@ -18,7 +18,7 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
   const editorRef = useRef<CodeMirrorShim>()
   const nav = useNavigate()
   const { projectTitle, file } = useParams()
-  const { contracts, gallApps, setProjectText, getGallFile } = useProjectStore()
+  const { contracts, gallApps, setProjectText, getGallFile } = useZigguratStore()
 
   const contract = useMemo(() => contracts[projectTitle || ''], [projectTitle, contracts])
   const gallApp = useMemo(() => gallApps[projectTitle || ''], [projectTitle, gallApps])

@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-import useProjectStore from "../../store/projectStore"
+import useZigguratStore from "../../stores/zigguratStore"
 import Button from "../form/Button"
 import Form from "../form/Form"
 import Input from "../form/Input"
@@ -33,7 +33,7 @@ interface PublishModalProps {
 }
 
 export const PublishModal = ({ project, show, hide }: PublishModalProps) => {
-  const { publishGallApp } = useProjectStore()
+  const { publishGallApp } = useZigguratStore()
   const [deployForm, setPublishForm] = useState(BLANK_DEPLOY_FORM)
 
   const publishApp = useCallback(async () => {

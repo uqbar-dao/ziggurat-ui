@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { FaPen, FaTrash, FaChevronDown, FaChevronUp, FaPlay } from 'react-icons/fa';
 import Col from '../spacing/Col'
 import Row from '../spacing/Row'
-import useProjectStore from '../../store/projectStore';
+import useZigguratStore from '../../stores/zigguratStore';
 import Button from '../form/Button';
 import { Test, TestResult } from '../../types/ziggurat/TestData';
 import Input from '../form/Input';
@@ -113,7 +113,7 @@ const TestResultDisplay = ({ result, expectedError }: { result?: TestResult, exp
 }
 
 export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntryProps) => {
-  const { currentProject, toggleTest, deleteTest, runTest } = useProjectStore()
+  const { currentProject, toggleTest, deleteTest, runTest } = useZigguratStore()
   const [expandInput, setExpandInput] = useState(false)
   const [expandOutput, setExpandOutput] = useState(false)
   const [expandExpectations, setExpandExpectations] = useState(false)
@@ -227,7 +227,7 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
 }
 
 export const TestList = ({ editTest, showTestExpectationModal }: TestListProps) => {
-  const { contracts, currentProject } = useProjectStore()
+  const { contracts, currentProject } = useZigguratStore()
   const project = useMemo(() => contracts[currentProject], [currentProject, contracts])
 
   if (!project || !project.tests) {

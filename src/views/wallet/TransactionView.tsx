@@ -8,7 +8,7 @@ import Col from '../../components-wallet/spacing/Col'
 import Container from '../../components-wallet/spacing/Container'
 import Text from '../../components-wallet/text/Text'
 import CopyIcon from '../../components-wallet/transactions/CopyIcon'
-import useWalletStore from '../../store/walletStore'
+import useWalletStore from '../../stores/walletStore'
 import { getStatus } from '../../utils/constants'
 import { removeDots } from '../../utils/format'
 

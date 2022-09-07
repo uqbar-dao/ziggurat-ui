@@ -3,14 +3,14 @@ import Iframe from 'react-iframe';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Col from '../../components-zig/spacing/Col';
 import Container from '../../components-zig/spacing/Container'
-import useProjectStore from '../../store/projectStore';
+import useZigguratStore from '../../stores/zigguratStore';
 
 import './DocsView.scss'
 
 const AppView = ({ hide = false }: { hide?: boolean }) => {
   const nav = useNavigate()
   const { pathname } = useLocation()
-  const { openTools, currentTool } = useProjectStore()
+  const { openTools, currentTool } = useZigguratStore()
 
   if (!currentTool && pathname === 'app') {
     nav('/')

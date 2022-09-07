@@ -12,7 +12,7 @@ import Col from '../../components-wallet/spacing/Col'
 import Container from '../../components-wallet/spacing/Container'
 import Row from '../../components-wallet/spacing/Row'
 import Text from '../../components-wallet/text/Text'
-import useWalletStore from '../../store/walletStore'
+import useWalletStore from '../../stores/walletStore'
 import { DerivedAddressType, HardwareWalletType, Seed } from '../../types/wallet/Accounts'
 import { capitalize } from '../../utils/format'
 

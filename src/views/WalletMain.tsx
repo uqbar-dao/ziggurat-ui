@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import useWalletStore from '../store/walletStore';
+import useWalletStore from '../stores/walletStore';
 import AccountsView from './wallet/AccountsView';
 import AccountView from './wallet/AccountView';
 import AssetsView from './wallet/AssetsView';

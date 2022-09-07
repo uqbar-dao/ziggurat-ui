@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
-import useWalletStore from '../../store/walletStore';
+import useWalletStore from '../../stores/walletStore';
 import './Link.scss'
 
 interface CustomLinkProps extends React.HTMLAttributes<HTMLAnchorElement> {

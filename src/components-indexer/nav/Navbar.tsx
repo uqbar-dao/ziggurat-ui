@@ -6,12 +6,12 @@ import './Navbar.scss'
 import { isMobileCheck } from '../../utils/dimensions'
 import Dropdown from '../popups/Dropdown'
 import Text from '../text/Text'
-import useExplorerStore from '../../store/explorerStore'
+import useIndexerStore from '../../stores/indexerStore'
 
 const Navbar = () => {
   const [open, setOpen] = useState(false)
   const isMobile = isMobileCheck()
-  const { accounts, importedAccounts } = useExplorerStore()
+  const { accounts, importedAccounts } = useIndexerStore()
   const addresses = accounts.map(({ address }) => address).concat(importedAccounts.map(({ address }) => address))
 
   return (

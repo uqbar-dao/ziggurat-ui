@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import useProjectStore from '../store/projectStore';
+import useZigguratStore from '../stores/zigguratStore';
 import Container from '../components-zig/spacing/Container';
 import Col from '../components-zig/spacing/Col';
 import Row from '../components-zig/spacing/Row';
@@ -16,7 +16,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function ZigguratMain() {
-  const { loading, init } = useProjectStore()
+  const { loading, init } = useZigguratStore()
 
   useEffect(() => {
     init()

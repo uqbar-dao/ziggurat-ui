@@ -10,7 +10,7 @@ import { removeDots } from "../utils/format"
 import { deriveLedgerAddress, getLedgerAddress } from "../utils/ledger"
 import { deriveTrezorAddress, getTrezorAddress } from "../utils/trezor"
 import { addHexDots } from "../utils/number"
-import { mockData, PUBLIC_URL } from "../utils/constants"
+import { mockData, PUBLIC_URL, WALLET_STORAGE_VERSION } from "../utils/constants"
 import { mockAccounts, mockAssets, mockMetadata, mockTransactions } from "../mocks/wallet-mocks"
 import { createSubscription } from "./createSubscription"
 import { Assets } from "../types/wallet/Assets"
@@ -269,7 +269,8 @@ const useWalletStore = create<WalletStore>(
     setPathname: (pathname: string) => set({ pathname }),
   }),
   {
-    name: 'contractStore'
+    name: 'contractStore',
+    version: WALLET_STORAGE_VERSION,
   })
 )
 

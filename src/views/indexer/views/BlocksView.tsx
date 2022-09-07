@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import Col from '../../components-indexer/spacing/Col'
-import useIndexerStore from '../../stores/indexerStore'
+import Col from '../../../components-indexer/spacing/Col'
+import useIndexerStore from '../../../stores/indexerStore'
 
 const BlocksView = () => {
   const { scry } = useIndexerStore()

@@ -9,11 +9,11 @@ import { RunTestPayload } from "../types/ziggurat/TestData";
 import { TestGrainInput } from "../types/ziggurat/TestGrain";
 import { DEFAULT_USER_ADDRESS, ZIGGURAT_STORAGE_VERSION } from "../utils/constants";
 import { generateMolds, generateProjects } from "../utils/project";
-import { handleGallUpdate, handleContractUpdate, handleTestUpdate } from "./project";
+import { handleGallUpdate, handleContractUpdate, handleTestUpdate } from "./subscriptions/project";
 import { createSubscription, Subscriptions } from "./createSubscription";
 import { getFilename, getFileText, getFolder, getFolderForFile, mapFilesToFolders } from "../utils/gall";
 
-export interface ProjectStore {
+export interface ZigguratStore {
   loading?: string
   currentProject: string
   currentFolder: string
@@ -63,7 +63,7 @@ export interface ProjectStore {
   getGallFile: (project: string, file: string) => Promise<void>
 }
 
-const useProjectStore = create<ProjectStore>(persist<ProjectStore>(
+const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
   (set, get) => ({
     loading: '',
     accounts: [],
@@ -383,9 +383,9 @@ const useProjectStore = create<ProjectStore>(persist<ProjectStore>(
     }
   }),
   {
-    name: 'contractStore',
+    name: 'zigguratStore',
     version: ZIGGURAT_STORAGE_VERSION,
   }
 ));
 
-export default useProjectStore;
+export default useZigguratStore;

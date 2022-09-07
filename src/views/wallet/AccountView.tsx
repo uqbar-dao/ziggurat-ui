@@ -2,7 +2,7 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 import AccountDisplay from '../../components-wallet/accounts/AccountDisplay'
 import Container from '../../components-wallet/spacing/Container'
-import useWalletStore from '../../store/walletStore'
+import useWalletStore from '../../stores/walletStore'
 
 const AccountView = () => {
   const { account } = useParams()

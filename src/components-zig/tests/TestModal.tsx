@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react"
-import useProjectStore from "../../store/projectStore"
+import useZigguratStore from "../../stores/zigguratStore"
 import { TestFormField, TestFormValues } from "../../types/ziggurat/TestForm"
 import { STATUS_CODES } from "../../utils/constants"
 import Button from "../form/Button"
@@ -27,7 +27,7 @@ export const TestModal = ({
   updateTestFormValue,
   submitTest,
 }: TestModalProps) => {
-  const { contracts, currentProject } = useProjectStore()
+  const { contracts, currentProject } = useZigguratStore()
   const project = useMemo(() => contracts[currentProject], [contracts, currentProject])
 
   const [mold, setMold] = useState('other')
