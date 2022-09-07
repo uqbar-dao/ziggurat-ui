@@ -18,6 +18,7 @@
     "@urbit/api": "^2.1.0",
     "@urbit/http-api": "^2.1.0",
     "buffer": "^6.0.3",
+    "classnames": "^2.3.1",
     "codemirror": "^5.65.2",
     "core-js": "^3.22.2",
     "ethers": "^5.6.4",

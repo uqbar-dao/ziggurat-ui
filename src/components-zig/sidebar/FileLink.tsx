@@ -2,9 +2,9 @@ import React, { useCallback, useState } from 'react'
 import { FaTrash } from 'react-icons/fa';
 import { useLocation } from 'react-router-dom';
 import useZigguratStore from '../../stores/zigguratStore'
-import Button from '../form/Button';
-import { Tooltip } from '../popups/Tooltip';
-import Row from '../spacing/Row'
+import Button from '../../components/form/Button';
+import { Tooltip } from '../../components/popups/Tooltip';
+import Row from '../../components/spacing/Row'
 import Link from '../nav/Link';
 import { genHref } from '../../utils/nav';
 

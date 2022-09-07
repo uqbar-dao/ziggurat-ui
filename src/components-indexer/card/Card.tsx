@@ -1,5 +1,5 @@
 import React from 'react'
-import Text from '../text/Text'
+import Text from '../../components/text/Text'
 import './Card.scss'
 import CardHeader from './CardHeader'
 

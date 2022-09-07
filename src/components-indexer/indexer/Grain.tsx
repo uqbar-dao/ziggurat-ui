@@ -1,11 +1,11 @@
 import useIndexerStore from '../../stores/indexerStore'
 import { Grain } from '../../types/indexer/Grain'
 import { removeDots } from '../../utils/format'
-import CopyIcon from '../card/CopyIcon'
-import Entry from '../card/Entry'
-import Field from '../card/Field'
+import CopyIcon from '../../components/text/CopyIcon'
+import Entry from '../../components/spacing/Entry'
+import Field from '../../components/spacing/Field'
 import Link from '../nav/Link'
-import Text from '../text/Text'
+import Text from '../../components/text/Text'
 import './Grain.scss'
 
 interface GrainEntryProps {

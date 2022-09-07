@@ -1,12 +1,12 @@
 import React from 'react'
-import Row from '../spacing/Row'
+import Row from '../../components/spacing/Row'
 import Link from './Link'
 // import logoWithText from '../../assets/img/uqbar-logo-text.png'
 import logo from '../../assets/img/logo192.png'
 import './Navbar.scss'
 import { isMobileCheck } from '../../utils/dimensions'
-import Dropdown from '../form/Dropdown'
-import Text from '../text/Text'
+import Dropdown from '../../components/popups/Dropdown'
+import Text from '../../components/text/Text'
 
 const Navbar = () => {
   const isMobile = isMobileCheck()

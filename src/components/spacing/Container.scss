@@ -1,0 +1,14 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  max-height: 100vh;
+  padding: 1em 2em;
+
+  @media only screen and (max-width: 600px) {
+    height: calc(100vh - 60px);
+    min-height: calc(100vh - 60px);
+    max-height: none;
+    padding: 8px;
+    margin: 0 auto;
+  }
+}

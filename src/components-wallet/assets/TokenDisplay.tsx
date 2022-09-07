@@ -4,15 +4,15 @@ import useWalletStore from '../../stores/walletStore';
 import { Token } from '../../types/wallet/Token'
 import { abbreviateHex } from '../../utils/format';
 import { displayTokenAmount } from '../../utils/number';
-import Button from '../form/Button';
-import Col from '../spacing/Col';
-import Row from '../spacing/Row'
-import Text from '../text/Text';
-import Field from '../form/Field';
+import Button from '../../components/form/Button';
+import Col from '../../components/spacing/Col';
+import Row from '../../components/spacing/Row'
+import Text from '../../components/text/Text';
+import Field from '../../components/spacing/Field';
 import NftImage from './NftImage';
-import CopyIcon from '../transactions/CopyIcon';
-import Divider from '../spacing/Divider';
-import Entry from '../form/Entry';
+import CopyIcon from '../../components/text/CopyIcon';
+import Divider from '../../components/spacing/Divider';
+import Entry from '../../components/spacing/Entry';
 
 import './TokenDisplay.scss'
 

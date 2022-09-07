@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import useZigguratStore from '../stores/zigguratStore';
-import Container from '../components-zig/spacing/Container';
-import Col from '../components-zig/spacing/Col';
-import Row from '../components-zig/spacing/Row';
+import Container from '../components/spacing/Container';
+import Col from '../components/spacing/Col';
+import Row from '../components/spacing/Row';
 import { Sidebar } from '../components-zig/sidebar/Sidebar';
-import LoadingOverlay from '../components-zig/popups/LoadingOverlay';
+import LoadingOverlay from '../components/popups/LoadingOverlay';
 import EditorView from './ziggurat/EditorView';
 import NewProjectView from './ziggurat/NewProjectView';
 import AppView from './ziggurat/AppView';

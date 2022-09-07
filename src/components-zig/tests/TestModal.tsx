@@ -2,13 +2,13 @@ import { useCallback, useMemo, useState } from "react"
 import useZigguratStore from "../../stores/zigguratStore"
 import { TestFormField, TestFormValues } from "../../types/ziggurat/TestForm"
 import { STATUS_CODES } from "../../utils/constants"
-import Button from "../form/Button"
-import Input from "../form/Input"
-import { Select } from "../form/Select"
-import TextArea from "../form/TextArea"
-import Modal from "../popups/Modal"
-import Col from "../spacing/Col"
-import Text from "../text/Text"
+import Button from "../../components/form/Button"
+import Input from "../../components/form/Input"
+import { Select } from "../../components/form/Select"
+import TextArea from "../../components/form/TextArea"
+import Modal from "../../components/popups/Modal"
+import Col from "../../components/spacing/Col"
+import Text from "../../components/text/Text"
 
 interface TestModalProps {
   showTestModal: boolean
@@ -41,9 +41,9 @@ export const TestModal = ({
   }, [project, setMold, updateTestFormValue])
 
   return (
-    <Modal show={showTestModal} hide={hideTestModal} style={{ minWidth: 320, width: '60%', maxWidth: 500 }}>
+    <Modal title={(isEdit ? 'Edit' : 'Add New') + ' Test'} show={showTestModal} hide={hideTestModal} style={{ minWidth: 320, width: '60%', maxWidth: 500 }}>
       <Col style={{ maxHeight: 'calc(100vh - 80px)', overflow: 'scroll' }}>
-        <h3 style={{ marginTop: 0 }}>{isEdit ? 'Edit' : 'Add New'} Test</h3>
+        <h3 style={{ marginTop: 0 }}></h3>
         <Input
           label="Name"
           onChange={(e) => updateTestFormValue('name', e.target.value)}

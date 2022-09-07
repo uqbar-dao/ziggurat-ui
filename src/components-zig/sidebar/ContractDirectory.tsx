@@ -3,11 +3,11 @@ import { FaChevronRight, FaChevronDown, FaDownload, FaTrash, FaUpload } from 're
 import { useNavigate } from 'react-router-dom';
 import useZigguratStore from '../../stores/zigguratStore'
 import { Contract } from '../../types/ziggurat/Contracts';
-import Button from '../form/Button';
-import { Tooltip } from '../popups/Tooltip';
-import Col from '../spacing/Col'
-import Row from '../spacing/Row'
-import Text from '../text/Text'
+import Button from '../../components/form/Button';
+import { Tooltip } from '../../components/popups/Tooltip';
+import Col from '../../components/spacing/Col'
+import Row from '../../components/spacing/Row'
+import Text from '../../components/text/Text'
 import { DeployModal } from './DeployModal';
 import { BUTTON_STYLE, FileLink } from './FileLink';
 

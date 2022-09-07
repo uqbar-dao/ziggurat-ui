@@ -4,11 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import useWalletStore from '../../stores/walletStore';
 import { HotWallet, HardwareWallet } from '../../types/wallet/Accounts';
 import { displayPubKey } from '../../utils/account';
-import Input from '../form/Input';
-import Col from '../spacing/Col';
-import Row from '../spacing/Row'
-import Text from '../text/Text';
-import CopyIcon from '../transactions/CopyIcon';
+import Input from '../../components/form/Input';
+import Col from '../../components/spacing/Col';
+import Row from '../../components/spacing/Row'
+import Text from '../../components/text/Text';
+import CopyIcon from '../../components/text/CopyIcon';
 import './AccountDisplay.scss'
 
 const SAVE_NICK_DELAY = 1000

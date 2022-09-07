@@ -1,10 +1,10 @@
 import { useCallback, useState } from "react"
 import useZigguratStore from "../../stores/zigguratStore"
 import { DEFAULT_BUDGET, DEFAULT_RATE } from "../../utils/constants"
-import Button from "../form/Button"
-import Form from "../form/Form"
-import Input from "../form/Input"
-import Modal from "../popups/Modal"
+import Button from "../../components/form/Button"
+import Form from "../../components/form/Form"
+import Input from "../../components/form/Input"
+import Modal from "../../components/popups/Modal"
 
 type DeployFormField = 'address' | 'location' | 'town' | 'rate' | 'budget'
 const BLANK_DEPLOY_FORM = { address: '', location: '', town: '0x0', rate: DEFAULT_RATE.toString(), budget: DEFAULT_BUDGET.toString() }
@@ -33,9 +33,8 @@ export const DeployModal = ({ project, show, hide }: DeployModalProps) => {
   }, [deployForm, setDeployForm])
 
   return (
-    <Modal show={show} hide={hide}>
+    <Modal title='Deploy Contract' show={show} hide={hide}>
       <Form onSubmit={deployProjectContract} style={{ minWidth: 320 }}>
-        <h3 style={{ marginTop: 0 }}>Deploy Contract</h3>
         {(['address', 'location', 'town', 'rate', 'budget'] as DeployFormField[]).map(field => (
           <Input
             key={field}

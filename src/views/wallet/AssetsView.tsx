@@ -1,12 +1,11 @@
 import React, { useMemo, useState } from 'react'
 import AccountBalance from '../../components-wallet/assets/AccountBalance'
-import Entry from '../../components-wallet/form/Entry'
-import PageHeader from '../../components-wallet/page/PageHeader'
+import Entry from '../../components/spacing/Entry'
+import PageHeader from '../../components/page/PageHeader'
 import SendModal from '../../components-wallet/popups/SendModal'
-import Col from '../../components-wallet/spacing/Col'
-import Container from '../../components-wallet/spacing/Container'
-import Row from '../../components-wallet/spacing/Row'
-import Text from '../../components-wallet/text/Text'
+import Container from '../../components/spacing/Container'
+import Row from '../../components/spacing/Row'
+import Text from '../../components/text/Text'
 import useWalletStore from '../../stores/walletStore'
 import { displayPubKey } from '../../utils/account';
 

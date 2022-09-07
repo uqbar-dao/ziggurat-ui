@@ -2,14 +2,14 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { FaRegPlusSquare, FaSave, FaFileAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import useZigguratStore from '../../stores/zigguratStore'
-import Button from '../form/Button';
-import Input from '../form/Input';
-import { Tooltip } from '../popups/Tooltip';
-import Modal from '../popups/Modal';
-import Col from '../spacing/Col'
-import Row from '../spacing/Row'
-import Text from '../text/Text'
-import { Select } from '../form/Select';
+import Button from '../../components/form/Button';
+import Input from '../../components/form/Input';
+import { Tooltip } from '../../components/popups/Tooltip';
+import Modal from '../../components/popups/Modal';
+import Col from '../../components/spacing/Col'
+import Row from '../../components/spacing/Row'
+import Text from '../../components/text/Text'
+import { Select } from '../../components/form/Select';
 import { displayPubKey } from '../../utils/account';
 import { DEFAULT_USER_ADDRESS } from '../../utils/constants';
 import { ContractDirectory } from './ContractDirectory';
@@ -125,13 +125,11 @@ export const Sidebar = () => {
           ))}
         </Col>
       </Col>
-      <Modal show={showToolModal} hide={() => setShowToolModal(false)}>
-        <h3 style={{ marginTop: 0 }}>Enter App URL (i.e. "webterm"):</h3>
+      <Modal title='Enter App URL (i.e. "webterm"):' show={showToolModal} hide={() => setShowToolModal(false)}>
         <Input onChange={(e) => setToolToAdd(e.target.value)} value={toolToAdd} placeholder='app url' autoFocus />
         <Button style={{ margin: '16px auto 0' }} variant='dark' onClick={openTool}>Open App</Button>
       </Modal>
-      <Modal show={showAddFileModal} hide={() => setShowAddFileModal(false)} style={{ minWidth: 300 }}>
-        <h3 style={{ margin: 0 }}>Add New File</h3>
+      <Modal  title='Add New File' show={showAddFileModal} hide={() => setShowAddFileModal(false)} style={{ minWidth: 300 }}>
         <div style={{ marginBottom: 12 }}>(adding to project "{currentProject}")</div>
         <Input onChange={(e) => setNewFile(e.target.value)}
           value={newFile} placeholder='file name'

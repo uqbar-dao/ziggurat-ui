@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import Iframe from 'react-iframe';
-import Container from '../../components-zig/spacing/Container'
+import Container from '../../components/spacing/Container'
 
 import './DocsView.scss'
 

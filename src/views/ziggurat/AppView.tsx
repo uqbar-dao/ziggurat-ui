@@ -1,8 +1,8 @@
 import React from 'react'
 import Iframe from 'react-iframe';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Col from '../../components-zig/spacing/Col';
-import Container from '../../components-zig/spacing/Container'
+import Col from '../../components/spacing/Col';
+import Container from '../../components/spacing/Container'
 import useZigguratStore from '../../stores/zigguratStore';
 
 import './DocsView.scss'

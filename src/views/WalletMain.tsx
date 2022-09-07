@@ -7,8 +7,8 @@ import AssetsView from './wallet/AssetsView';
 import TransactionsView from './wallet/TransactionsView';
 import TransactionView from './wallet/TransactionView';
 import { PUBLIC_URL } from '../utils/constants';
-import LoadingOverlay from '../components-zig/popups/LoadingOverlay';
-import Navbar from '../components-wallet/nav/Navbar';
+import LoadingOverlay from '../components/popups/LoadingOverlay';
+import WalletNavbar from '../components-wallet/nav/WalletNavbar';
 
 function WalletMain() {
   const { init, loadingText } = useWalletStore()
@@ -19,7 +19,7 @@ function WalletMain() {
 
   return (
     <BrowserRouter basename={`${PUBLIC_URL}/wallet`}>
-      <Navbar />
+      <WalletNavbar />
       <Routes>
         <Route path="/" element={<AssetsView />} />
         <Route path="accounts/:account" element={<AccountView />} />

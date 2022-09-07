@@ -1,8 +1,8 @@
 import { Droppable } from 'react-beautiful-dnd'
 import { Test } from "../../types/ziggurat/TestData"
 import { truncateString } from "../../utils/format"
-import Col from "../spacing/Col"
-import Row from "../spacing/Row"
+import Col from "../../components/spacing/Col"
+import Row from "../../components/spacing/Row"
 import { GrainDisplaySmall } from './GrainDisplay'
 
 interface ValuesProps {

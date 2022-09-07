@@ -1,29 +1,26 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import Entry from '../../components-wallet/form/Entry'
-import Field from '../../components-wallet/form/Field'
+import Entry from '../../components/spacing/Entry'
+import Field from '../../components/spacing/Field'
 import BackLink from '../../components-wallet/nav/BackLink'
 import Link from '../../components-zig/nav/Link'
-import Col from '../../components-wallet/spacing/Col'
-import Container from '../../components-wallet/spacing/Container'
-import Text from '../../components-wallet/text/Text'
-import CopyIcon from '../../components-wallet/transactions/CopyIcon'
+import Col from '../../components/spacing/Col'
+import Container from '../../components/spacing/Container'
+import Text from '../../components/text/Text'
+import CopyIcon from '../../components/text/CopyIcon'
 import useWalletStore from '../../stores/walletStore'
 import { getStatus } from '../../utils/constants'
 import { removeDots } from '../../utils/format'
 
 import './TransactionView.scss'
+import HexNum from '../../components/text/HexNum'
 
 const TransactionView = () => {
   const { hash } = useParams()
   const { transactions } = useWalletStore()
   const txn = transactions.find(t => t.hash === hash)
 
-  const renderField = (title: string, value: string) => (
-    <Field name={title}>
-      <Text mono breakWord>{value}</Text>
-    </Field>
-  )
+ 
 
   if (!txn) {
     return (
@@ -40,15 +37,19 @@ const TransactionView = () => {
       <Col className='transaction'>
         <Entry>
           <Field name='Hash:'>
-            <Link target='_blank' urlPrefix='/apps/uqbar-explorer' href={`/tx/${removeDots(txn.hash)}`}>
+            {/* <Link target='_blank' urlPrefix='/apps/ziggurat/indexer' href={`/tx/${removeDots(txn.hash)}`}> */}
               <Text style={{ overflowWrap: 'break-word' }} mono>{removeDots(txn.hash)}</Text>
-            </Link>
+            {/* </Link> */}
             <CopyIcon text={txn.hash} />
           </Field>
         </Entry>
         <Entry>
-          {renderField('From:', removeDots(txn.from))}
-          {renderField('To:', removeDots(txn.to))}
+          <Field name='From:'>
+            <HexNum mono num={ removeDots(txn.from)} />
+            </Field>
+          <Field name='To:'>
+            <HexNum mono num={ removeDots(txn.to)} />
+            </Field>
         </Entry>
         <Entry>
           <Field name='Status:'>
@@ -57,14 +58,28 @@ const TransactionView = () => {
           </Field>
         </Entry>
         <Entry>
-          {renderField('Town:', removeDots(txn.town))}
+          <Field name='Town:'>
+            <HexNum mono num={ removeDots(txn.town)} />
+            </Field>
         </Entry>
         <Entry>
-        {renderField('Nonce:', txn.nonce.toString())}
+        <Field name='Nonce:'>
+          <Text mono>
+            {txn.nonce.toString()}
+          </Text> 
+          </Field>
         </Entry>
         <Entry>
-          {renderField('Rate:', txn.rate.toString())}
-          {renderField('Budget:', txn.budget.toString())}
+          <Field name='Rate:'>
+            <Text>
+              { txn.rate.toString()}
+            </Text>
+            </Field>
+          <Field name='Budget:'>
+            <Text>
+              { txn.budget.toString()}
+            </Text>
+            </Field>
         </Entry>
         <Entry>
           <Field name='Args:'>

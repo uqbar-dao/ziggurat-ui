@@ -1,23 +1,23 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { FaPen, FaTrash, FaChevronDown, FaChevronUp, FaPlay } from 'react-icons/fa';
-import Col from '../spacing/Col'
-import Row from '../spacing/Row'
+import Col from '../../components/spacing/Col'
+import Row from '../../components/spacing/Row'
 import useZigguratStore from '../../stores/zigguratStore';
-import Button from '../form/Button';
+import Button from '../../components/form/Button';
 import { Test, TestResult } from '../../types/ziggurat/TestData';
-import Input from '../form/Input';
+import Input from '../../components/form/Input';
 import { DEFAULT_BUDGET, DEFAULT_RATE, getStatus, STATUS_CODES } from '../../utils/constants';
 import { getGrainDiff, parseAction } from '../../utils/tests';
-import Text from '../text/Text';
+import Text from '../../components/text/Text';
 import { TestGrain } from '../../types/ziggurat/TestGrain';
 import { GrainList } from './GrainList';
 import { displayPubKey } from '../../utils/account';
-import Modal from '../popups/Modal';
+import Modal from '../../components/popups/Modal';
 
 import './TestList.scss'
-import Entry from '../form/Entry';
-import Divider from '../spacing/Divider';
-import Field from '../form/Field';
+import Entry from '../../components/spacing/Entry';
+import Divider from '../../components/spacing/Divider';
+import Field from '../../components/spacing/Field';
 
 export const DROPPABLE_DIVIDER = '___'
 
@@ -93,8 +93,8 @@ const TestResultDisplay = ({ result, expectedError }: { result?: TestResult, exp
         </Col>
       )}
       <Button onClick={() => setShowAllResultsModal(true)} variant="dark" style={{ fontSize: 14, padding: '2px 6px', margin: '6px 0' }}>Show full test output</Button>
-      <Modal show={showAllResultsModal} hide={() => setShowAllResultsModal(false)}>
-        <h3>Full Test Results</h3>
+      <Modal title='Full Test Results' show={showAllResultsModal} hide={() => setShowAllResultsModal(false)}>
+        <h3></h3>
         {result?.grains && Object.keys(result.grains).length ? (
           Object.keys(result.grains).map(id => (
             <Col key={id}>
