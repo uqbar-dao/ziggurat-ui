@@ -55,3 +55,9 @@ export const formatType = (type: TypeAnnotation, value: string) => {
 
   return value
 }
+
+export const capitalize = (word?: string) => !word ? word : word[0].toUpperCase() + word.slice(1).toLowerCase()
+
+export const addHexPrefix = (str: string) => `0x${str.replace(/^0x/i, '')}`
+
+export const abbreviateHex = (hash: string) => `${removeDots(hash).slice(0, 10)}...${removeDots(hash).slice(-8)}`

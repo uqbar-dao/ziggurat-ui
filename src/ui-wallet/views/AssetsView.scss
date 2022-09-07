@@ -1,0 +1,9 @@
+@use '../../styles/colors.scss' as colors;
+
+.assets-view {
+  @media only screen and (max-width: 399px) {
+    padding-top: 36px;
+  }
+
+  
+}

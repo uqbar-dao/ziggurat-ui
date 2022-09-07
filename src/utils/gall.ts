@@ -1,5 +1,5 @@
-import { Folder, FolderContents } from "../types/Folder"
-import { GallApp } from "../types/GallApp"
+import { Folder, FolderContents } from "../types/ziggurat/Folder"
+import { GallApp } from "../types/ziggurat/GallApp"
 
 export const getFolder = (folder: Folder, path: string[]) : null | Folder => {
   if (path.length < 1) {

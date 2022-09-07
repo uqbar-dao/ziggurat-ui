@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
-      name="description"
-      content="The contract deployer for Uqbar"
+      name="Ziggurat from Uqbar"
+      content="The Ziggurat suite for Uqbar"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--
@@ -28,7 +28,7 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="ziggurat-root"></div>
+    <div id="root"></div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
@@ -40,17 +40,5 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
     <script src="/session.js"></script>
-
-    <script>
-      const zigguratAppId = 'ziggurat-root'
-
-      if (window.location.pathname.includes('/apps/ziggurat/develop') && !document.getElementById(zigguratAppId)) {
-        const zigguratApp = document.createElement('div');
-        zigguratApp.id = zigguratAppId
-        document.getElementsByTagName('body')[0].appendChild(zigguratApp);
-      } else if (!window.location.pathname.includes('/apps/ziggurat/develop')) {
-        window.location.pathname = '/apps/ziggurat/develop';
-      }
-    </script>
   </body>
 </html>

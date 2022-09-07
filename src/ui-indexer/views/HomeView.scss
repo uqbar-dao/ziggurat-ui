@@ -1,0 +1,88 @@
+@use '../../styles/colors.scss' as colors;
+@use '../../styles/border.scss' as border;
+
+.home {
+  h3 {
+    font-weight: 500;
+    color: colors.$charcoal;
+  }
+
+  .splash {
+    background: url('../../assets/img/roadmap-bg.png');
+    padding: 40px 48px 80px;
+    margin: 0 -48px;
+    flex-basis: content;
+
+    @media only screen and (max-width: 600px) {
+      margin-top: -16px;
+      margin: -16px -16px 0;
+      padding: 40px 16px 80px;
+    }
+
+    .search {
+      width: 100%;
+
+      .input-container {
+        height: fit-content;
+      }
+
+      .search-input {
+        border-radius: border.$br-md;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        border: none;
+        height: 36px;
+      }
+
+      .search-button {
+        background-color: colors.$uq-purple;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        border: none;
+        color: white;
+      }
+    }
+  }
+
+  .info {
+
+    .highlights {
+      min-height: 200px;
+      width: 100%;
+      margin: 0 auto 20px;
+    }
+
+    .latest {
+      align-items: flex-start;
+      margin-top: -32px;
+
+      @media only screen and (max-width: 600px) {
+        flex-wrap: wrap;
+      }
+
+      .latest-blocks, .latest-transactions {
+        width: calc(50% - 8px);
+        // min-height: 502px;
+
+        @media only screen and (max-width: 600px) {
+          width: 100%;
+        }
+
+        h4 {
+          margin: 0 0 6px;
+          padding: 16px;
+          border-bottom: 1px solid colors.$medium-gray;
+        }
+      }
+
+      .latest-blocks {
+        margin-right: 16px;
+
+        @media only screen and (max-width: 600px) {
+          margin-right: 0;
+          margin-bottom: 16px;
+        }
+      }
+    }
+  }
+}

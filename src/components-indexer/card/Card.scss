@@ -1,0 +1,15 @@
+@use '../../styles/border.scss' as border;
+@use '../../styles/colors.scss' as colors;
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border-radius: border.$br-md;
+  border: border.$gray;
+  background: white;
+  box-shadow: 2px 2px 2px colors.$light-gray;
+
+  padding: 12px 16px;
+
+  overflow: hidden;
+}

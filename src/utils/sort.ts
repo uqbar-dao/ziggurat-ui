@@ -1,5 +1,5 @@
-import { Test } from "../types/TestData";
-import { TestGrain } from "../types/TestGrain";
+import { Test } from "../types/ziggurat/TestData";
+import { TestGrain } from "../types/ziggurat/TestGrain";
 
 export const sortTest = (a: Test, b: Test) => {
   // if (Boolean(a.input.obsolete) === Boolean(b.input.obsolete)) {

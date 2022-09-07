@@ -1,0 +1,9 @@
+@use '../../styles/colors.scss' as colors;
+
+form.form.send-token-form {
+  border-top-left-radius: 0;
+
+  .assets {
+    font-family: monospace monospace;
+  }
+}

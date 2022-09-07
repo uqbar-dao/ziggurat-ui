@@ -1,0 +1,11 @@
+@use '../../styles/colors.scss' as colors;
+
+.entry {
+  padding: 12px 0;
+
+  &:not(.divide){
+    padding-bottom: 0;
+  }
+
+  
+}

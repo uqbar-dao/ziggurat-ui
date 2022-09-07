@@ -1,5 +1,5 @@
-import { Test, TestExpectationDiff } from "../types/TestData";
-import { TestGrain, TestGrainField, TestGrainInput } from "../types/TestGrain";
+import { Test, TestExpectationDiff } from "../types/ziggurat/TestData";
+import { TestGrain, TestGrainField, TestGrainInput } from "../types/ziggurat/TestGrain";
 
 export const parseAction = (test: Test) => `Action: ${test.action_text.split(' ')[0].slice(1)}`
 

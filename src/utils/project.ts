@@ -1,8 +1,8 @@
-import { GallApp, GallApps } from "../types/GallApp"
-import { Contract, Contracts, ContractState, ContractUpdate } from "../types/Contracts"
-import { ContractMold } from "../types/ContractMold"
-import { Tests } from "../types/TestData"
-import { TestGrain } from "../types/TestGrain"
+import { GallApp, GallApps } from "../types/ziggurat/GallApp"
+import { Contract, Contracts, ContractState, ContractUpdate } from "../types/ziggurat/Contracts"
+import { ContractMold } from "../types/ziggurat/ContractMold"
+import { Tests } from "../types/ziggurat/TestData"
+import { TestGrain } from "../types/ziggurat/TestGrain"
 import { mapFilesToFolders } from "./gall"
 import { ACTION_CENCOL_REGEX, ACTION_NOUN_LIST_REGEX, MOLD_REGEX } from "./regex"
 
