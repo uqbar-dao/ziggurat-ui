@@ -4,4 +4,22 @@
   &.mono {
     font-family: monospace, monospace;
   }
+
+  &.one-line {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &.break {
+    word-break: break-all;
+  }
+
+  &.large {
+    font-size: x-large;
+  }
+
+  &.bold {
+    font-weight: 600;
+  }
 }

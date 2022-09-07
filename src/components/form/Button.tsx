@@ -8,6 +8,12 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant 
   icon?: JSX.Element
   iconOnly?: boolean
+  dark?: boolean,
+  small?: boolean,
+  wide?: boolean,
+  xwide?: boolean,
+  mr1?: boolean,
+  mb1?: boolean,
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -15,6 +21,12 @@ const Button: React.FC<ButtonProps> = ({
   icon,
   iconOnly = false,
   type,
+  dark,
+  small,
+  wide,
+  xwide,
+  mr1,
+  mb1,
   style,
   ...props
 }) => {
@@ -22,7 +34,7 @@ const Button: React.FC<ButtonProps> = ({
     <button
       {...props}
       className={`button ${props.className || ''}
-      ${variant || ''}`}
+      ${variant || ''} ${dark ? 'dark' : ''} ${small ? 'small' : ''} ${wide ? 'wide' : ''} ${xwide ? 'xwide' : ''} ${mr1 ? 'mr1' : ''} ${mb1 ? 'mb1' : ''}`}
       type={type || "button"}
       style={{ ...style, justifyContent: 'space-evenly' }}
     >
