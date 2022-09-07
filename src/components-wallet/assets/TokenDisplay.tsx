@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { FaCaretRight, FaCaretDown, FaCoins, FaPortrait } from 'react-icons/fa';
+import { FaCaretDown, FaCoins, FaPortrait } from 'react-icons/fa';
 import useWalletStore from '../../stores/walletStore';
 import { Token } from '../../types/wallet/Token'
 import { abbreviateHex } from '../../utils/format';

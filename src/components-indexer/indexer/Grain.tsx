@@ -5,8 +5,6 @@ import CopyIcon from '../card/CopyIcon'
 import Entry from '../card/Entry'
 import Field from '../card/Field'
 import Link from '../nav/Link'
-import Col from '../spacing/Col'
-import Row from '../spacing/Row'
 import Text from '../text/Text'
 import './Grain.scss'
 
@@ -60,8 +58,8 @@ export const GrainEntry = ({
         )}
         {Boolean(tokenMetadata) && (
           <Field name='Token:'>
-            <Text mono oneLine>{tokenMetadata?.symbol}</Text>
-            <CopyIcon text={tokenMetadata?.symbol!}></CopyIcon>
+            <Text mono oneLine>{tokenMetadata?.data?.symbol}</Text>
+            <CopyIcon text={tokenMetadata?.data?.symbol!}></CopyIcon>
           </Field>
         )}
         <Field name='Town:'>
@@ -86,8 +84,8 @@ export const GrainEntry = ({
             </Row> */}
             {Boolean(tokenMetadata) && (
               <Field name='Token:'>
-                <Text mono oneLine>{tokenMetadata?.symbol}</Text>
-                <CopyIcon text={tokenMetadata?.symbol!}></CopyIcon>
+                <Text mono oneLine>{tokenMetadata?.data?.symbol}</Text>
+                <CopyIcon text={tokenMetadata?.data?.symbol!}></CopyIcon>
               </Field>
             )}
             <Field name='Town:'>

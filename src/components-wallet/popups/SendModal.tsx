@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import Button from '../form/Button'
 import Link from '../nav/Link'
 import Loader from './Loader'
@@ -10,11 +10,10 @@ import CopyIcon from '../transactions/CopyIcon';
 import { getStatus } from '../../utils/constants'
 import SendTokenForm from '../forms/SendTokenForm'
 import SendCustomTransactionForm from '../forms/SendCustomTransactionForm'
-import { Transaction } from '../../types/wallet/Transaction'
 import Modal, { ModalProps } from './Modal'
+import useWalletStore from '../../stores/walletStore'
 
 import './SendModal.scss'
-import useWalletStore from '../../stores/walletStore'
 
 export type SendType = 'tokens' | 'nft' | 'custom';
 
@@ -35,19 +34,8 @@ const SendModal = ({
   formType,
   hide
 }: SendModalProps) => {
-  const { transactions } = useWalletStore()
-  const [txn, setTxn] = useState<Transaction | undefined>()
+  const { mostRecentTransaction: txn } = useWalletStore()
   const [submitted, setSubmitted] = useState(false)
-
-  useEffect(() => {
-    const targetTxn = txn
-      ? transactions.find(({ hash }) => hash === txn.hash)
-      : transactions.find(({ status }) => status >= 100)
-
-    if (targetTxn) {
-      setTxn(targetTxn)
-    }
-  }, [transactions]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const getForm = () => {
     switch (formType) {
@@ -97,7 +85,7 @@ const SendModal = ({
               .
             </Text>
           )}
-          <Button onClick={hideModal}>Done</Button>
+          <Button style={{ alignSelf: 'center' }} onClick={hideModal}>Done</Button>
         </Col>
       ) : (
         getForm()

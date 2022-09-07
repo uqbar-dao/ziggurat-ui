@@ -10,7 +10,7 @@ import { Block, RawBlock } from '../types/indexer/Block'
 import { INDEXER_STORAGE_VERSION, mockData } from "../utils/constants"
 import { mockAccounts, mockBlockHeaders, mockTransactions, mockMetadata } from "../mocks/indexer-mocks"
 import { HardwareWallet, HardwareWalletType, HotWallet, processAccount, RawAccount } from "../types/wallet/Accounts"
-import { TokenMetadataStore } from "../types/indexer/TokenMetadata"
+import { TokenMetadataStore } from "../types/wallet/TokenMetadata"
 import { persist } from "zustand/middleware"
 
 export function createSubscription(app: string, path: string, e: (data: any) => void): SubscriptionRequestInterface {

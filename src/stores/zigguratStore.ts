@@ -10,7 +10,7 @@ import { TestGrainInput } from "../types/ziggurat/TestGrain";
 import { DEFAULT_USER_ADDRESS, ZIGGURAT_STORAGE_VERSION } from "../utils/constants";
 import { generateMolds, generateProjects } from "../utils/project";
 import { handleGallUpdate, handleContractUpdate, handleTestUpdate } from "./subscriptions/project";
-import { createSubscription, Subscriptions } from "./createSubscription";
+import { createSubscription, Subscriptions } from "./subscriptions/createSubscription";
 import { getFilename, getFileText, getFolder, getFolderForFile, mapFilesToFolders } from "../utils/gall";
 
 export interface ZigguratStore {

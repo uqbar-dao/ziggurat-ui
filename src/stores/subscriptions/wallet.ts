@@ -28,7 +28,7 @@ export const handleMetadataUpdate = (get: GetState<WalletStore>, set: SetState<W
 
 export const handleTxnUpdate = (get: GetState<WalletStore>, set: SetState<WalletStore>) => async (rawTxn: { [key: string]: Transaction }) => {
   const txnHash = Object.keys(rawTxn)[0]
-  const txn = { ...rawTxn[txnHash], hash: txnHash }
+  const txn = { ...rawTxn[txnHash], hash: txnHash, modified: new Date(), status: Number(rawTxn[txnHash].status) }
   console.log('TXN UPDATE:', txn)
   const { transactions } = get()
 
@@ -36,10 +36,10 @@ export const handleTxnUpdate = (get: GetState<WalletStore>, set: SetState<Wallet
 
   if (exists) {
     const newTransactions = transactions.map(t => ({ ...t, modified: t.hash === txn.hash ? new Date() : t.modified, status: Number(t.hash === txn.hash ? txn.status : t.status) }))
-    set({ transactions: newTransactions })
+    set({ transactions: newTransactions, mostRecentTransaction: { ...exists, ...txn } })
   } else if (txn.hash) {
-    // TODO: make sure sent-to-us will show up in getTransactions 
-    set({ transactions: [{ ...txn, created: new Date(), modified: new Date() } as Transaction].concat(transactions) })
+    // TODO: make sure sent-to-us will show up in getTransactions
+    set({ transactions: [{ ...txn, created: new Date(), modified: new Date() } as Transaction].concat(transactions), mostRecentTransaction: txn })
   }
 
   if (txn.status === 0) {
