@@ -1,0 +1,44 @@
+@use '../../styles/colors.scss' as colors;
+
+.send-view {
+  .assets {
+    font-family: monospace monospace;
+  }
+
+  .submission-confirmation {
+    padding: 16px;
+    border-radius: 4px;
+    background-color: colors.$light-gray;
+    max-width: 400px;
+  }
+
+  .form-container {
+    width: 100%;
+    max-width: 400px;
+
+    .form-selector {
+      background-color: colors.$washed-gray;
+      width: fit-content;
+  
+      .selector {
+        background: white;
+  
+        span {
+          border-top-left-radius: 4px;
+          border-top-right-radius: 4px;
+          padding: 6px 16px;
+          cursor: pointer;
+        }
+  
+        .inactive {
+          background-color: colors.$washed-gray;
+        }
+  
+        .active {
+          background-color: colors.$light-gray;
+        }
+      }
+    }
+  }
+
+}

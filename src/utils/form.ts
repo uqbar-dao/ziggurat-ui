@@ -1,7 +1,7 @@
-import { FormField, FormValues } from "../types/FormValues"
-import { Test } from "../types/TestData"
-import { TestGrain, TestGrainField } from "../types/TestGrain"
-import { UqbarType } from "../types/UqbarType"
+import { FormField, FormValues } from "../types/ziggurat/FormValues"
+import { Test } from "../types/ziggurat/TestData"
+import { TestGrain, TestGrainField } from "../types/ziggurat/TestGrain"
+import { UqbarType } from "../types/ziggurat/UqbarType"
 import { formatType, removeDots } from "./format"
 
 export const GRAIN_FORM_VALUES_COMMON: { [key: string]: any } = {

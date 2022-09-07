@@ -1,73 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import useProjectStore from './store/projectStore';
-import Container from './components/spacing/Container';
-import Col from './components/spacing/Col';
-import Row from './components/spacing/Row';
-import { Sidebar } from './components/sidebar/Sidebar';
-import LoadingOverlay from './components/popups/LoadingOverlay';
-import EditorView from './views/EditorView';
-import NewProjectView from './views/NewProjectView';
-import AppView from './views/AppView';
-import { TestView } from './views/TestView';
+import React from 'react';
 import { PUBLIC_URL } from './utils/constants';
-import WelcomeView from './views/WelcomeView';
-import Modal from './components/popups/Modal';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import ZigguratMain from './views/ZigguratMain';
+import IndexerMain from './views/IndexerMain';
+import WalletMain from './views/WalletMain';
+import Col from './components-zig/spacing/Col';
+import Container from './components-zig/spacing/Container';
 
 import './App.scss'
 
-function App() {
-  const { loading, init } = useProjectStore()
-  const [showError, setShowError] = useState(false)
-
-  useEffect(() => {
-    init()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
+const SelectAppView = () => {
   return (
     <Container>
-      <BrowserRouter basename={PUBLIC_URL}>
-      <Col style={{ width: '100%', height: '100%' }}>
-        <Row style={{ height: '100%', width: '100%' }}>
-          <Col style={{ height: '100%', width: '20%', maxWidth: 240, minWidth: 210 }}>
-            <Sidebar />
-          </Col>
-          <Col style={{ minWidth: 'calc(100% - 240px)', width: '80%', maxWidth: 'calc(100% - 210px)', height: '100%', position: 'relative' }}>
-            <Routes>
-              <Route path="/" element={<WelcomeView />} />
-              <Route path="/new" element={<NewProjectView />} />
-              <Route path="/app" element={<AppView />} />
-              <Route path="/app/:app" element={<AppView />} />
-              <Route path="/:projectTitle" element={<EditorView />} />
-              <Route path="/:projectTitle/tests" element={<TestView />} />
-              <Route path="/:projectTitle/:file" element={<EditorView />} />
-              <Route
-                path="*"
-                element={
-                  <main style={{ padding: "1rem" }}>
-                    <p>There's nothing here!</p>
-                  </main>
-                }
-              />
-            </Routes>
-          </Col>
-        </Row>
+      <Col style={{ justifyContent: 'center' }}>
+        <h3>What are you looking for?</h3>
+        <a style={{ marginTop: 16 }} href={`${PUBLIC_URL}/develop`}>Contract & App Development</a>
+        <a style={{ marginTop: 16 }} href={`${PUBLIC_URL}/wallet`}>Uqbar Wallet</a>
+        <a style={{ marginTop: 16 }} href={`${PUBLIC_URL}/indexer`}>Block Explorer (Indexer)</a>
       </Col>
-      </BrowserRouter>
-      <LoadingOverlay loading={loading !== undefined} text={loading} />
-      <ToastContainer
-        autoClose={false}
-        hideProgressBar
-        closeOnClick
-        rtl={false}
-        draggable
-        theme='colored'
-        style={{ fontSize: 14 }}
-      />
     </Container>
-  );
+  )
+}
+
+function App() {
+  if (window.location.href.includes(`${PUBLIC_URL}/develop`)) {
+    return <ZigguratMain />
+  } else if (window.location.href.includes(`${PUBLIC_URL}/indexer`)) {
+    return <IndexerMain />
+  } else if (window.location.href.includes(`${PUBLIC_URL}/wallet`)) {
+    return <WalletMain />
+  }
+
+  return <SelectAppView />
 }
 
 export default App;

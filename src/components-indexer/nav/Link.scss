@@ -1,0 +1,39 @@
+@use '../../styles/colors.scss' as colors;
+
+.link {
+  cursor: pointer;
+  color: colors.$uq-darkpurple;
+  text-decoration: none;
+
+  &:visited {
+    color: colors.$uq-darkpurple;
+  }
+
+  &:active {
+    color: colors.$uq-darkpink;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &.button {
+    color: colors.$uq-darkpurple;
+    background: white;
+    width: fit-content;
+    font-size: 16px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: 1px solid black;
+
+    &:hover {
+      opacity: 0.7;
+    }
+
+   
+    &.dark {
+      color: white;
+      background: black;
+    }
+  }
+}

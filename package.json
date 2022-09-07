@@ -4,18 +4,28 @@
   "private": true,
   "homepage": "/apps/ziggurat",
   "dependencies": {
+    "@ledgerhq/hw-app-eth": "^6.27.1",
+    "@ledgerhq/hw-transport-webusb": "^6.27.1",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
     "@testing-library/user-event": "^13.2.1",
+    "@trezor/connect": "^9.0.0",
+    "@trezor/connect-web": "^9.0.0",
     "@types/jest": "^27.0.1",
     "@types/node": "^16.7.13",
     "@types/react": "^17.0.20",
     "@types/react-dom": "^17.0.9",
     "@urbit/api": "^2.1.0",
     "@urbit/http-api": "^2.1.0",
+    "buffer": "^6.0.3",
     "codemirror": "^5.65.2",
+    "core-js": "^3.22.2",
+    "ethers": "^5.6.4",
     "file-saver": "^2.0.5",
     "http-proxy-middleware": "^2.0.6",
+    "ip-address": "^8.1.0",
+    "ipfs-core": "^0.14.3",
+    "moment": "^2.29.4",
     "react": "^17.0.2",
     "react-beautiful-dnd": "^13.1.0",
     "react-codemirror2": "^7.2.1",
@@ -27,15 +37,20 @@
     "sass": "^1.49.9",
     "styled-components": "^5.3.5",
     "typescript": "^4.4.2",
+    "util": "^0.12.4",
     "web-vitals": "^2.1.0",
     "xterm-addon-fit": "^0.5.0",
     "zustand": "^3.7.1"
   },
   "proxy": "http://localhost:8080",
   "scripts": {
-    "start": "sed -i.bak -e 's/compress: true/compress: false/' ./node_modules/react-scripts/config/webpackDevServer.config.js && react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "sed -i.bak -e 's/compress: true/compress: false/' ./node_modules/react-scripts/config/webpackDevServer.config.js && react-app-rewired start",
+    "start:mac": "sed -i '' -e 's/compress: true/compress: false/' ./node_modules/react-scripts/config/webpackDevServer.config.js && react-scripts start",
+    "start:linux": "echo $(pwd) && sed -i -e 's/compress: true/compress: false/' ./node_modules/react-scripts/config/webpackDevServer.config.js && react-scripts start",
+    "start:mock": "REACT_APP_MOCK_DATA=true yarn start",
+    "just-start": "react-app-rewired start",
+    "build": "GENERATE_SOURCEMAP=false && react-app-rewired build",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -57,6 +72,7 @@
     ]
   },
   "devDependencies": {
+    "react-app-rewired": "^2.2.1",
     "react-router-dom": "^6.2.2"
   }
 }

@@ -1,0 +1,15 @@
+.footer.splash {
+  margin-top: auto;
+  margin-bottom: -48px;
+  filter: hue-rotate(262deg);
+  padding-bottom: 2em;
+  background-position-y: bottom;
+
+  .circled {
+    margin: 0 0.6em;
+    border: 3px solid;
+    padding: 0.1em 0.45em 0.2em;
+    border-radius: 9999px;
+    font-size: xx-large;
+  }
+}

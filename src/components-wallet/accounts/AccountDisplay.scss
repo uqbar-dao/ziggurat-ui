@@ -1,0 +1,29 @@
+@use '../../styles/colors.scss' as colors;
+
+.account-display {
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  background: colors.$light-gray;
+  border-radius: 4px;
+
+  .icon {
+    padding: 4px;
+    cursor: pointer;
+  }
+
+    .nick-input {
+      border-color: transparent;
+      border-width: 1px;
+      border-bottom: 3px solid colors.$uq-purple;
+      border-radius: 6px;
+
+      &:focus, &:active {
+        border-color: colors.$uq-pink;
+        outline: none;
+      }
+      
+      input {
+        background: inherit
+    }
+  }
+}

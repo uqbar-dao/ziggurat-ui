@@ -44,3 +44,12 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+## Build the glob in a fakezod
+- cd ~/work/urbit && rm -rf zod && cp -r ./dist-zod ./zod
+- cp -r ~/work/uqbar/ziggurat-ui/build ~/work/urbit/zod/landscape/
+- cd ~/work/urbit/zod/landscape/build/static/js && rm *.js.map*
+- cd ~/work/urbit/zod/landscape/build/static/css && rm *.css.map*
+- ~/work/urbit/urbit ~/work/urbit/zod
+- |commit %landscape
+- -garden!make-glob %landscape /build

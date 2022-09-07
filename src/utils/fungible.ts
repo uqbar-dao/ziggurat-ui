@@ -12,5 +12,3 @@ export const generateInitialMetadata = (minters: string[], deployer: string, typ
   minters,
   deployer,
 })
-
-export const DEFAULT_TOWN_ID = '0x0'

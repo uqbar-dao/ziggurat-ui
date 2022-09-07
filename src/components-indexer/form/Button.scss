@@ -1,0 +1,19 @@
+button.button {
+  color: black;
+  background: white;
+  width: fit-content;
+  font-size: 16px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: 1px solid black;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.7;
+  }
+
+  &.dark {
+    color: white;
+    background: black;
+  }
+}

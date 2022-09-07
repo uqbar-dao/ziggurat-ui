@@ -1,0 +1,91 @@
+@use '../../styles/colors.scss' as colors;
+
+.token-display {
+  padding: 8px 12px 8px 8px;
+  margin: 16px 0px;
+  background: colors.$light-gray;
+  border-radius: 4px;
+
+  &:hover{
+    background: linear-gradient(-45deg, colors.$uq-pink, colors.$uq-lightpurple);
+    animation: gradient 15s linear infinite;
+    background-size: 400% 400%;
+  }
+
+  svg:not(.arrow) {
+    padding-left: 0.5em;
+  }
+
+  .token-name {
+    padding-left: 0.5em;
+    
+    &::selection {
+      background-color: transparent;
+    }
+  }
+
+  &:not(.open) {
+    cursor: pointer;
+
+    .arrow {
+      transform: rotate(-90deg);
+    }
+
+    .details {
+      height: 0;
+      opacity: 0;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  
+
+  .token-display-header {
+    cursor: pointer;
+    justify-content: space-between;
+
+    svg {
+      transition: all 0.1s;
+    }
+  }
+
+  .details {
+    padding-left: 24px; 
+    padding-top: 8px;
+    transition: all 0.1s;
+  }
+
+}
+
+// inspired by a pen by https://manuel.pinto.dev
+@keyframes gradient {
+	0% {
+		background-position: 0% 0%;
+	}
+  5% {
+    background-position: 100% 0%;
+  }
+  10% {
+		background-position: 100% 100%;
+  }
+  15% {
+		background-position: 0% 100%;
+  }
+  20% {
+		background-position: 0% 0%;
+  }
+  40% {
+		background-position: 100% 0%;
+	}
+	60% {
+		background-position: 100% 100%;
+	}
+	80% {
+		background-position: 0% 100%;
+	}
+  100% {
+		background-position: 0% 0%;
+	}
+}
