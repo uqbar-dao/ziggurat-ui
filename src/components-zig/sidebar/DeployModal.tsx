@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-import useProjectStore from "../../ui-ziggurat/store/projectStore"
+import useProjectStore from "../../store/projectStore"
 import { DEFAULT_BUDGET, DEFAULT_RATE } from "../../utils/constants"
 import Button from "../form/Button"
 import Form from "../form/Form"

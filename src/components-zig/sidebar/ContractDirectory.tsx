@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { FaChevronRight, FaChevronDown, FaDownload, FaTrash, FaUpload } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import useProjectStore from '../../ui-ziggurat/store/projectStore'
+import useProjectStore from '../../store/projectStore'
 import { Contract } from '../../types/ziggurat/Contracts';
 import Button from '../form/Button';
 import { Tooltip } from '../popups/Tooltip';

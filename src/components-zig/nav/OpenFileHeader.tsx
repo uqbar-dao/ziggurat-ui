@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import useProjectStore from '../../ui-ziggurat/store/projectStore'
+import useProjectStore from '../../store/projectStore'
 import Row from '../spacing/Row'
 import Link from './Link'
 import Button from '../form/Button'

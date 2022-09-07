@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { FaPen, FaTrash, FaChevronDown, FaChevronUp, FaPlay } from 'react-icons/fa';
 import Col from '../spacing/Col'
 import Row from '../spacing/Row'
-import useProjectStore from '../../ui-ziggurat/store/projectStore';
+import useProjectStore from '../../store/projectStore';
 import Button from '../form/Button';
 import { Test, TestResult } from '../../types/ziggurat/TestData';
 import Input from '../form/Input';

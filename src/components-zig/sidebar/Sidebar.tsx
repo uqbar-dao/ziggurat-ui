@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { FaRegPlusSquare, FaSave, FaFileAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import useProjectStore from '../../ui-ziggurat/store/projectStore'
+import useProjectStore from '../../store/projectStore'
 import Button from '../form/Button';
 import Input from '../form/Input';
 import { Tooltip } from '../popups/Tooltip';

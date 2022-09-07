@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react"
-import useProjectStore from "../../ui-ziggurat/store/projectStore"
+import useProjectStore from "../../store/projectStore"
 import { FormValues } from "../../types/ziggurat/FormValues"
 import { METADATA_GRAIN_ID, MY_CONTRACT_ID, ZIGS_ACCOUNT_ID } from "../../utils/constants"
 import { formValuesFromGrain } from "../../utils/form"

@@ -3,7 +3,7 @@ import { Droppable, Draggable } from 'react-beautiful-dnd'
 import { FaChevronDown, FaChevronUp, FaPen, FaTrash } from 'react-icons/fa';
 import Col from '../spacing/Col'
 import Row from '../spacing/Row'
-import useProjectStore from '../../ui-ziggurat/store/projectStore';
+import useProjectStore from '../../store/projectStore';
 import { TestGrain } from '../../types/ziggurat/TestGrain';
 import Button from '../form/Button';
 import HexNum from '../text/HexNum'

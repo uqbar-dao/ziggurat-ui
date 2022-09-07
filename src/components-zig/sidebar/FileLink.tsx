@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { FaTrash } from 'react-icons/fa';
 import { useLocation } from 'react-router-dom';
-import useProjectStore from '../../ui-ziggurat/store/projectStore'
+import useProjectStore from '../../store/projectStore'
 import Button from '../form/Button';
 import { Tooltip } from '../popups/Tooltip';
 import Row from '../spacing/Row'

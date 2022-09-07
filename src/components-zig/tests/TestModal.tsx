@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react"
-import useProjectStore from "../../ui-ziggurat/store/projectStore"
+import useProjectStore from "../../store/projectStore"
 import { TestFormField, TestFormValues } from "../../types/ziggurat/TestForm"
 import { STATUS_CODES } from "../../utils/constants"
 import Button from "../form/Button"

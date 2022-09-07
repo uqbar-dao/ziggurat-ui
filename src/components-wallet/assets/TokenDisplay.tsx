@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { FaCaretRight, FaCaretDown, FaCoins, FaPortrait } from 'react-icons/fa';
-import useWalletStore from '../../ui-wallet/store/walletStore';
+import useWalletStore from '../../store/walletStore';
 import { Token } from '../../types/wallet/Token'
 import { abbreviateHex } from '../../utils/format';
 import { displayTokenAmount } from '../../utils/number';

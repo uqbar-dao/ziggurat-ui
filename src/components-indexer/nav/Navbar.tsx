@@ -6,7 +6,7 @@ import './Navbar.scss'
 import { isMobileCheck } from '../../utils/dimensions'
 import Dropdown from '../popups/Dropdown'
 import Text from '../text/Text'
-import useExplorerStore from '../../ui-indexer/store/explorerStore'
+import useExplorerStore from '../../store/explorerStore'
 
 const Navbar = () => {
   const [open, setOpen] = useState(false)

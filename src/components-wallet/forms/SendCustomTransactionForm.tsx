@@ -3,7 +3,7 @@ import Button from '../form/Button'
 import Form from '../form/Form'
 import Input from '../form/Input'
 import Row from '../spacing/Row'
-import useWalletStore from '../../ui-wallet/store/walletStore'
+import useWalletStore from '../../store/walletStore'
 import { removeDots } from '../../utils/format'
 import TextArea from '../form/TextArea'
 

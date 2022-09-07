@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { FaDownload, FaTrash, FaUpload, FaChevronDown, FaChevronRight } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import useProjectStore from '../../ui-ziggurat/store/projectStore'
+import useProjectStore from '../../store/projectStore'
 import Button from '../form/Button';
 import { Tooltip } from '../popups/Tooltip';
 import Col from '../spacing/Col'

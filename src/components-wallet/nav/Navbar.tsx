@@ -5,7 +5,7 @@ import Link from './Link'
 import logo from '../../assets/img/logo192.png'
 import { isMobileCheck } from '../../utils/dimensions'
 import { FaWallet, FaKey, FaHistory } from 'react-icons/fa'
-import useWalletStore from '../../ui-wallet/store/walletStore'
+import useWalletStore from '../../store/walletStore'
 import './Navbar.scss'
 
 const Navbar = () => {

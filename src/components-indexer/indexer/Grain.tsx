@@ -1,4 +1,4 @@
-import useExplorerStore from '../../ui-indexer/store/explorerStore'
+import useExplorerStore from '../../store/explorerStore'
 import { Grain } from '../../types/indexer/Grain'
 import { removeDots } from '../../utils/format'
 import CopyIcon from '../card/CopyIcon'

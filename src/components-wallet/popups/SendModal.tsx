@@ -14,7 +14,7 @@ import { Transaction } from '../../types/wallet/Transaction'
 import Modal, { ModalProps } from './Modal'
 
 import './SendModal.scss'
-import useWalletStore from '../../ui-wallet/store/walletStore'
+import useWalletStore from '../../store/walletStore'
 
 export type SendType = 'tokens' | 'nft' | 'custom';
 

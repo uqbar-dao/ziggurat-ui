@@ -1,5 +1,5 @@
 import { useCallback } from "react"
-import useProjectStore from "../../ui-ziggurat/store/projectStore"
+import useProjectStore from "../../store/projectStore"
 import { Test } from "../../types/ziggurat/TestData"
 import { truncateString } from "../../utils/format"
 import Button from "../form/Button"

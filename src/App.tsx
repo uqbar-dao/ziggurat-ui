@@ -1,8 +1,8 @@
 import React from 'react';
 import { PUBLIC_URL } from './utils/constants';
-import ZigguratMain from './ui-ziggurat/ZigguratMain';
-import IndexerMain from './ui-indexer/IndexerMain';
-import WalletMain from './ui-wallet/WalletMain';
+import ZigguratMain from './views/ZigguratMain';
+import IndexerMain from './views/IndexerMain';
+import WalletMain from './views/WalletMain';
 import Col from './components-zig/spacing/Col';
 import Container from './components-zig/spacing/Container';
 
