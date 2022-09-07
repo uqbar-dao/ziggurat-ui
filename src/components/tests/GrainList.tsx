@@ -6,10 +6,14 @@ import Row from '../spacing/Row'
 import useProjectStore from '../../store/projectStore';
 import { TestGrain } from '../../types/TestGrain';
 import Button from '../form/Button';
+import HexNum from '../text/HexNum'
+import Text from '../text/Text'
 
 import './GrainList.scss'
 import { METADATA_GRAIN_ID, MY_CONTRACT_ID, ZIGS_ACCOUNT_ID } from '../../utils/constants';
 import { displayPubKey } from '../../utils/account';
+import Field from '../form/Field';
+import Entry from '../form/Entry';
 
 interface GrainValueDisplayProps {
   grain: TestGrain
@@ -23,13 +27,6 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain, testId }: Grai
   const [expanded, setExpanded] = useState(false)
 
   const grainStyle = {
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    width: 'calc(100% - 32px)',
-    margin: '8px 8px 0',
-    padding: 8,
-    border: '1px solid black',
-    borderRadius: 4,
     background: grain.obsolete ? 'rgba(0,0,0,0.05)' : 'white',
   }
 
@@ -45,70 +42,70 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain, testId }: Grai
     displayPubKey(grain.id)
 
   const grainContent = (
-    <Col style={{ ...grainStyle, position: 'relative' }}>
-      <Col style={{ width: '100%' }}>
-        <Row style={{ width: '100%' }}>
-          <Button
-            onClick={() => setExpanded(!expanded)}
-            variant='unstyled'
-            style={{ marginRight: 8, marginTop: 2, alignSelf: 'flex-start' }}
-            iconOnly
-            icon={expanded ? <FaChevronUp size={16} /> : <FaChevronDown size={16} />}
-          />
-          <Col style={{ wordBreak: 'break-all', maxWidth: 'calc(100% - 80px)' }}>
-            ID: {grainIdDisplay}
-          </Col>
+    <>
+      <Row style={{ ...grainStyle, width: '100%' }}>
+        <Button
+          onClick={() => setExpanded(!expanded)}
+          variant='unstyled'
+          style={{ marginRight: 8, marginTop: 2, alignSelf: 'flex-start' }}
+          iconOnly
+          icon={expanded ? <FaChevronUp size={16} /> : <FaChevronDown size={16} />}
+        />
+        <Col style={{ wordBreak: 'break-all' }}>
+          <HexNum num={grain.id} displayNum={grainIdDisplay} />
+        </Col>
+        <Row style={{ marginLeft: 'auto'}}>
+          {/* {!grain.obsolete && (
+            <Button
+              onClick={() => editGrain(grain, true)}
+              variant='unstyled'
+              iconOnly
+              icon={<FaCopy size={14} />}
+              style={{ marginRight: 8 }}
+            />
+          )} */}
+          {!grain.obsolete && !untouchable && (
+            <Button
+              onClick={() => editGrain(grain)}
+              variant='unstyled'
+              iconOnly
+              icon={<FaPen size={14} />}
+            />
+          )}
+          {!untouchable && (
+            <Button
+              onClick={() => { if(window.confirm('Are you sure you want to remove this grain?')) { deleteGrain(grain.id, testId) } }}
+              variant='unstyled'
+              className='delete'
+              style={{ marginLeft: 8 }}
+              iconOnly
+              icon={<FaTrash size={14} />}
+            />
+          )}
         </Row>
-      </Col>
-      {expanded && <Col>
-        <div>Holder: {grain.holder}</div>
-        <div>Lord: {grain.lord}</div>
-        <div>Town: {grain.town_id}</div>
-        <div>Label: {grain.label}</div>
-        <div>Data:</div>
-        <div>{grain.data_text || grain.data}</div>
-        {/* <Values values={grainData} /> */}
-      </Col>}
-      <Row style={{ position: 'absolute', top: 4, right: 4, padding: 4 }}>
-        {/* {!grain.obsolete && (
-          <Button
-            onClick={() => editGrain(grain, true)}
-            variant='unstyled'
-            iconOnly
-            icon={<FaCopy size={14} />}
-            style={{ marginRight: 8 }}
-          />
-        )} */}
-        {!grain.obsolete && !untouchable && (
-          <Button
-            onClick={() => editGrain(grain)}
-            variant='unstyled'
-            iconOnly
-            icon={<FaPen size={14} />}
-          />
-        )}
-        {!untouchable && (
-          <Button
-            onClick={() => { if(window.confirm('Are you sure you want to remove this grain?')) { deleteGrain(grain.id, testId) } }}
-            variant='unstyled'
-            className="delete"
-            style={{ marginLeft: 8 }}
-            iconOnly
-            icon={<FaTrash size={14} />}
-          />
-        )}
       </Row>
-    </Col>
+      {expanded && <Entry>
+        <Field name='Holder'> {grain.holder}</Field>
+        <Field name='Lord'> {grain.lord}</Field>
+        <Field name='Town'> {grain.town_id}</Field>
+        <Field name='Label'> {grain.label}</Field>
+        <Field name='Data'>
+          <Text breakWord>
+            {grain.data_text || grain.data}
+          </Text>
+        </Field>
+      </Entry>}
+    </>
   )
 
   return (
     <Draggable draggableId={grain.id} index={grainIndex} isDragDisabled/*={Boolean(grain.obsolete)}*/>
       {(provided: any, snapshot: any) => (
         <>
-          <Row key={grain.id} className="grain" innerRef={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+          <Col key={grain.id} className='grain' innerRef={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
             {grainContent}
-          </Row>
-          {snapshot.isDragging && snapshot.draggingOver !== 'grains' && <Row className='grain'>{grainContent}</Row>}
+          </Col>
+          {snapshot.isDragging && snapshot.draggingOver !== 'grains' && <Col className='grain'>{grainContent}</Col>}
         </>
       )}
     </Draggable>
@@ -122,7 +119,7 @@ interface GrainListProps {
 }
 
 export const GrainList = ({ grains, editGrain, testId }: GrainListProps) =>
-  <Droppable droppableId="grains" style={{ width: '100%', height: '100%' }}>
+  <Droppable droppableId='grains' style={{ width: '100%', height: '100%' }}>
     {(provided: any) => (
       <Col className='grains' {...provided.droppableProps} innerRef={provided.innerRef} style={{ ...provided.droppableProps.style,  width: '100%', overflow: 'scroll' }}>
         {grains.map((grain, i) => (

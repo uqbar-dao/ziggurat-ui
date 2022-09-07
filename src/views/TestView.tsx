@@ -18,6 +18,8 @@ import { OpenFileHeader } from '../components/nav/OpenFileHeader';
 import { DEFAULT_BUDGET, DEFAULT_RATE } from '../utils/constants';
 import { Tooltip } from '../components/popups/Tooltip';
 import { GrainModal } from '../components/tests/GrainModal';
+import Text from '../components/text/Text'
+
 
 import './TestView.scss'
 import { BLANK_TEST_FORM, TestFormField, TestFormValues } from '../types/TestForm';
@@ -170,25 +172,26 @@ export const TestView = () => {
   return (
     <DragDropContext onDragEnd={handleDragAndDropGrain}>
       <OpenFileHeader />
-      <Row className="tests" style={{ flexDirection: isMobile ? 'column' : 'row' }}>
+      <Row className='tests' style={{ flexDirection: isMobile ? 'column' : 'row' }}>
         <Col style={{ height: isMobile ? 600 : '100%', width: isMobile ? '100%' : '50%' }}>
-          <Row className="section-header">
+          <Row className='section-header'>
             <Row>
-              <Row className="title" style={{ marginRight: 8 }}>Test Actions</Row>
+              <Row className='title' style={{ marginRight: 8 }}>Test Actions</Row>
             </Row>
             <Row>
-              <Button style={{ width: 60 }} onClick={() => setShowRunModal(true)} variant='unstyled' icon={<FaPlay size={14} />}>
+              <Button mr1 variant='unstyled' onClick={() => setShowRunModal(true)}>
+                <FaPlay size={'0.75em'} style={{marginRight: '0.5em'}} />
                 Run
               </Button>
-              <Row className="action" onClick={() => setShowTestModal(true)}>+ Add Test</Row>
+              <Button mr1 variant='unstyled' className='action' onClick={() => setShowTestModal(true)}>+ Add Test</Button>
             </Row>
           </Row>
           <TestList editTest={editTest} showTestExpectationModal={showTestExpectationModal} />
         </Col>
         <Col style={{ height: isMobile ? 600 : '100%', width: isMobile ? '100%' : '50%', borderLeft: '1px solid lightgray' }}>
-          <Row className="section-header">
-            <Row className="title">Chain State (Granary)</Row>
-            <Row className="action" onClick={() => populateGrainForm()}>+ Add Grain</Row>
+          <Row className='section-header'>
+            <Row className='title'>Chain State (Granary)</Row>
+            <Button mr1 variant='unstyled' className='action' onClick={() => populateGrainForm()}>+ Add Grain</Button>
           </Row>
           <GrainList grains={Object.values(project?.state || {})} editGrain={populateGrainForm} />
         </Col>
@@ -199,10 +202,10 @@ export const TestView = () => {
 
         <Modal show={showRunModal} hide={() => setShowRunModal(false)}>
           <h3 style={{ marginTop: 0 }}>Run selected tests:</h3>
-          <Tooltip tip="Test results will affect subsequent tests">
+          <Tooltip tip='Test results will affect subsequent tests'>
             <Button style={{ width: 180, justifyContent: 'center' }} onClick={runAllTests(true)}>Sequentially</Button>
           </Tooltip>
-          <Tooltip tip="Each test will run separately">
+          <Tooltip tip='Each test will run separately'>
             <Button style={{ width: 180, justifyContent: 'center', marginTop: 16 }} onClick={runAllTests(false)}>Independently</Button>
           </Tooltip>
         </Modal>

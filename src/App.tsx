@@ -16,6 +16,8 @@ import Modal from './components/popups/Modal';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import './App.scss'
+
 function App() {
   const { loading, init } = useProjectStore()
   const [showError, setShowError] = useState(false)

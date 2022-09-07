@@ -1,0 +1,18 @@
+.hex {
+  &.colors {
+    .color-dot {
+      border: 3px solid;
+      border-radius: 999px;
+
+      outline: 1px solid;
+
+      height: 1.3em;
+      min-height: 1.3em;
+      width: 1.3em;
+      min-width: 1.3em;
+      
+      margin-right: 0.5em;
+
+    }
+  }
+}

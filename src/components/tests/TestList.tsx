@@ -15,6 +15,9 @@ import { displayPubKey } from '../../utils/account';
 import Modal from '../popups/Modal';
 
 import './TestList.scss'
+import Entry from '../form/Entry';
+import Divider from '../spacing/Divider';
+import Field from '../form/Field';
 
 export const DROPPABLE_DIVIDER = '___'
 
@@ -158,7 +161,7 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
           />
         </Row>
       </Row>
-      <Col style={{ width: '100%', paddingTop: 6, paddingBottom: 4 }}>
+      <Entry>
         <Row style={{ marginBottom: 4 }}>
           <Button
             onClick={() => setExpandInput(!expandInput)}
@@ -170,16 +173,19 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
           {test.name ? test.name : parseAction(test)}
         </Row>
         {expandInput && (
-          <Col style={{ width: '100%', marginBottom: 6 }}>
-            <Text>Expected Status Code: {STATUS_CODES[test.expected_error]}</Text>
+          <Entry>
+            <Field name='Expected Status Code'>
+              {STATUS_CODES[test.expected_error]}
+            </Field>
             {test.action_text.slice(1, -1).split(' ').map((line) => (
               <Text key={line} style={{ wordBreak: 'break-all', marginTop: 4 }}>{line}</Text>
             ))}
-          </Col>
+          </Entry>
         )}
-      </Col>
+      </Entry>
+      <Divider/>
       {test.result !== undefined && (
-        <Col className="output" style={{ flex: 1, marginTop: 4, paddingTop: 8, borderTop: '1px solid gray' }}>
+        <Entry className="output" >
           <Row style={{ marginBottom: 4 }}>
             {!!test.result && (<Button
               onClick={() => setExpandOutput(!expandOutput)}
@@ -189,15 +195,15 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
               icon={expandOutput ? <FaChevronUp size={16} /> : <FaChevronDown size={16} />}
             />)}
             {/* isRunning ? <Loader size='small' style={{ marginLeft: 8 }} dark /> :  */}
-            <Row>
-              <Text style={{ width: 56 }}>Result:</Text>
+            <Field name='Result'>
               <TestStatus errorCode={test?.result?.errorcode} success={test?.result?.success} expectedError={test.expected_error} />
-            </Row>
+            </Field>
           </Row>
           {expandOutput && <TestResultDisplay result={test.result} expectedError={test.expected_error} />}
-        </Col>
+        </Entry>
       )}
-      <Col className="expectations" style={{ flex: 1, marginTop: 4, paddingTop: 8, borderTop: '1px solid gray' }}>
+      <Divider/>
+      <Entry className="expectations">
         <Row style={{ marginBottom: 4, justifyContent: 'space-between' }}>
           <Row>
             <Button
@@ -215,7 +221,7 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
           </Button>
         </Row>
         {expandExpectations && <GrainList testId={test.id} grains={Object.values(test?.expected || {})} editGrain={showTestExpectationModal(test.id)} />}
-      </Col>
+      </Entry>
     </Col>
   )
 }
