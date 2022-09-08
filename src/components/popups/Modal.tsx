@@ -1,4 +1,4 @@
-import React, { MouseEvent, useEffect } from 'react'
+import React, { MouseEvent } from 'react'
 import { FaPlus } from 'react-icons/fa'
 import Text from '../../components/text/Text'
 import Col from '../spacing/Col'
@@ -10,7 +10,7 @@ export interface ModalProps extends React.HTMLAttributes<HTMLDivElement> {
   hide: () => void
   hideClose?: boolean
   children: React.ReactNode,
-  title: string,
+  title?: string
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -31,7 +31,7 @@ const Modal: React.FC<ModalProps> = ({
   return (
     <div className={`modal-backdrop ${show ? 'show' : ''}`} onClick={hide}>
       <Col {...props} className={`modal ${props.className || ''}`} onClick={dontHide}>
-        <Text large className='modal-title'>{title}</Text>
+        {Boolean(title) && <Text large className='modal-title'>{title}</Text>}
         {!hideClose && (
           <FaPlus className='close' onClick={hide} />
         )}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Token } from '../../types/wallet/Token'
 import TokenDisplay from './TokenDisplay'
 import { displayPubKey } from '../../utils/account'
@@ -8,7 +8,6 @@ import CopyIcon from '../../components/text/CopyIcon'
 import { removeDots } from '../../utils/format'
 import Text from '../../components/text/Text'
 import Col from '../../components/spacing/Col'
-import SendModal from '../popups/SendModal'
 import Button from '../../components/form/Button'
 
 import './AccountBalance.scss'
@@ -17,20 +16,19 @@ interface AccountBalanceProps extends React.HTMLAttributes<HTMLDivElement> {
   pubKey: string
   balances: Token[]
   showAddress: boolean
-  setId: (id: string) => void
-  setNftIndex: (nftId?: number) => void
+  selectToken: (tokenId: string, nftIndex?: number) => void
+  setCustomFrom: (customFrom: string) => void
 }
 
 const AccountBalance: React.FC<AccountBalanceProps> = ({
   balances,
   pubKey,
   showAddress,
-  setId,
-  setNftIndex,
+  selectToken,
+  setCustomFrom,
   ...props
 }) => {
-  const navigate = useNavigate()
-  const [showCustomModal, setShowCustomModal] = useState(false)
+  const nav = useNavigate()
 
   return (
     <div {...props} className={`account-balance ${props.className || ''}`}>
@@ -38,25 +36,24 @@ const AccountBalance: React.FC<AccountBalanceProps> = ({
         <Row style={{ justifyContent: 'space-between' }}>
           <Col>
             <Row style={{ alignItems: 'center' }}>
-              <h4 style={{ fontFamily: 'monospace, monospace', margin: 0, cursor: 'pointer' }} onClick={() => navigate(`/accounts/${pubKey}`)}>
+              <h4 style={{ fontFamily: 'monospace, monospace', margin: 0, cursor: 'pointer' }} onClick={() => nav(`/accounts/${pubKey}`)}>
                 {displayPubKey(pubKey)}
               </h4>
               <CopyIcon text={removeDots(pubKey)} />
             </Row>
           </Col>
-          <Button dark small style={{ marginTop: 8 }} onClick={() => setShowCustomModal(true)}>
+          <Button dark small style={{ marginTop: 8 }} onClick={() => setCustomFrom(pubKey)}>
             Custom Txn
           </Button>
         </Row>
       )}
       {balances.length ? (
         balances.map(b => (
-          <TokenDisplay token={b} key={b.id} setId={setId} setNftIndex={setNftIndex} />
+          <TokenDisplay token={b} key={b.id} selectToken={selectToken} />
         ))
       ) : (
         <Text>There are no assets under this account.</Text>
       )}
-      <SendModal title='Send (custom)' from={pubKey} formType='custom' show={showCustomModal} hide={() => setShowCustomModal(false)} children={null}/>
     </div>
   )
 }

@@ -26,6 +26,7 @@ function WalletMain() {
         <Route path="accounts" element={<AccountsView />} />
         <Route path="transactions/:hash" element={<TransactionView />} />
         <Route path="transactions" element={<TransactionsView />} />
+        <Route path="/:unsignedTransactionHash" element={<AssetsView />} />
         <Route
           path="*"
           element={

@@ -1,7 +1,8 @@
 @use '../../styles/colors.scss' as colors;
 
-form.form.send-raw-transaction-form {
+form.form.send-transaction-form {
   border-top-left-radius: 0;
+  min-width: 300px;
 
   .assets {
     font-family: monospace monospace;

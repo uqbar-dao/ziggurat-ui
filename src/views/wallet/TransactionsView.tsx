@@ -15,7 +15,7 @@ import './TransactionsView.scss'
 const PLACEHOLDER = 'All addresses'
 
 const TransactionsView = () => {
-  const { accounts, transactions } = useWalletStore()
+  const { accounts, transactions, unsignedTransactions } = useWalletStore()
   const [filteredTransactions, setFilteredTransactions] = useState(transactions)
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>()
 
@@ -54,6 +54,13 @@ const TransactionsView = () => {
           </select>
         </Row>
       </PageHeader>
+      <Entry title='Unsigned'>
+        {Object.keys(unsignedTransactions).length ? (
+          Object.values(unsignedTransactions).map(txn => <TransactionShort key={txn.hash} txn={txn} isUnsigned />)
+        ) : (
+          <Text>None</Text>
+        )}
+      </Entry>
       <Entry title='Pending'>
         {pending.length ? (
           pending.map(txn => <TransactionShort key={txn.hash} txn={txn} />)

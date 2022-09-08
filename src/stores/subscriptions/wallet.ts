@@ -3,9 +3,9 @@ import { Assets } from "../../types/wallet/Assets";
 import { Transaction } from "../../types/wallet/Transaction";
 import { showNotification } from "../../utils/notification";
 import { WalletStore } from "../walletStore";
-import { abbreviateHex } from '../../utils/format';
 import { TokenMetadataStore } from "../../types/wallet/TokenMetadata";
 import { Token } from "../../types/wallet/Token";
+import { SUCCESSFUL_STATUS, UNSIGNED_STATUS } from "../../utils/constants";
 
 export const handleBookUpdate = (get: GetState<WalletStore>, set: SetState<WalletStore>) => (balanceData: Assets) => {
   console.log('ASSETS:', balanceData)
@@ -35,14 +35,14 @@ export const handleTxnUpdate = (get: GetState<WalletStore>, set: SetState<Wallet
   const exists = transactions.find(({ hash }) => txn.hash === hash)
 
   if (exists) {
+    if (exists.status !== SUCCESSFUL_STATUS && txn.status === SUCCESSFUL_STATUS) {
+      showNotification(`Transaction confirmed!`)
+    }
+
     const newTransactions = transactions.map(t => ({ ...t, modified: t.hash === txn.hash ? new Date() : t.modified, status: Number(t.hash === txn.hash ? txn.status : t.status) }))
     set({ transactions: newTransactions, mostRecentTransaction: { ...exists, ...txn } })
-  } else if (txn.hash) {
+  } else if (txn.hash && txn.status !== UNSIGNED_STATUS) {
     // TODO: make sure sent-to-us will show up in getTransactions
     set({ transactions: [{ ...txn, created: new Date(), modified: new Date() } as Transaction].concat(transactions), mostRecentTransaction: txn })
-  }
-
-  if (txn.status === 0) {
-    showNotification(`Transaction ${abbreviateHex(txn.hash)} confirmed!`)
   }
 }
