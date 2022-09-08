@@ -17,6 +17,8 @@ import TextArea from '../../components/form/TextArea'
 import { NON_HEX_REGEX, NON_NUM_REGEX } from '../../utils/regex'
 
 import './SendTransactionForm.scss'
+import { Values } from '../../components-zig/tests/ValuesDisplay'
+import { ActionDisplay } from './ActionDisplay'
 
 export type SendFormType = 'tokens' | 'nft' | 'custom';
 
@@ -37,8 +39,10 @@ const SendTransactionForm = ({
 }: SendTransactionFormProps) => {
   const nav = useNavigate()
   const { unsignedTransactionHash } = useParams()
-  const { assets, metadata, importedAccounts, unsignedTransactions,
-    setLoading, getPendingHash, sendTokens, sendNft, submitSignedHash, setMostRecentTransaction, getUnsignedTransactions } = useWalletStore()
+  const {
+    assets, metadata, importedAccounts, unsignedTransactions, mostRecentTransaction,
+    setLoading, getPendingHash, sendTokens, sendNft, submitSignedHash, setMostRecentTransaction, getUnsignedTransactions, sendCustomTransaction
+  } = useWalletStore()
 
   const isNft = useMemo(() => formType === 'nft', [formType])
   const isCustom = useMemo(() => formType === 'custom', [formType])
@@ -70,7 +74,6 @@ const SendTransactionForm = ({
 
   useEffect(() => {
     if (selectedToken === undefined && id) {
-      console.log(2, selectedToken, id)
       setSelected(assetsList.find(a => a.id === id && (nftId === undefined || Number(nftId) === a.data.id)))
     }
   }, [assetsList, id]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -81,67 +84,67 @@ const SendTransactionForm = ({
     e.preventDefault()
     if (selectedToken?.data?.balance && Number(amount) * Math.pow(10, tokenMetadata?.data?.decimals || 1) > selectedToken?.data?.balance) {
       alert(`You do not have that many tokens. You have ${selectedToken.data?.balance} tokens.`)
-    } else if (!selectedToken) {
+    } else if (!selectedToken && !from) {
       alert('You must select a \'from\' account')
-    } else if (!to) {
-      // TODO: validate the destination address
-      alert('You must specify a destination address')
-    // } else if (removeDots(destination) === removeDots(selectedToken.holder)) {
-    //   alert('Destination cannot be the same as the origin')
     } else {
-      const payload = {
-        from: selectedToken.holder,
-        contract: selectedToken.contract,
-        town: selectedToken.town,
-        to: addHexDots(to),
-        grain: selectedToken.id,
-      }
-      
       setMostRecentTransaction(undefined)
-      if (isNft && selectedToken.data.id) {
-        await sendNft(payload)
-      } else if (!isNft) {
-        await sendTokens({ ...payload, amount: Number(amount) * Math.pow(10, tokenMetadata?.data?.decimals || 1) })
+
+      if (selectedToken) {
+        const payload = {
+          from: selectedToken.holder,
+          contract: selectedToken.contract,
+          town: selectedToken.town,
+          to: addHexDots(to),
+          grain: selectedToken.id,
+        }
+        
+        if (isNft && selectedToken.data.id) {
+          await sendNft(payload)
+        } else if (!isNft) {
+          await sendTokens({ ...payload, amount: Number(amount) * Math.pow(10, tokenMetadata?.data?.decimals || 1) })
+        }
+      } else {
+        const payload = { from: from || '', contract: addHexDots(contract), town: addHexDots(town), action: action.replace(/\n/g, '') }
+        await sendCustomTransaction(payload)
       }
 
       setLoading('Generating transaction...')
-      const unsigned = await getUnsignedTransactions(selectedToken.holder)
+      getUnsignedTransactions()
+      const unsigned = await getUnsignedTransactions()
       const mostRecentPendingHash = Object.keys(unsigned)
         .filter(hash => unsigned[hash].from === (selectedToken?.holder || from))
         .sort((a, b) => unsigned[a].nonce - unsigned[b].nonce)[0]
       
       console.log(mostRecentPendingHash, unsigned[mostRecentPendingHash])
       setPendingHash(mostRecentPendingHash)
-      setLoading(null)
     }
   }
 
   const submitSignedTransaction = useCallback(async (e: FormEvent) => {
     e.preventDefault()
-    if (!selectedToken) {
-      alert('There was an error, please close the form and try again.')
-    } else {
+    if (pendingHash && unsignedTransactions[pendingHash]) {
+      const fromAddress = unsignedTransactions[pendingHash].from
       let ethHash, sig, hardwareHash
-
-      const isHardwareWalletAddress = Boolean(importedAccounts.find(a => a.rawAddress === selectedToken.holder))
+  
+      const isHardwareWalletAddress = Boolean(importedAccounts.find(a => a.rawAddress === fromAddress))
       if (isHardwareWalletAddress) {
         const { hash, egg } = await getPendingHash()
         hardwareHash = hash
         setLoading('Please sign the transaction on your Ledger')
-        const sigResult = await signLedgerTransaction(removeDots(selectedToken.holder), hash, egg)
+        const sigResult = await signLedgerTransaction(removeDots(fromAddress), hash, egg)
         setLoading(null)
         ethHash = sigResult.ethHash ? sigResult.ethHash : undefined
         sig = sigResult.sig
         if (!sig)
           return alert('There was an error signing the transaction with Ledger.')
       }
-
-      submitSignedHash(selectedToken.holder, hardwareHash || pendingHash!, Number(rate), Number(bud), ethHash, sig)
+  
+      submitSignedHash(fromAddress, hardwareHash || pendingHash!, Number(rate), Number(bud), ethHash, sig)
       clearForm()
       setSubmitted(true)
       nav('/')
     }
-  }, [selectedToken, rate, bud, importedAccounts, pendingHash, nav, getPendingHash, submitSignedHash, setLoading, setSubmitted])
+  }, [unsignedTransactions, rate, bud, importedAccounts, pendingHash, nav, getPendingHash, submitSignedHash, setLoading, setSubmitted])
 
   const tokenDisplay = isNft ? (
     <Col>
@@ -151,22 +154,21 @@ const SendTransactionForm = ({
   ) : (
     <Col>
       <Text style={{ margin: '8px 12px 0px 0px', fontSize: 14 }}>Token - Balance: </Text>
-      <Text mono style={{ marginTop: 10 }}>{tokenMetadata?.data?.symbol || displayPubKey(selectedToken?.contract || '')} - {displayTokenAmount(selectedToken?.data?.balance!, tokenMetadata?.data?.decimals || 1)}</Text>
+      <Text mono style={{ margin: '8px 0' }}>{tokenMetadata?.data?.symbol || displayPubKey(selectedToken?.contract || '')} - {displayTokenAmount(selectedToken?.data?.balance!, tokenMetadata?.data?.decimals || 1)}</Text>
     </Col>
   )
-
-  console.log(isCustom)
 
   if (pendingHash) {
     return (
       <Form className='send-transaction-form' onSubmit={submitSignedTransaction}>
         {!isCustom && tokenDisplay}
-        {!to && <p style={{ wordBreak: 'break-word', maxWidth: 300, marginBottom: 0 }}>
-          {JSON.stringify(unsignedTransactions[pendingHash].action)}
-        </p>}
+        {!to && <ActionDisplay action={unsignedTransactions[pendingHash].action} />}
         {to && <Input label='To:' style={{ width: '100%' }} containerStyle={{ marginTop: 12, width: '100%' }} value={to} disabled />}
         {!isNft && amount && to && <Input label='Amount:' style={{ width: '100%' }} containerStyle={{ marginTop: 12, width: '100%' }} value={amount} disabled />}
-        <Row style={{ marginTop: 16 }}>Hash: {pendingHash}<CopyIcon text={pendingHash} /></Row>
+        <Col>
+          <Row style={{ marginTop: 16, fontWeight: 'bold' }}>Hash: <CopyIcon text={pendingHash}/></Row>
+          <Row style={{ wordBreak: 'break-all' }}>{pendingHash}</Row>
+        </Col>
         <Row style={{ justifyContent: 'space-between', marginTop: 12 }}>
           <Input
             label='Gas Price:'
@@ -193,9 +195,7 @@ const SendTransactionForm = ({
         </Button>
       </Form>
     )
-  }
-  console.log(isCustom)
-  if (isCustom) {
+  } else if (isCustom) {
     return (
       <Form className='send-transaction-form' onSubmit={generateTransaction}>
         <Input label='From:' containerStyle={{ marginTop: 12, width: '100%' }} value={from || ''} style={{ width: '100%' }} disabled />

@@ -16,6 +16,14 @@ import { createSubscription } from "./subscriptions/createSubscription"
 import { Assets } from "../types/wallet/Assets"
 import { generateSendTokenPayload } from "./util"
 
+const pokeWithAlert = async (json: any) => {
+  try {
+    await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json })
+  } catch (error) {
+    alert(`Error with transaction: ${String(error)}`)
+  }
+}
+
 export interface WalletStore {
   loadingText: string | null,
   accounts: HotWallet[],
@@ -235,15 +243,16 @@ const useWalletStore = create<WalletStore>(
     },
     sendTokens: async (payload: SendTokenPayload) => {
       const json = generateSendTokenPayload(payload)
-      await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json })
+      await pokeWithAlert(json)
     },
     sendNft: async (payload: SendNftPayload) => {
       const json = generateSendTokenPayload(payload)
-      await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json })
+      await pokeWithAlert(json)
     },
-    sendCustomTransaction: async ({ from, contract, town, data }: SendCustomTransactionPayload) => {
-      const json = { 'submit-custom': { from, contract, town, action: { text: data } } }
-      await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json })
+    sendCustomTransaction: async ({ from, contract, town, action }: SendCustomTransactionPayload) => {
+      const json = { 'transaction': { from, contract, town, action: { text: action } } }
+      console.log('SUBMIT CUSTOM:', json)
+      await pokeWithAlert(json)
     },
     getPendingHash: async () => {
       const { hash, egg } = await api.scry<{ hash: string; egg: any }>({ app: 'wallet', path: '/pending' }) || {}

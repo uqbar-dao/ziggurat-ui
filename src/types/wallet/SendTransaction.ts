@@ -5,7 +5,7 @@ export interface SendTransactionPayload {
 }
 
 export interface SendCustomTransactionPayload extends SendTransactionPayload {
-  data: string
+  action: string
 }
 
 export interface SendAssetPayload extends SendTransactionPayload {

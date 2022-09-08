@@ -46,7 +46,7 @@ const SendModal = ({
       title={title}
       show={show} 
       hide={hideModal}
-      style={{ width: '40%', minWidth: 320 }}
+      style={{ width: '40%', minWidth: 350 }}
       className='send-view'
     >
       {submitted ? (

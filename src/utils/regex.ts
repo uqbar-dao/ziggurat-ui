@@ -8,5 +8,5 @@ export const BLOCK_SEARCH_REGEX = /[0-9]+\/[0-9]+\/[0-9]+/
 export const TXN_HASH_REGEX = /^0x([A-Fa-f0-9]{64})$/
 export const GRAIN_REGEX = /^0x([A-Fa-f0-9]+)$/
 
-export const NON_HEX_REGEX = /[^xA-Fa-f0-9]/g
+export const NON_HEX_REGEX = /[^xA-Fa-f0-9.]/g
 export const NON_NUM_REGEX = /[^0-9.]/g
