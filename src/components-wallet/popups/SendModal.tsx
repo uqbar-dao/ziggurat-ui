@@ -8,47 +8,33 @@ import Text from '../../components/text/Text'
 import { abbreviateHex } from '../../utils/format'
 import CopyIcon from '../../components/text/CopyIcon';
 import { getStatus } from '../../utils/constants'
-import SendTokenForm from '../forms/SendTokenForm'
-import SendCustomTransactionForm from '../forms/SendCustomTransactionForm'
+import SendTransactionForm, { SendFormType } from '../forms/SendTransactionForm'
 import Modal, { ModalProps } from '../../components/popups/Modal'
 import useWalletStore from '../../stores/walletStore'
 
 import './SendModal.scss'
 
-export type SendType = 'tokens' | 'nft' | 'custom';
-
 interface SendModalProps extends ModalProps {
   id?: string
   from?: string
   nftId?: number
-  formType: SendType
-  title: string,
-  show: boolean,
+  formType?: SendFormType
+  show: boolean
+  title: string
   hide: () => void
 }
 
 const SendModal = ({
   id = '',
   from = '',
-  title = 'Send',
   nftId,
   show,
   formType,
-  hide
+  title,
+  hide,
 }: SendModalProps) => {
   const { mostRecentTransaction: txn } = useWalletStore()
   const [submitted, setSubmitted] = useState(false)
-
-  const getForm = () => {
-    switch (formType) {
-      case 'tokens':
-        return <SendTokenForm {...{ setSubmitted, id, formType: 'tokens' }} />
-      case 'nft':
-        return <SendTokenForm {...{ setSubmitted, id, nftId, formType: 'nft' }} />
-      case 'custom':
-        return <SendCustomTransactionForm {...{ setSubmitted, from }} />
-    }
-  }
 
   const hideModal = () => {
     hide();
@@ -57,9 +43,10 @@ const SendModal = ({
 
   return (
     <Modal 
-      title={title} 
+      title={title}
       show={show} 
-      hide={hideModal} 
+      hide={hideModal}
+      style={{ width: '40%', minWidth: 320 }}
       className='send-view'
     >
       {submitted ? (
@@ -76,8 +63,8 @@ const SendModal = ({
               </Row>
               <Row style={{ marginBottom: 16 }}>
                 <Text style={{ marginRight: 9 }}>Status: </Text>
+                {(txn.status === 100 || txn.status === 101) && <Loader style={{ marginRight: 16 }} />}
                 <Text mono>{getStatus(txn.status)}</Text>
-                {(txn.status === 100 || txn.status === 101) && <Loader style={{ marginLeft: 16 }} />}
               </Row>
             </>
           ) : (
@@ -90,7 +77,7 @@ const SendModal = ({
           <Button style={{ alignSelf: 'center' }} onClick={hideModal}>Done</Button>
         </Col>
       ) : (
-        getForm()
+        <SendTransactionForm {...{ setSubmitted, id, nftId, formType, from }} />
       )}
     </Modal>
   )

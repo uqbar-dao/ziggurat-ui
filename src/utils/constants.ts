@@ -42,6 +42,9 @@ export const STATUS_CODES : { [key: number] : string } = {
   209: 'superceded by another egg in batch',
 }
 
+export const UNSIGNED_STATUS = 100
+export const SUCCESSFUL_STATUS = 200
+
 export const getStatus = (status: number) => STATUS_CODES[status] || 'unknown'
 
 export const mockData = process.env.NODE_ENV === 'development' && Boolean(process.env.REACT_APP_MOCK_DATA)

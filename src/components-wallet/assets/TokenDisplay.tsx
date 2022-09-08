@@ -18,14 +18,12 @@ import './TokenDisplay.scss'
 
 interface TokenDisplayProps extends React.HTMLAttributes<HTMLDivElement> {
   token: Token
-  setId: (id: string) => void
-  setNftIndex: (nftId?: number) => void
+  selectToken: (tokenId: string, nftIndex?: number) => void
 }
 
 const TokenDisplay: React.FC<TokenDisplayProps> = ({
   token,
-  setId,
-  setNftIndex,
+  selectToken,
   ...props
 }) => {
   const { metadata } = useWalletStore()
@@ -33,10 +31,6 @@ const TokenDisplay: React.FC<TokenDisplayProps> = ({
   const { contract, id, data } = token
   const [open, setOpen] = useState(false)
   const isToken = data.balance !== undefined
-  const selectToken = () => {
-    setId(id)
-    setNftIndex(data.id)
-  }
 
   return (
     <Col {...props} onClick={() => !open && setOpen(true)} className={`token-display ${props.className || ''} ${open ? 'open' : ''}`}>
@@ -54,7 +48,7 @@ const TokenDisplay: React.FC<TokenDisplayProps> = ({
             ) : (
             <Text># {data.id || ''}</Text>
           )}
-          <Button onClick={selectToken} style={{ marginLeft: 16 }} dark small>
+          <Button onClick={(e) => {e.stopPropagation();selectToken(id, data.id)}} style={{ marginLeft: 16 }} dark small>
             Transfer
           </Button>
         </Row>

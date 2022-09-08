@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import AccountBalance from '../../components-wallet/assets/AccountBalance'
 import Entry from '../../components/spacing/Entry'
 import PageHeader from '../../components/page/PageHeader'
@@ -8,21 +8,60 @@ import Row from '../../components/spacing/Row'
 import Text from '../../components/text/Text'
 import useWalletStore from '../../stores/walletStore'
 import { displayPubKey } from '../../utils/account';
+import { useNavigate, useParams } from 'react-router-dom'
+import { SendFormType } from '../../components-wallet/forms/SendTransactionForm'
 
 import './AssetsView.scss'
 
 const PLACEHOLDER = 'All addresses'
 
 const AssetsView = () => {
-  const { assets, accounts, loadingText, metadata } = useWalletStore()
+  const nav = useNavigate()
+  const { unsignedTransactionHash } = useParams()
+  const { assets, accounts, loadingText, metadata, unsignedTransactions } = useWalletStore()
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>()
+  const [sendFormType, setSendFormType] = useState<SendFormType | undefined>()
   const [id, setId] = useState<string | undefined>()
   const [nftId, setNftIndex] = useState<number | undefined>()
-  const accountsList = useMemo(() => selectedAddress ? [selectedAddress] : Object.keys(assets), [assets, selectedAddress])
+  const [customFrom, setCustomFrom] = useState<string | undefined>()
 
+  const accountsList = useMemo(() => selectedAddress ? [selectedAddress] : Object.keys(assets), [assets, selectedAddress])
   const selectAddress = (e: any) => {
     setSelectedAddress(e.target.value === PLACEHOLDER ? undefined : e.target.value)
   }
+  const setCustomFromAddress = useCallback((address: string) => {
+    setCustomFrom(address)
+    setSendFormType('custom')
+  }, [setCustomFrom, setSendFormType])
+
+  const setTokenToSend = useCallback((tokenId: string, nftIndex?: number) => {
+    setId(tokenId)
+    setNftIndex(nftIndex)
+    setSendFormType(nftIndex ? 'nft' : 'tokens')
+  }, [setNftIndex, setSendFormType])
+
+  const modalTitle = sendFormType === 'custom' ?
+    'Send Custom Transaction' :
+    sendFormType === 'nft' ?
+    'Send NFT' :
+    'Send Tokens'
+
+  useEffect(() => {
+    if (unsignedTransactionHash) {
+      const txn = unsignedTransactions[unsignedTransactionHash]
+      if (txn) {
+        const grainId = Object.values(txn.action)[0]?.grain
+        const isToken = Boolean(Object.values(txn.action)[0]?.amount)
+
+        if (grainId) {
+          setId(grainId)
+          setSendFormType(isToken ? 'tokens' : 'nft')
+        } else {
+          setSendFormType('custom')
+        }
+      }
+    }
+  }, [unsignedTransactionHash, unsignedTransactions])
 
   return (
     <Container className='assets-view'>
@@ -48,22 +87,26 @@ const AssetsView = () => {
             key={a}
             pubKey={a}
             showAddress={!selectedAddress}
-            setId={setId}
-            setNftIndex={setNftIndex}
+            selectToken={setTokenToSend}
+            setCustomFrom={setCustomFromAddress}
             balances={Object.values(assets[a]).filter(({ data }) => metadata[data.metadata])}
           />
         ))}
       </Entry>
       <SendModal
-        title={'Send' + (nftId !== undefined ? ' NFT' : ' Tokens')}
-        show={Boolean(id)}
+        title={modalTitle}
+        show={Boolean(sendFormType)}
         id={id}
         nftId={nftId}
-        formType={nftId !== undefined ? 'nft' : 'tokens'}
+        from={customFrom}
+        formType={sendFormType}
         children={null}
         hide={() => {
+          nav('/')
+          setSendFormType(undefined)
           setId(undefined)
           setNftIndex(undefined)
+          setCustomFrom(undefined)
         }}
       />
     </Container>

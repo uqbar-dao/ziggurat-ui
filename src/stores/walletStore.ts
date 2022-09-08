@@ -4,7 +4,7 @@ import api from "../api"
 import { HotWallet, processAccount, RawAccount, HardwareWallet, HardwareWalletType, Seed } from "../types/wallet/Accounts"
 import { SendNftPayload, SendCustomTransactionPayload, SendTokenPayload } from "../types/wallet/SendTransaction"
 import { handleBookUpdate, handleTxnUpdate, handleMetadataUpdate } from "./subscriptions/wallet"
-import { CustomTransactions, Transaction } from "../types/wallet/Transaction"
+import { Transactions, Transaction } from "../types/wallet/Transaction"
 import { TokenMetadataStore } from "../types/wallet/TokenMetadata"
 import { removeDots } from "../utils/format"
 import { deriveLedgerAddress, getLedgerAddress } from "../utils/ledger"
@@ -24,6 +24,7 @@ export interface WalletStore {
   assets: Assets,
   selectedTown: number,
   transactions: Transaction[],
+  unsignedTransactions: Transactions,
   pathname: string,
   mostRecentTransaction?: Transaction,
   init: () => Promise<void>,
@@ -44,8 +45,11 @@ export interface WalletStore {
   sendNft: (payload: SendNftPayload) => Promise<void>,
   sendCustomTransaction: (payload: SendCustomTransactionPayload) => Promise<void>,
   getPendingHash: () => Promise<{ hash: string; egg: any; }>
-  submitSignedHash: (hash: string, ethHash: string, sig: { v: number; r: string; s: string; }) => Promise<void>
+  deleteUnsignedTransaction: (address: string, hash: string) => Promise<void>
+  getUnsignedTransactions: (address?: string) => Promise<{ [hash: string]: Transaction }>
+  submitSignedHash: (from: string, hash: string, rate: number, bud: number, ethHash?: string, sig?: { v: number; r: string; s: string; }) => Promise<void>
   setPathname: (pathname: string) => void
+  setMostRecentTransaction: (mostRecentTransaction?: Transaction) => void
 }
 
 const useWalletStore = create<WalletStore>(
@@ -57,6 +61,7 @@ const useWalletStore = create<WalletStore>(
     assets: {},
     selectedTown: 0,
     transactions: [],
+    unsignedTransactions: {},
     pathname: '/',
     init: async () => {
       set({ loadingText: 'Loading...' })
@@ -70,11 +75,13 @@ const useWalletStore = create<WalletStore>(
           api.subscribe(createSubscription('wallet', '/tx-updates', handleTxnUpdate(get, set)))
         }
     
-        const { getAccounts, getTransactions } = get()
+        const { getAccounts, getTransactions, getUnsignedTransactions } = get()
     
         // only wait for accounts before removing the loading text
         await getAccounts()
         getTransactions()
+        getUnsignedTransactions()
+        
       } catch (error) {
         console.warn('INIT ERROR:', error)
       }
@@ -106,10 +113,17 @@ const useWalletStore = create<WalletStore>(
       if (mockData) {
         return set({ transactions: mockTransactions })
       }
-      const { accounts } = get()
+      const { accounts, importedAccounts } = get()
       if (accounts.length) {
-        const rawTransactions = await api.scry<CustomTransactions>({ app: 'wallet', path: `/transactions/${accounts[0].rawAddress}` })
-        const transactions = Object.keys(rawTransactions).map(hash => ({ ...rawTransactions[hash], hash }))
+        const rawTransactions = await Promise.all(
+          accounts
+            .map(({ rawAddress }) => rawAddress)
+            .concat(importedAccounts.map(({ rawAddress }) => rawAddress))
+            .map(address => api.scry<Transactions>({ app: 'wallet', path: `/transactions/${address}` }))
+        )
+        const allRawTransactions = rawTransactions.reduce((acc: Transactions, cur: Transactions) => ({ ...acc, ...cur }))
+        console.log('TRANSACTIONS:', allRawTransactions)
+        const transactions = Object.keys(allRawTransactions).map(hash => ({ ...allRawTransactions[hash], hash })).sort((a, b) => a.nonce - b.nonce)
         set({ transactions })
       }
     },
@@ -211,23 +225,13 @@ const useWalletStore = create<WalletStore>(
       return seedData
     },
     setNode: async (town: number, ship: string) => {
-      await api.poke({
-        app: 'wallet',
-        mark: 'zig-wallet-poke',
-        json: {
-          'set-node': { town, ship }
-        }
-      })
+      const json = { 'set-node': { town, ship } }
+      await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json  })
       set({ selectedTown: town })
     },
     setIndexer: async (ship: string) => {
-      await api.poke({
-        app: 'wallet',
-        mark: 'zig-wallet-poke',
-        json: {
-          'set-indexer': { ship }
-        }
-      })
+      const json = { 'set-indexer': { ship } }
+      await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json })
     },
     sendTokens: async (payload: SendTokenPayload) => {
       const json = generateSendTokenPayload(payload)
@@ -237,17 +241,8 @@ const useWalletStore = create<WalletStore>(
       const json = generateSendTokenPayload(payload)
       await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json })
     },
-    sendCustomTransaction: async ({ from, to, town, data, rate, bud }: SendCustomTransactionPayload) => {
-      const json = {
-        'submit-custom': {
-          from,
-          to,
-          town,
-          gas: { rate, bud },
-          args: data
-        }
-      }
-
+    sendCustomTransaction: async ({ from, contract, town, data }: SendCustomTransactionPayload) => {
+      const json = { 'submit-custom': { from, contract, town, action: { text: data } } }
       await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json })
     },
     getPendingHash: async () => {
@@ -255,19 +250,37 @@ const useWalletStore = create<WalletStore>(
       console.log('PENDING:', hash, egg)
       return { hash, egg }
     },
-    submitSignedHash: async (hash: string, ethHash: string, sig: { v: number; r: string; s: string; }) => {
-      console.log({
-        'submit-signed': { hash, ethHash, sig }
-      })
-      await api.poke({
-        app: 'wallet',
-        mark: 'zig-wallet-poke',
-        json: {
-          'submit-signed': { hash, 'eth-hash': addHexDots(ethHash), sig }
-        }
-      })
+    deleteUnsignedTransaction: async (address: string, hash: string) => {
+      const json = { 'delete-pending': { from: address, hash } }
+      await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json })
+      get().getUnsignedTransactions(address)
+    },
+    getUnsignedTransactions: async (address?: string) => {
+      const { accounts, importedAccounts } = get()
+      const unsigned = await Promise.all(
+        accounts
+          .map(({ rawAddress }) => rawAddress)
+          .concat(importedAccounts.map(({ rawAddress }) => rawAddress))
+          .map(address => api.scry<Transactions>({ app: 'wallet', path: `/pending/${address}` }))
+      )
+      const unsignedMap = unsigned.reduce((acc: Transactions, cur: Transactions) => ({ ...acc, ...cur }))
+      const unsignedTransactions = Object.keys(unsignedMap).reduce((acc, hash) => {
+        acc[hash] = { ...unsignedMap[hash], hash }
+        return acc
+      }, {} as Transactions)
+      console.log('PENDING:', unsignedTransactions)
+      set({ unsignedTransactions })
+      return unsignedTransactions
+    },
+    submitSignedHash: async (from: string, hash: string, rate: number, bud: number, ethHash?: string, sig?: { v: number; r: string; s: string; }) => {
+      const json = ethHash && sig ?
+        { 'submit-signed': { from, hash, gas: { rate, bud }, ethHash, sig } } :
+        { 'submit': { from, hash, gas: { rate, bud } } }
+      await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json })
+      get().getUnsignedTransactions(from)
     },
     setPathname: (pathname: string) => set({ pathname }),
+    setMostRecentTransaction: (mostRecentTransaction?: Transaction) => set({ mostRecentTransaction })
   }),
   {
     name: 'contractStore',

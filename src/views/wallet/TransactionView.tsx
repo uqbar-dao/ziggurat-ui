@@ -82,9 +82,9 @@ const TransactionView = () => {
             </Field>
         </Entry>
         <Entry>
-          <Field name='Args:'>
+          <Field name='Action:'>
             <Col style={{ marginBottom: 12 }}>
-              <Text style={{ overflowWrap: 'break-word' }} mono breakWord>{JSON.stringify(txn.args)}</Text>
+              <Text style={{ overflowWrap: 'break-word' }} mono breakWord>{JSON.stringify(txn.action)}</Text>
             </Col>
           </Field>
         </Entry>

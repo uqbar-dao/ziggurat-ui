@@ -1,9 +1,7 @@
 export interface SendTransactionPayload {
   from: string
-  to: string
+  contract: string
   town: string
-  rate: number
-  bud: number
 }
 
 export interface SendCustomTransactionPayload extends SendTransactionPayload {
@@ -11,7 +9,7 @@ export interface SendCustomTransactionPayload extends SendTransactionPayload {
 }
 
 export interface SendAssetPayload extends SendTransactionPayload {
-  destination: string
+  to: string
   grain: string
 }
 
