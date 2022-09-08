@@ -15,7 +15,7 @@ const WalletNavbar = () => {
   return (
     <Row className='navbar'>
       <Row>
-        <Link href='/' className="nav-link logo">
+        <Link external href='/apps/ziggurat' className="nav-link logo">
           <img src={logo} alt="Uqbar Logo" />
         </Link>
         <Link className={`nav-link ${(pathname === '/' || pathname.match('/wallet/?$')) ? 'selected' : ''}`} href="/">
