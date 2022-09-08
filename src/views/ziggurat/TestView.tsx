@@ -175,22 +175,22 @@ export const TestView = () => {
         <Col style={{ height: isMobile ? 600 : '100%', width: isMobile ? '100%' : '50%' }}>
           <Row className='section-header'>
             <Row>
-              <Row className='title' style={{ marginRight: 8 }}>Test Actions</Row>
+              <Text mr1 className='title'>Test Actions</Text>
             </Row>
             <Row>
-              <Button className='mr1' variant='unstyled' onClick={() => setShowRunModal(true)}>
+              <Button className='action mr1' small onClick={() => setShowTestModal(true)}>+ Add Test</Button>
+              <Button dark small onClick={() => setShowRunModal(true)}>
                 <FaPlay size={'0.75em'} style={{marginRight: '0.5em'}} />
                 Run
               </Button>
-              <Button variant='unstyled' className='action mr1' onClick={() => setShowTestModal(true)}>+ Add Test</Button>
             </Row>
           </Row>
           <TestList editTest={editTest} showTestExpectationModal={showTestExpectationModal} />
         </Col>
         <Col style={{ height: isMobile ? 600 : '100%', width: isMobile ? '100%' : '50%', borderLeft: '1px solid lightgray' }}>
           <Row className='section-header'>
-            <Row className='title'>Chain State (Granary)</Row>
-            <Button variant='unstyled' className='action mr1' onClick={() => populateGrainForm()}>+ Add Grain</Button>
+            <Text className='title'>Chain State (Granary)</Text>
+            <Button small className='action' onClick={() => populateGrainForm()}>+ Add Grain</Button>
           </Row>
           <GrainList grains={Object.values(project?.state || {})} editGrain={populateGrainForm} />
         </Col>

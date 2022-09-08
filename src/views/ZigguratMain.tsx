@@ -23,7 +23,7 @@ function ZigguratMain() {
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <Container>
+    <Container className='h-screen p0'>
       <BrowserRouter basename={`${PUBLIC_URL}/develop`}>
       <Col style={{ width: '100%', height: '100%' }}>
         <Row style={{ height: '100%', width: '100%' }}>

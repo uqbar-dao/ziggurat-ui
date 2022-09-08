@@ -52,22 +52,24 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
   const isMobile = isMobileCheck()
 
   return (
-    <Form className="editor-view" style={{ visibility: hide ? 'hidden' : 'visible', padding: 0, height: '100%', width: '100%', background: 'white', position: 'absolute' }}>
-      <OpenFileHeader />
-      <Row style={{ height: 'calc(100% - 28px)', width: 'calc(100% - 2px)' }}>
+    <>
+    <OpenFileHeader />
+    <Form className='editor-view' style={{ visibility: hide ? 'hidden' : 'visible' }}>
+      <Row style={{ height: '100%', width: 'calc(100% - 2px)' }}>
         <Col style={{ height: '100%', width: '100%', borderBottom: isMobile ? '1px solid lightgray' : undefined }}>
           <Editor
             editorRef={editorRef}
             text={text}
             setText={setText}
             isContract
-          />
+            />
         </Col>
         {isGall && <Resizable defaultSize={{ width:320, height:200 }}>
-          <Iframe url={WEBTERM_PATH} height="100%" width='100%' />
+          <Iframe url={WEBTERM_PATH} height='100%' width='100%' />
         </Resizable>}
       </Row>
     </Form>
+    </>
   )
 }
 

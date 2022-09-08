@@ -7,6 +7,7 @@ import Button from '../../components/form/Button'
 
 import './OpenFileHeader.scss'
 import { genHref } from '../../utils/nav'
+import { FaPlus } from 'react-icons/fa'
 
 export const OpenFileHeader = () => {
   const { pathname } = useLocation()
@@ -30,7 +31,7 @@ export const OpenFileHeader = () => {
   }, [openFiles, setOpenFiles, nav, pathname, gallApps, currentProject])
 
   return (
-    <Row className='open-file-header' style={{ background: 'lightgray', height: 32, overflowX: 'scroll', width: '100%' }}>
+    <Row className='open-file-header'>
       {openFiles.map(({ project, file }) => {
         const prependProject = openFiles.find(of => of.project !== project && of.file === file)
         const isGall = Boolean(gallApps[project])
@@ -39,19 +40,18 @@ export const OpenFileHeader = () => {
 
         return (
           <Link key={project + file} className={`tab ${pathname.includes(href) ? 'selected' : ''}`} href={href} onClick={() => setCurrentProject(project)}>
-            <div style={{ fontSize: 12, whiteSpace: 'nowrap', marginTop: 2 }}>
+            <div className='tabName'>
               {fileName}{prependProject ? ` - ${project}` : ''}
             </div>
-            <Button
+            <Button className='close'
               variant='unstyled'
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
                 removeFile(project, file)
               }}
-              style={{ fontSize: 10, marginLeft: 6, marginTop: 4 }}
             >
-              &#10005;
+              <FaPlus style={{ transform: 'rotate(45deg)'}} />
             </Button>
           </Link>
         )
