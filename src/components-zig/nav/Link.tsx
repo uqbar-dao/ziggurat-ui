@@ -6,7 +6,6 @@ interface LinkProps extends React.HTMLAttributes<HTMLAnchorElement> {
   href: string;
   type?: string;
   underline?: boolean
-  urlPrefix?: string
   target?: string
 }
 

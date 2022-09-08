@@ -1,0 +1,32 @@
+.select-app {
+  border-radius: 1.5rem;
+  
+  .app-tile {
+    text-decoration: none;
+    // position: relative;
+    border-radius: 1.5em;
+    height: 100%;
+    margin: 0.5em;
+    padding: 1em;
+    
+    font-weight: 500;
+
+    &:hover {
+      opacity: 0.9;
+    }
+
+    .text {
+
+
+      text-decoration: none;
+      color: #eee;
+    }
+  }
+}
+
+.logo {
+  padding: 2px 8px 2px 12px;
+  img {
+    height: 28px;
+  }
+}
