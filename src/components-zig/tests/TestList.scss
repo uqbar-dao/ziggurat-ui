@@ -1,10 +1,34 @@
 @use '../../styles/colors.scss' as colors;
 
 .test-list {
+  overflow-y: auto;
+
   .result {
     cursor: pointer;
     &:hover {
       opacity: 0.8;
+    }
+  }
+
+  .test-entry {
+    justify-content: space-between;
+    margin: 8px;
+    padding: 8px;
+    border: 1px solid black;
+    border-radius: 4px;
+    position: relative;
+
+    .test-title {
+      border-bottom: 1px solid gray;
+      padding-bottom: 0.5em;
+    }
+
+    &:not(.selected) {
+      border-color: lightgray;
+    }
+
+    .iconOnly {
+      margin-left: 0.5em;
     }
   }
 }

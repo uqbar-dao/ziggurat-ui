@@ -1,22 +1,44 @@
 @use '../../styles/colors.scss' as colors;
 
 .open-file-header {
+  background: lightgray;
+  height: 32px;
+
   .tab {
-    border-radius: 8px 8px 0px 0px;
     text-decoration: none;
-    padding: 0px 8px 10px;
-    height: 24px;
-    justify-content: center;
+    padding: 10px 8px;
+    align-items: center;
     cursor: pointer;
-    text-align: center;
-    position: relative;
+    
     flex-direction: row;
+    justify-content: space-between;
     display: flex;
+
+    flex-grow: 1;
+    height: 100%;
+
     border-right: 1px solid gray;
-    align-items: flex-end;
+    white-space: nowrap;
 
     &.selected {
       background-color: white;
+      
+      .close {  
+        visibility: visible;
+      }
+    }
+
+    &:hover {
+      text-decoration: none;
+      
+      .close {  
+        visibility: visible;
+      }
+    }
+
+    .close {
+      visibility: hidden;
+      margin-top: 2px;
     }
   }
 

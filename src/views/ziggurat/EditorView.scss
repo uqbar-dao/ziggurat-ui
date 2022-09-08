@@ -1,6 +1,11 @@
 @use '../../styles/colors.scss' as colors;
 
 .editor-view {
+  padding: 0 !important;
+  height: calc(100vh - 32px); 
+  width: 100%;
+  background: white;
+
   .assets {
     font-family: monospace monospace;
   }
