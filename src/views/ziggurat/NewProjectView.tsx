@@ -172,7 +172,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
             <h3>Create a Project:</h3>
           </Row>
           <Input
-            style={{ width: 220 }}
+            style={{ width: 240 }}
             onChange={(e) => setOptions({ title: e.target.value?.replace(' ', '') })}
             value={options.title || ''}
             placeholder="Title (no spaces)"

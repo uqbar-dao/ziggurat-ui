@@ -5,6 +5,8 @@
   height: calc(100vh - 32px); 
   width: 100%;
   background: white;
+  position: relative;
+  overflow: hidden;
 
   .assets {
     font-family: monospace monospace;
