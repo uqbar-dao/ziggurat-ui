@@ -16,8 +16,8 @@ const CustomLink: React.FC<CustomLinkProps> = ({
   ...props
 }) => {
   return (
-    external ? <a href={href} className={`link ${props.className || ''} ${type}`}>{props.children}</a> :
-    <Link to={href} {...props} className={`link ${props.className || ''} ${type}`}>
+    external ? <a href={href} className={`link ${props.className || ''} ${type}`}>{props.children}</a> 
+    : <Link to={href} {...props} className={`link ${props.className || ''} ${type}`}>
       {props.children}
     </Link>
   )

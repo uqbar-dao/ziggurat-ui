@@ -42,6 +42,19 @@ export const STATUS_CODES : { [key: number] : string } = {
   209: 'superceded by another egg in batch',
 }
 
+export const STATUS_CODES_RAW : { [key: number] : string } = {
+  0: 'successfully performed',
+  1: 'submitted with raw id / no account info',
+  2: 'bad signature',
+  3: 'incorrect nonce',
+  4: 'lack zigs to fulfill budget',
+  5: 'couldn\'t find contract',
+  6: 'crash in contract execution',
+  7: 'validation of changed/issued/burned rice failed',
+  8: 'ran out of gas',
+  9: 'superceded by another egg in batch',
+}
+
 export const UNSIGNED_STATUS = 100
 export const SUCCESSFUL_STATUS = 200
 

@@ -22,6 +22,8 @@ import Text from '../../components/text/Text'
 import { BLANK_TEST_FORM, TestFormField, TestFormValues } from '../../types/ziggurat/TestForm';
 
 import './TestView.scss'
+import Field from '../../components/spacing/Field';
+import Entry from '../../components/spacing/Entry';
 
 export interface TestViewProps {}
 
@@ -172,22 +174,22 @@ export const TestView = () => {
     <DragDropContext onDragEnd={handleDragAndDropGrain}>
       <OpenFileHeader />
       <Row className='tests' style={{ flexDirection: isMobile ? 'column' : 'row' }}>
-        <Col style={{ height: isMobile ? 600 : '100%', width: isMobile ? '100%' : '50%' }}>
+        <Col className='test-actions' style={{ height: isMobile ? 600 : '100%', width: isMobile ? '100%' : '50%' }}>
           <Row className='section-header'>
             <Row>
               <Text mr1 className='title'>Test Actions</Text>
             </Row>
             <Row>
               <Button className='action mr1' small onClick={() => setShowTestModal(true)}>+ Add Test</Button>
-              <Button dark small onClick={() => setShowRunModal(true)}>
-                <FaPlay size={'0.75em'} style={{marginRight: '0.5em'}} />
+              <Button dark small className='run-all' onClick={() => setShowRunModal(true)}>
+                <FaPlay size={'0.75em'} />
                 Run
               </Button>
             </Row>
           </Row>
           <TestList editTest={editTest} showTestExpectationModal={showTestExpectationModal} />
         </Col>
-        <Col style={{ height: isMobile ? 600 : '100%', width: isMobile ? '100%' : '50%', borderLeft: '1px solid lightgray' }}>
+        <Col className='granary' style={{ height: isMobile ? 600 : '100%', width: isMobile ? '100%' : '50%',  }}>
           <Row className='section-header'>
             <Text className='title'>Chain State (Granary)</Text>
             <Button small className='action' onClick={() => populateGrainForm()}>+ Add Grain</Button>
@@ -199,13 +201,23 @@ export const TestView = () => {
 
         <GrainModal {...{ showGrainModal, hideGrainModal, isEdit, grainFormValues, updateGrainFormValue, setGrainFormValues, submitGrain, testExpectation }} />
 
-        <Modal title='Run selected tests:' show={showRunModal} hide={() => setShowRunModal(false)}>
-          <Tooltip tip='Test results will affect subsequent tests'>
-            <Button style={{ width: 180, justifyContent: 'center' }} onClick={runAllTests(true)}>Sequentially</Button>
-          </Tooltip>
-          <Tooltip tip='Each test will run separately'>
-            <Button style={{ width: 180, justifyContent: 'center', marginTop: 16 }} onClick={runAllTests(false)}>Independently</Button>
-          </Tooltip>
+        <Modal title='Run Selected Tests' show={showRunModal} hide={() => setShowRunModal(false)}>
+          <Entry>
+            <Field name='Sequential'>
+              <Text>Tests will run in order. Initial results will affect subsequent tests.</Text>
+            </Field>
+          </Entry>
+          <Entry>
+            <Field name='Parallel'>
+              <Text>Each test will run separately.</Text>
+            </Field>
+          </Entry>
+          <Entry>
+            <Row evenly>
+              <Button wide onClick={runAllTests(false)}>Run Parallel</Button>
+              <Button wide dark onClick={runAllTests(true)}>Run Sequential</Button>
+            </Row>
+          </Entry>
         </Modal>
       </Row>
     </DragDropContext>

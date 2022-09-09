@@ -2,6 +2,9 @@
 @use '../../styles/border.scss' as border;
 
 .home {
+  padding-top: 0;
+  margin-top: -0.75em;
+
   h3 {
     font-weight: 500;
     color: colors.$charcoal;
@@ -10,7 +13,7 @@
   .splash {
     background: url('../../assets/img/roadmap-bg.png');
     padding: 40px 48px 80px;
-    margin: 0 -48px;
+    margin: 0 -2em;
     flex-basis: content;
 
     @media only screen and (max-width: 600px) {

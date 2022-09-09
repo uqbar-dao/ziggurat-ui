@@ -1,0 +1,39 @@
+@use '../../styles/colors.scss' as colors;
+
+.sidebar {
+  height: 100%;
+  width: calc(100% - 1px);
+  max-width: 239px;
+  min-width: 209px;
+  border-right: 1px solid colors.$charcoal;
+
+  .sidebar-header {
+    border-bottom: 2px solid colors.$midnightpurp;
+    padding: 1em 0;
+    background-color: colors.$uq-purple;
+    color: white;
+    
+    .nav-link {
+      color: white;
+       
+      &.logo {
+        margin-bottom: 1px;
+
+        img {
+          border: 2px solid white;
+          border-radius: 2em;
+          background-image: linear-gradient(0deg, white, white);
+          height: 2em;
+        }
+      }
+    }
+
+  }
+
+  .projects {
+    width: 100%;
+    height: 80%;
+    overflow-y: auto;
+  }
+
+}

@@ -1,5 +1,7 @@
+import Link from '../nav/Link'
+import logo from '../../assets/img/logo192.png'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { FaRegPlusSquare, FaSave, FaFileAlt } from 'react-icons/fa';
+import { FaRegPlusSquare, FaSave, FaFileAlt, FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import useZigguratStore from '../../stores/zigguratStore'
 import Button from '../../components/form/Button';
@@ -14,6 +16,8 @@ import { displayPubKey } from '../../utils/account';
 import { DEFAULT_USER_ADDRESS } from '../../utils/constants';
 import { ContractDirectory } from './ContractDirectory';
 import { GallAppDirectory } from './GallAppDirectory';
+
+import './Sidebar.scss'
 
 export const Sidebar = () => {
   const { userAddress, contracts, gallApps, currentProject, currentFolder, currentTool, openTools, accounts, importedAccounts,
@@ -37,7 +41,7 @@ export const Sidebar = () => {
     return () => document.removeEventListener('keydown', keydownFunc)
   }, [currentProject, saveFiles])
 
-  const BUTTON_STYLE = { marginLeft: 6, padding: 2 }
+  const BUTTON_STYLE = { marginRight: 6, padding: 2 }
 
   const isGall = useMemo(() => Boolean(gallApps[currentProject]), [gallApps, currentProject])
 
@@ -81,30 +85,40 @@ export const Sidebar = () => {
   )
 
   return (
-    <Col style={{ height: '100%', width: 'calc(100% - 1px)', maxWidth: 239, minWidth: 209, borderRight: '1px solid black' }}>
-      <Col style={{ width: '100%', height: '80%', overflowY: 'auto' }}>
-        <Text style={{ fontSize: 16, fontWeight: 600, padding: '16px 24px' }}>PROJECT EXPLORER</Text>
+    <Col className='sidebar'>
+      <Col className='projects'>
+        <Row className='sidebar-header'>
+          <Link title='Home' external href='/apps/ziggurat' className='nav-link logo'>
+            <Row>
+              <FaArrowLeft className='mr1' />
+              <img src={logo} alt='Uqbar Logo' />
+            </Row>
+          </Link>
+          <Text bold mr1>ZIGGURAT</Text>
+        </Row>
         <Col style={{ margin: '8px 12px' }}>
-          <Text style={{ fontSize: 14 }}>Wallet Address</Text>
-          <Select style={{ fontSize: 14 }} value={userAddress} onChange={(e) => setUserAddress(e.target.value)}>
-            {userAddresses.map(a => <option key={a} value={a}>{displayPubKey(a)}</option>)}
-          </Select>
+          <Row>
+            <Text small mr1>Address</Text>
+            <Select style={{ fontSize: 'smaller' }} value={userAddress} onChange={(e) => setUserAddress(e.target.value)}>
+              {userAddresses.map(a => <option key={a} value={a}>{displayPubKey(a)}</option>)}
+            </Select>
+          </Row>
         </Col>
         <Row style={{ padding: '8px 12px' }}>
-          <div style={{ fontSize: 14, padding: 2, marginRight: 6 }}>Projects</div>
+          <Text small mr1>Projects</Text>
           {buttons.map(([icon, onClick, tip]: any, i: number) => (
             <Tooltip key={tip} tip={tip}>
-              <Button key={i} style={BUTTON_STYLE} variant="unstyled" onClick={onClick} iconOnly icon={icon} />
+              <Button key={i} style={BUTTON_STYLE} variant='unstyled' onClick={onClick} iconOnly icon={icon} />
             </Tooltip>
           ))}
         </Row>
         {Object.values(contracts).map((p) => <ContractDirectory key={p.title} project={p} />)}
         {Object.values(gallApps).map((p) => <GallAppDirectory key={p.title} project={p} />)}
       </Col>
-      <Col style={{ width: '100%', height: 'calc(20% - 1px)', borderTop: '1px solid black', overflow: 'auto' }}>
+      <Col className='tools' style={{ width: '100%', height: 'calc(20% - 1px)', borderTop: '1px solid black', overflow: 'auto' }}>
         <Row style={{ padding: '8px 12px' }}>
           <div style={{ fontSize: 14, padding: 2, marginRight: 0 }}>Tools</div>
-          <Button style={BUTTON_STYLE} variant="unstyled" onClick={() => setShowToolModal(true)} iconOnly icon={<FaRegPlusSquare />} />
+          <Button style={BUTTON_STYLE} variant='unstyled' onClick={() => setShowToolModal(true)} iconOnly icon={<FaRegPlusSquare />} />
         </Row>
         <Col>
           {openTools.map(app => (
@@ -116,7 +130,7 @@ export const Sidebar = () => {
                   removeTool(app)
                 }}
                 variant='unstyled'
-                className="delete"
+                className='delete'
                 style={{ fontSize: 20, marginLeft: 6, marginTop: 4 }}
               >
                 &times;
@@ -130,7 +144,7 @@ export const Sidebar = () => {
         <Button style={{ margin: '16px auto 0' }} variant='dark' onClick={openTool}>Open App</Button>
       </Modal>
       <Modal  title='Add New File' show={showAddFileModal} hide={() => setShowAddFileModal(false)} style={{ minWidth: 300 }}>
-        <div style={{ marginBottom: 12 }}>(adding to project "{currentProject}")</div>
+        <div style={{ marginBottom: 12 }}>(adding to project '{currentProject}')</div>
         <Input onChange={(e) => setNewFile(e.target.value)}
           value={newFile} placeholder='file name'
           label={isGall ? 'Please include the full file path' : undefined}

@@ -5,6 +5,11 @@
   height: calc(100vh - 32px); 
   width: 100%;
   background: white;
+  position: relative;
+  overflow: hidden;
+
+  border-top: 2px solid colors.$blush;
+  margin-left: -1px;
 
   .assets {
     font-family: monospace monospace;

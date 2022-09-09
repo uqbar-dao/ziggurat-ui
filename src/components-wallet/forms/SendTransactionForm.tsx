@@ -15,10 +15,9 @@ import Col from '../../components/spacing/Col'
 import CopyIcon from '../../components/text/CopyIcon'
 import TextArea from '../../components/form/TextArea'
 import { NON_HEX_REGEX, NON_NUM_REGEX } from '../../utils/regex'
+import { ActionDisplay } from './ActionDisplay'
 
 import './SendTransactionForm.scss'
-import { Values } from '../../components-zig/tests/ValuesDisplay'
-import { ActionDisplay } from './ActionDisplay'
 
 export type SendFormType = 'tokens' | 'nft' | 'custom';
 
@@ -40,7 +39,7 @@ const SendTransactionForm = ({
   const nav = useNavigate()
   const { unsignedTransactionHash } = useParams()
   const {
-    assets, metadata, importedAccounts, unsignedTransactions, mostRecentTransaction,
+    assets, metadata, importedAccounts, unsignedTransactions,
     setLoading, getPendingHash, sendTokens, sendNft, submitSignedHash, setMostRecentTransaction, getUnsignedTransactions, sendCustomTransaction
   } = useWalletStore()
 
