@@ -16,6 +16,7 @@ export const Tooltip = ({ tip, right = false, children, tipStyle = {}, ...props 
         {show && <span className='tooltip' style={{ fontSize: 12,
           position: 'absolute',
           zIndex: 3,
+          bottom: '-1em',
           background: 'white',
           right: right ? 0 : undefined,
           left: right ? undefined: 0,

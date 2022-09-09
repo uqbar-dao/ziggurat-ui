@@ -64,7 +64,7 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
             isContract
             />
         </Col>
-        {isGall && <Resizable defaultSize={{ width:320, height:200 }}>
+        {isGall && <Resizable style={{ position: 'absolute', right: 2, bottom: 0 }} defaultSize={{ width:320, height:200 }}>
           <Iframe url={WEBTERM_PATH} height='100%' width='100%' />
         </Resizable>}
       </Row>
