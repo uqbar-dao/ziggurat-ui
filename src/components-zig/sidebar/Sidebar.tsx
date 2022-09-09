@@ -98,7 +98,7 @@ export const Sidebar = () => {
         </Row>
         <Col style={{ margin: '8px 12px' }}>
           <Row>
-            <Text small mr1>Address</Text>
+            <Text small mr1>Wallet Address</Text>
             <Select style={{ fontSize: 'smaller' }} value={userAddress} onChange={(e) => setUserAddress(e.target.value)}>
               {userAddresses.map(a => <option key={a} value={a}>{displayPubKey(a)}</option>)}
             </Select>
