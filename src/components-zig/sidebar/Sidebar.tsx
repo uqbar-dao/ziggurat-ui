@@ -85,7 +85,7 @@ export const Sidebar = () => {
       <Col style={{ width: '100%', height: '80%', overflowY: 'auto' }}>
         <Text style={{ fontSize: 16, fontWeight: 600, padding: '16px 24px' }}>PROJECT EXPLORER</Text>
         <Col style={{ margin: '8px 12px' }}>
-          <Text style={{ fontSize: 14 }}>Wallet Address</Text>
+          <Text style={{ fontSize: 14, marginBottom: 4 }}>Wallet Address</Text>
           <Select style={{ fontSize: 14 }} value={userAddress} onChange={(e) => setUserAddress(e.target.value)}>
             {userAddresses.map(a => <option key={a} value={a}>{displayPubKey(a)}</option>)}
           </Select>
