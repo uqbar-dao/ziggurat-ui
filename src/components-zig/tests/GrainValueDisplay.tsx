@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import { Droppable, Draggable } from 'react-beautiful-dnd'
-import { FaChevronRight, FaChevronDown, FaPen, FaTrash } from 'react-icons/fa';
+import { FaChevronRight, FaChevronDown, FaPen, FaTrash, FaRegEdit, FaRegTrashAlt } from 'react-icons/fa';
 import Col from '../../components/spacing/Col'
 import Row from '../../components/spacing/Row'
 import useZigguratStore from '../../stores/zigguratStore';
@@ -57,7 +57,7 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain, testId }: Grai
             <Button
               onClick={() => editGrain(grain)}
               small iconOnly
-              icon={<FaPen size={14} />}
+              icon={<FaRegEdit size={14} />}
             />
           )}
           {!untouchable && (
@@ -66,7 +66,7 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain, testId }: Grai
               small className='delete'
               style={{ marginLeft: 8 }}
               iconOnly
-              icon={<FaTrash size={14} />}
+              icon={<FaRegTrashAlt size={14} />}
             />
           )}
         </Row>

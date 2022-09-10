@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react"
 import useZigguratStore from "../../stores/zigguratStore"
 import { TestFormField, TestFormValues } from "../../types/ziggurat/TestForm"
-import { STATUS_CODES } from "../../utils/constants"
+import { STATUS_CODES, STATUS_CODES_RAW } from "../../utils/constants"
 import Button from "../../components/form/Button"
 import Input from "../../components/form/Input"
 import { Select } from "../../components/form/Select"
@@ -64,8 +64,8 @@ export const TestModal = ({
         )}
         <Text style={{ marginTop: 12, marginBottom: 2 }}>Expected Status Code</Text>
         <Select value={testFormValues.expectedError} onChange={(e) => updateTestFormValue('expectedError', e.target.value)}>
-          {Object.keys(STATUS_CODES).map(code => (
-            <option key={code} value={code}>{STATUS_CODES[Number(code)]}</option>
+          {Object.keys(STATUS_CODES_RAW).map(code => (
+            <option key={code} value={code}>{STATUS_CODES_RAW[Number(code)]}</option>
           ))}
         </Select>
         <TextArea

@@ -29,19 +29,20 @@ export const ContractDirectory = ({ project }: ContractDirectoryProps) => {
     <Col style={{ padding: '0px 4px', fontSize: 14 }} onMouseEnter={() => setShowButtons(true)} onMouseLeave={() => setShowButtons(false)}>
       <Row style={{ padding: 2, marginBottom: 2, cursor: 'pointer', justifyContent: 'space-between' }} onClick={() => setProjectExpanded(title, !expanded)}>
         <Row>
-          <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={expanded ? <FaChevronDown size={12} /> : <FaChevronRight size={12} />} />
+          <Button style={BUTTON_STYLE} variant='unstyled' iconOnly icon={expanded ? <FaChevronDown size={12} /> : <FaChevronRight size={12} />} />
           <Text style={{ marginLeft: 4, marginBottom: 2, }}>{title}</Text>
         </Row>
         {showButtons && (
           <Row>
-            <Tooltip tip="deploy contract" right>
-              <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaUpload size={14} />} onClick={() => setShowDeployModal(true)} />
+            <Tooltip tip='deploy contract' right>
+              <Button style={BUTTON_STYLE} variant='unstyled' iconOnly icon={<FaUpload size={14} />} onClick={() => setShowDeployModal(true)} />
             </Tooltip>
-            <Tooltip tip="download zip" right>
-              <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaDownload size={14} />} onClick={() => null} />
-            </Tooltip>
-            <Tooltip tip="delete" right>
-              <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={async () => {
+            {/* 
+            <Tooltip tip='download zip' right>
+              <Button style={BUTTON_STYLE} variant='unstyled' iconOnly icon={<FaDownload size={14} />} onClick={() => alert('This feature is currently in development.')} />
+            </Tooltip> */}
+            <Tooltip tip='delete' right>
+              <Button style={BUTTON_STYLE} variant='unstyled' iconOnly icon={<FaTrash size={14} />} onClick={async () => {
                 if (window.confirm(`Are you sure you want to delete the ${title} project?`)) {
                   const navigateTo = await deleteProject(title)
                   if (navigateTo) {

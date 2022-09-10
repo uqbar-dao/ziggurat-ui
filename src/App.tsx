@@ -55,9 +55,11 @@ function App() {
 
   return (
     <Entry>
-      <Link className={'nav-link logo'} href='/'>
-        <img src={logo} alt='Uqbar Logo' />
-      </Link>
+      <Row style={{ borderBottom: '2px solid #f3ced2' }}>
+        <Link className={'nav-link logo'} href='/'>
+          <img src={logo} alt='Uqbar Logo' />
+        </Link>
+      </Row>
       <SelectAppView />
     </Entry>
   )

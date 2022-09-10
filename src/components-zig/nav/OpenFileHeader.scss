@@ -1,12 +1,22 @@
 @use '../../styles/colors.scss' as colors;
 
 .open-file-header {
-  background: lightgray;
-  height: 32px;
+  background: colors.$uq-lightpurple;
+  height: 33px;
   overflow-x: scroll;
+  margin-left: -1px; // TODO figure out what is causing that 1px difference. it's not just in the OpenFileHeader, it's on the level of the whole editor section.
+
+  &::-webkit-scrollbar {
+    // The scrollbar for the file tabs looks different in different browsers. With `overflow-x: scroll`, Firefox draws no scrollbar; Brave always draws one. Safari unknown.
+
+    display: none;
+  }
+
 
   .tab {
     text-decoration: none;
+    background-color: colors.$forgottenpurp;
+
     padding: 10px 8px;
     align-items: center;
     cursor: pointer;
@@ -16,16 +26,43 @@
     display: flex;
 
     flex-grow: 1;
+    max-width: 10em;
     height: 100%;
 
-    border-right: 1px solid gray;
+    border-radius: 0.5em 0.5em 0 0;
+
+    border-right: 2px solid colors.$charcoal;
     white-space: nowrap;
 
+    .tabName {
+      margin-left: 0.5em;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      font-size: 0.875em;
+
+      // flex-basis: 80%;
+    }
+
+    margin-top: 3px;
+    margin-bottom: -3px;
+
     &.selected {
-      background-color: white;
+      background-color: colors.$blush;
+      border-color: colors.$charcoal;
+      
+
+      margin-top: 0;
+      margin-bottom: 0;
+
+      color: white;
       
       .close {  
         visibility: visible;
+      }
+
+      .tabName {
+        color: white;
+
       }
     }
 
@@ -40,7 +77,19 @@
     .close {
       visibility: hidden;
       margin-top: 2px;
+      color: white;
+
     }
+
+    .tabName {
+      color: #FFFFFFAA;
+
+
+    }
+
+    // &:last-of-type {
+    //   box-shadow: 1px 0px 1px colors.$charcoal;
+    // }
   }
 
   .sub-tab {

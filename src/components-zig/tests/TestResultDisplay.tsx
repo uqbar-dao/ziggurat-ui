@@ -6,7 +6,7 @@ import useZigguratStore from '../../stores/zigguratStore';
 import Button from '../../components/form/Button';
 import { Test, TestResult } from '../../types/ziggurat/TestData';
 import Input from '../../components/form/Input';
-import { DEFAULT_BUDGET, DEFAULT_RATE, getStatus, STATUS_CODES } from '../../utils/constants';
+import { DEFAULT_BUDGET, DEFAULT_RATE, getStatus, STATUS_CODES, STATUS_CODES_RAW } from '../../utils/constants';
 import { getGrainDiff, parseAction } from '../../utils/tests';
 import Text from '../../components/text/Text';
 import { TestGrain } from '../../types/ziggurat/TestGrain';
@@ -34,7 +34,7 @@ const TestResultDisplay = ({ result, expectedError }: { result?: TestResult, exp
       {!!result && result.success === false && (
         <Col>
           {result?.errorcode !== expectedError && (
-            <Field name='Status Code'>{`expected: ${STATUS_CODES[expectedError]}, got: ${STATUS_CODES[result.errorcode]}`} </Field>
+            <Field name='Status Code'>{`expected: ${STATUS_CODES_RAW[expectedError]}, got: ${STATUS_CODES_RAW[result.errorcode]}`} </Field>
           )}
           {Object.keys(result?.grains).filter(id => result.grains[id].match === false)
             .map(id => {

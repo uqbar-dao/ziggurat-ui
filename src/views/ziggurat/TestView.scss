@@ -2,13 +2,16 @@
 
 .tests {
   height: 100%;
-  border-radius: 4px;
+  // border-radius: 4px;
   min-height: 300px;
+  margin-left: -1px;
 
+  
   .section-header {
     justify-content: space-between;
     padding: 4px 8px;
-    border-bottom: 1px solid lightgray;
+    border-bottom: 2px solid colors.$charcoal;
+    color:white;
 
     .title {
       padding: 4px;
@@ -16,6 +19,35 @@
     }
 
   }
+
+
+  .test-actions {
+    background-color: colors.$uq-lightpink;
+
+    .section-header {
+      background-color: colors.$blush;
+
+      .run-all {
+        svg {
+          margin-right: 0.5em;
+        }
+
+        &:hover {
+          background-color: colors.$uq-darkpurple;
+        }
+      }
+    }
+  }
+
+  .granary {
+    background-color: colors.$celeste;
+    border-left: 1px solid black;
+
+    .section-header {
+      background-color: colors.$celadon;
+    }
+  }
+
 
   .text-area {
     min-height: 120px;

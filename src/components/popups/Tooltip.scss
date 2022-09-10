@@ -1,0 +1,14 @@
+@use '../../styles/colors.scss' as colors;
+
+.tooltip {
+  font-size: 12px;
+  position: absolute;
+  z-index: 3px;
+  bottom: 2em;
+  background: white;
+  color: gray;
+  white-space: nowrap;
+  padding: 2px 6px;
+  border-radius: 4px;
+  box-shadow: 1px 1px 2px colors.$charcoal;
+}
