@@ -21,6 +21,13 @@
         border-color: colors.$uq-pink;
         outline: none;
       }
+
+      &.nick-saved {
+        &:focus, &:active {
+          border-color: colors.$turq;
+          outline: none;
+        }
+      }
       
       input {
         background: inherit

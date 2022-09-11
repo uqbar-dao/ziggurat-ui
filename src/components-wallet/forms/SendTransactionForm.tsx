@@ -19,22 +19,32 @@ import { ActionDisplay } from './ActionDisplay'
 
 import './SendTransactionForm.scss'
 
+export interface SendFormValues { to: string; rate: string; bud: string; amount: string; contract: string; town: string; action: string; }
+export type SendFormField = 'to' | 'rate' | 'bud' | 'amount' | 'contract' | 'town' | 'action'
 export type SendFormType = 'tokens' | 'nft' | 'custom';
 
+export const BLANK_FORM_VALUES = { to: '', rate: '', bud: '', amount: '', contract: '', town: '', action: '' }
+
 interface SendTransactionFormProps {
-  formType?: SendFormType
   setSubmitted: (submitted: boolean) => void
+  setFormValues: (values: SendFormValues) => void
+  setFormValue: (key: SendFormField, value: string) => void
+  formValues: SendFormValues
   id: string
   nftId?: number
   from?: string
+  formType?: SendFormType
 }
 
 const SendTransactionForm = ({
-  formType,
   setSubmitted,
+  setFormValues,
+  setFormValue,
+  formValues,
   id,
   nftId,
   from,
+  formType,
 }: SendTransactionFormProps) => {
   const nav = useNavigate()
   const { unsignedTransactionHash } = useParams()
@@ -45,6 +55,7 @@ const SendTransactionForm = ({
 
   const isNft = useMemo(() => formType === 'nft', [formType])
   const isCustom = useMemo(() => formType === 'custom', [formType])
+  const { to, rate, bud, amount, contract, town, action } = formValues
 
   const assetsList = useMemo(() => Object.values(assets)
     .reduce((acc: Token[], cur) => acc.concat(Object.values(cur)), [])
@@ -54,22 +65,13 @@ const SendTransactionForm = ({
 
   const [selectedToken, setSelected] =
     useState<Token | undefined>(assetsList.find(a => a.id === id && (!isNft || a.data.id === Number(nftId))))
-  const [to, setTo] = useState('')
-  const [rate, setGasPrice] = useState('')
-  const [bud, setBudget] = useState('')
-  const [amount, setAmount] = useState('')
-  const [contract, setContract] = useState('')
-  const [town, setTown] = useState('0x0')
-  const [action, setAction] = useState('')
+  
   const [pendingHash, setPendingHash] = useState<string | undefined>(unsignedTransactionHash)
 
-  const clearForm = () => {
+  const clearForm = useCallback(() => {
     setSelected(undefined)
-    setTo('')
-    setGasPrice('')
-    setBudget('')
-    setAmount('')
-  }
+    setFormValues(BLANK_FORM_VALUES)
+  }, [setSelected, setFormValues])
 
   useEffect(() => {
     if (selectedToken === undefined && id) {
@@ -116,6 +118,7 @@ const SendTransactionForm = ({
       
       console.log(mostRecentPendingHash, unsigned[mostRecentPendingHash])
       setPendingHash(mostRecentPendingHash)
+      setLoading(null)
     }
   }
 
@@ -143,7 +146,7 @@ const SendTransactionForm = ({
       setSubmitted(true)
       nav('/')
     }
-  }, [unsignedTransactions, rate, bud, importedAccounts, pendingHash, nav, getPendingHash, submitSignedHash, setLoading, setSubmitted])
+  }, [unsignedTransactions, rate, bud, importedAccounts, pendingHash, nav, clearForm, getPendingHash, submitSignedHash, setLoading, setSubmitted])
 
   const tokenDisplay = isNft ? (
     <Col>
@@ -175,7 +178,7 @@ const SendTransactionForm = ({
             containerStyle={{ width: 'calc(50% - 8px)' }}
             style={{ width: '100%' }}
             value={rate}
-            onChange={(e: any) => setGasPrice(e.target.value.replace(NON_NUM_REGEX, ''))}
+            onChange={(e: any) => setFormValue('rate', e.target.value.replace(NON_NUM_REGEX, ''))}
             required
             autoFocus
           />
@@ -185,7 +188,7 @@ const SendTransactionForm = ({
             containerStyle={{ width: 'calc(50% - 8px)' }}
             style={{ width: '100%' }}
             value={bud}
-            onChange={(e: any) => setBudget(e.target.value.replace(NON_NUM_REGEX, ''))}
+            onChange={(e: any) => setFormValue('bud', e.target.value.replace(NON_NUM_REGEX, ''))}
             required
           />
         </Row>
@@ -203,7 +206,7 @@ const SendTransactionForm = ({
           containerStyle={{ marginTop: 12, width: '100%' }}
           placeholder='Contract Address (@ux)'
           value={contract}
-          onChange={(e: any) => setContract(e.target.value.replace(NON_HEX_REGEX, ''))}
+          onChange={(e: any) => setFormValue('contract', e.target.value.replace(NON_HEX_REGEX, ''))}
           style={{ width: '100%' }}
         />
         <Input
@@ -211,7 +214,7 @@ const SendTransactionForm = ({
           containerStyle={{ marginTop: 12, width: '100%' }}
           placeholder='Town (@ux)'
           value={town}
-          onChange={(e: any) => setTown(e.target.value.replace(NON_HEX_REGEX, ''))}
+          onChange={(e: any) => setFormValue('town', e.target.value.replace(NON_HEX_REGEX, ''))}
           style={{ width: '100%' }}
         />
         <TextArea
@@ -220,7 +223,7 @@ const SendTransactionForm = ({
           style={{ width: '100%' }}
           placeholder='[%give 0xdead 1 0x1.beef `0x1.dead]'
           value={action}
-          onChange={(e: any) => setAction(e.target.value)}
+          onChange={(e: any) => setFormValue('action', e.target.value)}
         />
         <Button style={{ width: '100%', margin: '16px 0px 8px' }} type='submit' dark>
           Generate Transaction
@@ -238,7 +241,7 @@ const SendTransactionForm = ({
         style={{ width: '100%' }}
         containerStyle={{ marginTop: 12, width: '100%' }}
         value={to}
-        onChange={(e: any) => setTo(e.target.value.replace(NON_HEX_REGEX, ''))}
+        onChange={(e: any) => setFormValue('to', e.target.value.replace(NON_HEX_REGEX, ''))}
         required //delete line 81 & 83
       />
       {!isNft && <Input
@@ -247,7 +250,7 @@ const SendTransactionForm = ({
         style={{ width: '100%' }}
         containerStyle={{ marginTop: 12, width: '100%' }}
         value={amount}
-        onChange={(e: any) => setAmount(e.target.value.replace(NON_NUM_REGEX, ''))}
+        onChange={(e: any) => setFormValue('amount', e.target.value.replace(NON_NUM_REGEX, ''))}
         required //delete line 75 & 76
       />}
       <Button style={{ width: '100%', margin: '16px 0px 8px' }} type='submit' dark>

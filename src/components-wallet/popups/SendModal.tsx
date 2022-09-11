@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import Button from '../../components/form/Button'
 import Link from '../nav/Link'
 import Loader from '../../components/popups/Loader'
@@ -8,7 +8,7 @@ import Text from '../../components/text/Text'
 import { abbreviateHex } from '../../utils/format'
 import CopyIcon from '../../components/text/CopyIcon';
 import { getStatus } from '../../utils/constants'
-import SendTransactionForm, { SendFormType } from '../forms/SendTransactionForm'
+import SendTransactionForm, { BLANK_FORM_VALUES, SendFormField, SendFormType } from '../forms/SendTransactionForm'
 import Modal, { ModalProps } from '../../components/popups/Modal'
 import useWalletStore from '../../stores/walletStore'
 
@@ -35,11 +35,19 @@ const SendModal = ({
 }: SendModalProps) => {
   const { mostRecentTransaction: txn } = useWalletStore()
   const [submitted, setSubmitted] = useState(false)
+  const [formValues, setFormValues] = useState(BLANK_FORM_VALUES)
 
-  const hideModal = () => {
+  const setFormValue = useCallback((key: SendFormField, value: string) => {
+    const newValues = { ...formValues }
+    newValues[key] = value
+    setFormValues(newValues)
+  }, [formValues, setFormValues])
+
+  const hideModal = useCallback(() => {
     hide();
     setSubmitted(false);
-  }
+    setFormValues(BLANK_FORM_VALUES)
+  }, [hide, setSubmitted, setFormValues])
 
   return (
     <Modal 
@@ -77,7 +85,7 @@ const SendModal = ({
           <Button style={{ alignSelf: 'center' }} onClick={hideModal}>Done</Button>
         </Col>
       ) : (
-        <SendTransactionForm {...{ setSubmitted, id, nftId, formType, from }} />
+        <SendTransactionForm {...{ setSubmitted, id, nftId, formType, from, formValues, setFormValue, setFormValues }} />
       )}
     </Modal>
   )

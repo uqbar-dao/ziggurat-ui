@@ -32,7 +32,7 @@ export const mockTransactions = [
     'nonce': 6,
     'rate': 1,
     'budget': 1000000,
-    'to': '0x74.6361.7274.6e6f.632d.7367.697a',
+    'contract': '0x74.6361.7274.6e6f.632d.7367.697a',
     'from': '0x7a9a.97e0.ca10.8e1e.273f.0000.8dca.2b04.fc15.9f70',
     'status': 0
   }

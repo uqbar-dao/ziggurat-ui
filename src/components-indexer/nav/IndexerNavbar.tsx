@@ -2,17 +2,15 @@ import React, { useState } from 'react'
 import Row from '../../components/spacing/Row'
 import Link from './Link'
 import logo from '../../assets/img/logo192.png'
-import { isMobileCheck } from '../../utils/dimensions'
 import Dropdown from '../../components/popups/Dropdown'
 import Text from '../../components/text/Text'
 import useIndexerStore from '../../stores/indexerStore'
 import { abbreviateHex } from '../../utils/format'
 
-import { FaArrowLeft, FaBackward } from 'react-icons/fa'
+import { FaArrowLeft } from 'react-icons/fa'
 
 const IndexerNavbar = () => {
   const [open, setOpen] = useState(false)
-  const isMobile = isMobileCheck()
   const { accounts, importedAccounts } = useIndexerStore()
   const addresses = accounts.map(({ address }) => address).concat(importedAccounts.map(({ address }) => address))
 

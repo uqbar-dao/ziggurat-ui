@@ -9,6 +9,8 @@ import Col from '../../components/spacing/Col';
 import Row from '../../components/spacing/Row'
 import Text from '../../components/text/Text';
 import CopyIcon from '../../components/text/CopyIcon';
+import { ONE_SECOND } from '../../utils/constants';
+
 import './AccountDisplay.scss'
 
 const SAVE_NICK_DELAY = 1000
@@ -27,6 +29,7 @@ const AccountDisplay: React.FC<AccountDisplayProps> = ({
   const navigate = useNavigate()
   const { deleteAccount, editNickname } = useWalletStore()
   const [newNick, setNewNick] = useState(nick)
+  const [nickSaved, setNickSaved] = useState(false)
 
   useEffect(() => {
     setNewNick(nick)
@@ -35,7 +38,10 @@ const AccountDisplay: React.FC<AccountDisplayProps> = ({
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       if (newNick && newNick !== nick) {
-        editNickname(rawAddress, newNick)
+        const nickWithType = 'type' in account && account.type ? `${newNick}//${account.type}` : newNick
+        editNickname(rawAddress, nickWithType)
+        setNickSaved(true)
+        setTimeout(() => setNickSaved(false), ONE_SECOND * 2)
       }
     }, SAVE_NICK_DELAY)
     return () => clearTimeout(delayDebounceFn)
@@ -49,11 +55,11 @@ const AccountDisplay: React.FC<AccountDisplayProps> = ({
         <Row>
           {hardware && hardware.type && <Text style={{marginRight: '1em'}}>{hardware.type}</Text>}
           <Input
-            className='nick-input'
+            className={`nick-input ${nickSaved ? 'nick-saved' : ''}`}
             style={{ fontWeight: 600, marginRight: '1em', width: '10em'  }}
             onChange={(e: any) => setNewNick(e.target.value)}
             value={newNick}
-            />
+          />
           <Text mono style={{ fontWeight: 600, cursor: 'pointer' }} onClick={() => navigate(`/accounts/${address}`)}>{displayPubKey(address)}</Text>
           <CopyIcon text={address} />
         </Row>

@@ -43,6 +43,10 @@ button.button {
   &.xwide {
     min-width: 20em;
   }
+
+  &.fullWidth {
+    width: 100%;
+  }
   
   &.unstyled {
     color: inherit;

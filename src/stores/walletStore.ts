@@ -54,7 +54,7 @@ export interface WalletStore {
   sendCustomTransaction: (payload: SendCustomTransactionPayload) => Promise<void>,
   getPendingHash: () => Promise<{ hash: string; egg: any; }>
   deleteUnsignedTransaction: (address: string, hash: string) => Promise<void>
-  getUnsignedTransactions: (address?: string) => Promise<{ [hash: string]: Transaction }>
+  getUnsignedTransactions: () => Promise<{ [hash: string]: Transaction }>
   submitSignedHash: (from: string, hash: string, rate: number, bud: number, ethHash?: string, sig?: { v: number; r: string; s: string; }) => Promise<void>
   setPathname: (pathname: string) => void
   setMostRecentTransaction: (mostRecentTransaction?: Transaction) => void
@@ -72,7 +72,8 @@ const useWalletStore = create<WalletStore>(
     unsignedTransactions: {},
     pathname: '/',
     init: async () => {
-      set({ loadingText: 'Loading...' })
+      const { accounts, getAccounts, getTransactions, getUnsignedTransactions } = get()
+      set({ loadingText: accounts.length ? null : 'Loading...' })
 
       try {
         if (mockData) {
@@ -82,8 +83,6 @@ const useWalletStore = create<WalletStore>(
           api.subscribe(createSubscription('wallet', '/metadata-updates', handleMetadataUpdate(get, set)))
           api.subscribe(createSubscription('wallet', '/tx-updates', handleTxnUpdate(get, set)))
         }
-    
-        const { getAccounts, getTransactions, getUnsignedTransactions } = get()
     
         // only wait for accounts before removing the loading text
         await getAccounts()
@@ -115,6 +114,7 @@ const useWalletStore = create<WalletStore>(
         return { accounts, importedAccounts }
       }, { accounts: [] as HotWallet[], importedAccounts: [] as HardwareWallet[] })
 
+
       set({ accounts, importedAccounts, loadingText: null })
     },
     getTransactions: async () => {
@@ -130,7 +130,6 @@ const useWalletStore = create<WalletStore>(
             .map(address => api.scry<Transactions>({ app: 'wallet', path: `/transactions/${address}` }))
         )
         const allRawTransactions = rawTransactions.reduce((acc: Transactions, cur: Transactions) => ({ ...acc, ...cur }))
-        console.log('TRANSACTIONS:', allRawTransactions)
         const transactions = Object.keys(allRawTransactions).map(hash => ({ ...allRawTransactions[hash], hash })).sort((a, b) => a.nonce - b.nonce)
         set({ transactions })
       }
@@ -251,20 +250,18 @@ const useWalletStore = create<WalletStore>(
     },
     sendCustomTransaction: async ({ from, contract, town, action }: SendCustomTransactionPayload) => {
       const json = { 'transaction': { from, contract, town, action: { text: action } } }
-      console.log('SUBMIT CUSTOM:', json)
       await pokeWithAlert(json)
     },
     getPendingHash: async () => {
       const { hash, egg } = await api.scry<{ hash: string; egg: any }>({ app: 'wallet', path: '/pending' }) || {}
-      console.log('PENDING:', hash, egg)
       return { hash, egg }
     },
     deleteUnsignedTransaction: async (address: string, hash: string) => {
       const json = { 'delete-pending': { from: address, hash } }
       await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json })
-      get().getUnsignedTransactions(address)
+      get().getUnsignedTransactions()
     },
-    getUnsignedTransactions: async (address?: string) => {
+    getUnsignedTransactions: async () => {
       const { accounts, importedAccounts } = get()
       const unsigned = await Promise.all(
         accounts
@@ -277,7 +274,7 @@ const useWalletStore = create<WalletStore>(
         acc[hash] = { ...unsignedMap[hash], hash }
         return acc
       }, {} as Transactions)
-      console.log('PENDING:', unsignedTransactions)
+
       set({ unsignedTransactions })
       return unsignedTransactions
     },
@@ -286,7 +283,7 @@ const useWalletStore = create<WalletStore>(
         { 'submit-signed': { from, hash, gas: { rate, bud }, ethHash, sig } } :
         { 'submit': { from, hash, gas: { rate, bud } } }
       await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json })
-      get().getUnsignedTransactions(from)
+      get().getUnsignedTransactions()
     },
     setPathname: (pathname: string) => set({ pathname }),
     setMostRecentTransaction: (mostRecentTransaction?: Transaction) => set({ mostRecentTransaction })

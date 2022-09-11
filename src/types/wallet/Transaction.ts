@@ -10,7 +10,7 @@ export interface Transaction {
   nonce: number
   rate: number
   budget: number
-  to: string
+  contract: string
   from: string
   status: number
   created?: Date

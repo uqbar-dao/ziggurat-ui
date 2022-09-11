@@ -5,11 +5,10 @@ import Row from '../../components/spacing/Row'
 import Link from './Link'
 import Button from '../../components/form/Button'
 import Text from '../../components/text/Text'
-
+import { genHref } from '../../utils/nav'
+import { FaGoodreadsG, FaPlus } from 'react-icons/fa'
 
 import './OpenFileHeader.scss'
-import { genHref } from '../../utils/nav'
-import { FaGoodreads, FaGoodreadsG, FaGoogle, FaPlus } from 'react-icons/fa'
 
 export const OpenFileHeader = () => {
   const { pathname } = useLocation()

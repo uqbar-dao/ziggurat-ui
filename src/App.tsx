@@ -3,19 +3,16 @@ import { PUBLIC_URL } from './utils/constants';
 import ZigguratMain from './views/ZigguratMain';
 import IndexerMain from './views/IndexerMain';
 import WalletMain from './views/WalletMain';
-import Col from './components/spacing/Col';
 import Container from './components/spacing/Container';
 import Text from './components/text/Text'
 import Link from './components-indexer/nav/Link'
 import logo from './assets/img/uqbar-logo-text.png'
-
-import './App.scss'
-import './SelectAppView.scss'
 import Entry from './components/spacing/Entry';
 import Row from './components/spacing/Row';
 import Grid from './components/spacing/Grid';
-import PageHeader from './components/page/PageHeader';
-import Navbar from './components-zig/nav/Navbar';
+
+import './App.scss'
+import './SelectAppView.scss'
 
 interface AppTileProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
   href: string

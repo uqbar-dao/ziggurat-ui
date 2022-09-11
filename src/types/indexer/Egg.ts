@@ -12,7 +12,7 @@ export interface RawShell {
     ship: string
   }
   status: number
-  to: string
+  contract: string
   'town-id': number
 }
 
@@ -42,7 +42,7 @@ export interface Shell {
     ship: string
   }
   status: number
-  to: string
+  contract: string
   townId: number
 }
 
