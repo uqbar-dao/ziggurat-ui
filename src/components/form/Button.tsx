@@ -13,6 +13,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   small?: boolean
   wide?: boolean
   xwide?: boolean
+  fullWidth?: boolean
   mr1?: boolean
   mb1?: boolean
   mt1?: boolean
@@ -28,6 +29,7 @@ const Button: React.FC<ButtonProps> = ({
   small,
   wide,
   xwide,
+  fullWidth,
   style,
   mr1,
   mb1,
@@ -39,7 +41,7 @@ const Button: React.FC<ButtonProps> = ({
     <button
       {...props}
       className={`button ${variant || ''} ${classNames( {
-        dark, small, wide, xwide, mr1, mt1, mb1, expander, iconOnly
+        dark, small, wide, xwide, fullWidth, mr1, mt1, mb1, expander, iconOnly
       })} ${props.className || ''}`}
       type={type || "button"}
       style={{ ...style, justifyContent: 'space-evenly' }}

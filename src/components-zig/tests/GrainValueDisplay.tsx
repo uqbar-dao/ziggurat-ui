@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react'
-import { Droppable, Draggable } from 'react-beautiful-dnd'
-import { FaChevronRight, FaChevronDown, FaPen, FaTrash, FaRegEdit, FaRegTrashAlt } from 'react-icons/fa';
+import React, { useState } from 'react'
+import { Draggable } from 'react-beautiful-dnd'
+import { FaChevronRight, FaChevronDown, FaRegEdit, FaRegTrashAlt } from 'react-icons/fa';
 import Col from '../../components/spacing/Col'
 import Row from '../../components/spacing/Row'
 import useZigguratStore from '../../stores/zigguratStore';
@@ -8,13 +8,12 @@ import { TestGrain } from '../../types/ziggurat/TestGrain';
 import Button from '../../components/form/Button';
 import HexNum from '../../components/text/HexNum'
 import Text from '../../components/text/Text'
-
-import './GrainList.scss'
 import { METADATA_GRAIN_ID, MY_CONTRACT_ID, ZIGS_ACCOUNT_ID } from '../../utils/constants';
 import { displayPubKey } from '../../utils/account';
 import Field from '../../components/spacing/Field';
 import Entry from '../../components/spacing/Entry';
 
+import './GrainList.scss'
 
 interface GrainValueDisplayProps {
   grain: TestGrain

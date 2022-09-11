@@ -19,7 +19,7 @@ import { capitalize } from '../../utils/format'
 import './AccountsView.scss'
 
 const AccountsView = () => {
-  const { accounts, importedAccounts, getAccounts, createAccount, restoreAccount, importAccount, getSeed, deriveNewAddress } = useWalletStore()
+  const { accounts, importedAccounts, createAccount, restoreAccount, importAccount, getSeed, deriveNewAddress } = useWalletStore()
   const [showCreate, setShowCreate] = useState(false)
   const [showAddWallet, setShowAddWallet] = useState<'create' | 'restore' | undefined>()
   const [showImport, setShowImport] = useState(false)
@@ -32,10 +32,6 @@ const AccountsView = () => {
   const [importType, setImportType] = useState<HardwareWalletType | null>(null)
 
   const addHardwareAddress = addAddressType && addAddressType !== 'hot'
-
-  useEffect(() => {
-    getAccounts()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!showImport && !showAddWallet && !addAddressType) {
@@ -103,6 +99,15 @@ const AccountsView = () => {
     clearForm()
   }
 
+  const hideModal = useCallback(() => {
+    clearForm()
+    setImportType(null)
+    setSeed(null)
+    setShowAddWallet(undefined)
+    setShowCreate(false)
+    setShowImport(false)
+  }, [clearForm, setImportType, setSeed, setShowAddWallet, setShowCreate, setShowImport])
+
   const isFirefox = (typeof (window as any).InstallTrigger !== 'undefined') 
 
   const hardwareWalletTypes: HardwareWalletType[] =
@@ -130,7 +135,7 @@ const AccountsView = () => {
             </>
           )}
           <Button onClick={() => setShowCreate(true)} mr1 wide>
-            + New Wallet
+            New Wallet
           </Button>
         </Row>
       </Entry>
@@ -145,7 +150,7 @@ const AccountsView = () => {
             </Button>
           )}
           <Button onClick={() => setShowImport(true)} mr1 wide>
-            + Connect
+            Connect
           </Button>
         </Row>
       </Entry>
@@ -153,7 +158,8 @@ const AccountsView = () => {
       <Modal
         title='Seed:'
         show={Boolean(seedData)} 
-        hide={() => setSeed(null)}
+        hide={hideModal}
+        style={{ minWidth: 300 }}
       >
         <Col style={{ justifyContent: 'center', height: '100%', width: '300px' }}>
           <Text mono>{seedData?.mnemonic}</Text>
@@ -168,23 +174,25 @@ const AccountsView = () => {
       <Modal 
         title='Add Wallet'
         show={showCreate} 
-        hide={() => setShowCreate(false)}
+        hide={hideModal}
+        style={{ minWidth: 300 }}
       >
         <Col style={{ justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%' }}>
-          <Button xwide style={{  marginBottom: 24 }} onClick={() => setShowAddWallet('create')}>Create New Wallet</Button>
-          <Button xwide onClick={() => setShowAddWallet('restore')}>Restore Wallet From Seed</Button>
+          <Button fullWidth style={{  marginBottom: 16 }} onClick={() => setShowAddWallet('create')}>Create New Wallet</Button>
+          <Button fullWidth onClick={() => setShowAddWallet('restore')}>Restore Wallet From Seed</Button>
         </Col>
       </Modal>
       <Modal 
         title={(showAddWallet === 'create' ? 'Create' : 'Restore') + ' Wallet'}
         show={Boolean(showAddWallet)} 
-        hide={() => setShowAddWallet(undefined)}
+        hide={hideModal}
+        style={{ minWidth: 300 }}
       >
-        <Form style={{ justifyContent: 'center', alignItems: 'center', height: '100%', width: 'calc(100% - 32px)', background: 'white' }} onSubmit={create}>
+        <Form style={{ justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%', background: 'white' }} onSubmit={create}>
           <Input
             onChange={(e: any) => setNick(e.target.value)}
             placeholder='Nickname'
-            style={{ width: 'calc(100% - 20px)' }}
+            style={{ width: '100%' }}
             containerStyle={{ width: '100%', marginBottom: 16 }}
             value={nick}
             minLength={3}
@@ -195,19 +203,19 @@ const AccountsView = () => {
             onChange={(e: any) => setMnemonic(e.target.value)}
             placeholder='Enter seed phrase'
             containerStyle={{ width: '100%', marginBottom: 16 }}
-            style={{ width: 'calc(100% - 8px)', height: 80 }}
+            style={{ width: '100%', height: 80 }}
           />)}
           <Input
             onChange={(e: any) => setPassword(e.target.value)}
             placeholder='Enter password'
-            style={{ width: 'calc(100% - 20px)', marginBottom: 16 }}
+            style={{ width: '100%', marginBottom: 16 }}
             containerStyle={{ width: '100%' }}
             type='password'
             value={password}
-            minLength={8}
+            minLength={5}
             required
           />
-          <Button mr1 wide type='submit' dark>
+          <Button fullWidth type='submit' dark>
             {showAddWallet === 'create' ? 'Create' : 'Restore'}
           </Button>
         </Form>
@@ -215,7 +223,8 @@ const AccountsView = () => {
       <Modal
         title='Connect Hardware Wallet'
         show={showImport} 
-        hide={() => setShowImport(false)}
+        hide={hideModal}
+        style={{ minWidth: 300 }}
       >
         <Col style={{ justifyContent: 'space-evenly', alignItems: 'center', height: '100%', width: '100%' }}>
           {isFirefox && <Col style={{alignItems:'center', marginBottom:'1em'}}>
@@ -227,13 +236,13 @@ const AccountsView = () => {
               Please try a different browser if you encounter issues.
             </Text>
           </Col>}
-          <Button mb1 wide onClick={() => {
+          <Button mb1 fullWidth onClick={() => {
             setShowImport(false)
             setImportType('ledger')
           }}>
             Connect Ledger
           </Button>
-          <Button wide onClick={() => {
+          <Button fullWidth onClick={() => {
             setShowImport(false)
             setImportType('trezor')
           }}>
@@ -244,20 +253,18 @@ const AccountsView = () => {
       <Modal
         title='Set Nickname' 
         show={Boolean(importType)}
-        hide={() => {
-          setShowImport(true)
-          setImportType(null)
-        }}
+        hide={hideModal}
+        style={{ minWidth: 300 }}
       >
         <Col style={{ justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%' }}>
           <Input
             onChange={(e: any) => setNick(e.target.value)}
             placeholder={`Nickname, i.e. ${capitalize(importType || '')} primary`}
-            style={{ width: 'calc(100% - 16px)' }}
-            containerStyle={{ width: '100%', marginBottom: 24 }}
+            style={{ width: '100%' }}
+            containerStyle={{ width: '100%', marginBottom: '1em' }}
             value={nick}
           />
-          <Button onClick={doImport} dark mr1 wide>
+          <Button onClick={doImport} dark fullWidth style={{ width: '100%' }}>
             Connect
           </Button>
         </Col>
@@ -265,7 +272,8 @@ const AccountsView = () => {
       <Modal 
         title='Derive New Address' 
         show={Boolean(addAddressType)} 
-        hide={clearForm}
+        hide={hideModal}
+        style={{ minWidth: 300 }}
       >
         <Form style={{ justifyContent: 'center', alignItems: 'center', height: '100%', width: 300, maxWidth: '100%', background: 'white' }} onSubmit={addAddress}>
           {(addHardwareAddress) && (
@@ -280,7 +288,7 @@ const AccountsView = () => {
           <Input
             onChange={(e: any) => setNick(e.target.value)}
             placeholder='Nickname'
-            style={{ width: 'calc(100% - 20px)' }}
+            style={{ width: '100%' }}
             containerStyle={{ width: '100%', marginBottom: 16 }}
             value={nick}
             minLength={3}
@@ -289,12 +297,12 @@ const AccountsView = () => {
           <Input
             onChange={(e: any) => setHdpath(e.target.value)}
             placeholder={`HD Path ${addHardwareAddress ? '(m/44\'/60\'/0\'/0/0)' : '(optional)'}`}
-            style={{ width: 'calc(100% - 20px)' }}
+            style={{ width: '100%' }}
             containerStyle={{ width: '100%', marginBottom: 16 }}
             value={hdpath}
             required={Boolean(addHardwareAddress)}
           />
-          <Button type='submit' dark mr1 wide>Derive</Button>
+          <Button type='submit' dark fullWidth>Derive</Button>
         </Form>
       </Modal>
     </Container>

@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react"
 import useZigguratStore from "../../stores/zigguratStore"
 import { TestFormField, TestFormValues } from "../../types/ziggurat/TestForm"
-import { STATUS_CODES, STATUS_CODES_RAW } from "../../utils/constants"
+import { STATUS_CODES_RAW } from "../../utils/constants"
 import Button from "../../components/form/Button"
 import Input from "../../components/form/Input"
 import { Select } from "../../components/form/Select"

@@ -63,6 +63,14 @@ const AssetsView = () => {
     }
   }, [unsignedTransactionHash, unsignedTransactions])
 
+  const hideModal = useCallback(() => {
+    nav('/')
+    setSendFormType(undefined)
+    setId(undefined)
+    setNftIndex(undefined)
+    setCustomFrom(undefined)
+  }, [nav, setSendFormType, setId, setNftIndex, setCustomFrom])
+
   return (
     <Container className='assets-view'>
       <PageHeader title='Assets' >
@@ -101,13 +109,7 @@ const AssetsView = () => {
         from={customFrom}
         formType={sendFormType}
         children={null}
-        hide={() => {
-          nav('/')
-          setSendFormType(undefined)
-          setId(undefined)
-          setNftIndex(undefined)
-          setCustomFrom(undefined)
-        }}
+        hide={hideModal}
       />
     </Container>
   )

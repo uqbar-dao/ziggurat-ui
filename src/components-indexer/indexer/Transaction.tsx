@@ -34,8 +34,8 @@ export const TransactionEntry = ({
           </Field>
           {isWalletAddress ? (
             <Field name='To:'>
-              <Link href={`/grain/${removeDots(tx.egg.shell.to)}`}>
-                <Text mono oneLine>{removeDots(tx.egg.shell.to)}</Text>
+              <Link href={`/grain/${removeDots(tx.egg.shell.contract)}`}>
+                <Text mono oneLine>{removeDots(tx.egg.shell.contract)}</Text>
               </Link>
             </Field>
           ) : (

@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom'
 import Entry from '../../components/spacing/Entry'
 import Field from '../../components/spacing/Field'
 import BackLink from '../../components-wallet/nav/BackLink'
-import Link from '../../components-zig/nav/Link'
 import Col from '../../components/spacing/Col'
 import Container from '../../components/spacing/Container'
 import Text from '../../components/text/Text'
@@ -48,7 +47,7 @@ const TransactionView = () => {
             <HexNum mono num={ removeDots(txn.from)} />
             </Field>
           <Field name='To:'>
-            <HexNum mono num={ removeDots(txn.to)} />
+            <HexNum mono num={ removeDots(txn.contract)} />
             </Field>
         </Entry>
         <Entry>

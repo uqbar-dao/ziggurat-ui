@@ -77,10 +77,10 @@ const TransactionView = () => {
             <CopyIcon iconOnly={true} text={removeDots(shell.from.id)} />
           </Field>
           <Field name='To:'>
-            <Link href={`/grain/${removeDots(shell.to)}`} className='address'>
-              <Text mono oneLine>{removeDots(shell.to)}</Text>
+            <Link href={`/grain/${removeDots(shell.contract)}`} className='address'>
+              <Text mono oneLine>{removeDots(shell.contract)}</Text>
             </Link>
-            <CopyIcon iconOnly={true} text={removeDots(shell.to)} />
+            <CopyIcon iconOnly={true} text={removeDots(shell.contract)} />
           </Field>
         </Entry>
         <Entry>
