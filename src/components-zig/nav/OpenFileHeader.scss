@@ -46,6 +46,10 @@
     margin-top: 3px;
     margin-bottom: -3px;
 
+    &:first-of-type{
+      border-top-left-radius: 0px;
+    }
+
     &.selected {
       background-color: colors.$blush;
       border-color: colors.$charcoal;
