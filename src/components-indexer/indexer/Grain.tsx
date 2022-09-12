@@ -24,7 +24,7 @@ export const GrainEntry = ({
 
   return (
     grain.id !== grain.lord ? (
-      <Entry className='grain' key={grain.id}>
+      <Entry divide className='indexer-grain' key={grain.id}>
         <Field className='id' name='ID:'>
           <Link href={`/grain/${removeDots(grain.id)}`}>
             <Text mono oneLine>{removeDots(grain.id)}</Text>

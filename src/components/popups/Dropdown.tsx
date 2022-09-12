@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaChevronDown } from 'react-icons/fa';
+import Col from '../spacing/Col';
 
 import './Dropdown.scss';
 
@@ -21,14 +22,14 @@ const Dropdown = ({
 }: DropdownProps) => {
   return (
     <div {...props} className={`dropdown ${className} ${unstyled ? 'unstyled' : ''}`}>
-      {open && <div className="close-background" onClick={toggleOpen} />}
+      {open && <div className='close-background' onClick={toggleOpen} />}
       <div className={`selector ${open ? 'open' : ''}`} onClick={toggleOpen}>
         {value}
         <FaChevronDown style={{marginLeft: '8px'}} />
       </div>
       {open && (
-        <div className="content-border">
-          <div className="dropdown-content">{children}</div>
+        <div className='content-border'>
+          <Col className='dropdown-content'>{children}</Col>
         </div>
       )}
     </div>

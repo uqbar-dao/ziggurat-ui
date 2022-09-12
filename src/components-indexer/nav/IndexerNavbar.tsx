@@ -8,6 +8,7 @@ import useIndexerStore from '../../stores/indexerStore'
 import { abbreviateHex } from '../../utils/format'
 
 import { FaArrowLeft } from 'react-icons/fa'
+import HexNum from '../../components/text/HexNum'
 
 const IndexerNavbar = () => {
   const [open, setOpen] = useState(false)
@@ -18,7 +19,7 @@ const IndexerNavbar = () => {
     <Row className='navbar'>
       <Row style={{ width: '100%', justifyContent: 'space-between' }}>
         <Row className='logo-text'>
-          <Link title='Home' className={'nav-link logo'} href='/'>
+          <Link external title='Home' href='/apps/ziggurat' className='nav-link logo'>
             <Row>
               <FaArrowLeft className='mr1' />
               <img src={logo} alt='Uqbar Logo' />
@@ -31,10 +32,10 @@ const IndexerNavbar = () => {
             Home
           </Link>
           {addresses.length > -1 && (
-            <Dropdown value='My Accounts' open={open} toggleOpen={() => setOpen(!open)} className='nav-link' unstyled style={{ padding: '0 0 0 8px', fontSize: 16 }}>
+            <Dropdown value='My Accounts' open={open} toggleOpen={() => setOpen(!open)} className='nav-link dropdown' unstyled style={{ padding: '0 0 0 8px', fontSize: 16 }}>
               {addresses.map(a => (
-                <Link href={`/address/${a}`} className='account' key={a}>
-                  <Text mono oneLine style={{ maxWidth: 150, padding: '4px 8px' }}>{abbreviateHex(a, 6, 4)}</Text>
+                <Link href={`/address/${a}`} className='account' key={a} style={{ margin: '2px 0' }}>
+                  <HexNum num={a} displayNum={abbreviateHex(a, 5, 3)} />
                 </Link>
               ))}
             </Dropdown>

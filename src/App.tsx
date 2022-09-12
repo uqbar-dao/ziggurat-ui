@@ -53,7 +53,7 @@ function App() {
   return (
     <Entry>
       <Row style={{ borderBottom: '2px solid #f3ced2' }}>
-        <Link className={'nav-link logo'} href='/'>
+        <Link external className={'nav-link logo'} href='/apps/ziggurat'>
           <img src={logo} alt='Uqbar Logo' />
         </Link>
       </Row>

@@ -7,7 +7,7 @@ import Text from '../../components/text/Text'
 import CopyIcon from '../../components/text/CopyIcon'
 import useIndexerStore from '../../stores/indexerStore'
 import { RawTransaction, Transaction } from '../../types/indexer/Transaction'
-import { getStatus, mockData } from '../../utils/constants'
+import { getRawStatus, mockData } from '../../utils/constants'
 import { removeDots } from '../../utils/format'
 import { addHexDots } from '../../utils/number'
 import { processRawData } from '../../utils/object'
@@ -18,6 +18,8 @@ import Col from '../../components/spacing/Col'
 import PageHeader from '../../components/page/PageHeader'
 
 import './TransactionView.scss'
+import Footer from '../../components-indexer/nav/Footer'
+import HexNum from '../../components/text/HexNum'
 
 const TransactionView = () => {
   const { scry } = useIndexerStore()
@@ -51,8 +53,6 @@ const TransactionView = () => {
 
   const { location: loc, egg: { shell, yolk } } = transaction
 
-  alert('This page is pending refactor to match the updated backend.')
-
   return (
     <Container className='transaction-view'>
       <PageHeader title='Transaction'>
@@ -61,64 +61,55 @@ const TransactionView = () => {
         </Text>
         <CopyIcon text={removeDots(txnHash)} />
       </PageHeader>
-      <Card title='Overview'>
-        <Entry>
-          <Field name='Block:'>
-            <Link href={`/block/${loc.epochNum}/${loc.blockNum}/${loc.townId}`} className='address'>
-              <Text mono oneLine>{loc.epochNum}-{loc.blockNum}-{loc.townId}</Text>
-            </Link>
-          </Field>
-        </Entry>
-        <Entry>
-          <Field name='From:'>
-            <Link href={`/address/${removeDots(shell.from.id)}`} className='address'>
-              <Text mono oneLine>{removeDots(shell.from.id)}</Text>
-            </Link>
-            <CopyIcon iconOnly={true} text={removeDots(shell.from.id)} />
-          </Field>
-          <Field name='To:'>
-            <Link href={`/grain/${removeDots(shell.contract)}`} className='address'>
-              <Text mono oneLine>{removeDots(shell.contract)}</Text>
-            </Link>
-            <CopyIcon iconOnly={true} text={removeDots(shell.contract)} />
-          </Field>
-        </Entry>
-        <Entry>
-          <Field name='Status:'>
-            <Text mono>{getStatus(shell.status)}</Text>
-          </Field>
-        </Entry>
-        <Entry>
-          <Field name='Budget:'>
-            <Text mono oneLine>{shell.budget}</Text>
-          </Field>
-        </Entry>
-        <Entry>
-          <Field name='Caller:'>
-            <Link href={`/address/${removeDots(yolk.caller.id)}`} className='address'>
-              <Text mono oneLine>{removeDots(yolk.caller.id)}</Text>
-            </Link>
-            <CopyIcon iconOnly={true} text={removeDots(yolk.caller.id)} />
-          </Field>
-        </Entry>
-        <Entry>
-          <Field name='Args:'>
-            <Text mono oneLine>{removeDots(JSON.stringify(yolk.args))}</Text>
-          </Field>
-        </Entry>
-        <Entry divide={false}>
-          <Field name='Grains:'>
-            <Col style={{ maxWidth: 'calc(100% - 60px)' }}>
-              {yolk.myGrains.concat(yolk.contGrains).map(grain => (
-                // <Link key={grain} href={`/grain/${removeDots(grain)}`} className='address'>
-                //   <Text mono oneLine>{removeDots(grain)}</Text>
-                // </Link>
-                <Text mono oneLine key={grain}>{removeDots(grain)}</Text>
-              ))}
-            </Col>
-          </Field>
-        </Entry>
-      </Card>
+      <Entry>
+        <Card title='Overview'>
+          <Entry>
+            <Field name='Batch:'>
+              <Link href={`/block/${loc.epochNum}/${loc.blockNum}/${loc.townId}`} className='address'>
+                <Text mono oneLine>{loc.epochNum}-{loc.blockNum}-{loc.townId}</Text>
+              </Link>
+            </Field>
+          </Entry>
+          <Entry>
+            <Field name='From:'>
+              <Link href={`/address/${removeDots(shell.from.id)}`} className='address'>
+                <HexNum mono num={removeDots(shell.from.id)} />
+              </Link>
+              <CopyIcon iconOnly={true} text={removeDots(shell.from.id)} />
+            </Field>
+            <Field name='To:'>
+              <Link href={`/grain/${removeDots(shell.contract)}`} className='address'>
+                <HexNum mono num={removeDots(shell.contract)}/>
+              </Link>
+              <CopyIcon iconOnly={true} text={removeDots(shell.contract)} />
+            </Field>
+          </Entry>
+          <Entry>
+            <Field name='Status:'>
+              <Text mono>{getRawStatus(shell.status)}</Text>
+            </Field>
+          </Entry>
+          <Entry>
+            <Field name='Budget:'>
+              <Text mono oneLine>{shell.budget}</Text>
+            </Field>
+          </Entry>
+          <Entry>
+            <Field name='Caller:'>
+              <Link href={`/address/${removeDots(shell.from.id)}`} className='address'>
+                <HexNum mono num={removeDots(shell.from.id)} />
+              </Link>
+              <CopyIcon iconOnly={true} text={removeDots(shell.from.id)} />
+            </Field>
+          </Entry>
+          <Entry>
+            <Field name='Action:'>
+              <Text mono>{JSON.stringify(yolk)}</Text>
+            </Field>
+          </Entry>
+        </Card>
+      </Entry>
+      <Footer />
     </Container>
   )
 }

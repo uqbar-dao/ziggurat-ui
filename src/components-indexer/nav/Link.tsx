@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link as CustomLink } from 'react-router-dom'
 import './Link.scss'
 
 interface LinkProps extends React.HTMLAttributes<HTMLAnchorElement> {
@@ -14,9 +15,12 @@ const Link: React.FC<LinkProps> = ({
   ...props
 }) => {
   return (
-    <a href={(external ? '' : process.env.PUBLIC_URL) + href} {...props} className={`link ${props.className || ''} ${type}`}>
+    external ? <a href={href} {...props} className={`link ${props.className || ''} ${type}`}>
       {props.children}
     </a>
+    : <CustomLink to={href} {...props} className={`link ${props.className || ''} ${type}`}>
+    {props.children}
+  </CustomLink>
   )
 }
 
