@@ -60,6 +60,8 @@ export const SUCCESSFUL_STATUS = 200
 
 export const getStatus = (status: number) => STATUS_CODES[status] || 'unknown'
 
+export const getRawStatus = (status: number) => STATUS_CODES_RAW[status] || 'unknown'
+
 export const mockData = process.env.NODE_ENV === 'development' && Boolean(process.env.REACT_APP_MOCK_DATA)
 
 export const ONE_SECOND = 1000
