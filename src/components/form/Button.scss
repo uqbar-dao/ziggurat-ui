@@ -62,5 +62,6 @@ button.button {
   &.expander {
     margin-right: 8px; 
     margin-top: 2px; 
+    align-self: flex-start;
   }
 }

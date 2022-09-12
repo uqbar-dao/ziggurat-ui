@@ -24,6 +24,7 @@ import { BLANK_TEST_FORM, TestFormField, TestFormValues } from '../../types/zigg
 import './TestView.scss'
 import Field from '../../components/spacing/Field';
 import Entry from '../../components/spacing/Entry';
+import { promiseWaterfall } from '../../stores/util';
 
 export interface TestViewProps {}
 
@@ -159,10 +160,15 @@ export const TestView = () => {
       setLoading('Running tests...')
       if (runSequentially) {
         runTests(testsToRun.map(id => ({ id, rate: DEFAULT_RATE, bud: DEFAULT_BUDGET })))
+        .finally(() => {
+          setLoading(undefined)
+        })
       } else {
-        testsToRun.map(id => runTest({ id, rate: DEFAULT_RATE, bud: DEFAULT_BUDGET }))
+        promiseWaterfall(testsToRun.map(id => runTest({ id, rate: DEFAULT_RATE, bud: DEFAULT_BUDGET })))
+        .finally(() => {
+          setLoading(undefined)
+        })
       }
-      setLoading(undefined)
     } else {
       window.alert('Please select some tests to run.')
     }

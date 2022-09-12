@@ -1,4 +1,6 @@
 .hex {
+  width: 100%; 
+  
   &.colors {
     .color-dot {
       border: 3px solid;
@@ -13,6 +15,11 @@
       
       margin-right: 0.5em;
 
+      align-self: flex-start;
     }
+  }
+
+  .hex-text {
+    flex-basis: 80%
   }
 }
