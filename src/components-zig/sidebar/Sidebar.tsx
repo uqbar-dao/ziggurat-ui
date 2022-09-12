@@ -41,7 +41,7 @@ export const Sidebar = () => {
     return () => document.removeEventListener('keydown', keydownFunc)
   }, [currentProject, saveFiles])
 
-  const BUTTON_STYLE = { marginRight: 6, padding: 2 }
+  const BUTTON_STYLE = { marginLeft: 6, padding: 2, marginBottom: -4 }
 
   const isGall = useMemo(() => Boolean(gallApps[currentProject]), [gallApps, currentProject])
 
@@ -131,7 +131,7 @@ export const Sidebar = () => {
                 }}
                 variant='unstyled'
                 className='delete'
-                style={{ fontSize: 20, marginLeft: 6, marginTop: 4 }}
+                style={{ fontSize: 20, marginLeft: 6 }}
               >
                 &times;
               </Button>
