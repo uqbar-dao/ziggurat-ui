@@ -1,6 +1,6 @@
 
 import Text from '../../components/text/Text'
-import {  getStatus,  } from '../../utils/constants';
+import {  getRawStatus,  } from '../../utils/constants';
 
 interface TestStatusProps { errorCode: number, success?: boolean | null, expectedError: number }
 
@@ -13,9 +13,9 @@ const TestStatus = ({ errorCode, success, expectedError }: TestStatusProps) => {
 
   return (
     <Text style={{ marginLeft: 4, color: correctStatus && (success || success === null)  ? 'green' : 'red', fontWeight: 'bold' }}>
-      {getStatus(errorCode)}{statusInfo}
+      {getRawStatus(errorCode)}{statusInfo}
     </Text>
   )
 }
-  
+
 export default TestStatus
