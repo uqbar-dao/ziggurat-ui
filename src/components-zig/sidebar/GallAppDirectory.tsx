@@ -100,8 +100,9 @@ export const GallAppDirectory = ({ project }: GallAppDirectoryProps) => {
         )}
       </Row>
       {expanded && (
-        <Col style={{ paddingLeft: 20 }}>
-          {Object.keys(folder.contents).map((item) => {
+        <Col className='ml1'>
+          {Object.keys(folder.contents)
+          .map((item) => {
             if (typeof folder.contents[item] === 'string') {
               return <FileLink isGall key={item} project={title} file={item} />
             }

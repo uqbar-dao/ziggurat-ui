@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react'
-import { FaTrash } from 'react-icons/fa';
+import  { useCallback, useState } from 'react'
+import { FaCodeBranch, FaFile, FaFileImage, FaKickstarterK, FaMoneyBill, FaPencilRuler,  FaShip, FaTrash } from 'react-icons/fa';
 import { useLocation } from 'react-router-dom';
 import useZigguratStore from '../../stores/zigguratStore'
 import Button from '../../components/form/Button';
@@ -38,6 +38,13 @@ export const FileLink = ({ project, file, isGall = false }: FileLinkProps) => {
 
   return (
     <Row style={{ paddingLeft: 8, position: 'relative' }} onMouseEnter={() => setShowButtons(true)} onMouseLeave={() => setShowButtons(false)}>
+      {fileName.endsWith('.hoon') ? <FaCodeBranch style={{ transform: 'scale(1, -1)'}} />
+       : fileName.endsWith('tests') ? <FaPencilRuler />
+       : fileName.endsWith('.bill') ? <FaMoneyBill />
+       : fileName.endsWith('.ship') ? <FaShip />
+       : fileName.endsWith('.kelvin') ? <FaKickstarterK />
+       : fileName.match(/\.(pn|jp(e)?)g$/) ? <FaFileImage />
+       : <FaFile />}
       <Link onClick={selectFile} underline={pathname === href} href={href} style={{ padding: 2 }}>
         {fileName}
       </Link>
