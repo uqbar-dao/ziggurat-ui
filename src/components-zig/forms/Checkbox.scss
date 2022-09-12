@@ -1,0 +1,33 @@
+@use '../../styles/colors.scss' as colors;
+
+.checkbox {
+  input {
+    display: none;
+  }
+
+  label {
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.1s;
+    color: colors.$uq-darkpurple;
+
+    ::selection {
+      background-color: transparent;
+    }
+
+    &.unchecked {
+      color: colors.$charcoal;
+      font-weight: 400;
+    }
+    
+    .icon {
+      transition: all 0.1s;
+      font-size: 1.5em;
+      color: colors.$celadon;
+
+      &.unchecked {
+        color: colors.$uq-darkpink;
+      }
+    }
+  }
+}

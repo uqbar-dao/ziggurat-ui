@@ -16,6 +16,7 @@ import Entry from '../../components/spacing/Entry';
 import Field from '../../components/spacing/Field';
 import TestResultDisplay from './TestResultDisplay';
 import classNames from 'classnames';
+import Checkbox from '../forms/Checkbox';
 
 interface TestEntryProps extends TestListProps {
   test: Test
@@ -35,8 +36,7 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
     <Col className={'test-entry ' + classNames({ selected: test.selected })}>
       <Row between className='test-title'>
         <Row>
-          <Input type='checkbox' checked={!!test.selected} onChange={() => toggleTest(currentProject, test.id)} />
-          <Text ml1>{test.name ? test.name : parseAction(test)}</Text>
+          <Checkbox label={test.name ? test.name : parseAction(test)} isSelected={!!test.selected} onCheckboxChange={() => toggleTest(currentProject, test.id)} />
         </Row>
         <Row>
           <Button icon={<FaPlay size={12} />} iconOnly small onClick={runSingleTest} />
