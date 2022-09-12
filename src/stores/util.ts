@@ -31,3 +31,9 @@ export const generateSendTokenPayload = (payload: SendTokenPayload | SendNftPayl
 
   return json
 }
+
+export const promiseWaterfall = (callbacks: Promise<void>[], initialArgs?: any[]): Promise<any> => {
+  return callbacks.reduce((accumulator: any, callback: any) => {
+    return accumulator.then(callback)
+  }, Promise.resolve(initialArgs))
+}

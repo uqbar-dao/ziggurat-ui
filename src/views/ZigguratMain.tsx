@@ -52,7 +52,7 @@ function ZigguratMain() {
         </Row>
       </Col>
       </BrowserRouter>
-      <LoadingOverlay loading={loading !== undefined} text={loading} />
+      <LoadingOverlay loading={!!loading} text={loading} />
       <ToastContainer
         autoClose={false}
         hideProgressBar

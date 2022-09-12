@@ -1,0 +1,60 @@
+@use '../../styles/colors.scss' as colors;
+@use '../../styles/border.scss' as borders;
+
+.test-entry {
+  justify-content: space-between;
+  margin: 8px;
+  padding: 8px;
+  border: 1px solid black;
+  border-radius: 4px;
+  position: relative;
+  background-color: white;
+  box-shadow: borders.$card-shadow;
+
+  .overlay {
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    bottom: 0; 
+    right: 0;
+    left: 0;
+    justify-content: center;
+    background-color: colors.$dark-gray;
+
+    .spinner {
+      height: 3em;
+      width: 3em;
+      color: white;
+      animation: spin 1s ease-out infinite;
+    }
+  }
+
+  &:not(.selected) {
+    border-color: lightgray;
+  }
+
+  &.running {
+    .overlay {
+      visibility: visible;
+    }
+  }
+
+  .test-title {
+    border-bottom: 1px solid gray;
+    padding-bottom: 0.5em;
+  }
+
+
+  .iconOnly {
+    margin-left: 0.5em;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

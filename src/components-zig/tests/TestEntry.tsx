@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react'
-import { FaChevronRight, FaChevronDown, FaPlay, FaRegEdit, FaRegTrashAlt } from 'react-icons/fa';
+import { FaChevronRight, FaChevronDown, FaPlay, FaRegEdit, FaRegTrashAlt, FaSpinner } from 'react-icons/fa';
 import Col from '../../components/spacing/Col'
 import Row from '../../components/spacing/Row'
 import useZigguratStore from '../../stores/zigguratStore';
@@ -18,6 +18,9 @@ import TestResultDisplay from './TestResultDisplay';
 import classNames from 'classnames';
 import Checkbox from '../forms/Checkbox';
 
+
+import './TestEntry.scss'
+
 interface TestEntryProps extends TestListProps {
   test: Test
 }
@@ -28,12 +31,21 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
   const [expandInput, setExpandInput] = useState(false)
   const [expandOutput, setExpandOutput] = useState(false)
   const [expandExpectations, setExpandExpectations] = useState(false)
- 
+  const [running, setRunning] = useState(false)
 
-  const runSingleTest = useCallback(() => runTest({ id: test.id, rate: DEFAULT_RATE, bud: DEFAULT_BUDGET }), [test, runTest])
+  const runSingleTest = useCallback(() => {
+    setRunning(true)
+    runTest({ id: test.id, rate: DEFAULT_RATE, bud: DEFAULT_BUDGET })
+    .then(() => {
+      setRunning(false)
+    })
+  }, [test, runTest])
 
   return (
-    <Col className={'test-entry ' + classNames({ selected: test.selected })}>
+    <Col className={'test-entry ' + classNames({ selected: test.selected, running })}>
+      <Row className='overlay'>
+        <FaSpinner className='spinner' />
+      </Row>
       <Row between className='test-title'>
         <Row>
           <Checkbox label={test.name ? test.name : parseAction(test)} isSelected={!!test.selected} onCheckboxChange={() => toggleTest(currentProject, test.id)} />
