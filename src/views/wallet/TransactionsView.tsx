@@ -12,12 +12,14 @@ import { groupTransactions } from '../../utils/transactions'
 
 import './TransactionsView.scss'
 
+
 const PLACEHOLDER = 'All addresses'
 
 const TransactionsView = () => {
-  const { accounts, transactions, unsignedTransactions } = useWalletStore()
+  const { accounts, transactions, unsignedTransactions, setPathname } = useWalletStore()
   const [filteredTransactions, setFilteredTransactions] = useState(transactions)
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>()
+  
 
   const filterByAddress = useCallback((address?: string) => {
     if (address) {
@@ -34,6 +36,8 @@ const TransactionsView = () => {
   }
 
   useEffect(() => {
+    setPathname('/wallet/transactions')
+
     filterByAddress(selectedAddress)
   }, [selectedAddress, transactions, filterByAddress])
 

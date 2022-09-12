@@ -18,7 +18,7 @@ const PLACEHOLDER = 'All addresses'
 const AssetsView = () => {
   const nav = useNavigate()
   const { unsignedTransactionHash } = useParams()
-  const { assets, accounts, loadingText, metadata, unsignedTransactions } = useWalletStore()
+  const { assets, accounts, loadingText, metadata, unsignedTransactions, setPathname } = useWalletStore()
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>()
   const [sendFormType, setSendFormType] = useState<SendFormType | undefined>()
   const [id, setId] = useState<string | undefined>()
@@ -47,6 +47,8 @@ const AssetsView = () => {
     'Send Tokens'
 
   useEffect(() => {
+    setPathname('/wallet')
+
     if (unsignedTransactionHash) {
       const txn = unsignedTransactions[unsignedTransactionHash]
       if (txn) {

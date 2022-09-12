@@ -19,7 +19,7 @@ import { capitalize } from '../../utils/format'
 import './AccountsView.scss'
 
 const AccountsView = () => {
-  const { accounts, importedAccounts, createAccount, restoreAccount, importAccount, getSeed, deriveNewAddress } = useWalletStore()
+  const { accounts, importedAccounts, createAccount, restoreAccount, importAccount, getSeed, deriveNewAddress, setPathname } = useWalletStore()
   const [showCreate, setShowCreate] = useState(false)
   const [showAddWallet, setShowAddWallet] = useState<'create' | 'restore' | undefined>()
   const [showImport, setShowImport] = useState(false)
@@ -33,7 +33,9 @@ const AccountsView = () => {
 
   const addHardwareAddress = addAddressType && addAddressType !== 'hot'
 
+  
   useEffect(() => {
+    setPathname('/wallet/accounts')
     if (!showImport && !showAddWallet && !addAddressType) {
       setNick('')
     }
@@ -116,7 +118,7 @@ const AccountsView = () => {
   return (
     <Container className='accounts-view'>
       <PageHeader title='Accounts' />
-      <Entry title='Hot Wallets' >
+      <Entry title='Hot Wallets' divide className='mb1'>
         <Text mb1>
           WARNING: HOT WALLETS ARE NOT SECURE. ALL YOUR OTHER URBIT APPS CAN READ YOUR HOT WALLET PRIVATE KEYS.
         </Text>

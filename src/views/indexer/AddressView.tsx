@@ -23,6 +23,8 @@ import { TransactionEntry } from '../../components-indexer/indexer/Transaction'
 import { GrainEntry } from '../../components-indexer/indexer/Grain'
 import PageHeader from '../../components/page/PageHeader'
 import Footer from '../../components-indexer/nav/Footer'
+import CardHeader from '../../components-indexer/card/CardHeader'
+import Entry from '../../components/spacing/Entry'
 
 type Selection = 'txns' | 'grains'
 
@@ -119,50 +121,54 @@ const AddressView = () => {
         </Text>
         <CopyIcon text={removeDots(address)} />
       </PageHeader>
-      <Card>
-        {!isRice && (
-          <Row style={{ margin: '-12px -16px 0', borderBottom: '1px solid lightgray', justifyContent: 'space-between' }}>
-            <Row>
-              <Text large onClick={() => setDisplay('txns')} className={`selector ${display === 'txns' && 'selected'}`}>
-                Transactions
-              </Text>
-              <Text large onClick={() => setDisplay('grains')} className={`selector ${display === 'grains' && 'selected'}`}>
-                Assets
-              </Text>
-            </Row>
-            <Row style={{ padding: '12px 16px' }}>
-              <Text style={{ marginRight: 12 }}>Town:</Text>
-              <select value={town} style={{ padding: '2px 4px', fontSize: 14 }} onChange={(e) => setTown(Number(e.target.value))}>
-                <option value={-1} key={-1}>All</option>
-                {towns.map(t => <option value={t} key={t}>{t}</option>)}
-              </select>
-            </Row>
-          </Row>
-        )}
-        <Col>
-          {display === 'txns' ? (
-            displayTransactions.length > 0 ? (
-              displayTransactions.map((tx, i, arr) => (
-                <TransactionEntry tx={tx} isWalletAddress={isWalletAddress} displayIndex={arr.length - i} key={tx.hash || i} />
-              ))
-            ) : transactions.length > 0 ? (
-              <Text>No transactions under this town</Text>
-            ) : (
-              <Text>No transactions</Text>
-            )
-          ) : (
-            displayGrains.length > 0 ? (
-              displayGrains.map((grain, i) => (
-                <GrainEntry grain={grain} isRiceView={isRice} isWalletAddress={isWalletAddress} key={i} />
-              ))
-            ) :  grains.length > 0 ? (
-              <Text style={{ padding: 16 }}>No assets under this town</Text>
-            ) : (
-              <Text>No assets</Text>
-            )
+      <Entry>
+        <Card>
+          {!isRice && (
+            <CardHeader style={{ padding: '0 1em 0 0' }}> 
+              <Row fullWidth between>
+                <Row>
+                  <Text onClick={() => setDisplay('txns')} className={`selector ${display === 'txns' && 'selected'}`}>
+                    Transactions
+                  </Text>
+                  <Text onClick={() => setDisplay('grains')} className={`selector ${display === 'grains' && 'selected'}`}>
+                    Assets
+                  </Text>
+                </Row>
+                <Row>
+                  <Text mr1>Town:</Text>
+                  <select value={town} className='small text' style={{paddingRight: '1em'}} onChange={(e) => setTown(Number(e.target.value))}>
+                    <option value={-1} key={-1}>All</option>
+                    {towns.map(t => <option value={t} key={t}>{t}</option>)}
+                  </select>
+                </Row>
+              </Row>
+            </CardHeader>
           )}
-        </Col>
-      </Card>
+          <Col>
+            {display === 'txns' ? (
+              displayTransactions.length > 0 ? (
+                displayTransactions.map((tx, i, arr) => (
+                  <TransactionEntry tx={tx} isWalletAddress={isWalletAddress} displayIndex={arr.length - i} key={tx.hash || i} />
+                ))
+              ) : transactions.length > 0 ? (
+                <Text>No transactions under this town</Text>
+              ) : (
+                <Text>No transactions</Text>
+              )
+            ) : (
+              displayGrains.length > 0 ? (
+                displayGrains.map((grain, i) => (
+                  <GrainEntry grain={grain} isRiceView={isRice} isWalletAddress={isWalletAddress} key={i} />
+                ))
+              ) :  grains.length > 0 ? (
+                <Text style={{ padding: 16 }}>No assets under this town</Text>
+              ) : (
+                <Text>No assets</Text>
+              )
+            )}
+          </Col>
+        </Card>
+      </Entry>
       <Footer/>
     </Container>
   )

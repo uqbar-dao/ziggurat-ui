@@ -5,15 +5,15 @@ import Row from '../../components/spacing/Row'
 
 interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string,
-  title: string
+  title?: string
 }
 
 const CardHeader: React.FC<CardHeaderProps> = ({ children, title, className, ...rest }) => {
   return (
     <Row className={`header ${className || ''}`} {...rest}>
-      <Text large >
+      {title && <Text large >
         {title}
-      </Text>
+      </Text>}
       {children}
     </Row>
   )

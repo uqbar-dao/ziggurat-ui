@@ -38,7 +38,7 @@ const HexNum: React.FC<HexNumProps> = ({
 
         background: `linear-gradient(${angle}deg, ${leftColor} 0 50%, ${rightColor} 50% 100%)`, 
       }}></span>}
-      <Text breakAll className='hex-text' mono={mono}>
+      <Text breakAll className='hex-text' mono={mono}> 
         {displayNum}
       </Text>
     </Row>

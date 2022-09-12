@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Row from '../../components/spacing/Row'
 import Link from './Link'
 // import logoWithText from '../../assets/img/uqbar-logo-text.png'
@@ -17,21 +17,21 @@ const WalletNavbar = () => {
     <Row className='navbar'>
       <Row>
         <Row>
-          <Link external title='Home' href='/apps/ziggurat' className="nav-link logo">
+          <Link external title='Home' href='/apps/ziggurat' className='nav-link logo'>
             <Row>
               <FaArrowLeft className='mr1' />
-              <img src={logo} alt="Uqbar Logo" />
+              <img src={logo} alt='Uqbar Logo' />
             </ Row>
           </Link>
           <Text bold mr1>WALLET</Text>
         </Row>
-        <Link className={`nav-link ${(pathname === '/' || pathname.match('/wallet/?$')) ? 'selected' : ''}`} href="/">
+        <Link className={`nav-link ${(pathname === '/' || pathname.match(/wallet\/?$/)) ? 'selected' : ''}`} href='/'>
           {isMobile ? <FaWallet  /> : 'Assets'}
         </Link>
-        <Link className={`nav-link ${pathname.includes('/accounts') ? 'selected' : ''}`} href="/accounts">
+        <Link className={`nav-link ${pathname.includes('/accounts') ? 'selected' : ''}`} href='/accounts'>
           {isMobile ? <FaKey  /> : 'Accounts'}
         </Link>
-        <Link className={`nav-link ${pathname.includes('/transactions') ? 'selected' : ''}`} href="/transactions">
+        <Link className={`nav-link ${pathname.includes('/transactions') ? 'selected' : ''}`} href='/transactions'>
           {isMobile ? <FaHistory  /> : 'History'}
         </Link>
       </Row>
