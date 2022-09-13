@@ -17,6 +17,7 @@ import { DerivedAddressType, HardwareWalletType, Seed } from '../../types/wallet
 import { capitalize } from '../../utils/format'
 
 import './AccountsView.scss'
+import { unwatchTabClose, watchTabClose } from '../../utils/nav'
 
 const AccountsView = () => {
   const { accounts, importedAccounts, createAccount, restoreAccount, importAccount, getSeed, deriveNewAddress, setPathname } = useWalletStore()
@@ -41,6 +42,8 @@ const AccountsView = () => {
     }
   }, [showImport, showAddWallet, addAddressType])
 
+  
+  
   const showSeed = useCallback(async () => {
     if (window.confirm('Are you sure you want to display your seed phrase? Anyone viewing this will have access to your account.')) {
       const seed = await getSeed()
@@ -53,6 +56,7 @@ const AccountsView = () => {
     setHdpath('')
     setPassword('')
     setAddAddressType(null)
+    unwatchTabClose()
   }, [setNick, setHdpath, setPassword, setAddAddressType])
 
   const create = useCallback(async (e) => {
@@ -85,11 +89,13 @@ const AccountsView = () => {
       setShowImport(false)
       setImportType(null)
       clearForm()
+      unwatchTabClose()
     }
   }, [setShowCreate, setShowAddWallet, setShowImport, importAccount, clearForm, nick, importType])
 
   const addAddress = (e: any) => {
     e.preventDefault()
+    watchTabClose()
     if (addHardwareAddress) {
       if (!hdpath) {
         return alert('You must supply an HD path')
@@ -108,6 +114,7 @@ const AccountsView = () => {
     setShowAddWallet(undefined)
     setShowCreate(false)
     setShowImport(false)
+    unwatchTabClose()
   }, [clearForm, setImportType, setSeed, setShowAddWallet, setShowCreate, setShowImport])
 
   const isFirefox = (typeof (window as any).InstallTrigger !== 'undefined') 
