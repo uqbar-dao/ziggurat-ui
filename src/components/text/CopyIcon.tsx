@@ -16,8 +16,7 @@ const CopyIcon: React.FC<CopyIconProps> = ({
 }) => {
   const [didCopy, setDidCopy] = useState(false)
 
-  const onCopy = useCallback((e) => {
-    e.preventDefault()
+  const onCopy = useCallback(() => {
     navigator.clipboard.writeText(text)
     setDidCopy(true)
     setTimeout(() => setDidCopy(false), 1000)
