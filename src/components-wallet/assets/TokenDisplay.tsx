@@ -15,6 +15,7 @@ import Divider from '../../components/spacing/Divider';
 import Entry from '../../components/spacing/Entry';
 
 import './TokenDisplay.scss'
+import HexNum from '../../components/text/HexNum';
 
 interface TokenDisplayProps extends React.HTMLAttributes<HTMLDivElement> {
   token: Token
@@ -40,7 +41,7 @@ const TokenDisplay: React.FC<TokenDisplayProps> = ({
             <FaCaretDown className='arrow' /> 
             {isToken? <FaCoins /> : <FaPortrait /> }
           </Row>
-          <Text bold className='token-name'>{(isToken ? tokenMetadata?.data?.symbol : tokenMetadata?.data?.name) || abbreviateHex(contract)}</Text>
+          <Text bold className='token-name'>{(isToken ? tokenMetadata?.data?.symbol : tokenMetadata?.data?.name) || <HexNum num={contract} />}</Text>
         </Row>
         <Row>
           {isToken ? (
@@ -71,14 +72,12 @@ const TokenDisplay: React.FC<TokenDisplayProps> = ({
         )}
         <Entry>
           <Field name='Contract:'>
-            <Text breakWord mono>{contract}</Text>
-            <CopyIcon text={contract} />
+            <HexNum copy mono num={contract} />
           </Field>
         </Entry>
         <Entry>
           <Field name='Grain:'>
-            <Text breakWord mono>{id}</Text>
-            <CopyIcon text={id} />
+            <HexNum copy mono num={id} />
           </Field>
         </Entry>
         {!isToken && tokenMetadata?.data?.properties && (

@@ -37,17 +37,16 @@ const TransactionView = () => {
         <Entry>
           <Field name='Hash:'>
             {/* <Link target='_blank' urlPrefix='/apps/ziggurat/indexer' href={`/tx/${removeDots(txn.hash)}`}> */}
-              <Text style={{ overflowWrap: 'break-word' }} mono>{removeDots(txn.hash)}</Text>
+              <HexNum mono copy num={removeDots(txn.hash)} />
             {/* </Link> */}
-            <CopyIcon text={txn.hash} />
           </Field>
         </Entry>
         <Entry>
           <Field name='From:'>
-            <HexNum mono num={ removeDots(txn.from)} />
+            <HexNum mono copy num={ removeDots(txn.from)} />
             </Field>
           <Field name='To:'>
-            <HexNum mono num={ removeDots(txn.contract)} />
+            <HexNum mono copy num={ removeDots(txn.contract)} />
             </Field>
         </Entry>
         <Entry>
@@ -58,7 +57,7 @@ const TransactionView = () => {
         </Entry>
         <Entry>
           <Field name='Town:'>
-            <HexNum mono num={ removeDots(txn.town)} />
+            <HexNum mono copy num={ removeDots(txn.town)} />
             </Field>
         </Entry>
         <Entry>
@@ -82,8 +81,9 @@ const TransactionView = () => {
         </Entry>
         <Entry>
           <Field name='Action:'>
-            <Col style={{ marginBottom: 12 }}>
-              <Text style={{ overflowWrap: 'break-word' }} mono breakWord>{JSON.stringify(txn.action)}</Text>
+            <Col className='mb1'>
+              <Text mono breakAll>{JSON.stringify(txn.action)}</Text>
+              <CopyIcon text={JSON.stringify(txn.action)} />
             </Col>
           </Field>
         </Entry>

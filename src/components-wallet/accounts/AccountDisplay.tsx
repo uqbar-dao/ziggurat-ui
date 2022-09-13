@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {  FaRegTrashAlt,  } from 'react-icons/fa';
+import {  FaArrowRight, FaRegTrashAlt,  } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import useWalletStore from '../../stores/walletStore';
 import { HotWallet, HardwareWallet } from '../../types/wallet/Accounts';
@@ -10,6 +10,8 @@ import Row from '../../components/spacing/Row'
 import Text from '../../components/text/Text';
 import CopyIcon from '../../components/text/CopyIcon';
 import { ONE_SECOND } from '../../utils/constants';
+import HexNum from '../../components/text/HexNum';
+import Link from '../nav/Link'
 
 import './AccountDisplay.scss'
 
@@ -60,7 +62,9 @@ const AccountDisplay: React.FC<AccountDisplayProps> = ({
             onChange={(e: any) => setNewNick(e.target.value)}
             value={newNick}
           />
-          <Text mono style={{ fontWeight: 600, cursor: 'pointer' }} onClick={() => navigate(`/accounts/${address}`)}>{displayPubKey(address)}</Text>
+          <Link href={`/accounts/${address}`}>
+            <HexNum num={displayPubKey(address)} mono bold />
+          </Link>
           <CopyIcon text={address} />
         </Row>
         <Row>
