@@ -90,7 +90,7 @@ const AssetsView = () => {
       </PageHeader>
       <Entry title='Accounts'>
         {(!accountsList.length && !loadingText) && (
-          <Text style={{ marginTop: 16 }}>You do not have any Uqbar accounts yet.</Text>
+          <Text className='mt1'>You do not have any Uqbar accounts yet.</Text>
         )}
         {accountsList.map(a => (
           <AccountBalance

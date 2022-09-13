@@ -6,6 +6,12 @@
   background: colors.$light-gray;
   border-radius: 4px;
 
+  &:hover {
+    background: linear-gradient(-45deg, colors.$uq-pink, colors.$uq-lightpurple);
+    animation: gradient 15s linear infinite;
+    background-size: 400% 400%;
+  }
+
   .icon {
     padding: 4px;
     cursor: pointer;

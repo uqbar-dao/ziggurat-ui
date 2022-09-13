@@ -1,7 +1,12 @@
 import React from 'react'
+import { FaArrowLeft } from 'react-icons/fa'
 import { useParams } from 'react-router-dom'
 import AccountDisplay from '../../components-wallet/accounts/AccountDisplay'
+import BackLink from '../../components-wallet/nav/BackLink'
+import PageHeader from '../../components/page/PageHeader'
+import Col from '../../components/spacing/Col'
 import Container from '../../components/spacing/Container'
+import Entry from '../../components/spacing/Entry'
 import useWalletStore from '../../stores/walletStore'
 
 const AccountView = () => {
@@ -12,8 +17,12 @@ const AccountView = () => {
 
   return (
     <Container>
-      <h2>Account</h2>
-      {displayAccount && <AccountDisplay account={displayAccount} full />}
+      <PageHeader title='Account'>
+      </PageHeader>
+      <Entry>
+        {displayAccount && <AccountDisplay account={displayAccount} full />}
+        <BackLink />
+      </Entry>
     </Container>
   )
 }

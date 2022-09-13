@@ -22,3 +22,35 @@ $light-gray: rgba(0, 0, 0, 0.1);
 $medium-gray: rgba(0, 0, 0, 0.2);
 $dark-gray: rgba(0, 0, 0, 0.5);
 $charcoal: #333;
+
+
+// inspired by a pen by https://manuel.pinto.dev
+@keyframes gradient {
+	0% {
+		background-position: 0% 0%;
+	}
+  5% {
+    background-position: 100% 0%;
+  }
+  10% {
+		background-position: 100% 100%;
+  }
+  15% {
+		background-position: 0% 100%;
+  }
+  20% {
+		background-position: 0% 0%;
+  }
+  40% {
+		background-position: 100% 0%;
+	}
+	60% {
+		background-position: 100% 100%;
+	}
+	80% {
+		background-position: 0% 100%;
+	}
+  100% {
+		background-position: 0% 0%;
+	}
+}

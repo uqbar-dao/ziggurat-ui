@@ -12,6 +12,7 @@ import Button from '../../components/form/Button';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import useWalletStore from '../../stores/walletStore';
 import { useNavigate } from 'react-router-dom';
+import HexNum from '../../components/text/HexNum';
 
 interface TransactionShortProps extends React.HTMLAttributes<HTMLDivElement> {
   txn: Transaction
@@ -30,7 +31,7 @@ const TransactionShort: React.FC<TransactionShortProps> = ({
     <Col {...props} className={`transaction-short ${props.className || ''}`}>
       <Field name='Hash:'>
         <Link href={`/transactions/${txn.hash}`}>
-          <Text mono>{abbreviateHex(txn.hash)}</Text>
+          <HexNum mono num={txn.hash} displayNum={abbreviateHex(txn.hash)} />
         </Link>
         <CopyIcon text={txn.hash} />
       </Field>
