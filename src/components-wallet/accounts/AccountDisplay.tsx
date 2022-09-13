@@ -63,7 +63,11 @@ const AccountDisplay: React.FC<AccountDisplayProps> = ({
             value={newNick}
           />
           <Link href={`/accounts/${address}`}>
+            <Row>
+
             <HexNum num={displayPubKey(address)} mono bold />
+            {!full && <FaArrowRight className='ml1' />}
+            </Row>
           </Link>
           <CopyIcon text={address} />
         </Row>
@@ -82,8 +86,8 @@ const AccountDisplay: React.FC<AccountDisplayProps> = ({
       {full && (
         <Col>
           <h4>Nonces</h4>
-          {Object.keys(nonces).map(n => (
-            <Row>
+          {Object.keys(nonces).map((n, i) => (
+            <Row key={i}>
               <Text style={{ marginRight: 8, width: 72 }}>Town: {n}</Text>
               <Text>Nonce: {nonces[n]}</Text>
             </Row>

@@ -164,7 +164,7 @@ export const TestView = () => {
           setLoading(undefined)
         })
       } else {
-        promiseWaterfall(testsToRun.map(id => runTest({ id, rate: DEFAULT_RATE, bud: DEFAULT_BUDGET })))
+        Promise.all(testsToRun.map(id => runTest({ id, rate: DEFAULT_RATE, bud: DEFAULT_BUDGET })))
         .finally(() => {
           setLoading(undefined)
         })
@@ -209,13 +209,13 @@ export const TestView = () => {
 
         <Modal title='Run Selected Tests' show={showRunModal} hide={() => setShowRunModal(false)}>
           <Entry>
-            <Field name='Sequential'>
-              <Text>Tests will run in order. Initial results will affect subsequent tests.</Text>
+            <Field name='Parallel'>
+              <Text>Each test will run separately.</Text>
             </Field>
           </Entry>
           <Entry>
-            <Field name='Parallel'>
-              <Text>Each test will run separately.</Text>
+            <Field name='Sequential'>
+              <Text>Tests will run in order. Initial results will affect subsequent tests.</Text>
             </Field>
           </Entry>
           <Entry>

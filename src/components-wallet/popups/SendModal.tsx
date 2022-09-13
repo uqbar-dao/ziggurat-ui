@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import Button from '../../components/form/Button'
 import Link from '../nav/Link'
 import Loader from '../../components/popups/Loader'
@@ -11,8 +11,9 @@ import { getStatus } from '../../utils/constants'
 import SendTransactionForm, { BLANK_FORM_VALUES, SendFormField, SendFormType } from '../forms/SendTransactionForm'
 import Modal, { ModalProps } from '../../components/popups/Modal'
 import useWalletStore from '../../stores/walletStore'
-
+ 
 import './SendModal.scss'
+import { unwatchTabClose, watchTabClose } from '../../utils/nav'
 
 interface SendModalProps extends ModalProps {
   id?: string
@@ -36,6 +37,10 @@ const SendModal = ({
   const { mostRecentTransaction: txn } = useWalletStore()
   const [submitted, setSubmitted] = useState(false)
   const [formValues, setFormValues] = useState(BLANK_FORM_VALUES)
+
+  useEffect(() => {
+    if (show) watchTabClose()
+  }, [show])
 
   const setFormValue = useCallback((key: SendFormField, value: string) => {
     const newValues = { ...formValues }

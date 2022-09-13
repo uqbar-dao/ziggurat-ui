@@ -12,6 +12,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { SendFormType } from '../../components-wallet/forms/SendTransactionForm'
 
 import './AssetsView.scss'
+import { unwatchTabClose, watchTabClose } from '../../utils/nav'
 
 const PLACEHOLDER = 'All addresses'
 
@@ -55,6 +56,8 @@ const AssetsView = () => {
         const grainId = Object.values(txn.action)[0]?.grain
         const isToken = Boolean(Object.values(txn.action)[0]?.amount)
 
+        watchTabClose()
+        
         if (grainId) {
           setId(grainId)
           setSendFormType(isToken ? 'tokens' : 'nft')
@@ -65,12 +68,14 @@ const AssetsView = () => {
     }
   }, [unsignedTransactionHash, unsignedTransactions])
 
+
   const hideModal = useCallback(() => {
     nav('/')
     setSendFormType(undefined)
     setId(undefined)
     setNftIndex(undefined)
     setCustomFrom(undefined)
+    unwatchTabClose()
   }, [nav, setSendFormType, setId, setNftIndex, setCustomFrom])
 
   return (

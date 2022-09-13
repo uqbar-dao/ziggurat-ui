@@ -83,8 +83,8 @@ const TransactionView = () => {
           <Field name='Action:'>
             <Col className='mb1'>
               <Text mono breakAll>{JSON.stringify(txn.action)}</Text>
-              <CopyIcon text={JSON.stringify(txn.action)} />
             </Col>
+            <CopyIcon text={JSON.stringify(txn.action)} />
           </Field>
         </Entry>
       </Col>
