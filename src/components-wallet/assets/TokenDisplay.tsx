@@ -45,7 +45,7 @@ const TokenDisplay: React.FC<TokenDisplayProps> = ({
         </Row>
         <Row>
           {isToken ? (
-            <Text>{displayTokenAmount(data.balance!, tokenMetadata?.data?.decimals || 1)}</Text>
+            <Text>{displayTokenAmount(data.balance!, tokenMetadata?.data?.decimals || 1, open ? tokenMetadata?.data?.decimals || 8 : 8)}</Text>
             ) : (
             <Text># {data.id || ''}</Text>
           )}
@@ -63,6 +63,13 @@ const TokenDisplay: React.FC<TokenDisplayProps> = ({
             </Field>
           </Entry>
         )}
+        {isToken && tokenMetadata?.data?.decimals && (
+          <Entry>
+            <Field name='Decimals:'>
+              <Text breakWord mono>{tokenMetadata?.data?.decimals}</Text>
+            </Field>
+          </Entry>
+        )}
         <Entry>
           <Field name='Contract:'>
             <HexNum copy mono num={contract} />
@@ -73,6 +80,13 @@ const TokenDisplay: React.FC<TokenDisplayProps> = ({
             <HexNum copy mono num={id} />
           </Field>
         </Entry>
+        {!isToken && tokenMetadata?.data?.properties && (
+          <Entry>
+            <Field name='Properties:'>
+              <Text breakWord mono>{tokenMetadata?.data?.properties.join(', ')}</Text>
+            </Field>
+          </Entry>
+        )}
         {!isToken && <NftImage nftInfo={data} />}
       </Col>
     </Col>
