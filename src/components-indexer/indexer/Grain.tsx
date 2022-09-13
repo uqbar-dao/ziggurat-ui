@@ -7,6 +7,7 @@ import Field from '../../components/spacing/Field'
 import Link from '../nav/Link'
 import Text from '../../components/text/Text'
 import './Grain.scss'
+import HexNum from '../../components/text/HexNum'
 
 interface GrainEntryProps {
   grain: Grain
@@ -27,14 +28,14 @@ export const GrainEntry = ({
       <Entry divide className='indexer-grain' key={grain.id}>
         <Field className='id' name='ID:'>
           <Link href={`/grain/${removeDots(grain.id)}`}>
-            <Text mono oneLine>{removeDots(grain.id)}</Text>
+            <HexNum mono num={removeDots(grain.id)} />
           </Link>
           <CopyIcon text={removeDots(grain.id)}></CopyIcon>
         </Field>
         {isWalletAddress ? (
           <Field name='Lord:'>
             <Link href={`/grain/${removeDots(grain.lord)}`}>
-              <Text mono oneLine>{removeDots(grain.lord)}</Text>
+              <HexNum mono num={removeDots(grain.lord)} />
             </Link>
             <CopyIcon text={removeDots(grain.lord)}></CopyIcon>
           </Field>
@@ -42,7 +43,7 @@ export const GrainEntry = ({
           grain.holder !== grain.lord && (
             <Field name='Holder:'>
               <Link href={`/address/${removeDots(grain.holder)}`}>
-                <Text mono oneLine>{removeDots(grain.holder)}</Text>
+                <HexNum mono num={removeDots(grain.holder)} />
               </Link>
               <CopyIcon text={removeDots(grain.holder)}></CopyIcon>
             </Field>
@@ -51,7 +52,7 @@ export const GrainEntry = ({
         {isRiceView && (
           <Field name='Lord:'>
             <Link href={`/grain/${removeDots(grain.lord)}`}>
-              <Text mono oneLine>{removeDots(grain.lord)}</Text>
+              <HexNum mono num={removeDots(grain.lord)} />
             </Link>
             <CopyIcon text={removeDots(grain.lord)}></CopyIcon>
           </Field>
@@ -63,7 +64,7 @@ export const GrainEntry = ({
           </Field>
         )}
         <Field name='Town:'>
-          <Text mono oneLine>{grain.townId}</Text>
+          <HexNum mono num={grain.townId.toString()} />
           {/* <CopyIcon text={`${grain.townId}`}></CopyIcon> */}
         </Field>
       </Entry>
@@ -73,7 +74,7 @@ export const GrainEntry = ({
           <Entry className='grain' key={id}>
             <Field className='id' name='ID:'>
               <Link href={`/grain/${removeDots(id)}`}>
-                <Text mono oneLine>{removeDots(id)}</Text>
+                <HexNum mono num={removeDots(id)} />
               </Link>
             </Field>
             {/* <Row style={{ marginLeft: 28 }}>
@@ -89,7 +90,7 @@ export const GrainEntry = ({
               </Field>
             )}
             <Field name='Town:'>
-              <Text mono oneLine>{grain.townId}</Text>
+              <HexNum mono num={grain.townId.toString()} />
             </Field>
           </Entry>
         ))}

@@ -25,6 +25,7 @@ import PageHeader from '../../components/page/PageHeader'
 import Footer from '../../components-indexer/nav/Footer'
 import CardHeader from '../../components-indexer/card/CardHeader'
 import Entry from '../../components/spacing/Entry'
+import HexNum from '../../components/text/HexNum'
 
 type Selection = 'txns' | 'grains'
 
@@ -116,10 +117,7 @@ const AddressView = () => {
   return (
     <Container className='address-view'>
       <PageHeader title={isWalletAddress ? 'Address' : grainIsRice ? 'Asset' : 'Contract'}>
-        <Text mono oneLine style={{ fontSize: 18 }}>
-          {removeDots(address)}
-        </Text>
-        <CopyIcon text={removeDots(address)} />
+        <HexNum mono copy style={{ fontSize: 18 }} num={removeDots(address)} />
       </PageHeader>
       <Entry>
         <Card>

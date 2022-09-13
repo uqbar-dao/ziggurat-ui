@@ -8,6 +8,8 @@ import Link from '../nav/Link'
 import Col from '../../components/spacing/Col'
 import Text from '../../components/text/Text'
 import './Transaction.scss'
+import HexNum from '../../components/text/HexNum'
+import CopyIcon from '../../components/text/CopyIcon'
 
 interface TransactionProps {
   tx: Transaction
@@ -29,20 +31,23 @@ export const TransactionEntry = ({
           </Field>
           <Field name='Hash:'>
             <Link href={`/tx/${removeDots(tx.hash || '')}`}>
-              <Text mono oneLine>{removeDots(tx.hash || '')}</Text>
+              <HexNum mono num={removeDots(tx.hash || '')} />
             </Link>
+            <CopyIcon text={removeDots(tx.hash!)} />
           </Field>
           {isWalletAddress ? (
             <Field name='To:'>
               <Link href={`/grain/${removeDots(tx.egg.shell.contract)}`}>
-                <Text mono oneLine>{removeDots(tx.egg.shell.contract)}</Text>
+                <HexNum mono num={removeDots(tx.egg.shell.contract)} />
               </Link>
+              <CopyIcon text={tx.egg.shell.contract} />
             </Field>
           ) : (
             <Field name='From:'>
               <Link href={`/grain/${removeDots(tx.egg.shell.from.id)}`}>
-                <Text mono oneLine>{removeDots(tx.egg.shell.from.id)}</Text>
+                <HexNum mono num={removeDots(tx.egg.shell.from.id)} />
               </Link>
+              <CopyIcon text={tx.egg.shell.from.id} />
             </Field>
           )}
           <Field name='Status'>
