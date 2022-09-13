@@ -56,10 +56,7 @@ const TransactionView = () => {
   return (
     <Container className='transaction-view'>
       <PageHeader title='Transaction'>
-        <Text mono oneLine style={{ fontSize: 18 }}>
-          {removeDots(txnHash)}
-        </Text>
-        <CopyIcon text={removeDots(txnHash)} />
+        <HexNum mono copy style={{ fontSize: 18 }} num={removeDots(txnHash)} />
       </PageHeader>
       <Entry>
         <Card title='Overview'>
