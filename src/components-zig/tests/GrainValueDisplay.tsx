@@ -33,7 +33,7 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain, testId }: Grai
   const isZigsGrain = grain.id === ZIGS_ACCOUNT_ID
   const isContractGrain = grain.id === MY_CONTRACT_ID
   const isMetadataGrain = grain.id === METADATA_GRAIN_ID
-  const untouchable = isZigsGrain || isContractGrain || isMetadataGrain
+  const untouchable = isZigsGrain || isContractGrain
 
   const grainIdDisplay = expanded ? grain.id :
     isZigsGrain ? `${displayPubKey(grain.id)} - zigs account` :

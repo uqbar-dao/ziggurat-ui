@@ -21,7 +21,7 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
   const editorRef = useRef<CodeMirrorShim>()
   const nav = useNavigate()
   const { projectTitle, file } = useParams()
-  const { contracts, gallApps, setProjectText, getGallFile } = useZigguratStore()
+  const { contracts, gallApps, toastMessages, setProjectText, getGallFile } = useZigguratStore()
 
   const contract = useMemo(() => contracts[projectTitle || ''], [projectTitle, contracts])
   const gallApp = useMemo(() => gallApps[projectTitle || ''], [projectTitle, gallApps])
@@ -49,6 +49,23 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
     }
   }, [contract, gallApp, file, setProjectText])
 
+  useEffect(() => {
+    if (editorRef?.current) {
+      if (toastMessages.length) {
+        toastMessages.forEach(msg => {
+          const lines = msg.message.split('\n')
+          const location = lines.find(l => l[0] === '{')
+          if (location) {
+            const [line, ch] = location.slice(1, -1).split(' ')
+            editorRef?.current?.markText({ line: Number(line) - 1, ch: Number(ch) - 1 }, { line: Number(line) - 1, ch: 100 }, {className: "error-underline"})
+          }
+        })
+      } else {
+        editorRef.current.getAllMarks().forEach(m => m.clear())
+      }
+    }
+  }, [toastMessages, editorRef])
+
   const isMobile = isMobileCheck()
 
   return (
@@ -62,7 +79,7 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
             text={text}
             setText={setText}
             isContract
-            />
+          />
         </Col>
         {isGall && <Resizable style={{ position: 'absolute', right: 2, bottom: 0 }} defaultSize={{ width:320, height:200 }}>
           <Iframe url={WEBTERM_PATH} height='100%' width='100%' />

@@ -6,6 +6,7 @@ import BlocksView from './indexer/BlocksView';
 import BlockView from './indexer/BlockView';
 import TransactionView from './indexer/TransactionView';
 import AddressView from './indexer/AddressView';
+import GrainView from './indexer/GrainView';
 import IndexerNavbar from '../components-indexer/nav/IndexerNavbar';
 import LoadingOverlay from '../components/popups/LoadingOverlay';
 import { PUBLIC_URL } from '../utils/constants';
@@ -30,7 +31,7 @@ function IndexerMain() {
         <Route path="block/:epoch/:block/:town" element={<BlockView />} />
         <Route path="tx/:tx" element={<TransactionView />} />
         <Route path="address/:address" element={<AddressView />} />
-        <Route path="grain/:grain" element={<AddressView />} />
+        <Route path="grain/:grain" element={<GrainView />} />
         {/* <Route path="blocks" element={<BlocksView />} />
         <Route path="txs" element={<TransactionsView />} />
         <Route path="pendingTxs" element={<PendingTransactionsView />} />

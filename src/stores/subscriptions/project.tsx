@@ -26,7 +26,9 @@ export const handleContractUpdate = (get: GetState<ZigguratStore>, set: SetState
       id: toast.error(
         <>
           <div>Error with project '{project}'</div>
-          <p>{update.error}</p>
+          {update.error.split('\n').map(line => (
+            <p key={line} style={{ margin: 0 }}>{line}</p>
+          ))}
         </>,
         {
           

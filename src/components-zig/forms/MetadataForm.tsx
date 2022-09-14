@@ -47,7 +47,7 @@ export const MetadataForm = ({ metadata, setMetadata, onSubmit }: MetadataFormPr
         maxLength={20}
         required
       />
-      {metadata.decimals !== undefined && (
+      {/* {metadata.decimals !== undefined && (
         <Input
           containerStyle={{ marginTop: 8 }}
           style={{ width: 300 }}
@@ -57,7 +57,7 @@ export const MetadataForm = ({ metadata, setMetadata, onSubmit }: MetadataFormPr
           maxLength={2}
           required
         />
-      )}
+      )} */}
       {metadata.properties !== undefined && (
         <ListInput
           containerStyle={{ marginTop: 8 }}
@@ -66,7 +66,7 @@ export const MetadataForm = ({ metadata, setMetadata, onSubmit }: MetadataFormPr
           setValues={(values: string[]) => setMetadata({ ...metadata, properties: values })}
         />
       )}
-      <Input
+      {/* <Input
         containerStyle={{ marginTop: 8 }}
         style={{ width: 300 }}
         onChange={(e) => setMetadata({ ...metadata, supply: e.target.value.replace(/[^0-9]/gi, '') })}
@@ -104,14 +104,6 @@ export const MetadataForm = ({ metadata, setMetadata, onSubmit }: MetadataFormPr
         onChange={(e) => setMetadata({ ...metadata, deployer: e.target.value.replace(/[^0-9a-fA-Fx]/gi, '') })}
         value={metadata.deployer}
         label="Deployer"
-        required
-      />
-      {/* <Input
-        containerStyle={{ marginTop: 8 }}
-        style={{ width: 300 }}
-        onChange={(e) => setMetadata({ ...metadata, salt: e.target.value.replace(/[^0-9a-fA-Fx]/gi, '') })}
-        value={metadata.salt}
-        label="salt"
         required
       /> */}
       <Button variant='dark' type="submit" style={{ margin: '16px 0px 8px', width: '100%', justifyContent: 'center' }}>

@@ -5,9 +5,9 @@ export const BLANK_METADATA = { name: '', symbol: '', salt: '', decimals: '', su
 export const generateInitialMetadata = (minters: string[], deployer: string, type: 'fungible' | 'nft' | 'blank') => ({
   ...BLANK_METADATA,
   salt: genRanNum(6),
-  decimals: type === 'fungible' ? '18' : undefined,
+  decimals: type === 'fungible' ? '1' : undefined,
   properties: type === 'nft' ? [] : undefined,
-  supply: '1000000',
+  supply: type === 'fungible' ? '400' : '2',
   mintable: 't',
   minters,
   deployer,
