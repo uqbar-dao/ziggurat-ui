@@ -14,17 +14,18 @@ import { processRawData } from '../../utils/object'
 import Entry from '../../components/spacing/Entry'
 import Field from '../../components/spacing/Field'
 import { mockTransaction } from '../../mocks/indexer-mocks'
-import Col from '../../components/spacing/Col'
 import PageHeader from '../../components/page/PageHeader'
-
-import './TransactionView.scss'
 import Footer from '../../components-indexer/nav/Footer'
 import HexNum from '../../components/text/HexNum'
+import Loader from '../../components/popups/Loader'
+
+import './TransactionView.scss'
 
 const TransactionView = () => {
   const { scry } = useIndexerStore()
   const location = useLocation()
   const [transaction, setTransaction] = useState<Transaction | undefined>()
+  const [loading, setLoading] = useState(true)
 
   const splitPath = location.pathname.split('/')
   const txnHash = addHexDots(splitPath[splitPath.length - 1])
@@ -38,6 +39,7 @@ const TransactionView = () => {
       if (result) {
         setTransaction(processRawData(Object.values(result.egg)[0]))
       }
+      setLoading(false)
     }
 
     if (mockData) {
@@ -48,7 +50,8 @@ const TransactionView = () => {
   }, [location]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!transaction) {
-    return <Text>No transaction data</Text>
+    return loading ? <Loader dark style={{ marginTop: 16 }}/> :
+      <Text>No transaction data</Text>
   }
 
   const { location: loc, egg: { shell, yolk } } = transaction
@@ -75,7 +78,7 @@ const TransactionView = () => {
               <CopyIcon iconOnly={true} text={removeDots(shell.from.id)} />
             </Field>
             <Field name='To:'>
-              <Link href={`/grain/${removeDots(shell.contract)}`} className='address'>
+              <Link href={`/address/${removeDots(shell.contract)}`} className='address'>
                 <HexNum mono num={removeDots(shell.contract)}/>
               </Link>
               <CopyIcon iconOnly={true} text={removeDots(shell.contract)} />

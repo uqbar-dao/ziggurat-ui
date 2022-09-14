@@ -1,15 +1,16 @@
 import moment from 'moment'
 import { Transaction } from '../../types/indexer/Transaction'
-import { getStatus } from '../../utils/constants'
+import { getRawStatus } from '../../utils/constants'
 import { removeDots } from '../../utils/format'
 import Entry from '../../components/spacing/Entry'
 import Field from '../../components/spacing/Field'
 import Link from '../nav/Link'
 import Col from '../../components/spacing/Col'
 import Text from '../../components/text/Text'
-import './Transaction.scss'
 import HexNum from '../../components/text/HexNum'
 import CopyIcon from '../../components/text/CopyIcon'
+
+import './Transaction.scss'
 
 interface TransactionProps {
   tx: Transaction
@@ -50,11 +51,11 @@ export const TransactionEntry = ({
               <CopyIcon text={tx.egg.shell.from.id} />
             </Field>
           )}
-          <Field name='Status'>
-            <Text mono oneLine>{getStatus(tx.egg.shell.status)}</Text>
+          <Field name='Status:'>
+            <Text mono oneLine>{getRawStatus(tx.egg.shell.status)}</Text>
           </Field>
         </Col>
       </Field>
     </Entry>
-)
+  )
 }

@@ -18,7 +18,6 @@ import Entry from '../../components/spacing/Entry'
 import { mockData } from '../../utils/constants'
 import { mockBlock } from '../../mocks/indexer-mocks'
 import Field from '../../components/spacing/Field'
-import Divider from '../../components/spacing/Divider'
 import PageHeader from '../../components/page/PageHeader'
 
 import './BlockView.scss'

@@ -8,7 +8,11 @@ export interface RawHashData {
       [key: string]: RawTransaction
     }
     grains: {
-      [key: string]: RawGrain
+      [key: string]: {
+        grain: RawGrain
+        location: Location
+        timestamp: number
+      }[]
     }
     slots: {
       [key: string]: RawSlot

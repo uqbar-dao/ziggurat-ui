@@ -37,6 +37,6 @@ export interface Block {
   location: {
     blockNum: number
     epochNum: number
-    townId: number
+    townId: string
   }
 }

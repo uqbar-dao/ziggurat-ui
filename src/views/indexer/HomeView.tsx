@@ -29,7 +29,6 @@ const HomeView = () => {
   const [timeToNextBlock, setTimeToNextBlock] = useState(getOffset(nextBlockTime || new Date().getTime()))
   const navigate = useNavigate()
 
-
   useEffect(() => {
     try {
       init()
@@ -44,22 +43,23 @@ const HomeView = () => {
   }, [nextBlockTime])
 
   const search = () => {
+    const cleanValue = addHexPrefix(removeDots(searchValue))
     if (!searchValue) {
       setInputError('Please enter a search')
     // check for block
-    } else if (BLOCK_SEARCH_REGEX.test(searchValue)) {
+    } else if (BLOCK_SEARCH_REGEX.test(cleanValue)) {
       console.log('BLOCK')
-      navigate(`/block/${searchValue}`)
-    } else if (ADDRESS_REGEX.test(addHexPrefix(removeDots(searchValue))) || ETH_ADDRESS_REGEX.test(addHexPrefix(removeDots(searchValue)))) {
+      navigate(`/block/${cleanValue}`)
+    } else if (ADDRESS_REGEX.test(cleanValue) || ETH_ADDRESS_REGEX.test(cleanValue)) {
       console.log('ADDRESS')
-      navigate(`/address/${addHexPrefix(removeDots(searchValue))}`)
+      navigate(`/address/${cleanValue}`)
     // check for txn hash
-    } else if (TXN_HASH_REGEX.test(addHexPrefix(removeDots(searchValue)))) {
+    } else if (TXN_HASH_REGEX.test(cleanValue)) {
       console.log('TRANSACTION')
-      navigate(`/tx/${addHexPrefix(removeDots(searchValue))}`)
-    } else if (GRAIN_REGEX.test(addHexPrefix(removeDots(searchValue)))) {
+      navigate(`/tx/${cleanValue}`)
+    } else if (GRAIN_REGEX.test(cleanValue)) {
       console.log('GRAIN')
-      navigate(`/grain/${addHexPrefix(removeDots(searchValue))}`)
+      navigate(`/grain/${cleanValue}`)
     } else {
       setInputError('Must be in address, txn hash, or epoch/block/town format (with slashes)')
     }

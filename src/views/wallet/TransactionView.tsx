@@ -10,16 +10,15 @@ import CopyIcon from '../../components/text/CopyIcon'
 import useWalletStore from '../../stores/walletStore'
 import { getStatus } from '../../utils/constants'
 import { removeDots } from '../../utils/format'
+import HexNum from '../../components/text/HexNum'
+import Row from '../../components/spacing/Row'
 
 import './TransactionView.scss'
-import HexNum from '../../components/text/HexNum'
 
 const TransactionView = () => {
   const { hash } = useParams()
   const { transactions } = useWalletStore()
   const txn = transactions.find(t => t.hash === hash)
-
- 
 
   if (!txn) {
     return (
@@ -81,10 +80,10 @@ const TransactionView = () => {
         </Entry>
         <Entry>
           <Field name='Action:'>
-            <Col className='mb1'>
+            <Row className='mb1'>
               <Text mono breakAll>{JSON.stringify(txn.action)}</Text>
-            </Col>
-            <CopyIcon text={JSON.stringify(txn.action)} />
+              <CopyIcon text={JSON.stringify(txn.action)} />
+            </Row>
           </Field>
         </Entry>
       </Col>

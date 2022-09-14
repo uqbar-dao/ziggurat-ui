@@ -4,6 +4,9 @@ import '../../utils/codemirror-hoon'
 
 import './Editors.scss'
 require('codemirror/lib/codemirror.css')
+require('codemirror/addon/selection/mark-selection.js')
+
+export interface LineChar { line: number, ch: number }
 
 export interface CodeMirrorShim {
   setValue: (value: string) => void
@@ -14,6 +17,8 @@ export interface CodeMirrorShim {
   getInputField: () => HTMLInputElement
   getCursor: () => number
   getDoc: () => any
+  markText: (start: LineChar, end: LineChar, classInfo: { className: string }) => void
+  getAllMarks: () => any[]
   element: HTMLElement
 }
 

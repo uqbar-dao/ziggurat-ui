@@ -12,6 +12,7 @@ import { mockAccounts, mockBlockHeaders, mockTransactions, mockMetadata } from "
 import { HardwareWallet, HardwareWalletType, HotWallet, processAccount, RawAccount } from "../types/wallet/Accounts"
 import { TokenMetadataStore } from "../types/wallet/TokenMetadata"
 import { persist } from "zustand/middleware"
+import { handleMetadataUpdate } from "./subscriptions/explorer"
 
 export function createSubscription(app: string, path: string, e: (data: any) => void): SubscriptionRequestInterface {
   const request = {
@@ -62,8 +63,9 @@ const useIndexerStore = create<IndexerStore>(
       }
       
       try {
+        api.subscribe(createSubscription('wallet', '/metadata-updates', handleMetadataUpdate(get, set)))
+
         get().getAccounts()
-        get().getMetadata()
         const result = await get().scry<{ headers: RawBlockHeader[] }>('/headers/5')
         if (result?.headers) {
           const blockHeaders = result.headers.map(processRawData)

@@ -43,7 +43,7 @@ export interface Shell {
   }
   status: number
   contract: string
-  townId: number
+  townId: string
 }
 
 export interface Yolk {

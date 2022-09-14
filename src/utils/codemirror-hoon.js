@@ -9,15 +9,13 @@ const COMMENT_REGEX = /::.*|"""[.\S\s]*?"""|'''[.\S\s]*?'''/
 // tape
 // cord
 // arm
-const ARM_REGEX = /([a-z]([a-z0-9-]*[a-z0-9])?\/)|(\+[-+] {2}(?=[a-z]([a-z0-9-]*[a-z0-9])?).+(?![a-z0-9-]))/;
+const ARM_REGEX = /([a-z]([a-z0-9-]*[a-z0-9])?(?=\=))|(\+[-+] {2}(?=[a-z]([a-z0-9-]*[a-z0-9])?)).+?(?![a-z0-9-])/;
 // rune
-const RUNE_REGEX = /(([+/\\\-|$%:.#^~;=?!_,@/%*]|&amp;|&lt;|&gt;)+)|(;script(type "text\/coffeescript")).+?==/;
+const RUNE_REGEX = /\.[\^+*=?]|![&gt;&lt;:.=?!]|=[&gt;|:,.\-^&lt;+;\/~*?]|\?[&gt;<>|:.\-^&lt;+&amp;~=@!]|\|[$_%:.\-^~*=@?]|\+[|$+*]|:[_\-^+~*]|\^[_\-+~*]|%[_:.\-^+~*=]|^[|:.\-+&amp;~*=?]|\$[|_%:&lt;&gt;\-^&amp;~@=?]|;[:&lt;+;\/~*=]|~[&gt;|$_%&lt;+\/&amp;=?!]|--|==|(;script(type "text\/coffeescript")).+?==/;
 // cube
 const CUBE_REGEX = /%[a-z]([a-z0-9-]*[a-z0-9])?/;
 // aura
-const AURA_REGEX = /@[a-z]([a-z0-9-]*[a-z0-9])?/;
-
-const KEYWORDS = [ARM_REGEX, RUNE_REGEX];
+const AURA_REGEX = /@(?:[a-z0-9-]*[a-z0-9])?|\*/;
 
 (function(mod) {
   mod(CodeMirror);
@@ -40,17 +38,20 @@ const KEYWORDS = [ARM_REGEX, RUNE_REGEX];
       if (source.match(COMMENT_REGEX)) {
         // using a different color than 'comment'
         return 'tag';
+      } else if (source.match(RUNE_REGEX)) {
+        return 'keyword';
+      } else if (source.match(ARM_REGEX)) {
+        while (source.string[source.start - 1] !== ' ' && source.start > 0) {
+          source.start = source.start - 1
+        }
+        return 'comment'
       }
 
-      var ch = source.next();
+      const ch = source.next();
 
       // AURA and CUBE
-      if ((ch === '@' || ch === '%') && source.match(/[a-z]([a-z0-9-]*[a-z0-9])?/)) {
+      if ((ch === '@' || ch === '%') && (source.match(/[a-z]([a-z0-9-]*[a-z0-9])?/))) {
         return 'attribute';
-      }
-
-      if (KEYWORDS.reduce((acc, cur) => acc || source.match(cur), false)) {
-        return 'keyword';
       }
 
       if (ch === "'" && source.match("''")) {
@@ -127,9 +128,15 @@ const KEYWORDS = [ARM_REGEX, RUNE_REGEX];
         var t = state.f(stream, function(s) { state.f = s; });
         var w = stream.current();
 
-        if (t === 'keyword' && KEYWORDS.reduce((acc, cur) => acc || cur.test(w), false)) {
-          return 'keyword'
+        if (t === 'keyword') {
+          return w.length > 1 && !(/=[a-z]/.test(w)) ? 'keyword' : null
         }
+
+        // if (t === 'comment') {
+        //   console.log(t)
+        //   console.log(stream, state)
+        //   console.log(w)
+        // }
 
         return t;
       },
