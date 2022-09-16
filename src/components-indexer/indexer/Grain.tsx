@@ -6,9 +6,9 @@ import Entry from '../../components/spacing/Entry'
 import Field from '../../components/spacing/Field'
 import Link from '../nav/Link'
 import Text from '../../components/text/Text'
+import HexNum from '../../components/text/HexNum'
 
 import './Grain.scss'
-import HexNum from '../../components/text/HexNum'
 
 interface GrainEntryProps {
   grain: Grain
@@ -55,7 +55,7 @@ export const GrainEntry = ({
           </Field>
         )}
         <Field name='Town:'>
-          <HexNum mono num={grain.townId.toString()} />
+          <HexNum mono num={grain['town-id'].toString()} />
           {/* <CopyIcon text={`${grain.townId}`}></CopyIcon> */}
         </Field>
       </Entry>

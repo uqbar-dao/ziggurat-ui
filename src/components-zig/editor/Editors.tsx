@@ -73,7 +73,7 @@ export const Editor = ({
       return
     editorRef.current?.setOption('mode', null)
     editorRef.current?.setOption('placeholder', getPlaceholder(isContract, isTest))
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const options = {
     ...defaultOptions,

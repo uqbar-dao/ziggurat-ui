@@ -6,14 +6,13 @@ import Container from '../../components/spacing/Container'
 import Text from '../../components/text/Text'
 import CopyIcon from '../../components/text/CopyIcon'
 import useIndexerStore from '../../stores/indexerStore'
-import { RawTransaction, Transaction } from '../../types/indexer/Transaction'
+import { Transaction } from '../../types/indexer/Transaction'
 import { getRawStatus, mockData } from '../../utils/constants'
 import { removeDots } from '../../utils/format'
 import { addHexDots } from '../../utils/number'
-import { processRawData } from '../../utils/object'
 import Entry from '../../components/spacing/Entry'
 import Field from '../../components/spacing/Field'
-import { mockTransaction } from '../../mocks/indexer-mocks'
+// import { mockTransaction } from '../../mocks/indexer-mocks'
 import PageHeader from '../../components/page/PageHeader'
 import Footer from '../../components-indexer/nav/Footer'
 import HexNum from '../../components/text/HexNum'
@@ -34,16 +33,16 @@ const TransactionView = () => {
     const getData = async () => {
       // 0x523515b872fce8297919a3e40bfd48dec4d27d9700dd44dd81efc254ef8aa3e6
       
-      const result = await scry<{ egg: { [key: string]: RawTransaction } }>(`/egg/${txnHash}`)
+      const result = await scry<{ egg: { [key: string]: Transaction } }>(`/egg/${txnHash}`)
 
       if (result) {
-        setTransaction(processRawData(Object.values(result.egg)[0]))
+        setTransaction(Object.values(result.egg)[0])
       }
       setLoading(false)
     }
 
     if (mockData) {
-      return setTransaction(mockTransaction)
+      // return setTransaction(mockTransaction)
     }
 
     getData()
@@ -55,6 +54,7 @@ const TransactionView = () => {
   }
 
   const { location: loc, egg: { shell, yolk } } = transaction
+  console.log('LOCATION:', loc)
 
   return (
     <Container className='transaction-view'>
@@ -65,8 +65,8 @@ const TransactionView = () => {
         <Card title='Overview'>
           <Entry>
             <Field name='Batch:'>
-              <Link href={`/block/${loc.epochNum}/${loc.blockNum}/${loc.townId}`} className='address'>
-                <Text mono oneLine>{loc.epochNum}-{loc.blockNum}-{loc.townId}</Text>
+              <Link href={`/block/${loc['epoch-num']}/${loc['block-num']}/${loc['town-id']}`} className='address'>
+                <Text mono oneLine>{loc['epoch-num']}-{loc['block-num']}-{loc['town-id']}</Text>
               </Link>
             </Field>
           </Entry>

@@ -90,7 +90,7 @@ export const Sidebar = () => {
         <Row className='sidebar-header'>
           <Link title='Home' external href='/apps/ziggurat' className='nav-link logo'>
             <Row>
-              <FaArrowLeft className='mr1' />
+              {/* <FaArrowLeft className='mr1' /> */}
               <img src={logo} alt='Uqbar Logo' />
             </Row>
           </Link>

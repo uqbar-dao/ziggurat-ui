@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import useIndexerStore from '../stores/indexerStore';
 import HomeView from './indexer/HomeView';
-import BlocksView from './indexer/BlocksView';
-import BlockView from './indexer/BlockView';
+import BatchesView from './indexer/BatchesView';
+import BatchView from './indexer/BatchView';
 import TransactionView from './indexer/TransactionView';
 import AddressView from './indexer/AddressView';
 import GrainView from './indexer/GrainView';
@@ -27,8 +27,8 @@ function IndexerMain() {
       <IndexerNavbar />
       <Routes>
         <Route path="/" element={<HomeView />} />
-        <Route path="latest-blocks/:numBlocks" element={<BlocksView />} />
-        <Route path="block/:epoch/:block/:town" element={<BlockView />} />
+        <Route path="latest-batches/:numBlocks" element={<BatchesView />} />
+        <Route path="batch/:batchId" element={<BatchView />} />
         <Route path="tx/:tx" element={<TransactionView />} />
         <Route path="address/:address" element={<AddressView />} />
         <Route path="grain/:grain" element={<GrainView />} />

@@ -1,24 +1,15 @@
 import { GetState, SetState } from "zustand";
-import { Slot, RawSlot } from "../../types/indexer/Slot";
-import { HashTransaction } from "../../types/indexer/Transaction";
+import { Batch, NewBatch } from "../../types/indexer/Batch";
+import { Transaction } from "../../types/indexer/Transaction";
 import { TokenMetadataStore } from "../../types/wallet/TokenMetadata";
-import { THIRTY_SECONDS } from "../../utils/constants";
-import { processRawData } from "../../utils/object";
 import { IndexerStore } from "../indexerStore";
 
-export const handleLatestBlock = (get: GetState<IndexerStore>, set: SetState<IndexerStore>) => async (blockHeader: { slots: { [key: string]: RawSlot } }) => {
-  set({ nextBlockTime: new Date().getTime() + THIRTY_SECONDS })
-  const ib: Slot = processRawData(Object.values(blockHeader.slots)[0])
-
-  if (ib.location.epochNum > get().blockHeaders[0].epochNum) {
-    const cur = get()
-  
-    const blockHeaders = [{ epochNum: ib.location.epochNum, blockHeader: ib.slot.header }, ...cur.blockHeaders.slice(0, 4)]
-    const transactions = Object.values(ib.slot.block.chunks)
-      .reduce((acc: HashTransaction[], cur) => acc.concat(cur.transactions), [])
-      .filter(Boolean)
-  
-    set({ blockHeaders, transactions })
+export const handleLatestBatch = (get: GetState<IndexerStore>, set: SetState<IndexerStore>) => async (b: { 'newest-batch': NewBatch }) => {
+  console.log('LATEST BATCH:', b['newest-batch'])
+  if (!get().batches.find(({ id }) => id === b['newest-batch']['batch-id'])) {
+    const newBatches = [{ ...b['newest-batch'], id: b['newest-batch']['batch-id'] }, ...get().batches]
+    const newTransactions: Transaction[] = newBatches.reduce((acc: Transaction[], cur: Batch) => acc.concat(cur.batch.transactions), [])
+    set({ batches: newBatches.length > 5 ? newBatches.slice(0, 5) : newBatches, transactions: newTransactions })
   }
 }
 
