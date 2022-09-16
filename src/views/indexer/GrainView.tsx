@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom'
 import Card from '../../components-indexer/card/Card'
 import Col from '../../components/spacing/Col'
 import Container from '../../components/spacing/Container'
-import Row from '../../components/spacing/Row'
 import Text from '../../components/text/Text'
 import CopyIcon from '../../components/text/CopyIcon'
 import useIndexerStore from '../../stores/indexerStore'
@@ -11,21 +10,19 @@ import { Transaction } from '../../types/indexer/Transaction'
 import { mockData } from '../../utils/constants'
 import { removeDots } from '../../utils/format'
 import { addHexDots } from '../../utils/number'
-import { processRawData } from '../../utils/object'
-import { mockHolderGrains, mockTransactions } from '../../mocks/indexer-mocks'
-import { RawGrain, Grain } from '../../types/indexer/Grain'
-import { RawLocation } from '../../types/indexer/Location'
-import { HashData, RawHashData } from '../../types/indexer/HashData'
+import { mockTransactions } from '../../mocks/indexer-mocks'
+import { Grain } from '../../types/indexer/Grain'
+import { Location } from '../../types/indexer/Location'
+import { HashData } from '../../types/indexer/HashData'
 import { TransactionEntry } from '../../components-indexer/indexer/Transaction'
 import PageHeader from '../../components/page/PageHeader'
 import Footer from '../../components-indexer/nav/Footer'
-import CardHeader from '../../components-indexer/card/CardHeader'
 import Entry from '../../components/spacing/Entry'
 import Loader from '../../components/popups/Loader'
-
-import './GrainView.scss'
 import Field from '../../components/spacing/Field'
 import Link from '../../components-indexer/nav/Link'
+
+import './GrainView.scss'
 
 type Selection = 'details' | 'txns'
 
@@ -46,9 +43,9 @@ const GrainView = () => {
     const getData = async () => {
       try {
         const [rawData, grainEggs, grainInfo] = await Promise.all([
-          scry<RawHashData>(`/hash/${grainId}`),
+          scry<HashData>(`/hash/${grainId}`),
           scry<any>(`/grain-eggs/${grainId}`),
-          scry<{ grain: { [key: string]: { grain: RawGrain; location: RawLocation, timestamp: number }[] } }>(`/grain/${grainId}`)
+          scry<{ grain: { [key: string]: { grain: Grain; location: Location, timestamp: number }[] } }>(`/grain/${grainId}`)
         ])
 
         // console.log('SCRY: ', rawData, grainInfo)
@@ -59,11 +56,11 @@ const GrainView = () => {
             Object.values(grainInfo?.grain || {})[0][0]?.grain?.['is-rice']
           )
           setGrainIsRice(grainIsRice)
-          setGrain(processRawData(Object.values(grainInfo?.grain || {})[0][0]?.grain))
+          setGrain(Object.values(grainInfo?.grain || {})[0][0]?.grain)
         } catch (err) {}
 
         if (rawData) {
-          const { hash }: HashData = processRawData(rawData)
+          const { hash }: HashData = rawData
           const txns = Object.keys(hash.eggs).map(txnHash => ({ ...hash.eggs[txnHash], hash: txnHash }))
           setTransactions(txns)
         }
@@ -73,7 +70,7 @@ const GrainView = () => {
     }
 
     if (mockData) {
-      setGrain(mockHolderGrains[0])
+      // setGrain(mockHolderGrains[0])
       return setTransactions(mockTransactions)
     }
 
@@ -153,12 +150,11 @@ const GrainView = () => {
                         <CopyIcon text={String(grain.salt)}></CopyIcon>
                       </Field>
                       <Field name='Data:'>
-                        <Text mono oneLine>{grain.data}</Text>
-                        <CopyIcon text={grain.data}></CopyIcon>
+                        <Text mono>{JSON.stringify(grain.data)}</Text>
+                        <CopyIcon text={JSON.stringify(grain.data)}></CopyIcon>
                       </Field>
                       <Field name='Town:'>
-                        <Text mono oneLine>{grain.townId}</Text>
-                        {/* <CopyIcon text={`${grain.townId}`}></CopyIcon> */}
+                        <Text mono oneLine>{grain['town-id']}</Text>
                       </Field>
                     </Entry>
                   )

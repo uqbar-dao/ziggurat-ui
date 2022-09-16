@@ -57,7 +57,7 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
           const location = lines.find(l => l[0] === '{')
           if (location) {
             const [line, ch] = location.slice(1, -1).split(' ')
-            editorRef?.current?.markText({ line: Number(line) - 1, ch: Number(ch) - 1 }, { line: Number(line) - 1, ch: 100 }, {className: "error-underline"})
+            editorRef?.current?.markText({ line: Number(line) - 1, ch: Number(ch) - 1 }, { line: Number(line) - 1, ch: 100 }, {className: "code-error-underline"})
           }
         })
       } else {

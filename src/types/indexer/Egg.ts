@@ -1,68 +1,29 @@
-export interface RawShell {
-  budget: number
-  'eth-hash': string | null
-  from: {
-    id: string
-    nonce: number
-    zigs: number
-  }
-  sig: {
-    hash: string
-    life: number
-    ship: string
-  }
-  status: number
-  contract: string
-  'town-id': number
-}
-
-export interface RawYolk {
-  args: null | string
-  caller: {
-    id: string
-    nonce: number
-    zigs: number
-  }
-  'cont-grains': string[]
-  'my-grains': string[]
+export interface Sig {
+  s: number
+  v: number
+  r: number
 }
 
 export interface Shell {
+  status: number
+  contract: string
   budget: number
-  rate: number
-  ethHash: string | null
   from: {
     id: string
     nonce: number
-    zigs: number
-  }
-  sig: {
-    hash: string
-    life: number
-    ship: string
-  }
-  status: number
-  contract: string
-  townId: string
+    zigs: string
+  },
+  "eth-hash": string | null
+  rate: number
+  "town-id": string
 }
 
 export interface Yolk {
-  args: null | string
-  caller: {
-    id: string
-    nonce: number
-    zigs: number
-  }
-  contGrains: string[]
-  myGrains: string[]
-}
-
-export interface RawEgg {
-  yolk: RawYolk
-  shell: RawShell
+  give: string
 }
 
 export interface Egg {
   yolk: Yolk
   shell: Shell
+  sig?: Sig
 }

@@ -1,24 +1,7 @@
-import { Grain, RawGrain } from "./Grain"
-import { RawSlot, Slot } from "./Slot"
-import { RawTransaction, Transaction } from "./Transaction"
-
-export interface RawHashData {
-  hash: {
-    eggs: {
-      [key: string]: RawTransaction
-    }
-    grains: {
-      [key: string]: {
-        grain: RawGrain
-        location: Location
-        timestamp: number
-      }[]
-    }
-    slots: {
-      [key: string]: RawSlot
-    }
-  }
-}
+import { Grain } from "./Grain"
+import { Location } from "./Location"
+import { Slot } from "./Slot"
+import { Transaction } from "./Transaction"
 
 export interface HashData {
   hash: {
@@ -26,7 +9,11 @@ export interface HashData {
       [key: string]: Transaction
     }
     grains: {
-      [key: string]: Grain
+      [key: string]: {
+        grain: Grain
+        location: Location
+        timestamp: number
+      }[]
     }
     slots: {
       [key: string]: Slot

@@ -1,4 +1,5 @@
-import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from 'react'
+import React, { ChangeEvent, KeyboardEvent, useState } from 'react'
+import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 import { FaSearch } from 'react-icons/fa'
 import Button from '../../components/form/Button'
@@ -10,37 +11,22 @@ import Card from '../../components-indexer/card/Card'
 import useIndexerStore from '../../stores/indexerStore'
 import Text from '../../components/text/Text'
 import { ADDRESS_REGEX, BLOCK_SEARCH_REGEX, TXN_HASH_REGEX, GRAIN_REGEX, ETH_ADDRESS_REGEX } from '../../utils/regex'
-import { addHexPrefix, removeDots } from '../../utils/format'
-import { getStatus } from '../../utils/constants'
+import { abbreviateHex, addHexPrefix, removeDots } from '../../utils/format'
+import { getRawStatus } from '../../utils/constants'
 import Link from '../../components-indexer/nav/Link'
 import CardHeader from '../../components-indexer/card/CardHeader'
 import Entry from '../../components/spacing/Entry'
 import Field from '../../components/spacing/Field'
 import Footer from '../../components-indexer/nav/Footer'
+import HexNum from '../../components/text/HexNum'
 
 import './HomeView.scss'
 
-const getOffset = (nextBlockTime: number) => Math.round((nextBlockTime - new Date().getTime()) / 1000)
-
 const HomeView = () => {
-  const { blockHeaders, transactions, nextBlockTime, init } = useIndexerStore()
+  const { batches, transactions } = useIndexerStore()
   const [searchValue, setSearchValue] = useState('')
   const [inputError, setInputError] = useState('')
-  const [timeToNextBlock, setTimeToNextBlock] = useState(getOffset(nextBlockTime || new Date().getTime()))
   const navigate = useNavigate()
-
-  useEffect(() => {
-    try {
-      init()
-    } catch (err) {}
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (nextBlockTime !== null) {
-      const interval = setInterval(() => setTimeToNextBlock(getOffset(nextBlockTime)), 1000)
-      return () => clearInterval(interval)
-    }
-  }, [nextBlockTime])
 
   const search = () => {
     const cleanValue = addHexPrefix(removeDots(searchValue))
@@ -109,26 +95,23 @@ const HomeView = () => {
         </Card> */}
         <Row className='latest'>
           <Card className='latest-blocks title'>
-            <CardHeader title='Latest Blocks'>
+            <CardHeader title='Latest Batches'>
               <Row style={{marginLeft: 'auto'}}> {/* m-l:auto causes alignment to the right of flex container */}
-                <Text large style={{marginRight: '1em'}}>Next:</Text>
-                <Text large mono>{Math.max(0, timeToNextBlock)}</Text>
+                {/* <Text large style={{marginRight: '1em'}}>Next:</Text>
+                <Text large mono>{Math.max(0, timeToNextBlock)}</Text> */}
               </Row>
             </CardHeader>
             <Col>
-              {blockHeaders.map((bh, index) => (
-                <Entry key={bh.epochNum}>
-                    <Field name='Epoch:'>
-                      <Link href={`/block/${bh.epochNum}/${bh.blockHeader.num}/1`}>
-                        <Text>{bh.epochNum}</Text>
-                      </Link>
-                    </Field>
-                    <Field name='Block:'>
-                      <Text>{bh.blockHeader.num}</Text>
-                    </Field>
-                    <Field name='Hash:'>
-                      <Text mono oneLine>{removeDots(bh.blockHeader.dataHash)}</Text>
-                    </Field>
+              {batches.map((bh, index) => (
+                <Entry key={bh.id}>
+                  <Field name='Time:'>
+                    <Text>{moment(bh.timestamp).format('YYYY-MM-DD hh:mm')}</Text>
+                  </Field>
+                  <Field name='Batch ID:'>
+                    <Link href={`/batch/${bh.id}`}>
+                      <HexNum mono num={bh.id} />
+                    </Link>
+                  </Field>
                 </Entry>
               ))}
             </Col>
@@ -141,21 +124,20 @@ const HomeView = () => {
               {transactions.map((tx, index) => (
                 <Entry key={tx.hash || index}>
                   <Field name='Hash:'>
-                    <Text mono >{removeDots(tx.hash)}</Text>
-                  </Field>
-                  <Field name='ID:'>
                     <Link href={`/tx/${addHexPrefix(removeDots(tx.hash))}`}>
-                      <Text mono >{tx.egg.shell.from.id}</Text>
+                      <Text mono >{abbreviateHex(tx.hash, 6, 4)}</Text>
+                    </Link>
+                  </Field>
+                  <Field name='From:'>
+                    <Link href={`/address/${addHexPrefix(removeDots(tx.egg.shell.from.id))}`}>
+                      <Text mono >{abbreviateHex(tx.egg.shell.from.id, 6, 4)}</Text>
                     </Link>
                   </Field>
                   <Field name='Nonce:'>
                     <Text mono >{tx.egg.shell.from.nonce}</Text>
                   </Field>
-                  <Field name='Zigs:'>
-                    <Text mono >{tx.egg.shell.from.zigs}</Text>
-                  </Field>
                   <Field name='Status:'>
-                    <Text>{getStatus(tx.egg.shell.status)}</Text>
+                    <Text>{getRawStatus(tx.egg.shell.status)}</Text>
                   </Field>
                 </Entry>
               ))}

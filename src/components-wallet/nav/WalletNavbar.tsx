@@ -19,7 +19,7 @@ const WalletNavbar = () => {
         <Row>
           <Link external title='Home' href='/apps/ziggurat' className='nav-link logo'>
             <Row>
-              <FaArrowLeft className='mr1' />
+              {/* <FaArrowLeft className='mr1' /> */}
               <img src={logo} alt='Uqbar Logo' />
             </ Row>
           </Link>

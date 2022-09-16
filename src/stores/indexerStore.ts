@@ -1,18 +1,15 @@
 import { SubscriptionRequestInterface } from "@urbit/http-api"
 import create from "zustand"
 import api from "../api"
-import { handleLatestBlock } from "./subscriptions/explorer"
-import { BlockHeader, RawBlockHeader } from '../types/indexer/BlockHeader'
-import { processRawData } from '../utils/object'
-import { addDecimalDots } from '../utils/number'
-import { HashTransaction } from '../types/indexer/Transaction'
-import { Block, RawBlock } from '../types/indexer/Block'
-import { INDEXER_STORAGE_VERSION, mockData } from "../utils/constants"
+import { handleLatestBatch } from "./subscriptions/explorer"
+import { DEFAULT_TOWN_ID, INDEXER_STORAGE_VERSION, mockData } from "../utils/constants"
 import { mockAccounts, mockBlockHeaders, mockTransactions, mockMetadata } from "../mocks/indexer-mocks"
 import { HardwareWallet, HardwareWalletType, HotWallet, processAccount, RawAccount } from "../types/wallet/Accounts"
 import { TokenMetadataStore } from "../types/wallet/TokenMetadata"
 import { persist } from "zustand/middleware"
 import { handleMetadataUpdate } from "./subscriptions/explorer"
+import { Transaction } from "../types/indexer/Transaction"
+import { Batch, Batches } from "../types/indexer/Batch"
 
 export function createSubscription(app: string, path: string, e: (data: any) => void): SubscriptionRequestInterface {
   const request = {
@@ -31,8 +28,8 @@ export function createSubscription(app: string, path: string, e: (data: any) => 
 export interface IndexerStore {
   loadingText: string | null
   nextBlockTime: number | null
-  blockHeaders: BlockHeader[]
-  transactions: HashTransaction[]
+  batches: Batch[]
+  transactions: Transaction[]
   accounts: HotWallet[]
   importedAccounts: HardwareWallet[]
   metadata: TokenMetadataStore
@@ -51,40 +48,39 @@ const useIndexerStore = create<IndexerStore>(
   persist<IndexerStore>((set, get) => ({
     loadingText: 'Loading...',
     nextBlockTime: null,
-    blockHeaders: [],
+    batches: [],
     transactions: [],
     accounts: [],
     importedAccounts: [],
     metadata: {},
     init: async () => {
       // Subscriptions, includes getting assets
-      if (mockData) {
-        return set({ loadingText: null, blockHeaders: mockBlockHeaders, transactions: mockTransactions.map(t => ({ ...t, hash: '' })) })
-      }
+      // if (mockData) {
+      //   return set({ loadingText: null, batches: [], transactions: mockTransactions.map(t => ({ ...t, hash: '' })) })
+      // }
       
       try {
         api.subscribe(createSubscription('wallet', '/metadata-updates', handleMetadataUpdate(get, set)))
+        api.subscribe(createSubscription('indexer', `/town/${DEFAULT_TOWN_ID}/no-init`, handleLatestBatch(get, set)))
 
         get().getAccounts()
-        const result = await get().scry<{ headers: RawBlockHeader[] }>('/headers/5')
-        if (result?.headers) {
-          const blockHeaders = result.headers.map(processRawData)
-          set({ blockHeaders })
-      
-          api.subscribe(createSubscription('indexer', '/slot', handleLatestBlock(get, set)))
-      
-          const rawBlocks = (await Promise.all(blockHeaders.map((bh: BlockHeader) => 
-            get().scry<RawBlock>(`/chunk-num/${addDecimalDots(bh.epochNum.toString())}/${bh.blockHeader.num}/${0}`)
-          )))
+        const result = await get().scry<{ 'batch-order': string[] }>(`/batch-order/${DEFAULT_TOWN_ID}/0/5`)
+        const batchOrder = (result && result['batch-order']) || []
+        const batches = (await Promise.all(
+          batchOrder.map(async (batchId) => ({ id: batchId, result: await get().scry<Batches>(`/batch/${batchId}`) }))
+        )).map(({ id, result }) => {
+          if (result?.batch) {
+            return ({ id, ...Object.values(result?.batch)[0] })
+          }
+          return null
+        }).filter(b => b)
+        console.log('BATCHES:', batches)
 
-          const blocks: Block[] = rawBlocks.map(processRawData)
-          const transactions = blocks
-            .reduce((acc: HashTransaction[], cur) => acc.concat(cur.chunk.transactions), [])
-            .slice(0, 10)
-            .filter(Boolean)
-    
-          set({ transactions })
-        }
+        const transactions = batches.reduce((acc: Transaction[], cur: Batch) => acc.concat(cur.batch.transactions), [])
+        console.log('TRANSACTIONS:', transactions)
+
+        set({ batches, transactions })
+        // TODO: set the transactions
       } catch (err) {
         console.warn(err)
       }
@@ -105,8 +101,8 @@ const useIndexerStore = create<IndexerStore>(
     },
     setLoading: (loadingText: string | null) => set({ loadingText }),
     // getBlockHeaders: async (numHeaders: number) => {
-    //   const blockHeaders = await api.scry({app: "indexer", path: `/headers/${numHeaders}`})
-    //   console.log('BLOCK HEADERS:', blockHeaders)
+    //   const batches = await api.scry({app: "indexer", path: `/headers/${numHeaders}`})
+    //   console.log('BLOCK HEADERS:', batches)
     // },
     // getChunkInfo: async (epoch: number, block: number, town: number) => {
     //   const chunks = await api.scry({app: "indexer", path: `/chunk-num/${epoch}/${block}/${town}`})
