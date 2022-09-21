@@ -15,6 +15,35 @@ import Row from '../../components/spacing/Row'
 
 import './TransactionView.scss'
 
+type ActionValue = { [key: string]: ActionValue } | string | number
+
+interface ActionDisplayProps {
+  action: ActionValue
+  indent?: number
+}
+
+const ActionDisplay = ({ action, indent = 0 }: ActionDisplayProps) => {
+  if (typeof action === 'string' || typeof action === 'number') {
+    return <Text mono breakAll>{action}</Text>
+  }
+
+  return (
+    <>
+      {Object.keys(action).map(key => (
+        typeof action[key] === 'string' || typeof action[key] === 'number' ?
+        <Row style={{ marginLeft: indent * 16, alignItems: 'flex-start' }}>
+          <Text mono style={{ marginRight: 8 }}>{key}:</Text>
+          <ActionDisplay action={action[key]} />
+        </Row> :
+        <Col style={{ marginLeft: indent * 16 }}>
+          <Text mono style={{ marginRight: 8 }}>{key}:</Text>
+          <ActionDisplay action={action[key]} indent={indent + 1} />
+        </Col>
+      ))}
+    </>
+  )
+}
+
 const TransactionView = () => {
   const { hash } = useParams()
   const { transactions } = useWalletStore()
@@ -51,7 +80,7 @@ const TransactionView = () => {
         <Entry>
           <Field name='Status:'>
             <Text mono>{getStatus(txn.status)}</Text>
-            {txn.created && <Text mono style={{ marginLeft:'auto'}}>{txn.created.toDateString()}</Text>}
+            {txn.created && txn.created instanceof Date && <Text mono style={{ marginLeft:'auto'}}>{txn.created?.toDateString()}</Text>}
           </Field>
         </Entry>
         <Entry>
@@ -81,6 +110,7 @@ const TransactionView = () => {
         <Entry>
           <Field name='Action:'>
             <Row className='mb1'>
+              {/* <ActionDisplay action={txn.action} /> */}
               <Text mono breakAll>{JSON.stringify(txn.action)}</Text>
               <CopyIcon text={JSON.stringify(txn.action)} />
             </Row>

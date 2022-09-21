@@ -11,6 +11,7 @@ import HexNum from '../../components/text/HexNum'
 import CopyIcon from '../../components/text/CopyIcon'
 
 import './Transaction.scss'
+import { formatIndexerTimestamp } from '../../utils/date'
 
 interface TransactionProps {
   tx: Transaction
@@ -28,7 +29,7 @@ export const TransactionEntry = ({
       <Field className='transaction' name={displayIndex + '.'}> 
         <Col>
           <Field name='Time:'>
-            <Text mono oneLine>{moment(tx.timestamp).format('YYYY-MM-DD hh:mm')}</Text>
+            <Text mono oneLine>{formatIndexerTimestamp(tx.timestamp)}</Text>
           </Field>
           <Field name='Hash:'>
             <Link href={`/tx/${removeDots(tx.hash || '')}`}>

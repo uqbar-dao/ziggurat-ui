@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { FaCaretDown, FaCoins, FaPortrait } from 'react-icons/fa';
 import useWalletStore from '../../stores/walletStore';
 import { Token } from '../../types/wallet/Token'
-import { abbreviateHex } from '../../utils/format';
 import { displayTokenAmount } from '../../utils/number';
 import Button from '../../components/form/Button';
 import Col from '../../components/spacing/Col';
@@ -10,12 +9,11 @@ import Row from '../../components/spacing/Row'
 import Text from '../../components/text/Text';
 import Field from '../../components/spacing/Field';
 import NftImage from './NftImage';
-import CopyIcon from '../../components/text/CopyIcon';
 import Divider from '../../components/spacing/Divider';
 import Entry from '../../components/spacing/Entry';
+import HexNum from '../../components/text/HexNum';
 
 import './TokenDisplay.scss'
-import HexNum from '../../components/text/HexNum';
 
 interface TokenDisplayProps extends React.HTMLAttributes<HTMLDivElement> {
   token: Token
@@ -31,7 +29,7 @@ const TokenDisplay: React.FC<TokenDisplayProps> = ({
   const tokenMetadata = metadata[token.data.metadata]
   const { contract, id, data } = token
   const [open, setOpen] = useState(false)
-  const isToken = data.balance !== undefined
+  const isToken = token.token_type === 'token'
 
   return (
     <Col {...props} onClick={() => !open && setOpen(true)} className={`token-display ${props.className || ''} ${open ? 'open' : ''}`}>
@@ -80,14 +78,20 @@ const TokenDisplay: React.FC<TokenDisplayProps> = ({
             <HexNum copy mono num={id} />
           </Field>
         </Entry>
-        {!isToken && tokenMetadata?.data?.properties && (
+        {!isToken && token.data.properties && (
           <Entry>
             <Field name='Properties:'>
-              <Text breakWord mono>{tokenMetadata?.data?.properties.join(', ')}</Text>
+              <Row style={{ flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                <Col style={{ marginRight: 16 }}>
+                  {Object.keys(token.data.properties).map((prop) => (
+                    <Text key={prop} breakWord mono>{prop}: {token.data.properties ? token.data.properties[prop] : 'unknown'}</Text>
+                  ))}
+                </Col>
+                {token.data.uri && <NftImage nftInfo={data} />}
+              </Row>
             </Field>
           </Entry>
         )}
-        {!isToken && <NftImage nftInfo={data} />}
       </Col>
     </Col>
   )

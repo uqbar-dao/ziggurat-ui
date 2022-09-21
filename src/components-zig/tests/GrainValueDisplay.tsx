@@ -37,8 +37,8 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain, testId }: Grai
 
   const grainIdDisplay = expanded ? grain.id :
     isZigsGrain ? `${displayPubKey(grain.id)} - zigs account` :
-    isContractGrain ? `${displayPubKey(grain.id)} - contract grain` :
-    isMetadataGrain ? `${displayPubKey(grain.id)} - metadata grain` :
+    isContractGrain ? `${displayPubKey(grain.id)} - contract` :
+    isMetadataGrain ? `${displayPubKey(grain.id)} - metadata` :
     displayPubKey(grain.id)
 
   const grainContent = (
