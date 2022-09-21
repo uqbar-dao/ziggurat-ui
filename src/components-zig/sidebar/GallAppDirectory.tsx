@@ -10,7 +10,16 @@ import Text from '../../components/text/Text'
 import { PublishModal } from './PublishModal';
 import { BUTTON_STYLE, FileLink } from './FileLink';
 import { GallApp } from '../../types/ziggurat/GallApp';
-import { Folder } from '../../types/ziggurat/Folder';
+import { Folder, FolderContents } from '../../types/ziggurat/Folder';
+
+const sortFolderContents = (contents: FolderContents) => Object.keys(contents).sort((a, b) => {
+  const aIsFile = typeof contents[a] === 'string'
+  const bIsFile = typeof contents[b] === 'string'
+
+  return aIsFile && bIsFile ? (contents[a] as string).localeCompare(contents[b] as string) :
+    !aIsFile && !bIsFile ? (contents[a] as Folder).name.localeCompare((contents[b] as Folder).name) :
+    aIsFile ? 1 : -1
+})
 
 interface SubDirectoryProps {
   projectTitle: string
@@ -42,7 +51,7 @@ const SubDirectory = ({ projectTitle, folder, indent }: SubDirectoryProps) => {
       </Row>
       {expanded && (
         <Col style={{ paddingLeft: indent * 9 }}>
-          {Object.keys(contents).map((item) => {
+          {sortFolderContents(contents).map((item) => {
             if (typeof contents[item] === 'string') {
               return <FileLink key={item} isGall project={projectTitle} file={item} />
             }
@@ -101,7 +110,7 @@ export const GallAppDirectory = ({ project }: GallAppDirectoryProps) => {
       </Row>
       {expanded && (
         <Col className='ml1'>
-          {Object.keys(folder.contents)
+          {sortFolderContents(folder.contents)
           .map((item) => {
             if (typeof folder.contents[item] === 'string') {
               return <FileLink isGall key={item} project={title} file={item} />

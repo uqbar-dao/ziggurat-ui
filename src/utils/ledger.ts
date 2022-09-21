@@ -3,8 +3,7 @@ import { ethers, Wallet } from "ethers"
 import { listen } from "@ledgerhq/logs"
 import Eth from "@ledgerhq/hw-app-eth"
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb" // eslint-disable-line
-import { removeDots } from './format'
-import { addHexDots } from './number'
+import { removeDots, addHexDots } from './format'
 
 export const getLedgerAddress = async () => {
   try {

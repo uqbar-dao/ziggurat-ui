@@ -1,5 +1,6 @@
 import React from 'react'
 import { hexToRgb, hslToRgb, rgbToHex, rgbToHsl } from '../../utils/colors'
+import { addHexDots } from '../../utils/format'
 import Row from '../spacing/Row'
 import CopyIcon from './CopyIcon'
 import './HexNum.scss'
@@ -53,9 +54,9 @@ const HexNum: React.FC<HexNumProps> = ({
         background: `linear-gradient(${angle}deg, ${leftColor} 0 50%, ${rightColor} 50% 100%)`, 
       }}></span>}
       <Text breakAll className='hex-text' bold={bold} mono={mono}> 
-        {displayNum}
+        {addHexDots(displayNum)}
       </Text>
-      {copy && <CopyIcon text={copyText} />}
+      {copy && <CopyIcon text={addHexDots(copyText)} />}
     </Row>
   )
 }

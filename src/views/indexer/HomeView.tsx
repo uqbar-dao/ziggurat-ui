@@ -10,7 +10,7 @@ import Card from '../../components-indexer/card/Card'
 import useIndexerStore from '../../stores/indexerStore'
 import Text from '../../components/text/Text'
 import { ADDRESS_REGEX, BLOCK_SEARCH_REGEX, TXN_HASH_REGEX, GRAIN_REGEX, ETH_ADDRESS_REGEX } from '../../utils/regex'
-import { abbreviateHex, addHexPrefix, removeDots } from '../../utils/format'
+import { abbreviateHex, addHexDots, addHexPrefix, removeDots } from '../../utils/format'
 import { getRawStatus } from '../../utils/constants'
 import Link from '../../components-indexer/nav/Link'
 import CardHeader from '../../components-indexer/card/CardHeader'
@@ -124,12 +124,12 @@ const HomeView = () => {
               {transactions.map((tx, index) => (
                 <Entry key={tx.hash || index}>
                   <Field name='Hash:'>
-                    <Link href={`/tx/${addHexPrefix(removeDots(tx.hash))}`}>
+                    <Link href={`/tx/${addHexDots(tx.hash)}`}>
                       <Text mono >{abbreviateHex(tx.hash, 6, 4)}</Text>
                     </Link>
                   </Field>
                   <Field name='From:'>
-                    <Link href={`/address/${addHexPrefix(removeDots(tx.egg.shell.from.id))}`}>
+                    <Link href={`/address/${addHexDots(tx.egg.shell.from.id)}`}>
                       <Text mono >{abbreviateHex(tx.egg.shell.from.id, 6, 4)}</Text>
                     </Link>
                   </Field>

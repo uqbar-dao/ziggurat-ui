@@ -7,7 +7,7 @@ import Text from '../../components/text/Text'
 import TransactionShort from '../../components-wallet/transactions/TransactionShort'
 import useWalletStore from '../../stores/walletStore'
 import { displayPubKey } from '../../utils/account'
-import { addHexDots } from '../../utils/number'
+import { addHexDots } from '../../utils/format'
 import { groupTransactions } from '../../utils/transactions'
 
 import './TransactionsView.scss'

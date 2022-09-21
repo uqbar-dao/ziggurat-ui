@@ -1,7 +1,5 @@
 import 'core-js/actual'
 import { ethers, Wallet } from "ethers"
-import { removeDots } from './format'
-import { addHexDots } from './number'
 import TrezorConnect from '@trezor/connect-web';
 
 TrezorConnect.init({

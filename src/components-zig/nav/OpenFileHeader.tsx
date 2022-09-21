@@ -31,8 +31,6 @@ export const OpenFileHeader = () => {
     setOpenFiles(newOpenFiles)
   }, [openFiles, setOpenFiles, nav, pathname, gallApps, currentProject])
 
-  console.log({ openFiles, gallApps } )
-
   return (
     <Row className='open-file-header'>
       {openFiles.map(({ project, file }) => {

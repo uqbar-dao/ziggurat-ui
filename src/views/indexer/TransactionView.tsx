@@ -8,8 +8,7 @@ import CopyIcon from '../../components/text/CopyIcon'
 import useIndexerStore from '../../stores/indexerStore'
 import { Transaction } from '../../types/indexer/Transaction'
 import { getRawStatus, mockData } from '../../utils/constants'
-import { removeDots } from '../../utils/format'
-import { addHexDots } from '../../utils/number'
+import { addDecimalDots, addHexDots } from '../../utils/format'
 import Entry from '../../components/spacing/Entry'
 import Field from '../../components/spacing/Field'
 // import { mockTransaction } from '../../mocks/indexer-mocks'
@@ -33,7 +32,7 @@ const TransactionView = () => {
     const getData = async () => {
       // 0x523515b872fce8297919a3e40bfd48dec4d27d9700dd44dd81efc254ef8aa3e6
       
-      const result = await scry<{ egg: { [key: string]: Transaction } }>(`/egg/${txnHash}`)
+      const result = await scry<{ egg: { [key: string]: Transaction } }>(`/json/egg/${txnHash}`)
 
       if (result) {
         setTransaction(Object.values(result.egg)[0])
@@ -59,7 +58,7 @@ const TransactionView = () => {
   return (
     <Container className='transaction-view'>
       <PageHeader title='Transaction'>
-        <HexNum mono copy style={{ fontSize: 18 }} num={removeDots(txnHash)} />
+        <HexNum mono copy style={{ fontSize: 18 }} num={addHexDots(txnHash)} />
       </PageHeader>
       <Entry>
         <Card title='Overview'>
@@ -72,16 +71,16 @@ const TransactionView = () => {
           </Entry>
           <Entry>
             <Field name='From:'>
-              <Link href={`/address/${removeDots(shell.from.id)}`} className='address'>
-                <HexNum mono num={removeDots(shell.from.id)} />
+              <Link href={`/address/${addHexDots(shell.from.id)}`} className='address'>
+                <HexNum mono num={addHexDots(shell.from.id)} />
               </Link>
-              <CopyIcon iconOnly={true} text={removeDots(shell.from.id)} />
+              <CopyIcon iconOnly={true} text={addHexDots(shell.from.id)} />
             </Field>
             <Field name='To:'>
-              <Link href={`/address/${removeDots(shell.contract)}`} className='address'>
-                <HexNum mono num={removeDots(shell.contract)}/>
+              <Link href={`/address/${addHexDots(shell.contract)}`} className='address'>
+                <HexNum mono num={addHexDots(shell.contract)}/>
               </Link>
-              <CopyIcon iconOnly={true} text={removeDots(shell.contract)} />
+              <CopyIcon iconOnly={true} text={addHexDots(shell.contract)} />
             </Field>
           </Entry>
           <Entry>
@@ -91,20 +90,20 @@ const TransactionView = () => {
           </Entry>
           <Entry>
             <Field name='Budget:'>
-              <Text mono oneLine>{shell.budget}</Text>
+              <Text mono oneLine>{addDecimalDots(shell.budget)}</Text>
             </Field>
           </Entry>
           <Entry>
             <Field name='Caller:'>
-              <Link href={`/address/${removeDots(shell.from.id)}`} className='address'>
-                <HexNum mono num={removeDots(shell.from.id)} />
+              <Link href={`/address/${addHexDots(shell.from.id)}`} className='address'>
+                <HexNum mono num={addHexDots(shell.from.id)} />
               </Link>
-              <CopyIcon iconOnly={true} text={removeDots(shell.from.id)} />
+              <CopyIcon iconOnly={true} text={addHexDots(shell.from.id)} />
             </Field>
           </Entry>
           <Entry>
             <Field name='Action:'>
-              <Text mono>{JSON.stringify(yolk)}</Text>
+              <Text mono breakAll>{JSON.stringify(yolk)}</Text>
             </Field>
           </Entry>
         </Card>
