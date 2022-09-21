@@ -34,6 +34,19 @@ export const addBinDots = (bin: string) => {
   return `0b${result}`
 }
 
+export const addDecimalDots = (decimal: string | number) => {
+  const num = typeof decimal === 'number' ? decimal.toString() : decimal
+  const number = []
+  const len = num.length;
+  for (let i = 0; i < len; i++) {
+    if (i !== 0 && i % 3 === 0) {
+      number.push('.')
+    }
+    number.push(num[len - 1 - i])
+  }
+  return number.reverse().join('')
+}
+
 //   '@': removeDots,
 //   '@da': ,
 //   '@p': ,

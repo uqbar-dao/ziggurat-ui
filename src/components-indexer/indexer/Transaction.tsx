@@ -1,7 +1,6 @@
-import moment from 'moment'
 import { Transaction } from '../../types/indexer/Transaction'
 import { getRawStatus } from '../../utils/constants'
-import { removeDots } from '../../utils/format'
+import { addHexDots } from '../../utils/format'
 import Entry from '../../components/spacing/Entry'
 import Field from '../../components/spacing/Field'
 import Link from '../nav/Link'
@@ -9,9 +8,9 @@ import Col from '../../components/spacing/Col'
 import Text from '../../components/text/Text'
 import HexNum from '../../components/text/HexNum'
 import CopyIcon from '../../components/text/CopyIcon'
+import { formatIndexerTimestamp } from '../../utils/date'
 
 import './Transaction.scss'
-import { formatIndexerTimestamp } from '../../utils/date'
 
 interface TransactionProps {
   tx: Transaction
@@ -32,22 +31,22 @@ export const TransactionEntry = ({
             <Text mono oneLine>{formatIndexerTimestamp(tx.timestamp)}</Text>
           </Field>
           <Field name='Hash:'>
-            <Link href={`/tx/${removeDots(tx.hash || '')}`}>
-              <HexNum mono num={removeDots(tx.hash || '')} />
+            <Link href={`/tx/${addHexDots(tx.hash || '')}`}>
+              <HexNum mono num={addHexDots(tx.hash || '')} />
             </Link>
-            <CopyIcon text={removeDots(tx.hash!)} />
+            <CopyIcon text={addHexDots(tx.hash!)} />
           </Field>
           {isWalletAddress ? (
             <Field name='To:'>
-              <Link href={`/grain/${removeDots(tx.egg.shell.contract)}`}>
-                <HexNum mono num={removeDots(tx.egg.shell.contract)} />
+              <Link href={`/grain/${addHexDots(tx.egg.shell.contract)}`}>
+                <HexNum mono num={addHexDots(tx.egg.shell.contract)} />
               </Link>
               <CopyIcon text={tx.egg.shell.contract} />
             </Field>
           ) : (
             <Field name='From:'>
-              <Link href={`/grain/${removeDots(tx.egg.shell.from.id)}`}>
-                <HexNum mono num={removeDots(tx.egg.shell.from.id)} />
+              <Link href={`/grain/${addHexDots(tx.egg.shell.from.id)}`}>
+                <HexNum mono num={addHexDots(tx.egg.shell.from.id)} />
               </Link>
               <CopyIcon text={tx.egg.shell.from.id} />
             </Field>

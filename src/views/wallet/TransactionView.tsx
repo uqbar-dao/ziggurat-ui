@@ -9,7 +9,7 @@ import Text from '../../components/text/Text'
 import CopyIcon from '../../components/text/CopyIcon'
 import useWalletStore from '../../stores/walletStore'
 import { getStatus } from '../../utils/constants'
-import { removeDots } from '../../utils/format'
+import { addHexDots } from '../../utils/format'
 import HexNum from '../../components/text/HexNum'
 import Row from '../../components/spacing/Row'
 
@@ -65,16 +65,16 @@ const TransactionView = () => {
         <Entry>
           <Field name='Hash:'>
             {/* <Link target='_blank' urlPrefix='/apps/ziggurat/indexer' href={`/tx/${removeDots(txn.hash)}`}> */}
-              <HexNum mono copy num={removeDots(txn.hash)} />
+              <HexNum mono copy num={addHexDots(txn.hash)} />
             {/* </Link> */}
           </Field>
         </Entry>
         <Entry>
           <Field name='From:'>
-            <HexNum mono copy num={ removeDots(txn.from)} />
+            <HexNum mono copy num={ addHexDots(txn.from)} />
             </Field>
           <Field name='To:'>
-            <HexNum mono copy num={ removeDots(txn.contract)} />
+            <HexNum mono copy num={ addHexDots(txn.contract)} />
             </Field>
         </Entry>
         <Entry>
@@ -85,7 +85,7 @@ const TransactionView = () => {
         </Entry>
         <Entry>
           <Field name='Town:'>
-            <HexNum mono copy num={ removeDots(txn.town)} />
+            <HexNum mono copy num={ addHexDots(txn.town)} />
             </Field>
         </Entry>
         <Entry>

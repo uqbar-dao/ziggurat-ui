@@ -9,7 +9,7 @@ import Row from '../../components/spacing/Row'
 import Text from '../../components/text/Text'
 import useIndexerStore from '../../stores/indexerStore'
 import { Batch, Batches } from '../../types/indexer/Batch'
-import { removeDots } from '../../utils/format'
+import { addHexDots } from '../../utils/format'
 import Link from '../../components-indexer/nav/Link'
 import Entry from '../../components/spacing/Entry'
 import { mockData } from '../../utils/constants'
@@ -17,11 +17,11 @@ import { mockData } from '../../utils/constants'
 import Field from '../../components/spacing/Field'
 import PageHeader from '../../components/page/PageHeader'
 import CopyIcon from '../../components/text/CopyIcon'
-
-import './BatchView.scss'
 import HexNum from '../../components/text/HexNum'
 import Loader from '../../components/popups/Loader'
 import { formatIndexerTimestamp } from '../../utils/date'
+
+import './BatchView.scss'
 
 const BatchView = () => {
   const { scry } = useIndexerStore()
@@ -68,7 +68,7 @@ const BatchView = () => {
     <Container className='batch-view'>
       <PageHeader title='Batch'>
         <Text mono style={{ fontSize: 18 }}>{batch.id}</Text>
-        <CopyIcon text={removeDots(batch.id)} />
+        <CopyIcon text={addHexDots(batch.id)} />
       </PageHeader>
       <Card title='Overview'>
         <Entry>
@@ -86,7 +86,7 @@ const BatchView = () => {
               {expandGranary && 
                 <Col style={{marginLeft: '1em'}}>
                   {Object.keys(batch.batch.town.land.granary).map(grainId => (
-                    <Link href={`/grain/${removeDots(grainId || '')}`} className="transaction" key={grainId}>
+                    <Link href={`/grain/${addHexDots(grainId || '')}`} className="transaction" key={grainId}>
                       <HexNum num={grainId} />
                     </Link>
                   ))}
@@ -105,7 +105,7 @@ const BatchView = () => {
               {expandPopulace && 
                 <Col style={{marginLeft: '1em'}}>
                   {Object.keys(batch.batch.town.land.populace).map(userAddress => (
-                    <Link href={`/address/${removeDots(userAddress || '')}`} className="transaction" key={userAddress}>
+                    <Link href={`/address/${addHexDots(userAddress || '')}`} className="transaction" key={userAddress}>
                       <HexNum num={userAddress} />
                     </Link>
                   ))}
@@ -124,8 +124,8 @@ const BatchView = () => {
               {expandTransactions && 
                 <Col style={{marginLeft: '1em'}}>
                   {batch.batch.transactions.map((tx, i) => (
-                    <Link href={`/tx/${removeDots(tx.hash || '')}`} className="transaction" key={tx.hash}>
-                      <Text mono oneLine>{i + 1}. {removeDots(tx.hash || '')}</Text>
+                    <Link href={`/tx/${addHexDots(tx.hash || '')}`} className="transaction" key={tx.hash}>
+                      <Text mono oneLine>{i + 1}. {addHexDots(tx.hash || '')}</Text>
                     </Link>
                   ))}
                 </Col>

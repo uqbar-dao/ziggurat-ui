@@ -8,8 +8,7 @@ import Text from '../../components/text/Text'
 import useIndexerStore from '../../stores/indexerStore'
 import { Transaction } from '../../types/indexer/Transaction'
 import { mockData } from '../../utils/constants'
-import { removeDots } from '../../utils/format'
-import { addHexDots } from '../../utils/number'
+import { removeDots, addHexDots } from '../../utils/format'
 import { mockHolderGrains, mockTransactions } from '../../mocks/indexer-mocks'
 import { Grain } from '../../types/indexer/Grain'
 import { Location } from '../../types/indexer/Location'
@@ -46,7 +45,7 @@ const AddressView = () => {
       try {
         const [rawData, grainInfo] = await Promise.all([
           scry<HashData>(`/hash/${address}`),
-          scry<{ grain: { [key: string]: { grain: Grain; location: Location } } }>(`/grain/${address}`)
+          scry<{ grain: { [key: string]: { grain: Grain; location: Location } } }>(`/json/grain/${address}`)
         ])
 
         console.log('SCRY: ', rawData, grainInfo)
@@ -104,7 +103,7 @@ const AddressView = () => {
   return (
     <Container className='address-view'>
       <PageHeader title={isWalletAddress ? 'Address' : 'Contract'}>
-        <HexNum mono copy style={{ fontSize: 18 }} num={removeDots(address)} />
+        <HexNum mono copy style={{ fontSize: 18 }} num={addHexDots(address)} />
       </PageHeader>
       <Entry>
         <Card>

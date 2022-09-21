@@ -8,8 +8,7 @@ import CopyIcon from '../../components/text/CopyIcon'
 import useIndexerStore from '../../stores/indexerStore'
 import { Transaction } from '../../types/indexer/Transaction'
 import { mockData } from '../../utils/constants'
-import { removeDots } from '../../utils/format'
-import { addHexDots } from '../../utils/number'
+import { addHexDots } from '../../utils/format'
 import { mockTransactions } from '../../mocks/indexer-mocks'
 import { Grain } from '../../types/indexer/Grain'
 import { Location } from '../../types/indexer/Location'
@@ -81,9 +80,9 @@ const GrainView = () => {
     <Container className='grain-view'>
       <PageHeader title={'Grain'}>
         <Text mono oneLine style={{ fontSize: 18 }}>
-          {removeDots(grainId)}
+          {addHexDots(grainId)}
         </Text>
-        <CopyIcon text={removeDots(grainId)} />
+        <CopyIcon text={addHexDots(grainId)} />
       </PageHeader>
       <Entry>
         <Card>
@@ -128,16 +127,16 @@ const GrainView = () => {
                         </Field>
                       )}
                       <Field name='Lord:'>
-                        <Link href={`/address/${removeDots(grain.lord)}`}>
-                          <Text mono oneLine>{removeDots(grain.lord)}</Text>
+                        <Link href={`/address/${addHexDots(grain.lord)}`}>
+                          <Text mono oneLine>{addHexDots(grain.lord)}</Text>
                         </Link>
-                        <CopyIcon text={removeDots(grain.lord)}></CopyIcon>
+                        <CopyIcon text={addHexDots(grain.lord)}></CopyIcon>
                       </Field>
                       <Field name='Holder:'>
-                        <Link href={`/address/${removeDots(grain.holder)}`}>
-                          <Text mono oneLine>{removeDots(grain.holder)}</Text>
+                        <Link href={`/address/${addHexDots(grain.holder)}`}>
+                          <Text mono oneLine>{addHexDots(grain.holder)}</Text>
                         </Link>
-                        <CopyIcon text={removeDots(grain.holder)}></CopyIcon>
+                        <CopyIcon text={addHexDots(grain.holder)}></CopyIcon>
                       </Field>
                       <Field name='Label:'>
                         <Text mono oneLine>{grain.label}</Text>

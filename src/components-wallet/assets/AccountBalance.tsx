@@ -5,7 +5,7 @@ import { displayPubKey } from '../../utils/account'
 import { useNavigate } from 'react-router-dom'
 import Row from '../../components/spacing/Row'
 import CopyIcon from '../../components/text/CopyIcon'
-import { removeDots } from '../../utils/format'
+import { addHexDots } from '../../utils/format'
 import Text from '../../components/text/Text'
 import Col from '../../components/spacing/Col'
 import Button from '../../components/form/Button'
@@ -40,7 +40,7 @@ const AccountBalance: React.FC<AccountBalanceProps> = ({
               <h4 style={{ fontFamily: 'monospace, monospace', margin: 0, cursor: 'pointer' }} onClick={() => nav(`/accounts/${pubKey}`)}>
                 <HexNum num={pubKey}  displayNum={displayPubKey(pubKey)} />
               </h4>
-              <CopyIcon text={removeDots(pubKey)} />
+              <CopyIcon text={addHexDots(pubKey)} />
             </Row>
           </Col>
           <Button dark small style={{ marginTop: 8 }} onClick={() => setCustomFrom(pubKey)}>

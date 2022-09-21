@@ -10,16 +10,16 @@ import useWalletStore from '../../stores/walletStore'
 import { displayPubKey } from '../../utils/account';
 import { useNavigate, useParams } from 'react-router-dom'
 import { SendFormType } from '../../components-wallet/forms/SendTransactionForm'
+import { unwatchTabClose, watchTabClose } from '../../utils/nav'
 
 import './AssetsView.scss'
-import { unwatchTabClose, watchTabClose } from '../../utils/nav'
 
 const PLACEHOLDER = 'All addresses'
 
 const AssetsView = () => {
   const nav = useNavigate()
   const { unsignedTransactionHash } = useParams()
-  const { assets, accounts, loadingText, metadata, unsignedTransactions, setPathname } = useWalletStore()
+  const { assets, accounts, loadingText, unsignedTransactions, setPathname } = useWalletStore()
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>()
   const [sendFormType, setSendFormType] = useState<SendFormType | undefined>()
   const [id, setId] = useState<string | undefined>()
@@ -66,7 +66,7 @@ const AssetsView = () => {
         }
       }
     }
-  }, [unsignedTransactionHash, unsignedTransactions])
+  }, [unsignedTransactionHash, unsignedTransactions]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
   const hideModal = useCallback(() => {

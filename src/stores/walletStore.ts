@@ -6,10 +6,9 @@ import { SendNftPayload, SendCustomTransactionPayload, SendTokenPayload } from "
 import { handleBookUpdate, handleTxnUpdate, handleMetadataUpdate } from "./subscriptions/wallet"
 import { Transactions, Transaction } from "../types/wallet/Transaction"
 import { TokenMetadataStore } from "../types/wallet/TokenMetadata"
-import { removeDots } from "../utils/format"
 import { deriveLedgerAddress, getLedgerAddress } from "../utils/ledger"
 import { deriveTrezorAddress, getTrezorAddress } from "../utils/trezor"
-import { addHexDots } from "../utils/number"
+import { addHexDots } from "../utils/format"
 import { mockData, PUBLIC_URL, WALLET_STORAGE_VERSION } from "../utils/constants"
 import { mockAccounts, mockAssets, mockMetadata, mockTransactions } from "../mocks/wallet-mocks"
 import { createSubscription } from "./subscriptions/createSubscription"
@@ -222,7 +221,7 @@ const useWalletStore = create<WalletStore>(
       set({ loadingText: null })
     },
     deleteAccount: async (address: string) => {
-      if (window.confirm(`Are you sure you want to remove this address?\n\n${removeDots(address)}`)) {
+      if (window.confirm(`Are you sure you want to remove this address?\n\n${addHexDots(address)}`)) {
         await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json: { 'delete-address': { address } } })
         get().getAccounts()
       }

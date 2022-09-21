@@ -1,6 +1,6 @@
 import useIndexerStore from '../../stores/indexerStore'
 import { Grain } from '../../types/indexer/Grain'
-import { removeDots } from '../../utils/format'
+import { addHexDots } from '../../utils/format'
 import CopyIcon from '../../components/text/CopyIcon'
 import Entry from '../../components/spacing/Entry'
 import Field from '../../components/spacing/Field'
@@ -26,25 +26,25 @@ export const GrainEntry = ({
     grain.id !== grain.lord ? (
       <Entry divide className='indexer-grain' key={grain.id}>
         <Field className='id' name='ID:'>
-          <Link href={`/grain/${removeDots(grain.id)}`}>
-            <HexNum mono num={removeDots(grain.id)} />
+          <Link href={`/grain/${addHexDots(grain.id)}`}>
+            <HexNum mono num={addHexDots(grain.id)} />
           </Link>
-          <CopyIcon text={removeDots(grain.id)}></CopyIcon>
+          <CopyIcon text={addHexDots(grain.id)}></CopyIcon>
         </Field>
         {isWalletAddress ? (
           <Field name='Lord:'>
-            <Link href={`/grain/${removeDots(grain.lord)}`}>
-              <HexNum mono num={removeDots(grain.lord)} />
+            <Link href={`/grain/${addHexDots(grain.lord)}`}>
+              <HexNum mono num={addHexDots(grain.lord)} />
             </Link>
-            <CopyIcon text={removeDots(grain.lord)}></CopyIcon>
+            <CopyIcon text={addHexDots(grain.lord)}></CopyIcon>
           </Field>
         ) : (
           grain.holder !== grain.lord && (
             <Field name='Holder:'>
-              <Link href={`/address/${removeDots(grain.holder)}`}>
-                <HexNum mono num={removeDots(grain.holder)} />
+              <Link href={`/address/${addHexDots(grain.holder)}`}>
+                <HexNum mono num={addHexDots(grain.holder)} />
               </Link>
-              <CopyIcon text={removeDots(grain.holder)}></CopyIcon>
+              <CopyIcon text={addHexDots(grain.holder)}></CopyIcon>
             </Field>
           )
         )}
