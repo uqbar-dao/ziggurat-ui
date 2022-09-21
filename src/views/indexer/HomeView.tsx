@@ -1,5 +1,4 @@
 import React, { ChangeEvent, KeyboardEvent, useState } from 'react'
-import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 import { FaSearch } from 'react-icons/fa'
 import Button from '../../components/form/Button'
@@ -21,6 +20,7 @@ import Footer from '../../components-indexer/nav/Footer'
 import HexNum from '../../components/text/HexNum'
 
 import './HomeView.scss'
+import { formatIndexerTimestamp } from '../../utils/date'
 
 const HomeView = () => {
   const { batches, transactions } = useIndexerStore()
@@ -105,7 +105,7 @@ const HomeView = () => {
               {batches.map((bh, index) => (
                 <Entry key={bh.id}>
                   <Field name='Time:'>
-                    <Text>{moment(bh.timestamp).format('YYYY-MM-DD hh:mm')}</Text>
+                    <Text>{formatIndexerTimestamp(bh.timestamp)}</Text>
                   </Field>
                   <Field name='Batch ID:'>
                     <Link href={`/batch/${bh.id}`}>

@@ -104,7 +104,7 @@ const AssetsView = () => {
             showAddress={!selectedAddress}
             selectToken={setTokenToSend}
             setCustomFrom={setCustomFromAddress}
-            balances={Object.values(assets[a]).filter(({ data }) => metadata[data.metadata])}
+            balances={Object.values(assets[a])}
           />
         ))}
       </Entry>

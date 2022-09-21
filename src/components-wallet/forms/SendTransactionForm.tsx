@@ -18,6 +18,7 @@ import { NON_HEX_REGEX, NON_NUM_REGEX } from '../../utils/regex'
 import { ActionDisplay } from './ActionDisplay'
 
 import './SendTransactionForm.scss'
+import Loader from '../../components/popups/Loader'
 
 export interface SendFormValues { to: string; rate: string; bud: string; amount: string; contract: string; town: string; action: string; }
 export type SendFormField = 'to' | 'rate' | 'bud' | 'amount' | 'contract' | 'town' | 'action'
@@ -49,7 +50,7 @@ const SendTransactionForm = ({
   const nav = useNavigate()
   const { unsignedTransactionHash } = useParams()
   const {
-    assets, metadata, importedAccounts, unsignedTransactions,
+    assets, metadata, importedAccounts, unsignedTransactions, loadingText,
     setLoading, getPendingHash, sendTokens, sendNft, submitSignedHash, setMostRecentTransaction, getUnsignedTransactions, sendCustomTransaction
   } = useWalletStore()
 
@@ -98,6 +99,7 @@ const SendTransactionForm = ({
           to: addHexDots(to),
           grain: selectedToken.id,
         }
+        setLoading('Generating transaction...')
         
         if (isNft && selectedToken.data.id) {
           await sendNft(payload)
@@ -109,14 +111,12 @@ const SendTransactionForm = ({
         await sendCustomTransaction(payload)
       }
 
-      setLoading('Generating transaction...')
       getUnsignedTransactions()
       const unsigned = await getUnsignedTransactions()
       const mostRecentPendingHash = Object.keys(unsigned)
         .filter(hash => unsigned[hash].from === (selectedToken?.holder || from))
         .sort((a, b) => unsigned[a].nonce - unsigned[b].nonce)[0]
       
-      console.log(mostRecentPendingHash, unsigned[mostRecentPendingHash])
       setPendingHash(mostRecentPendingHash)
       setLoading(null)
     }
@@ -147,6 +147,8 @@ const SendTransactionForm = ({
       nav('/')
     }
   }, [unsignedTransactions, rate, bud, importedAccounts, pendingHash, nav, clearForm, getPendingHash, submitSignedHash, setLoading, setSubmitted])
+
+  const disableSubmit = Boolean(loadingText)
 
   const tokenDisplay = isNft ? (
     <Col>
@@ -225,9 +227,13 @@ const SendTransactionForm = ({
           value={action}
           onChange={(e: any) => setFormValue('action', e.target.value)}
         />
-        <Button style={{ width: '100%', margin: '16px 0px 8px' }} type='submit' dark>
-          Generate Transaction
-        </Button>
+        {disableSubmit ? (
+          <Loader style={{ alignSelf: 'center', justifySelf: 'center' }} dark />
+        ) : (
+          <Button style={{ width: '100%', margin: '16px 0px 8px' }} type='submit' dark disabled={disableSubmit}>
+            Generate Transaction
+          </Button>
+        )}
       </Form>
     )
   }
@@ -253,9 +259,13 @@ const SendTransactionForm = ({
         onChange={(e: any) => setFormValue('amount', e.target.value.replace(NON_NUM_REGEX, ''))}
         required //delete line 75 & 76
       />}
-      <Button style={{ width: '100%', margin: '16px 0px 8px' }} type='submit' dark>
-        Generate Transaction
-      </Button>
+      {disableSubmit ? (
+        <Loader style={{ alignSelf: 'center', justifySelf: 'center' }} dark />
+      ) : (
+        <Button style={{ width: '100%', margin: '16px 0px 8px' }} type='submit' dark disabled={disableSubmit}>
+          Generate Transaction
+        </Button>
+      )}
     </Form>
   )
 }

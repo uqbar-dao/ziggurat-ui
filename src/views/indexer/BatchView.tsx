@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { FaCaretDown, FaCaretRight } from 'react-icons/fa'
-import moment from 'moment'
 
 import Card from '../../components-indexer/card/Card'
 import Col from '../../components/spacing/Col'
@@ -22,6 +21,7 @@ import CopyIcon from '../../components/text/CopyIcon'
 import './BatchView.scss'
 import HexNum from '../../components/text/HexNum'
 import Loader from '../../components/popups/Loader'
+import { formatIndexerTimestamp } from '../../utils/date'
 
 const BatchView = () => {
   const { scry } = useIndexerStore()
@@ -73,7 +73,7 @@ const BatchView = () => {
       <Card title='Overview'>
         <Entry>
           <Field name='Timestamp:'>
-            <Text>{moment(batch.timestamp).format('YYYY-MM-DD hh:mm')}</Text>
+            <Text>{formatIndexerTimestamp(batch.timestamp)}</Text>
           </Field>
         </Entry>
         <Entry>

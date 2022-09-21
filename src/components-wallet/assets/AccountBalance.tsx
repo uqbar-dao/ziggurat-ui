@@ -9,9 +9,9 @@ import { removeDots } from '../../utils/format'
 import Text from '../../components/text/Text'
 import Col from '../../components/spacing/Col'
 import Button from '../../components/form/Button'
+import HexNum from '../../components/text/HexNum'
 
 import './AccountBalance.scss'
-import HexNum from '../../components/text/HexNum'
 
 interface AccountBalanceProps extends React.HTMLAttributes<HTMLDivElement> {
   pubKey: string

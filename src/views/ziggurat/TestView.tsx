@@ -197,8 +197,8 @@ export const TestView = () => {
         </Col>
         <Col className='granary' style={{ height: isMobile ? 600 : '100%', width: isMobile ? '100%' : '50%',  }}>
           <Row className='section-header'>
-            <Text className='title'>Chain State (Granary)</Text>
-            <Button small className='action' onClick={() => populateGrainForm()}>+ Add Grain</Button>
+            <Text className='title'>Chain State</Text>
+            <Button small className='action' onClick={() => populateGrainForm()}>+ Add Data</Button>
           </Row>
           <GrainList grains={Object.values(project?.state || {})} editGrain={populateGrainForm} />
         </Col>
