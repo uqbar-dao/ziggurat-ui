@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Controlled as CodeEditor } from 'react-codemirror2'
 import '../../utils/codemirror-hoon'
 
-import './Editors.scss'
+import './Editor.scss'
 require('codemirror/lib/codemirror.css')
 require('codemirror/addon/selection/mark-selection.js')
 
@@ -68,11 +68,14 @@ export const Editor = ({
   isContract = false,
   isTest = false,
 }: EditorProps) => {
+  const [rerenderValue, setRerenderValue] = useState(0)
+
   useEffect(() => {
     if (!editorRef)
       return
     editorRef.current?.setOption('mode', null)
     editorRef.current?.setOption('placeholder', getPlaceholder(isContract, isTest))
+    setRerenderValue(rerenderValue + 1) // render twice on mount to make sure the syntax highlighting works
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const options = {

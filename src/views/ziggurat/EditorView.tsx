@@ -9,7 +9,7 @@ import useZigguratStore from '../../stores/zigguratStore'
 import Form from '../../components/form/Form'
 import Col from '../../components/spacing/Col'
 import Row from '../../components/spacing/Row'
-import { CodeMirrorShim, Editor } from '../../components-zig/editor/Editors'
+import { CodeMirrorShim, Editor } from '../../components-zig/editor/Editor'
 import { OpenFileHeader } from '../../components-zig/nav/OpenFileHeader'
 import { isMobileCheck } from '../../utils/dimensions';
 import { getFileText } from '../../utils/gall'
@@ -70,22 +70,22 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
 
   return (
     <>
-    <OpenFileHeader />
-    <Form className='editor-view' style={{ visibility: hide ? 'hidden' : 'visible' }}>
-      <Row style={{ height: '100%', width: 'calc(100% - 2px)' }}>
-        <Col style={{ height: '100%', width: '100%', borderBottom: isMobile ? '1px solid lightgray' : undefined }}>
-          <Editor
-            editorRef={editorRef}
-            text={text}
-            setText={setText}
-            isContract
-          />
-        </Col>
-        {isGall && <Resizable style={{ position: 'absolute', right: 2, bottom: 0 }} defaultSize={{ width:320, height:200 }}>
-          <Iframe url={WEBTERM_PATH} height='100%' width='100%' />
-        </Resizable>}
-      </Row>
-    </Form>
+      <OpenFileHeader />
+      <Form className='editor-view' style={{ visibility: hide ? 'hidden' : 'visible' }}>
+        <Row style={{ height: '100%', width: 'calc(100% - 2px)' }}>
+          <Col style={{ height: '100%', width: '100%', borderBottom: isMobile ? '1px solid lightgray' : undefined }}>
+            <Editor
+              editorRef={editorRef}
+              text={text}
+              setText={setText}
+              isContract
+            />
+          </Col>
+          {isGall && <Resizable style={{ position: 'absolute', right: 2, bottom: 0 }} defaultSize={{ width:320, height:200 }}>
+            <Iframe url={WEBTERM_PATH} height='100%' width='100%' />
+          </Resizable>}
+        </Row>
+      </Form>
     </>
   )
 }
