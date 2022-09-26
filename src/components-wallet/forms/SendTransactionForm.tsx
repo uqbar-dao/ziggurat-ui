@@ -17,6 +17,7 @@ import TextArea from '../../components/form/TextArea'
 import { NON_HEX_REGEX, NON_NUM_REGEX } from '../../utils/regex'
 import { ActionDisplay } from './ActionDisplay'
 import Loader from '../../components/popups/Loader'
+import { TransactionArgs } from '../../types/wallet/Transaction'
 
 import './SendTransactionForm.scss'
 
@@ -24,7 +25,7 @@ export interface SendFormValues { to: string; rate: string; bud: string; amount:
 export type SendFormField = 'to' | 'rate' | 'bud' | 'amount' | 'contract' | 'town' | 'action'
 export type SendFormType = 'tokens' | 'nft' | 'custom';
 
-export const BLANK_FORM_VALUES = { to: '', rate: '', bud: '', amount: '', contract: '', town: '', action: '' }
+export const BLANK_FORM_VALUES = { to: '', rate: '1', bud: '1000000', amount: '', contract: '', town: '', action: '' }
 
 interface SendTransactionFormProps {
   setSubmitted: (submitted: boolean) => void
@@ -163,12 +164,22 @@ const SendTransactionForm = ({
   )
 
   if (pendingHash) {
+    const pendingAction = unsignedTransactions[pendingHash].action as TransactionArgs
+    const giveAction = pendingAction.give || pendingAction['give-nft']
+    const showToAddress = Boolean(to || (tokenMetadata?.data?.symbol && giveAction.to))
+    const showAmount = Boolean(!isNft && (amount || (tokenMetadata?.data?.symbol && giveAction.amount)))
+
     return (
       <Form className='send-transaction-form' onSubmit={submitSignedTransaction}>
         {!isCustom && tokenDisplay}
-        {!to && <ActionDisplay action={unsignedTransactions[pendingHash].action} />}
-        {to && <Input label='To:' style={{ width: '100%' }} containerStyle={{ marginTop: 12, width: '100%' }} value={to} disabled />}
-        {!isNft && amount && to && <Input label='Amount:' style={{ width: '100%' }} containerStyle={{ marginTop: 12, width: '100%' }} value={amount} disabled />}
+        {showToAddress ? (
+          <Input label='To:' style={{ width: '100%' }} containerStyle={{ marginTop: 12, width: '100%' }} value={to || giveAction.to as any} disabled />
+        ) : (
+          <ActionDisplay action={pendingAction} />
+        )}
+        {showAmount && (
+          <Input label='Amount:' style={{ width: '100%' }} containerStyle={{ marginTop: 12, width: '100%' }} value={amount || displayTokenAmount(Number(giveAction.amount), tokenMetadata?.data.decimals || 1)} disabled />
+        )}
         <Col>
           <Row style={{ marginTop: 16, fontWeight: 'bold' }}>Hash: <CopyIcon text={pendingHash}/></Row>
           <Row style={{ wordBreak: 'break-all' }}>{pendingHash}</Row>
