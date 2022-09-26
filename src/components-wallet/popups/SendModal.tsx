@@ -11,9 +11,9 @@ import { getStatus } from '../../utils/constants'
 import SendTransactionForm, { BLANK_FORM_VALUES, SendFormField, SendFormType } from '../forms/SendTransactionForm'
 import Modal, { ModalProps } from '../../components/popups/Modal'
 import useWalletStore from '../../stores/walletStore'
+import { watchTabClose } from '../../utils/nav'
  
 import './SendModal.scss'
-import { unwatchTabClose, watchTabClose } from '../../utils/nav'
 
 interface SendModalProps extends ModalProps {
   id?: string
