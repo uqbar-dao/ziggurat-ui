@@ -15,8 +15,8 @@ import { Folder, FolderContents } from '../../types/ziggurat/Folder';
 const sortFolderContents = (contents: FolderContents) => Object.keys(contents).sort((a, b) => {
   const aIsFile = typeof contents[a] === 'string'
   const bIsFile = typeof contents[b] === 'string'
-
-  return aIsFile && bIsFile ? (contents[a] as string).localeCompare(contents[b] as string) :
+ 
+  return aIsFile && bIsFile ? (a).localeCompare(b) :
     !aIsFile && !bIsFile ? (contents[a] as Folder).name.localeCompare((contents[b] as Folder).name) :
     aIsFile ? 1 : -1
 })
