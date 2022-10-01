@@ -107,15 +107,6 @@ export const Editor = ({
     setText(value)
   }, [text, setText])
 
-  const onPaste = (cm: CodeMirrorShim, e: ClipboardEvent) => {
-    const pastedText = e?.clipboardData?.getData('Text')
-    const editor = editorRef?.current
-    if (editor && pastedText) {
-      const cursor = editor.getCursor()
-      editor.replaceRange(pastedText, cursor)
-    }
-  }
-
   return (
     <CodeEditor
       className={`editor ${isTest ? 'test' : ''}`}
@@ -125,8 +116,6 @@ export const Editor = ({
       editorDidMount={(codeEditor: any) => {
         editorRef.current = codeEditor
       }}
-      onPaste={onPaste}
-      onChange={textChange}
     />
   )
 }

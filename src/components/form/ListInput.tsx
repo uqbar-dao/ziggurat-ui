@@ -50,7 +50,6 @@ export const ListInput: React.FC<ListInputProps> = ({
       </Row>
       <Row style={{ width: '100%', marginTop: 6 }}>
         <input {...props} style={{ ...props.style, width: '100%' }} value={value} onChange={(e) => setValue(e.target.value)} onKeyDown={(e) => {
-          console.log(e.key)
           if (e.key === 'Enter' && value) {
             e.preventDefault()
             addValue()
