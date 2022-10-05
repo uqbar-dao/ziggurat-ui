@@ -29,13 +29,10 @@ const AppTile: React.FC<AppTileProps> = ({ href, color, children, title, ...prop
 const SelectAppView = () => {
   return (
     <Container className='select-app'>
-        <Grid style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(auto, 250px))' }}>
-          <AppTile color='#333' href={`${PUBLIC_URL}/develop`} title='Contract & App Development'>
-          </AppTile>
-          <AppTile color='#5761ef' href={`${PUBLIC_URL}/wallet`} title='Uqbar Wallet'>
-          </AppTile>
-          <AppTile color='#cd3c52' href={`${PUBLIC_URL}/indexer`} title='Block Explorer'>
-          </AppTile>
+        <Grid style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(auto, 250px))', rowGap: 12 }}>
+          <AppTile color='#333' href={`${PUBLIC_URL}/develop`} title='Contract & App Development' />
+          <AppTile color='#5761ef' href={`${PUBLIC_URL}/wallet`} title='Uqbar Wallet' />
+          <AppTile color='#cd3c52' href={`${PUBLIC_URL}/indexer`} title='Block Explorer' />
         </Grid>
     </Container>
   )

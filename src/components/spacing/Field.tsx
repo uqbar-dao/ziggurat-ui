@@ -6,6 +6,7 @@ import './Field.scss'
 interface FieldProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string,
   name: string,
+  center?: boolean
 }
 
 const Field : React.FC<FieldProps> = ({ className = '', children, name, ...rest }) => {

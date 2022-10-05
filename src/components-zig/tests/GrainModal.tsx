@@ -43,8 +43,8 @@ export const GrainModal = ({
     setMold(action)
     const selectedMold = project.molds.rice.find(m => m.name === action)
     if (selectedMold) {
-      updateGrainFormValue('data', `[${selectedMold.mold}]`)
-      updateGrainFormValue('label', `[${selectedMold.name}]`)
+      updateGrainFormValue('data', `${selectedMold.mold}`)
+      updateGrainFormValue('label', `${selectedMold.name}`)
     }
   }, [project, setMold, updateGrainFormValue])
 

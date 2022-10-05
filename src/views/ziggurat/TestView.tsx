@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { DragDropContext } from 'react-beautiful-dnd';
 import { FaPlay } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 import { isMobileCheck } from '../../utils/dimensions'
 import Col from '../../components/spacing/Col'
 import Row from '../../components/spacing/Row'
@@ -16,15 +17,13 @@ import { TestModal } from '../../components-zig/tests/TestModal';
 import { FormValues } from '../../types/ziggurat/FormValues';
 import { OpenFileHeader } from '../../components-zig/nav/OpenFileHeader';
 import { DEFAULT_BUDGET, DEFAULT_RATE } from '../../utils/constants';
-import { Tooltip } from '../../components/popups/Tooltip';
 import { GrainModal } from '../../components-zig/tests/GrainModal';
 import Text from '../../components/text/Text'
 import { BLANK_TEST_FORM, TestFormField, TestFormValues } from '../../types/ziggurat/TestForm';
-
-import './TestView.scss'
 import Field from '../../components/spacing/Field';
 import Entry from '../../components/spacing/Entry';
-import { promiseWaterfall } from '../../stores/util';
+
+import './TestView.scss'
 
 export interface TestViewProps {}
 
@@ -35,7 +34,7 @@ export const TestView = () => {
   const [testExpectation, setTestExpecation] = useState('')
   const [showGrainModal, setShowGrainModal] = useState(false)
   const [showRunModal, setShowRunModal] = useState(false)
-  const [grainFormValues, setGrainFormValues] = useState<FormValues>({})
+  const [grainFormValues, setGrainFormValues] = useState<FormValues>(formValuesForGrain())
   const [testFormValues, setTestFormValues] = useState<TestFormValues>(BLANK_TEST_FORM)
   const [edit, setEdit] = useState<Test | TestGrain | undefined>()
 
@@ -47,8 +46,6 @@ export const TestView = () => {
     if (grain) {
       setGrainFormValues(formValuesFromGrain(grain))
       setEdit(grain)
-    } else {
-      setGrainFormValues(formValuesForGrain())
     }
     setShowGrainModal(true)
   }, [setEdit, setGrainFormValues, setShowGrainModal])
@@ -74,15 +71,19 @@ export const TestView = () => {
   const submitTest = useCallback(async () => {
     setLoading('Saving test...')
 
-    if (!edit) {
-      await addTest(testFormValues.name, testFormValues.action.replace(/\n/g, ' '), Number(testFormValues.expectedError))
-    } else {
-      await updateTest(edit.id, testFormValues.name, testFormValues.action.replace(/\n/g, ' '), Number(testFormValues.expectedError))
+    try {
+      if (!edit) {
+        await addTest(testFormValues.name, testFormValues.action.replace(/\n/g, ' '), Number(testFormValues.expectedError))
+      } else {
+        await updateTest(edit.id, testFormValues.name, testFormValues.action.replace(/\n/g, ' '), Number(testFormValues.expectedError))
+      }
+      setShowTestModal(false)
+      setTestFormValues(BLANK_TEST_FORM)
+      setEdit(undefined)
+    } catch (e) {
+      toast.error('Error saving test')
     }
     
-    setShowTestModal(false)
-    setTestFormValues(BLANK_TEST_FORM)
-    setEdit(undefined)
     setLoading(undefined)
   }, [testFormValues, edit, addTest, updateTest, setLoading])
 
@@ -101,15 +102,18 @@ export const TestView = () => {
     }
 
     setLoading('Saving grain...')
-    if (testExpectation) {
-      await addTestExpectation(testExpectation, newGrain)
-    } else {
-      await addGrain(newGrain)
+    try {
+      if (testExpectation) {
+        await addTestExpectation(testExpectation, newGrain)
+      } else {
+        await addGrain(newGrain)
+      }
+      setShowGrainModal(false)
+      setGrainFormValues(formValuesForGrain())
+      setEdit(undefined)
+    } catch (e) {
+      toast.error('Error saving grain')
     }
-
-    setShowGrainModal(false)
-    setGrainFormValues({})
-    setEdit(undefined)
     setLoading(undefined)
   }, [edit, currentProject, contracts, grainFormValues, testExpectation, addTestExpectation, addGrain, setLoading])
 
@@ -129,19 +133,27 @@ export const TestView = () => {
   }, [contracts, currentProject]);
 
   const hideTestModal = () => {
-    if (window.confirm('Are you sure you want to discard your changes?')) {
-      setTestFormValues(BLANK_TEST_FORM)
+    if (edit) {
+      if (window.confirm('Are you sure you want to discard your changes?')) {
+        setTestFormValues(BLANK_TEST_FORM)
+        setShowTestModal(false)
+        setEdit(undefined)
+      }
+    } else {
       setShowTestModal(false)
-      setEdit(undefined)
     }
   }
 
   const hideGrainModal = () => {
-    if (window.confirm('Are you sure you want to discard your changes?')) {
-      setGrainFormValues({})
+    if (edit) {
+      if (window.confirm('Are you sure you want to discard your changes?')) {
+        setGrainFormValues(formValuesForGrain())
+        setShowGrainModal(false)
+        setEdit(undefined)
+        setTestExpecation('')
+      }
+    } else {
       setShowGrainModal(false)
-      setEdit(undefined)
-      setTestExpecation('')
     }
   }
 
