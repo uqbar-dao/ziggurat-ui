@@ -93,6 +93,13 @@ export const Editor = ({
       },
       'Esc': () => {
         editorRef?.current?.getInputField().blur()
+      },
+      'Tab': () => {
+        const editor = editorRef?.current
+        if (editor) {
+          const spaces = Array(editor.getOption("indentUnit") + 1).join(" ");
+          editor.replaceSelection(spaces);
+        }
       }
     }
   }
