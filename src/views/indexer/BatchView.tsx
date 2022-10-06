@@ -90,6 +90,11 @@ const BatchView = () => {
                       <HexNum num={grainId} />
                     </Link>
                   ))}
+                  {Object.keys(batch.batch.town.land.granary).map(grainId => (
+                    <Link href={`/grain/${addHexDots(grainId || '')}`} className="transaction" key={grainId}>
+                      <HexNum num={grainId} />
+                    </Link>
+                  ))}
                 </Col>
               }
             </Col>

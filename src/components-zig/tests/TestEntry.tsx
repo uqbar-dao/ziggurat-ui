@@ -94,7 +94,7 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
               iconOnly 
               icon={expandOutput ? <FaChevronDown size={16} /> : <FaChevronRight size={16} />}
             />)}
-            <Field name='Result'>
+            <Field name='Result' className='center'>
               <TestStatus errorCode={test?.result?.errorcode} success={test?.result?.success} expectedError={test.expected_error} />
             </Field>
           </Row>

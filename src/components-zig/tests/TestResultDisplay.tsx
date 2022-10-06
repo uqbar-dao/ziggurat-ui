@@ -18,47 +18,46 @@ const TestResultDisplay = ({ result, expectedError }: { result?: TestResult, exp
       <Field name='Gas Used'>
         <Text ml1>{String(result?.fee)}</Text>
       </Field>
-      <Field name='Failures'>
-
       {!!result && result.success === false && (
-        <Col>
-          {result?.errorcode !== expectedError && (
-            <Field name='Status Code'>{`expected: ${STATUS_CODES_RAW[expectedError]}, got: ${STATUS_CODES_RAW[result.errorcode]}`} </Field>
-          )}
-          {Object.keys(result?.grains).filter(id => result.grains[id].match === false)
-            .map(id => {
-              if (result.grains[id].expected && !result.grains[id].made) {
+        <Field name='Failures'>
+          <Col>
+            {result?.errorcode !== expectedError && (
+              <Field name='Status Code'>{`expected: ${STATUS_CODES_RAW[expectedError]}, got: ${STATUS_CODES_RAW[result.errorcode]}`} </Field>
+            )}
+            {Object.keys(result?.grains).filter(id => result.grains[id].match === false)
+              .map(id => {
+                if (result.grains[id].expected && !result.grains[id].made) {
+                  return (
+                    <Entry divide key={id}>
+                      <Field name='ID'>{displayPubKey(id)} </Field>
+                      <Field name='Error'>No grain matching that expectation</Field>
+                    </Entry>
+                  )
+                }
+                const diff = getGrainDiff(result.grains[id].expected, result.grains[id].made)
                 return (
                   <Entry divide key={id}>
                     <Field name='ID'>{displayPubKey(id)} </Field>
-                    <Field name='Error'>No grain matching that expectation</Field>
+                    {Object.keys(diff).map(field => (
+                      <Entry key={field}>
+                        <Field name='Field'>{field} </Field>
+                        <Field name='Expected'>{String(diff[field].expected)} </Field>
+                        <Field name='Actual'>{String(diff[field].result)} </Field>
+                      </Entry>
+                    ))}
                   </Entry>
                 )
-              }
-              const diff = getGrainDiff(result.grains[id].expected, result.grains[id].made)
-              return (
-                <Entry divide key={id}>
-                  <Field name='ID'>{displayPubKey(id)} </Field>
-                  {Object.keys(diff).map(field => (
-                    <Entry key={field}>
-                      <Field name='Field'>{field} </Field>
-                      <Field name='Expected'>{String(diff[field].expected)} </Field>
-                      <Field name='Actual'>{String(diff[field].result)} </Field>
-                    </Entry>
-                  ))}
-                </Entry>
-              )
-            })
-          }
-        </Col>
+              })
+            }
+          </Col>
+        </Field>
       )}
-      </Field>
-      <Button onClick={() => setShowAllResultsModal(true)} small>Show full test output</Button> 
+      <Button style={{ margin: '8px 0 0 16px' }} onClick={() => setShowAllResultsModal(true)} small>Show full test output</Button> 
       <Modal title='Full Test Results' show={showAllResultsModal} hide={() => setShowAllResultsModal(false)}>
         {result?.grains && Object.keys(result.grains).length ? (
           Object.keys(result.grains).map(id => (
             <Entry key={id}>
-              <Field name='Grain ID'>{displayPubKey(id)}</Field>
+              <Field name='Grain ID'>{id}</Field>
               <Field name='Match'>{JSON.stringify(result.grains[id].match)}</Field>
               <Field name='Expected'>{JSON.stringify(result.grains[id].expected)}</Field>
               <Field name='Result'>{JSON.stringify(result.grains[id].made)}</Field>
