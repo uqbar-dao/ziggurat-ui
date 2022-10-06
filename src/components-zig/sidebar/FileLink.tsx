@@ -18,7 +18,7 @@ interface FileLinkProps {
 
 export const FileLink = ({ project, file, isGall = false }: FileLinkProps) => {
   const { pathname } = useLocation()
-  const { currentProject, openFiles, setCurrentProject, setOpenFiles, deleteFile } = useZigguratStore()
+  const { currentProject, openFiles, setCurrentProject, setOpenFiles, deleteFile, contracts } = useZigguratStore()
   const [showButtons, setShowButtons] = useState(false)
   const isTests = file === 'tests'
   const fileName = isGall ? file.split('/').slice(-2).join('.') :
@@ -35,6 +35,9 @@ export const FileLink = ({ project, file, isGall = false }: FileLinkProps) => {
   }, [project, currentProject, file, openFiles, setOpenFiles, setCurrentProject])
 
   const href = genHref(project, file, isGall)
+  const tar = contracts[project] && contracts[project].modifiedFiles
+    && contracts[project].modifiedFiles.has
+    && contracts[project].modifiedFiles.has(file) ? '*' : ''
 
   return (
     <Row style={{ paddingLeft: 8, position: 'relative' }} onMouseEnter={() => setShowButtons(true)} onMouseLeave={() => setShowButtons(false)}>
@@ -43,10 +46,10 @@ export const FileLink = ({ project, file, isGall = false }: FileLinkProps) => {
        : fileName.endsWith('.bill') ? <FaMoneyBill />
        : fileName.endsWith('.ship') ? <FaShip />
        : fileName.endsWith('.kelvin') ? <FaKickstarterK />
-       : fileName.match(/\.(pn|jp(e)?)g$/) ? <FaFileImage />
+       : fileName.match(/\.((pn|jp(e)?)g|gif|tif(f)?|webp|bmp|ico)$/) ? <FaFileImage />
        : <FaFile />}
       <Link onClick={selectFile} underline={pathname === href} href={href} style={{ padding: 2 }}>
-        {fileName}
+        {tar} {fileName}
       </Link>
       {showButtons && !isTests && file !== project && (
         <Tooltip style={{ position: 'absolute', right: 0, top: 0 }} tip="delete">

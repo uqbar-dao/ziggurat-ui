@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import { useCallback } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import useZigguratStore from '../../stores/zigguratStore'
 import Row from '../../components/spacing/Row'
@@ -13,7 +13,7 @@ import './OpenFileHeader.scss'
 export const OpenFileHeader = () => {
   const { pathname } = useLocation()
   const nav = useNavigate()
-  const { openFiles, gallApps, currentProject, setOpenFiles, setCurrentProject } = useZigguratStore()
+  const { contracts, openFiles, gallApps, currentProject, setOpenFiles, setCurrentProject } = useZigguratStore()
 
   const removeFile = useCallback((p: string, f: string) => {
     const newOpenFiles = openFiles.filter(({ project, file }) => !(p === project && f === file) )
@@ -41,12 +41,16 @@ export const OpenFileHeader = () => {
           file.split('/').slice(-2).join('.') // /file/txt -> file.txt
           : file.match('(^tests$|\.[\w]+$)') ? file // file.txt -> file.txt
           : file + '.hoon' // file -> file.hoon
+        const tar = contracts[project] && contracts[project].modifiedFiles
+          && contracts[project].modifiedFiles.has
+          && contracts[project].modifiedFiles.has(file) ? '* ' : ' '
 
         return (
           <Link key={project + file} className={`tab ${pathname.includes(href) ? 'selected' : ''}`} href={href} onClick={() => setCurrentProject(project)}>
             <Row between style={{ width: '100%' }}> 
               <Text className='tabName'>
                 {isGall && <FaGoodreadsG fontSize={12} className='mr1' />}
+                {tar}
                 {fileName}{prependProject ? ` - ${project}` : ''}
               </Text>
               <Button className='close'

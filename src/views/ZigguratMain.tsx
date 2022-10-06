@@ -16,7 +16,22 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function ZigguratMain() {
-  const { loading, init } = useZigguratStore()
+  const { loading, init, contracts } = useZigguratStore()
+
+  const promptIfUnsavedFiles = (ev: BeforeUnloadEvent) => {
+    ev.preventDefault()
+    return ev.returnValue = 'Are you sure you want to exit? Unsaved changes will be lost.' // this message is ignored by the browser
+  }
+
+  useEffect(() => {
+    window.removeEventListener('beforeunload', promptIfUnsavedFiles)
+    window.removeEventListener('beforeunload', promptIfUnsavedFiles)
+    console.log('removing before unload')
+    if (Object.keys(contracts).find(k => contracts[k]?.modifiedFiles.size > 0)) {
+      console.log('adding before unload')
+      window.addEventListener('beforeunload', promptIfUnsavedFiles)
+    }
+  }, [contracts, loading])
 
   useEffect(() => {
     init()
