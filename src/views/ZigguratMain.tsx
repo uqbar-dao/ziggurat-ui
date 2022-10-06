@@ -25,10 +25,7 @@ function ZigguratMain() {
 
   useEffect(() => {
     window.removeEventListener('beforeunload', promptIfUnsavedFiles)
-    window.removeEventListener('beforeunload', promptIfUnsavedFiles)
-    console.log('removing before unload')
     if (Object.keys(contracts).find(k => contracts[k]?.modifiedFiles.size > 0)) {
-      console.log('adding before unload')
       window.addEventListener('beforeunload', promptIfUnsavedFiles)
     }
   }, [contracts, loading])
