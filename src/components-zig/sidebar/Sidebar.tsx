@@ -115,7 +115,7 @@ export const Sidebar = () => {
         {Object.values(contracts).map((p) => <ContractDirectory key={p.title} project={p} />)}
         {Object.values(gallApps).map((p) => <GallAppDirectory key={p.title} project={p} />)}
       </Col>
-      <Col className='tools' style={{ width: '100%', height: 'calc(20% - 1px)', borderTop: '1px solid black', overflow: 'auto' }}>
+      <Col className='tools' style={{ width: '100%', height: '20%', borderTop: '1px solid black', overflow: 'auto' }}>
         <Row style={{ padding: '8px 12px' }}>
           <div style={{ fontSize: 14, padding: 2, marginRight: 0 }}>Tools</div>
           <Button style={BUTTON_STYLE} variant='unstyled' onClick={() => setShowToolModal(true)} iconOnly icon={<FaRegPlusSquare />} />
