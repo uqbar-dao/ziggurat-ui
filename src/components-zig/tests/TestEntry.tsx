@@ -28,10 +28,25 @@ interface TestEntryProps extends TestListProps {
 
 export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntryProps) => {
   const { currentProject, toggleTest, deleteTest, runTest } = useZigguratStore()
-  const [expandInput, setExpandInput] = useState(false)
-  const [expandOutput, setExpandOutput] = useState(false)
-  const [expandExpectations, setExpandExpectations] = useState(false)
   const [running, setRunning] = useState(false)
+  
+  // TODO: surely there is a better way to do this.
+  const [expandInput, _setExpandInput] = useState(localStorage.getItem('zs'+test.id+'expandInput') === 'true')
+  const [expandOutput, _setExpandOutput] = useState(localStorage.getItem('zs'+test.id+'expandOutput') === 'true')
+  const [expandExpectations, _setExpandExpectations] = useState(localStorage.getItem('zs'+test.id+'expandExpectations') === 'true')
+
+  const setExpandInput = (b:boolean) => {
+    localStorage.setItem('zs'+test.id+'expandInput', `${b}`)
+    _setExpandInput(b)
+  }
+  const setExpandOutput = (b:boolean) => {
+    localStorage.setItem('zs'+test.id+'expandOutput', `${b}`)
+    _setExpandOutput(b)
+  }
+  const setExpandExpectations = (b:boolean) => {
+    localStorage.setItem('zs'+test.id+'expandExpectations', `${b}`)
+    _setExpandExpectations(b)
+  }
 
   const runSingleTest = useCallback(() => {
     setRunning(true)
