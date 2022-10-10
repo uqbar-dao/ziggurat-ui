@@ -117,7 +117,7 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
             + Add
           </Button>
         </Row>
-        {expandExpectations && <GrainList testId={test.id} grains={Object.values(test?.expected || {})} editGrain={showTestExpectationModal(test.id)} />}
+        {expandExpectations && <GrainList isExpectationsList={true} testId={test.id} grains={Object.values(test?.expected || {})} editGrain={showTestExpectationModal(test.id)} />}
       </Entry>
     </Col>
   )
