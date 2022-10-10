@@ -41,7 +41,13 @@ export const handleContractUpdate = (get: GetState<ZigguratStore>, set: SetState
       if (t.project === project)
         toast.dismiss(t.id)
     })
-    set({ toastMessages: toastMessages.filter(t => t.project !== project) })
+    set({ toastMessages: toastMessages.filter(t => t.project !== project)
+      .concat([{
+        project,
+        message: `Built '${project}' successfully.`,
+        id: toast.success(`Built '${project}' successfully.`, { autoClose: 2000 }),
+      }])
+    })
   }
 }
 
