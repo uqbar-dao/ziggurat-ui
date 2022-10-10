@@ -20,9 +20,10 @@ interface GrainValueDisplayProps {
   grainIndex: number
   editGrain: (grain: TestGrain) => void
   testId?: string
+  isExpectation?: boolean
 }
 
-export const GrainValueDisplay = ({ grain, grainIndex, editGrain, testId }: GrainValueDisplayProps) => {
+export const GrainValueDisplay = ({ grain, grainIndex, editGrain, testId, isExpectation }: GrainValueDisplayProps) => {
   const { deleteGrain } = useZigguratStore()
   const [expanded, setExpanded] = useState(false)
 
@@ -33,7 +34,7 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain, testId }: Grai
   const isZigsGrain = grain.id === ZIGS_ACCOUNT_ID
   const isContractGrain = grain.id === MY_CONTRACT_ID
   const isMetadataGrain = grain.id === METADATA_GRAIN_ID
-  const untouchable = isZigsGrain || isContractGrain
+  const untouchable = (isZigsGrain || isContractGrain) && !isExpectation
 
   const grainIdDisplay = expanded ? grain.id :
     isZigsGrain ? `${displayPubKey(grain.id)} - zigs account` :
