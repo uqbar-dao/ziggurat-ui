@@ -14,5 +14,9 @@
   .content {
     flex-basis: 100%;
     word-break: break-all;
+
+    &.monospace {
+      font-family: monospace;
+    }
   }
 }

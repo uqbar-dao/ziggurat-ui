@@ -38,7 +38,7 @@ const TestResultDisplay = ({ result, expectedError }: { result?: TestResult, exp
               if (errorMsg) {
                 return (
                   <Entry className='ml1' divide={index < arr.length - 1} key={id}>
-                    <h4>Fail #{index+1}</h4>
+                    <h4>Failure #{index+1}</h4>
                     <Field name='ID'> <HexNum num={id} displayNum={displayPubKey(id)} copy copyText={id} /></Field>
                     <Field name='Error'>{errorMsg}</Field>
                   </Entry>
@@ -47,13 +47,14 @@ const TestResultDisplay = ({ result, expectedError }: { result?: TestResult, exp
               
               const diff = getGrainDiff(grain.expected, grain.made)
               return (
-                <Entry divide key={id}>
-                  <Field name='ID'>{displayPubKey(id)} </Field>
+                <Entry className='ml1' divide key={id}>
+                  <h4>Failure #{index+1}</h4>
+                  <Field name='ID'> <HexNum num={id} displayNum={displayPubKey(id)} copy copyText={id} /></Field>
                   {Object.keys(diff).map(field => (
                     <Entry key={field}>
-                      <Field name='Field'>{field} </Field>
-                      <Field name='Expected'>{String(diff[field].expected)} </Field>
-                      <Field name='Actual'>{String(diff[field].result)} </Field>
+                      <Field mono name='Field'>{field} </Field>
+                      <Field mono name='Expected'>{String(diff[field].expected)} </Field>
+                      <Field mono name='Actual'>{String(diff[field].result)} </Field>
                     </Entry>
                   ))}
                 </Entry>
