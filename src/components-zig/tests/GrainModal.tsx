@@ -74,7 +74,7 @@ export const GrainModal = ({
             <Select value={selectedGrainId} onChange={(e) => selectGrain(e.target.value)}>
               <option key="other" value="other">other</option>
               {Object.keys(project.state)
-                .filter(id => id !== ZIGS_ACCOUNT_ID && id !== MY_CONTRACT_ID && id !== METADATA_GRAIN_ID)
+                .filter(id => id !== MY_CONTRACT_ID && id !== METADATA_GRAIN_ID)
                 .map(id => (
                   <option key={id} value={id}>{id}</option>
                 ))

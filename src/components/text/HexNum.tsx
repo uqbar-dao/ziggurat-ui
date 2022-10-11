@@ -17,13 +17,13 @@ interface HexNumProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 const HexNum: React.FC<HexNumProps> = ({
-  colors = true,
   num,
   displayNum = num,
-  mono,
   bold,
   copy,
   copyText,
+  colors = true,
+  mono = true,
   ...props
 }) => {
   num = num.replace(/(0x|\.)/g,'')
