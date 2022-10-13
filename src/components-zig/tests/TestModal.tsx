@@ -43,7 +43,6 @@ export const TestModal = ({
   return (
     <Modal title={(isEdit ? 'Edit' : 'Add New') + ' Test'} show={showTestModal} hide={hideTestModal} style={{ minWidth: 320, width: '60%', maxWidth: 500 }}>
       <Col style={{ maxHeight: 'calc(100vh - 80px)', overflow: 'scroll' }}>
-        <h3 style={{ marginTop: 0 }}></h3>
         <Input
           label="Name"
           onChange={(e) => updateTestFormValue('name', e.target.value)}

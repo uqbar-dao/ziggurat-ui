@@ -26,6 +26,7 @@
     "http-proxy-middleware": "^2.0.6",
     "ip-address": "^8.1.0",
     "ipfs-core": "^0.14.3",
+    "jszip": "^3.10.1",
     "moment": "^2.29.4",
     "re-resizable": "^6.9.9",
     "react": "^17.0.2",

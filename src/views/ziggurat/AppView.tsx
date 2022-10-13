@@ -18,7 +18,7 @@ const AppView = ({ hide = false }: { hide?: boolean }) => {
   }
 
   return (
-    <Container className='docs-view' style={{ visibility: hide ? 'hidden' : 'visible', position: hide ? 'absolute' : 'relative' }}>
+    <Container className='docs-view' style={{ visibility: hide ? 'hidden' : 'visible', position: hide ? 'absolute' : 'relative', margin: '-1em 2em 1em -2em', height: '100%' }}>
       {openTools.map(app => (
         <Col key={app} style={{ position: 'absolute', visibility: app === currentTool ? 'visible' : 'hidden', width: '100%', height: '100%' }}>
           <Iframe url={`/apps/${app}`} height='100%' width='100%' />

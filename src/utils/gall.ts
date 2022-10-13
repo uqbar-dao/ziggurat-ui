@@ -1,3 +1,5 @@
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 import { Folder, FolderContents } from "../types/ziggurat/Folder"
 import { GallApp } from "../types/ziggurat/GallApp"
 
@@ -52,4 +54,22 @@ export const mapFilesToFolders = (project: string, files: string[], localApp?: G
   })
 
   return projectFolder
+}
+
+export const downloadProjectZip = async (project: GallApp) => {
+  const zipUpFolder = (folder: Folder, zipFolder: JSZip) =>
+    Object.keys(folder.contents).forEach((key) => {
+      if (typeof folder.contents[key] === 'string') {
+        zipFolder!.file(getFilename(key), folder.contents[key] as string)
+      } else {
+        const subFolder = folder.contents[key] as Folder
+        const subFolderName = subFolder.name.split('/').pop() || subFolder.name
+        zipUpFolder(subFolder, zipFolder!.folder(subFolderName)!)
+      }
+    })
+
+  const zip = new JSZip()
+  zipUpFolder(project.folder, zip)
+  const zipBlob = await zip.generateAsync({ type: 'blob' })
+  saveAs(zipBlob, `${project.title}.zip`)
 }

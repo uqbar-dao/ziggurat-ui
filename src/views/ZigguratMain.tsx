@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import 'react-toastify/dist/ReactToastify.css';
+
 import useZigguratStore from '../stores/zigguratStore';
 import Container from '../components/spacing/Container';
 import Col from '../components/spacing/Col';
@@ -13,7 +15,7 @@ import { TestView } from './ziggurat/TestView';
 import { PUBLIC_URL } from '../utils/constants';
 import WelcomeView from './ziggurat/WelcomeView';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { EndpointView } from './ziggurat/EndpointView';
 
 function ZigguratMain() {
   const { loading, init, contracts } = useZigguratStore()
@@ -47,6 +49,7 @@ function ZigguratMain() {
               <Route path="/" element={<WelcomeView />} />
               <Route path="/new" element={<NewProjectView />} />
               <Route path="/app" element={<AppView />} />
+              <Route path="/endpoints" element={<EndpointView />} />
               <Route path="/app/:app" element={<AppView />} />
               <Route path="/:projectTitle" element={<EditorView />} />
               <Route path="/:projectTitle/tests" element={<TestView />} />

@@ -1,0 +1,49 @@
+@use '../../styles/colors.scss' as colors;
+
+.endpoint {
+  height: 100%;
+
+  .section-header {
+    justify-content: space-between;
+    padding: 4px 8px;
+    border-bottom: 2px solid colors.$charcoal;
+    color:white;
+
+    .title {
+      padding: 4px;
+      font-weight: bold;
+    }
+  }
+
+  .test-actions {
+    background-color: colors.$uq-lightpink;
+
+    .section-header {
+      background-color: colors.$blush;
+
+      .run-all {
+        svg {
+          margin-right: 0.5em;
+        }
+
+        &:hover {
+          background-color: colors.$uq-darkpurple;
+        }
+      }
+    }
+  }
+
+  .granary {
+    background-color: colors.$celeste;
+    border-left: 1px solid black;
+
+    .section-header {
+      background-color: colors.$celadon;
+    }
+  }
+
+
+  .text-area {
+    min-height: 120px;
+  }
+}
