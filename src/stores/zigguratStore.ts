@@ -327,7 +327,15 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
     },
     addTestExpectation: async (testId: string, expected: TestGrainInput) => {
       const project = get().currentProject
-      const json = { project, action: { "add-test-expectation": { id: testId, expected } } }
+      const json = { project, action: { "add-test-expectation": { id: testId, expected: {
+        salt: expected.salt,
+        label: expected.label,
+        data: expected.data,
+        lord: expected.lord,
+        holder: expected.holder,
+        'town-id': expected['town-id'],
+        // id: expected.id // ids are calculated on backend
+      } } } }
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
     },
     deleteTest: async (testId: string) => {
