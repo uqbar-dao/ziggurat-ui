@@ -91,15 +91,17 @@ export const TestView = () => {
     const validationError = validateFormValues(grainFormValues)
     if (validationError)
       return window.alert(validationError)
+      
+    // ids are now calculated on backend
+    const newGrain = grainFromForm({...grainFormValues, id: { value: '0x7e57', type: '%id' }})
 
-    const newGrain = grainFromForm(grainFormValues)
-
-    const targetProject = contracts[currentProject]
-    if (targetProject && !testExpectation) {
-      if (targetProject?.state[newGrain.id] && !edit) {
-        return window.alert('You already have a grain with this ID, please change the ID.')
-      }
-    }
+    // ids are now calculated on backend
+    // const targetProject = contracts[currentProject]
+    // if (targetProject && !testExpectation) {
+    //   if (targetProject?.state[newGrain.id] && !edit) {
+    //     return window.alert('You already have a grain with this ID, please change the ID.')
+    //   }
+    // }
 
     setLoading('Saving grain...')
     try {

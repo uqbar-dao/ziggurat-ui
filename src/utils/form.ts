@@ -5,7 +5,7 @@ import { UqbarType } from "../types/ziggurat/UqbarType"
 import { formatType, removeDots } from "./format"
 
 export const GRAIN_FORM_VALUES_COMMON: { [key: string]: any } = {
-  id: '%id',
+  // id: '%id', // id is calculated on backend
   lord: '%id',
   holder: '%id',
   town_id: '@ux',
@@ -23,7 +23,7 @@ export const TEST_FORM_VALUES_COMMON: { [key: string]: any } = {
 }
 
 export const formatField: { [key: string]: (val: string) => string } = {
-  '%id': (value: string) => value.replace(/[^x0-9A-Fa-f.]/, ''),
+  // '%id': (value: string) => value.replace(/[^x0-9A-Fa-f.]/, ''),
   '%grain': (value: string) => value.replace(/[^x0-9A-Fa-f.]/, ''),
   '@': (value: string) => value.replace(/[^0-9.]/, ''),
   '@da': (value: string) => value,
