@@ -7,6 +7,7 @@ import { Tooltip } from '../../components/popups/Tooltip';
 import Row from '../../components/spacing/Row'
 import Link from '../nav/Link';
 import { genHref } from '../../utils/nav';
+import { getFilename } from '../../utils/gall';
 
 export const BUTTON_STYLE = { marginLeft: 6, padding: 2 }
 
@@ -21,7 +22,7 @@ export const FileLink = ({ project, file, isGall = false }: FileLinkProps) => {
   const { currentProject, openFiles, setCurrentProject, setOpenFiles, deleteFile, contracts } = useZigguratStore()
   const [showButtons, setShowButtons] = useState(false)
   const isTests = file === 'tests'
-  const fileName = isGall ? file.split('/').slice(-2).join('.') :
+  const fileName = isGall ? getFilename(file) :
     !isTests ? `${file}.hoon` :
     file
 

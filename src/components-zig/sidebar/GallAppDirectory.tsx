@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { FaDownload, FaTrash, FaUpload, FaChevronDown, FaChevronRight } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+
 import useZigguratStore from '../../stores/zigguratStore'
 import Button from '../../components/form/Button';
 import { Tooltip } from '../../components/popups/Tooltip';
@@ -11,6 +12,7 @@ import { PublishModal } from './PublishModal';
 import { BUTTON_STYLE, FileLink } from './FileLink';
 import { GallApp } from '../../types/ziggurat/GallApp';
 import { Folder, FolderContents } from '../../types/ziggurat/Folder';
+import { downloadProjectZip } from '../../utils/gall';
 
 const sortFolderContents = (contents: FolderContents) => Object.keys(contents).sort((a, b) => {
   const aIsFile = typeof contents[a] === 'string'
@@ -75,7 +77,9 @@ export const GallAppDirectory = ({ project }: GallAppDirectoryProps) => {
 
   const { title, folder, expanded } = project
 
-  // TODO: download icon should save all project files in a zip
+  const downloadZip = useCallback(async () => {
+    downloadProjectZip(project)
+  }, [project])
 
   return (
     <Col style={{ padding: '0px 4px', fontSize: 14 }} onMouseEnter={() => setShowButtons(true)} onMouseLeave={() => setShowButtons(false)} onClick={() => setCurrentProject(title)}>
@@ -90,7 +94,7 @@ export const GallAppDirectory = ({ project }: GallAppDirectoryProps) => {
               <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaUpload size={14} />} onClick={(e) => {e.stopPropagation(); setShowPublishModal(true)}} />
             </Tooltip>
             <Tooltip tip="download zip" right>
-              <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaDownload size={14} />} onClick={() => null} />
+              <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaDownload size={14} />} onClick={downloadZip} />
             </Tooltip>
             <Tooltip tip="delete" right>
               <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={async (e) => {

@@ -1,0 +1,26 @@
+@use '../../styles/colors.scss' as colors;
+@use '../../styles/border.scss' as borders;
+
+.endpoint {
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 0.5em 0.5em 0;
+  padding: 8px;
+  border: 1px solid black;
+  border-radius: 4px;
+  background-color: white;
+  box-shadow: borders.$card-shadow;
+  // overflow-y: scroll;
+
+  &.clone {
+    + .endpoint {
+      display: none!important;
+    }
+  }
+}
+
+.endpoints {
+  width: 100%;
+  overflow-y: auto;
+  padding-bottom: 1em;
+}

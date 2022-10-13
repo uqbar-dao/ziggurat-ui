@@ -12,6 +12,10 @@ import { generateMolds, generateProjects } from "../utils/project";
 import { handleGallUpdate, handleContractUpdate, handleTestUpdate } from "./subscriptions/project";
 import { createSubscription, Subscriptions } from "./subscriptions/createSubscription";
 import { getFilename, getFileText, getFolder, getFolderForFile, mapFilesToFolders } from "../utils/gall";
+import { Endpoint } from '../types/ziggurat/Endpoint';
+import { EndpointForm } from "../types/ziggurat/EndpointForm";
+import { genRanHex } from "../utils/number";
+import { handleEndpointUpdate } from "./subscriptions/endpoint";
 
 export interface ZigguratStore {
   loading?: string
@@ -27,6 +31,7 @@ export interface ZigguratStore {
   subscriptions: Subscriptions
   toastMessages: { project: string, message: string, id: number | string }[]
   userAddress: string
+  endpoints: Endpoint[]
   setLoading: (loading?: string) => void
   init: () => Promise<Contracts>
   getProjects: () => Promise<Contracts>
@@ -61,6 +66,9 @@ export interface ZigguratStore {
   addToastMessage: (project: string, message: string, id: number | string) => void
   setUserAddress: (userAddress: string) => void
   getGallFile: (project: string, file: string) => Promise<void>
+  addEndpoint: (endpoint: EndpointForm, id?: string) => Promise<void>
+  testEndpoint: (endpoint: Endpoint) => Promise<void>
+  removeEndpoint: (id: string) => void
 }
 
 const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
@@ -78,6 +86,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
     currentTool: '',
     toastMessages: [],
     userAddress: DEFAULT_USER_ADDRESS,
+    endpoints: [],
     setLoading: (loading?: string) => set({ loading }),
     init: async () => {
       const contracts = await get().getProjects()
@@ -86,7 +95,18 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
         set({ currentProject: Object.values(contracts)[0].title || '' })
       }
 
-      set({ loading: undefined })
+      // TODO: set up subscriptions for endpoints, should be
+      const newEndpoints = await Promise.all(
+        get().endpoints.map(async (e) => {
+          if (e.type === 'sub') {
+            e.sub = await api.subscribe(createSubscription(e.app, e.path!, handleEndpointUpdate(get, set, e.id)))
+          }
+
+          return e
+        })
+      )
+
+      set({ loading: undefined, endpoints: newEndpoints })
 
       return contracts
     },
@@ -380,6 +400,53 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
         folder.contents[file] = text
       
       set({ gallApps: newApps })
+    },
+    addEndpoint: async (endpoint: EndpointForm, id?: string) => {
+      // TODO: add subscriptions
+      const newEndpoints = await Promise.all(
+        get().endpoints.map(async (e) => {
+          if (e.id === id && e.type === 'sub' && e.sub !== undefined) {
+            await api.unsubscribe(e.sub)
+            e.sub = await api.subscribe(createSubscription(e.app, e.path!, handleEndpointUpdate(get, set, e.id)))
+          }
+
+          return id === e.id ? { id, ...endpoint } : e
+        })
+      )
+
+      if (!id) {
+        const { app, path } = endpoint
+        const newId = genRanHex(8)
+        const sub = endpoint.type === 'sub' ? await api.subscribe(createSubscription(app, path!, handleEndpointUpdate(get, set, newId))) : undefined
+        newEndpoints.push({ id: newId, sub, result: endpoint.type === 'sub' ? [] : undefined, ...endpoint })
+      }
+
+      set({ endpoints: newEndpoints })
+    },
+    testEndpoint: async (endpoint: Endpoint) => {
+      const updatedEndpoint = { ...endpoint }
+
+      try {
+        const { app, path, mark, json } = updatedEndpoint
+        if (updatedEndpoint.type === 'scry') {
+          updatedEndpoint.result = JSON.stringify(await api.scry({ app, path: path || '' }))
+        } else if (updatedEndpoint.type === 'poke') {
+          updatedEndpoint.result = String(await api.poke({ app, mark: mark || '', json: JSON.parse(json || '{}') }))
+        }
+      } catch (err) {
+        updatedEndpoint.error = 'check console'
+      }
+
+      set({ endpoints: get().endpoints.map(e => e.id === endpoint.id ? updatedEndpoint : e) })
+    },
+    removeEndpoint: (id: string) => {
+      const newEndpoints = get().endpoints.filter(e => {
+        if (e.id === id && e.type === 'sub' && e.sub !== undefined)
+          api.unsubscribe(e.sub)
+
+        return e.id !== id
+      })
+      set({ endpoints: newEndpoints })
     }
   }),
   {
