@@ -39,18 +39,18 @@ const TokenDisplay: React.FC<TokenDisplayProps> = ({
             <FaCaretDown className='arrow' /> 
             {isToken? <FaCoins /> : <FaPortrait /> }
           </Row>
-          <Text bold className='token-name'>{(isToken ? tokenMetadata?.data?.symbol : tokenMetadata?.data?.name) || <HexNum num={contract} />}</Text>
-        </Row>
-        <Row>
+          <Text bold className='token-name'>
+            {(isToken ? tokenMetadata?.data?.symbol : tokenMetadata?.data?.name) || <HexNum num={contract} />} -
+          </Text>
           {isToken ? (
             <Text>{displayTokenAmount(data.balance!, tokenMetadata?.data?.decimals || 1, open ? tokenMetadata?.data?.decimals || 8 : 8)}</Text>
             ) : (
             <Text># {data.id || ''}</Text>
           )}
-          <Button onClick={(e) => {e.stopPropagation();selectToken(id, data.id)}} style={{ marginLeft: 16 }} dark small>
-            Transfer
-          </Button>
         </Row>
+        <Button onClick={(e) => {e.stopPropagation();selectToken(id, data.id)}} style={{ marginLeft: 16 }} dark small>
+          Transfer
+        </Button>
       </Row>
       <Col className='details'>
         <Divider />

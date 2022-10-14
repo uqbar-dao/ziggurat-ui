@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { FaExclamationTriangle } from 'react-icons/fa'
 import AccountDisplay from '../../components-wallet/accounts/AccountDisplay'
+import { useLocation } from 'react-router-dom'
 import Button from '../../components/form/Button'
 import Entry from '../../components/spacing/Entry'
 import Form from '../../components/form/Form'
@@ -15,14 +16,16 @@ import Text from '../../components/text/Text'
 import useWalletStore from '../../stores/walletStore'
 import { DerivedAddressType, HardwareWalletType, Seed } from '../../types/wallet/Accounts'
 import { capitalize } from '../../utils/format'
+import { unwatchTabClose, watchTabClose } from '../../utils/nav'
 
 import './AccountsView.scss'
-import { unwatchTabClose, watchTabClose } from '../../utils/nav'
 
 const AccountsView = () => {
   const { accounts, importedAccounts, createAccount, restoreAccount, importAccount, getSeed, deriveNewAddress, setPathname } = useWalletStore()
-  const [showCreate, setShowCreate] = useState(false)
-  const [showAddWallet, setShowAddWallet] = useState<'create' | 'restore' | undefined>()
+  const { search } = useLocation()
+  const createParam = new URLSearchParams(search).get('create')
+  const [showCreate, setShowCreate] = useState(Boolean(createParam))
+  const [showAddWallet, setShowAddWallet] = useState<'create' | 'restore' | undefined>(Boolean(createParam) ? 'create' : undefined)
   const [showImport, setShowImport] = useState(false)
   const [mnemonic, setMnemonic] = useState('')
   const [password, setPassword] = useState('')
@@ -34,16 +37,17 @@ const AccountsView = () => {
 
   const addHardwareAddress = addAddressType && addAddressType !== 'hot'
 
-  
+  useEffect(() => {
+    
+  }, []) // eslint-disable-line
+
   useEffect(() => {
     setPathname('/wallet/accounts')
     if (!showImport && !showAddWallet && !addAddressType) {
       setNick('')
     }
-  }, [showImport, showAddWallet, addAddressType])
+  }, [showImport, showAddWallet, addAddressType, setPathname])
 
-  
-  
   const showSeed = useCallback(async () => {
     if (window.confirm('Are you sure you want to display your seed phrase? Anyone viewing this will have access to your account.')) {
       const seed = await getSeed()
@@ -61,7 +65,7 @@ const AccountsView = () => {
 
   const create = useCallback(async (e) => {
     e.preventDefault()
-    if (window.confirm('Please make sure you have backed up your seed phrase and password. This will overwrite your existing account(s), are you sure?')) {
+    // if (!accounts.length || window.confirm('Please make sure you have backed up your seed phrase and password. This will overwrite your existing account(s), are you sure?')) {
       if (showAddWallet === 'restore') {
         if (!mnemonic) {
           return alert('Mnemonic is required')
@@ -74,7 +78,7 @@ const AccountsView = () => {
       setShowAddWallet(undefined)
       setShowCreate(false)
       clearForm()
-    }
+    // }
   }, [mnemonic, password, nick, showAddWallet, createAccount, restoreAccount, clearForm])
 
   const doImport = useCallback(() => {

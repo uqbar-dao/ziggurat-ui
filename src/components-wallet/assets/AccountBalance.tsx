@@ -16,7 +16,6 @@ import './AccountBalance.scss'
 interface AccountBalanceProps extends React.HTMLAttributes<HTMLDivElement> {
   pubKey: string
   balances: Token[]
-  showAddress: boolean
   selectToken: (tokenId: string, nftIndex?: number) => void
   setCustomFrom: (customFrom: string) => void
 }
@@ -24,7 +23,6 @@ interface AccountBalanceProps extends React.HTMLAttributes<HTMLDivElement> {
 const AccountBalance: React.FC<AccountBalanceProps> = ({
   balances,
   pubKey,
-  showAddress,
   selectToken,
   setCustomFrom,
   ...props
@@ -32,22 +30,20 @@ const AccountBalance: React.FC<AccountBalanceProps> = ({
   const nav = useNavigate()
 
   return (
-    <div {...props} className={`account-balance ${props.className || ''}`}>
-      {showAddress && (
-        <Row style={{ justifyContent: 'space-between' }}>
-          <Col>
-            <Row style={{ alignItems: 'center' }}>
-              <h4 style={{ fontFamily: 'monospace, monospace', margin: 0, cursor: 'pointer' }} onClick={() => nav(`/accounts/${pubKey}`)}>
-                <HexNum num={pubKey}  displayNum={displayPubKey(pubKey)} />
-              </h4>
-              <CopyIcon text={addHexDots(pubKey)} />
-            </Row>
-          </Col>
-          <Button dark small style={{ marginTop: 8 }} onClick={() => setCustomFrom(pubKey)}>
-            Custom Txn
-          </Button>
-        </Row>
-      )}
+    <div {...props} className={`account-balance ${props.className || ''}`} style={{ ...props.style, marginBottom: balances.length ? 8 : 16 }}>
+      <Row style={{ justifyContent: 'space-between' }}>
+        <Col>
+          <Row style={{ alignItems: 'center' }}>
+            <h4 style={{ fontFamily: 'monospace, monospace', margin: 0, cursor: 'pointer' }} onClick={() => nav(`/accounts/${pubKey}`)}>
+              <HexNum num={pubKey}  displayNum={displayPubKey(pubKey)} />
+            </h4>
+            <CopyIcon text={addHexDots(pubKey)} />
+          </Row>
+        </Col>
+        <Button dark small style={{ marginTop: 8 }} onClick={() => setCustomFrom(pubKey)}>
+          Custom Txn
+        </Button>
+      </Row>
       {balances.length ? (
         balances.map(b => (
           <TokenDisplay token={b} key={b.id} selectToken={selectToken} />

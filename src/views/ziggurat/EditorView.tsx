@@ -51,7 +51,7 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
 
   useEffect(() => {
     if (editorRef?.current) {
-      if (toastMessages.length) {
+      if (toastMessages.filter(({ message }) => message.toLowerCase().includes('error')).length) {
         toastMessages.forEach(msg => {
           const lines = msg.message.split('\n')
           const location = lines.find(l => l[0] === '{')

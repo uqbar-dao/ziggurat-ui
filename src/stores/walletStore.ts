@@ -268,7 +268,7 @@ const useWalletStore = create<WalletStore>(
           .concat(importedAccounts.map(({ rawAddress }) => rawAddress))
           .map(address => api.scry<Transactions>({ app: 'wallet', path: `/pending/${address}` }))
       )
-      const unsignedMap = unsigned.reduce((acc: Transactions, cur: Transactions) => ({ ...acc, ...cur }))
+      const unsignedMap = unsigned.reduce((acc: Transactions, cur: Transactions) => ({ ...acc, ...cur }), {})
       const unsignedTransactions = Object.keys(unsignedMap).reduce((acc, hash) => {
         acc[hash] = { ...unsignedMap[hash], hash }
         return acc

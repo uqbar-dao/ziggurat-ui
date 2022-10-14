@@ -69,7 +69,7 @@ const AccountDisplay: React.FC<AccountDisplayProps> = ({
             {!full && <FaArrowRight className='ml1' />}
             </Row>
           </Link>
-          <CopyIcon text={address} />
+          <CopyIcon text={rawAddress} />
         </Row>
         <Row>
           <Row className='icon' onClick={(e) => {

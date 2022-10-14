@@ -1,7 +1,7 @@
 import Link from '../nav/Link'
 import logo from '../../assets/img/logo192.png'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { FaRegPlusSquare, FaSave, FaFileAlt, FaArrowLeft } from 'react-icons/fa';
+import { FaRegPlusSquare, FaSave, FaFileAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import useZigguratStore from '../../stores/zigguratStore'
 import Button from '../../components/form/Button';
@@ -18,6 +18,10 @@ import { ContractDirectory } from './ContractDirectory';
 import { GallAppDirectory } from './GallAppDirectory';
 
 import './Sidebar.scss'
+
+const APP_NAMES : { [key: string]: string } = {
+  webterm: 'dojo - terminal'
+}
 
 export const Sidebar = () => {
   const { userAddress, contracts, gallApps, currentProject, currentFolder, currentTool, openTools, accounts, importedAccounts,
@@ -84,6 +88,10 @@ export const Sidebar = () => {
     [accounts, importedAccounts]
   )
 
+  useEffect(() => {
+    setUserAddress(userAddresses[0])
+  }, [userAddresses, setUserAddress])
+
   return (
     <Col className='sidebar'>
       <Col className='projects'>
@@ -123,7 +131,7 @@ export const Sidebar = () => {
         <Col>
           {openTools.map(app => (
             <Row key={app} style={{ marginLeft: 14, cursor: 'pointer' }} onClick={() => setTool(app)}>
-              <Text style={{ fontSize: 14, textDecoration: app === currentTool ? 'underline' : undefined }}>{app}</Text>
+              <Text style={{ fontSize: 14, textDecoration: app === currentTool ? 'underline' : undefined }}>{APP_NAMES[app] || app}</Text>
               <Button
                 onClick={(e) => {
                   e.stopPropagation()
