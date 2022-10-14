@@ -327,7 +327,13 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       const project = get().currentProject
       const json = {project, action: { "add-test": { name, action, 'expected-error': expectedError } } }
       console.log('ADDING TEST:', json)
-      await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
+      try {
+        await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
+      } catch {
+        const msg = 'Error saving test. Please ensure your hoon data is valid, and that you do not use any molds.'
+        alert(msg)
+        throw msg
+      }
     },
     addTestExpectation: async (testId: string, expected: TestGrainInput) => {
       const project = get().currentProject
@@ -351,7 +357,13 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       const project = get().currentProject
       const json = { project, action: { "edit-test": { id: testId, name, action, 'expected-error': expectedError } } }
       console.log('UPDATING TEST:', json)
-      await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
+      try {
+        await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
+      } catch {
+        const msg = 'Error saving test. Please ensure your hoon data is valid, and that you do not use any molds.'
+        alert(msg)
+        throw msg
+      }
     },
     runTest: async (payload: RunTestPayload) => {
       const project = get().currentProject

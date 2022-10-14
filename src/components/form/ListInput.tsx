@@ -28,6 +28,8 @@ export const ListInput: React.FC<ListInputProps> = ({
   const [value, setValue] = useState('')
 
   const addValue = useCallback(() => {
+    if (!value) return window.alert('Value cannot be blank.')
+
     if (!values.includes(value)) {
       setValues(values.concat([value]))
       setValue('')

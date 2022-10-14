@@ -37,16 +37,18 @@ export const handleContractUpdate = (get: GetState<ZigguratStore>, set: SetState
       )
     }]) })
   } else if (!update.error) {
+    const successToast = {
+      project,
+      message: `Built '${project}' successfully.`,
+      id: toast.success(`Built '${project}' successfully.`, { autoClose: 1000 }),
+    }
     toastMessages.forEach(t => {
-      if (t.project === project)
+      if (t.project === project || t.message == successToast.message)
         toast.dismiss(t.id)
-    })
-    set({ toastMessages: toastMessages.filter(t => t.project !== project)
-      .concat([{
-        project,
-        message: `Built '${project}' successfully.`,
-        id: toast.success(`Built '${project}' successfully.`, { autoClose: 2000 }),
-      }])
+    }) 
+    set({ toastMessages: toastMessages
+      .filter(t => t.project !== project && t.message != successToast.message)
+      .concat([successToast])
     })
   }
 }
