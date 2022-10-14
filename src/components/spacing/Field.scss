@@ -18,6 +18,10 @@
     max-height: 300px;
     display: block;
 
+    &::-webkit-scrollbar {
+      width: 0px;
+    }
+
     &.monospace {
       font-family: monospace;
     }
