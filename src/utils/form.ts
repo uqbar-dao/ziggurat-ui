@@ -42,7 +42,7 @@ export const formatField: { [key: string]: (val: string) => string } = {
 
 export const formValuesFromGrain = (grain: TestGrain) =>
   Object.keys(GRAIN_FORM_VALUES_COMMON).reduce((acc, key) => {
-    const value = key === 'data' ? grain.data_text : String(grain[key as TestGrainField] || '')
+    const value = grain && (key === 'data' ? grain.data_text : String(grain[key as TestGrainField] || '')) || ''
     acc[key] = { type: GRAIN_FORM_VALUES_COMMON[key], value }
     return acc
   }, {} as FormValues)
