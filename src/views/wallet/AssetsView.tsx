@@ -13,20 +13,24 @@ import { SendFormType } from '../../components-wallet/forms/SendTransactionForm'
 import { unwatchTabClose, watchTabClose } from '../../utils/nav'
 
 import './AssetsView.scss'
+import Button from '../../components/form/Button'
 
 const PLACEHOLDER = 'All addresses'
 
 const AssetsView = () => {
   const nav = useNavigate()
   const { unsignedTransactionHash } = useParams()
-  const { assets, accounts, loadingText, unsignedTransactions, setPathname } = useWalletStore()
+  const { assets, accounts, importedAccounts, loadingText, unsignedTransactions, setPathname } = useWalletStore()
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>()
   const [sendFormType, setSendFormType] = useState<SendFormType | undefined>()
   const [id, setId] = useState<string | undefined>()
   const [nftId, setNftIndex] = useState<number | undefined>()
   const [customFrom, setCustomFrom] = useState<string | undefined>()
 
-  const accountsList = useMemo(() => selectedAddress ? [selectedAddress] : Object.keys(assets), [assets, selectedAddress])
+  const accountsList = useMemo(() => {
+    return Array.from(new Set(Object.keys(assets).concat((accounts as any[]).concat(importedAccounts).map(a => a.rawAddress))))
+  }, [assets, accounts, importedAccounts])
+
   const selectAddress = (e: any) => {
     setSelectedAddress(e.target.value === PLACEHOLDER ? undefined : e.target.value)
   }
@@ -68,7 +72,6 @@ const AssetsView = () => {
     }
   }, [unsignedTransactionHash, unsignedTransactions]) // eslint-disable-line react-hooks/exhaustive-deps
 
-
   const hideModal = useCallback(() => {
     nav('/')
     setSendFormType(undefined)
@@ -85,9 +88,9 @@ const AssetsView = () => {
             <label style={{ marginRight: 8 }}>Address:</label>
             <select className='address-selector' value={selectedAddress} onChange={selectAddress}>
               <option>{PLACEHOLDER}</option>
-              {accounts.map(({ address, rawAddress }) => (
-                <option value={rawAddress} key={address}>
-                  {displayPubKey(address)}
+              {accountsList.map(rawAddress => (
+                <option value={rawAddress} key={rawAddress}>
+                  {displayPubKey(rawAddress)}
                 </option>
               ))}
             </select>
@@ -95,16 +98,20 @@ const AssetsView = () => {
       </PageHeader>
       <Entry title='Accounts'>
         {(!accountsList.length && !loadingText) && (
-          <Text className='mt1'>You do not have any Uqbar accounts yet.</Text>
+          <>
+            <Text className='mt1'>You do not have any Uqbar accounts yet.</Text>
+            <Button onClick={() => nav('/accounts?create=true')} mr1 mt1 wide>
+              Create Account
+            </Button>
+          </>
         )}
-        {accountsList.map(a => (
+        {(selectedAddress ? [selectedAddress] : accountsList).map(a => (
           <AccountBalance
             key={a}
             pubKey={a}
-            showAddress={!selectedAddress}
             selectToken={setTokenToSend}
             setCustomFrom={setCustomFromAddress}
-            balances={Object.values(assets[a])}
+            balances={(assets && assets[a] && Object.values(assets[a])) || []}
           />
         ))}
       </Entry>

@@ -233,7 +233,7 @@ const SendTransactionForm = ({
         <TextArea
           label='Custom Action:'
           containerStyle={{ marginTop: 12, width: '100%' }}
-          style={{ width: '100%' }}
+          style={{ width: '100%', minHeight: 160 }}
           placeholder='[%give 0xdead 1 0x1.beef `0x1.dead]'
           value={action}
           onChange={(e: any) => setFormValue('action', e.target.value)}

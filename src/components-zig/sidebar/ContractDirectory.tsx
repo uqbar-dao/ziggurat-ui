@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { FaChevronRight, FaChevronDown, FaDownload, FaTrash, FaUpload } from 'react-icons/fa';
+import { FaChevronRight, FaChevronDown, FaTrash, FaUpload } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import useZigguratStore from '../../stores/zigguratStore'
 import { Contract } from '../../types/ziggurat/Contracts';

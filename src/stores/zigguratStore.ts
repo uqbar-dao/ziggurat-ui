@@ -34,6 +34,7 @@ export interface ZigguratStore {
   endpoints: Endpoint[]
   setLoading: (loading?: string) => void
   init: () => Promise<Contracts>
+  getAccounts: () => Promise<void>
   getProjects: () => Promise<Contracts>
   createProject: (options: { [key: string]: string }) => Promise<void>
   populateTemplate: (project: string, template: 'nft' | 'fungible', metadata: TestGrainInput) => Promise<void>
@@ -90,6 +91,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
     setLoading: (loading?: string) => set({ loading }),
     init: async () => {
       const contracts = await get().getProjects()
+      get().getAccounts()
 
       if (!get().currentProject && Object.values(contracts)[0]) {
         set({ currentProject: Object.values(contracts)[0].title || '' })

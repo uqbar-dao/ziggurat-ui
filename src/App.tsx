@@ -1,15 +1,16 @@
-import React, { AnchorHTMLAttributes } from 'react';
-import { PUBLIC_URL } from './utils/constants';
-import ZigguratMain from './views/ZigguratMain';
-import IndexerMain from './views/IndexerMain';
-import WalletMain from './views/WalletMain';
-import Container from './components/spacing/Container';
+import React, { AnchorHTMLAttributes } from 'react'
+import { PUBLIC_URL } from './utils/constants'
+import ZigguratMain from './views/ZigguratMain'
+import IndexerMain from './views/IndexerMain'
+import WalletMain from './views/WalletMain'
+import Container from './components/spacing/Container'
 import Text from './components/text/Text'
 import Link from './components-indexer/nav/Link'
 import logo from './assets/img/uqbar-logo-text.png'
-import Entry from './components/spacing/Entry';
-import Row from './components/spacing/Row';
-import Grid from './components/spacing/Grid';
+import background from './assets/img/select-app-background.jpg'
+import Entry from './components/spacing/Entry'
+import Row from './components/spacing/Row'
+import Grid from './components/spacing/Grid'
 
 import './App.scss'
 import './SelectAppView.scss'
@@ -29,11 +30,12 @@ const AppTile: React.FC<AppTileProps> = ({ href, color, children, title, ...prop
 const SelectAppView = () => {
   return (
     <Container className='select-app'>
-        <Grid style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(auto, 250px))', rowGap: 12 }}>
-          <AppTile color='#333' href={`${PUBLIC_URL}/develop`} title='Contract & App Development' />
-          <AppTile color='#5761ef' href={`${PUBLIC_URL}/wallet`} title='Uqbar Wallet' />
-          <AppTile color='#cd3c52' href={`${PUBLIC_URL}/indexer`} title='Block Explorer' />
-        </Grid>
+      <img src={background} className='background-image' alt='Uqbar Logo' />
+      <Grid style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(auto, 250px))', rowGap: 12, zIndex: 1, marginTop: 32 }}>
+        <AppTile color='#333' href={`${PUBLIC_URL}/develop`} title='Contract & App Development' />
+        <AppTile color='#5761ef' href={`${PUBLIC_URL}/wallet`} title='Uqbar Wallet' />
+        <AppTile color='#cd3c52' href={`${PUBLIC_URL}/indexer`} title='Block Explorer' />
+      </Grid>
     </Container>
   )
 }
