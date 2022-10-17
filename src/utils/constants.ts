@@ -17,9 +17,9 @@ export const DEFAULT_USER_ADDRESS = '0xdead.beef'
 export const DEFAULT_RATE = 1
 export const DEFAULT_BUDGET = 1000000 // 1 million
 
-export const ZIGGURAT_STORAGE_VERSION = 1
-export const INDEXER_STORAGE_VERSION = 1
-export const WALLET_STORAGE_VERSION = 1
+export const ZIGGURAT_STORAGE_VERSION = 2
+export const INDEXER_STORAGE_VERSION = 2
+export const WALLET_STORAGE_VERSION = 2
 
 export const ORIGIN = window.location.origin
 export const BASENAME = '/apps/ziggurat'

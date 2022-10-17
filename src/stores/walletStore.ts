@@ -23,6 +23,7 @@ const pokeWithAlert = async (json: any) => {
   }
 }
 
+const our: string = (window as any)?.api?.ship || ''
 export interface WalletStore {
   loadingText: string | null,
   accounts: HotWallet[],
@@ -288,7 +289,7 @@ const useWalletStore = create<WalletStore>(
     setMostRecentTransaction: (mostRecentTransaction?: Transaction) => set({ mostRecentTransaction })
   }),
   {
-    name: 'contractStore',
+    name: our+'-contractStore',
     version: WALLET_STORAGE_VERSION,
   })
 )
