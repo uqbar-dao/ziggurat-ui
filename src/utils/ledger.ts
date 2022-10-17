@@ -1,17 +1,10 @@
 import 'core-js/actual'
-import { ethers, Wallet } from "ethers"
+import { ethers } from "ethers"
 import { listen } from "@ledgerhq/logs"
 import Eth from "@ledgerhq/hw-app-eth"
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb" // eslint-disable-line
 import { removeDots, addHexDots } from './format'
-
-interface Egg {
-  to: string
-  rate: number
-  budget: number
-  nonce: number
-  town: string
-}
+import { Egg } from '../types/wallet/SendTransaction'
 
 export const getLedgerAddress = async () => {
   try {
