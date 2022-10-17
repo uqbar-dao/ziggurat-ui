@@ -73,6 +73,8 @@ export interface ZigguratStore {
   removeEndpoint: (id: string) => void
 }
 
+const our: string = (window as any)?.api?.ship || ''
+
 const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
   (set, get) => ({
     loading: '',
@@ -477,7 +479,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
     }
   }),
   {
-    name: 'zigguratStore',
+    name: our+'-zigguratStore',
     version: ZIGGURAT_STORAGE_VERSION,
   }
 ));

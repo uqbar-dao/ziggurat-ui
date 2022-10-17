@@ -44,6 +44,8 @@ export interface IndexerStore {
   getMetadata: () => Promise<void>,
 }
 
+const our: string = (window as any)?.api?.ship || ''
+
 const useIndexerStore = create<IndexerStore>(
   persist<IndexerStore>((set, get) => ({
     loadingText: 'Loading...',
@@ -148,7 +150,7 @@ const useIndexerStore = create<IndexerStore>(
     }
   }),
   {
-    name: 'indexerStore',
+    name: our+'-indexerStore',
     version: INDEXER_STORAGE_VERSION,
   })
 )

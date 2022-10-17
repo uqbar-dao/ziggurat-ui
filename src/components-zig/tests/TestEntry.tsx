@@ -29,22 +29,23 @@ interface TestEntryProps extends TestListProps {
 export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntryProps) => {
   const { currentProject, toggleTest, deleteTest, runTest } = useZigguratStore()
   const [running, setRunning] = useState(false)
-  
+  const our: string = (window as any)?.api?.ship || ''
+  const lsPrefix = `zs-${our}-${test.id}`
   // TODO: surely there is a better way to do this.
-  const [expandInput, _setExpandInput] = useState(localStorage.getItem('zs'+test.id+'expandInput') === 'true')
-  const [expandOutput, _setExpandOutput] = useState(localStorage.getItem('zs'+test.id+'expandOutput') === 'true')
-  const [expandExpectations, _setExpandExpectations] = useState(localStorage.getItem('zs'+test.id+'expandExpectations') === 'true')
+  const [expandInput, _setExpandInput] = useState(localStorage.getItem(lsPrefix+'expandInput') === 'true')
+  const [expandOutput, _setExpandOutput] = useState(localStorage.getItem(lsPrefix+'expandOutput') === 'true')
+  const [expandExpectations, _setExpandExpectations] = useState(localStorage.getItem(lsPrefix+'expandExpectations') === 'true')
 
   const setExpandInput = (b:boolean) => {
-    localStorage.setItem('zs'+test.id+'expandInput', `${b}`)
+    localStorage.setItem(lsPrefix+'expandInput', `${b}`)
     _setExpandInput(b)
   }
   const setExpandOutput = (b:boolean) => {
-    localStorage.setItem('zs'+test.id+'expandOutput', `${b}`)
+    localStorage.setItem(lsPrefix+'expandOutput', `${b}`)
     _setExpandOutput(b)
   }
   const setExpandExpectations = (b:boolean) => {
-    localStorage.setItem('zs'+test.id+'expandExpectations', `${b}`)
+    localStorage.setItem(lsPrefix+'expandExpectations', `${b}`)
     _setExpandExpectations(b)
   }
 
