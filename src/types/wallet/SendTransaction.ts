@@ -18,3 +18,11 @@ export interface SendTokenPayload extends SendAssetPayload {
 }
 
 export interface SendNftPayload extends SendAssetPayload {}
+
+export interface Egg {
+  to: string
+  rate: number
+  budget: number
+  nonce: number
+  town: string
+}

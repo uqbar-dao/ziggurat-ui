@@ -147,9 +147,9 @@ const AddressView = () => {
                   <GrainEntry grain={grain} isWalletAddress={isWalletAddress} key={i} />
                 ))
               ) :  grains.length > 0 ? (
-                <Text style={{ paddingTop: 16 }}>No assets under this town</Text>
+                <Text style={{ marginTop: 16 }}>No assets under this town</Text>
               ) : (
-                <Text>No assets</Text>
+                <Text style={{ marginTop: 16 }}>No assets</Text>
               )
             )}
           </Col>

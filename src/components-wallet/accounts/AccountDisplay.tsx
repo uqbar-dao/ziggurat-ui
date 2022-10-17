@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import {  FaArrowRight, FaRegTrashAlt,  } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
 import useWalletStore from '../../stores/walletStore';
 import { HotWallet, HardwareWallet } from '../../types/wallet/Accounts';
 import { displayPubKey } from '../../utils/account';
@@ -9,7 +8,7 @@ import Col from '../../components/spacing/Col';
 import Row from '../../components/spacing/Row'
 import Text from '../../components/text/Text';
 import CopyIcon from '../../components/text/CopyIcon';
-import { ONE_SECOND } from '../../utils/constants';
+import { ONE_SECOND, PUBLIC_URL } from '../../utils/constants';
 import HexNum from '../../components/text/HexNum';
 import Link from '../nav/Link'
 
@@ -28,7 +27,6 @@ const AccountDisplay: React.FC<AccountDisplayProps> = ({
   ...props
 }) => {
   const { nick, address, rawAddress, nonces } = account
-  const navigate = useNavigate()
   const { deleteAccount, editNickname } = useWalletStore()
   const [newNick, setNewNick] = useState(nick)
   const [nickSaved, setNickSaved] = useState(false)
@@ -62,11 +60,10 @@ const AccountDisplay: React.FC<AccountDisplayProps> = ({
             onChange={(e: any) => setNewNick(e.target.value)}
             value={newNick}
           />
-          <Link href={`/accounts/${address}`}>
+          <Link href={`${PUBLIC_URL}/indexer/address/${address}`}>
             <Row>
-
-            <HexNum num={displayPubKey(address)} mono bold />
-            {!full && <FaArrowRight className='ml1' />}
+              <HexNum num={displayPubKey(address)} mono bold />
+              {!full && <FaArrowRight className='ml1' />}
             </Row>
           </Link>
           <CopyIcon text={rawAddress} />

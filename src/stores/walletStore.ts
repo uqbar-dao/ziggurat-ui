@@ -278,8 +278,9 @@ const useWalletStore = create<WalletStore>(
       return unsignedTransactions
     },
     submitSignedHash: async (from: string, hash: string, rate: number, bud: number, ethHash?: string, sig?: { v: number; r: string; s: string; }) => {
+      console.log('ETH HASH & SIG:', ethHash, sig)
       const json = ethHash && sig ?
-        { 'submit-signed': { from, hash, gas: { rate, bud }, ethHash, sig } } :
+        { 'submit-signed': { from, hash, gas: { rate, bud }, 'eth-hash': ethHash, sig } } :
         { 'submit': { from, hash, gas: { rate, bud } } }
       await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json })
       get().getUnsignedTransactions()

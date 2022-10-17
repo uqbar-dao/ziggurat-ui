@@ -52,7 +52,7 @@ const SendTransactionForm = ({
   const { unsignedTransactionHash } = useParams()
   const {
     assets, metadata, importedAccounts, unsignedTransactions, loadingText,
-    setLoading, getPendingHash, sendTokens, sendNft, submitSignedHash, setMostRecentTransaction, getUnsignedTransactions, sendCustomTransaction
+    setLoading, sendTokens, sendNft, submitSignedHash, setMostRecentTransaction, getUnsignedTransactions, sendCustomTransaction
   } = useWalletStore()
 
   const isNft = useMemo(() => formType === 'nft', [formType])
@@ -131,23 +131,30 @@ const SendTransactionForm = ({
   
       const isHardwareWalletAddress = Boolean(importedAccounts.find(a => a.rawAddress === fromAddress))
       if (isHardwareWalletAddress) {
-        const { hash, egg } = await getPendingHash()
-        hardwareHash = hash
-        setLoading('Please sign the transaction on your Ledger')
-        const sigResult = await signLedgerTransaction(removeDots(fromAddress), hash, egg)
+        hardwareHash = pendingHash
+        setLoading('Please sign the transaction on your hardware wallet')
+        const contract = removeDots(unsignedTransactions[pendingHash].contract.slice(2))
+        const to = (unsignedTransactions[pendingHash] as any).action?.give?.to ||
+          (unsignedTransactions[pendingHash] as any).action?.['give-nft']?.to ||
+          `0x${contract}${contract}`
+        const sigResult = await signLedgerTransaction(removeDots(fromAddress), pendingHash, { ...unsignedTransactions[pendingHash], to })
         setLoading(null)
-        ethHash = sigResult.ethHash ? sigResult.ethHash : undefined
+        ethHash = sigResult.ethHash ? addHexDots(sigResult.ethHash) : undefined
         sig = sigResult.sig
         if (!sig)
-          return alert('There was an error signing the transaction with Ledger.')
+          return alert('There was an error signing the transaction with the hardware wallet')
       }
   
-      submitSignedHash(fromAddress, hardwareHash || pendingHash!, Number(rate), Number(bud), ethHash, sig)
-      clearForm()
-      setSubmitted(true)
-      nav('/')
+      try {
+        await submitSignedHash(fromAddress, hardwareHash || pendingHash!, Number(rate), Number(bud.replace(/\./g, '')), ethHash, sig)
+        clearForm()
+        setSubmitted(true)
+        nav('/')
+      } catch (err) {
+        alert('There was an error signing the transaction with the hardware wallet')
+      }
     }
-  }, [unsignedTransactions, rate, bud, importedAccounts, pendingHash, nav, clearForm, getPendingHash, submitSignedHash, setLoading, setSubmitted])
+  }, [unsignedTransactions, rate, bud, importedAccounts, pendingHash, nav, clearForm, submitSignedHash, setLoading, setSubmitted])
 
   const disableSubmit = Boolean(loadingText)
 

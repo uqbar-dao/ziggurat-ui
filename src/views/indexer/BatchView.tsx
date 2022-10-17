@@ -84,16 +84,13 @@ const BatchView = () => {
                 <Text>{expandGranary ? 'Collapse' : 'Expand'}</Text>
               </Row>
               {expandGranary && 
-                <Col style={{marginLeft: '1em'}}>
+                <Col className='expanded-details'>
                   {Object.keys(batch.batch.town.land.granary).map(grainId => (
-                    <Link href={`/grain/${addHexDots(grainId || '')}`} className="transaction" key={grainId}>
-                      <HexNum num={grainId} />
-                    </Link>
-                  ))}
-                  {Object.keys(batch.batch.town.land.granary).map(grainId => (
-                    <Link href={`/grain/${addHexDots(grainId || '')}`} className="transaction" key={grainId}>
-                      <HexNum num={grainId} />
-                    </Link>
+                    <Col className="transaction">
+                      <Link href={`/grain/${addHexDots(grainId || '')}`} key={grainId}>
+                        <HexNum num={grainId} />
+                      </Link>
+                    </Col>
                   ))}
                 </Col>
               }
@@ -108,11 +105,13 @@ const BatchView = () => {
                 <Text>{expandPopulace ? 'Collapse' : 'Expand'}</Text>
               </Row>
               {expandPopulace && 
-                <Col style={{marginLeft: '1em'}}>
+                <Col className='expanded-details'>
                   {Object.keys(batch.batch.town.land.populace).map(userAddress => (
-                    <Link href={`/address/${addHexDots(userAddress || '')}`} className="transaction" key={userAddress}>
-                      <HexNum num={userAddress} />
-                    </Link>
+                    <Col className="transaction">
+                      <Link href={`/address/${addHexDots(userAddress || '')}`} className="transaction" key={userAddress}>
+                        <HexNum num={userAddress} />
+                      </Link>
+                    </Col>
                   ))}
                 </Col>
               }
@@ -127,11 +126,13 @@ const BatchView = () => {
                 <Text>{expandTransactions ? 'Collapse' : 'Expand'}</Text>
               </Row>
               {expandTransactions && 
-                <Col style={{marginLeft: '1em'}}>
+                <Col className='expanded-details'>
                   {batch.batch.transactions.map((tx, i) => (
-                    <Link href={`/tx/${addHexDots(tx.hash || '')}`} className="transaction" key={tx.hash}>
-                      <Text mono oneLine>{i + 1}. {addHexDots(tx.hash || '')}</Text>
-                    </Link>
+                    <Col className="transaction">
+                      <Link href={`/tx/${addHexDots(tx.hash || '')}`} className="transaction" key={tx.hash}>
+                        <Text mono oneLine>{i + 1}. {addHexDots(tx.hash || '')}</Text>
+                      </Link>
+                    </Col>
                   ))}
                 </Col>
               }
