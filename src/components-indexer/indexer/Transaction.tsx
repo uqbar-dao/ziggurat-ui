@@ -32,21 +32,21 @@ export const TransactionEntry = ({
           </Field>
           <Field name='Hash:'>
             <Link href={`/tx/${addHexDots(tx.hash || '')}`}>
-              <HexNum mono num={addHexDots(tx.hash || '')} />
+              <HexNum mono style={{ margin: 2 }} num={addHexDots(tx.hash || '')} />
             </Link>
             <CopyIcon text={addHexDots(tx.hash!)} />
           </Field>
           {isWalletAddress ? (
             <Field name='To:'>
               <Link href={`/grain/${addHexDots(tx.egg.shell.contract)}`}>
-                <HexNum mono num={addHexDots(tx.egg.shell.contract)} />
+                <HexNum mono style={{ margin: 2 }} num={addHexDots(tx.egg.shell.contract)} />
               </Link>
               <CopyIcon text={tx.egg.shell.contract} />
             </Field>
           ) : (
             <Field name='From:'>
               <Link href={`/grain/${addHexDots(tx.egg.shell.from.id)}`}>
-                <HexNum mono num={addHexDots(tx.egg.shell.from.id)} />
+                <HexNum mono style={{ margin: 2 }} num={addHexDots(tx.egg.shell.from.id)} />
               </Link>
               <CopyIcon text={tx.egg.shell.from.id} />
             </Field>

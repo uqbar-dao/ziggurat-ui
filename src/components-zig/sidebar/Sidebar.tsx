@@ -84,7 +84,7 @@ export const Sidebar = () => {
   }, [gallApps, currentProject, newFile, addFile, setNewFile, setShowAddFileModal])
 
   const userAddresses = useMemo(
-    () => accounts.map(({ address }) => address).concat(importedAccounts.map(({ address }) => address)).concat([DEFAULT_USER_ADDRESS]),
+    () => accounts.map(({ rawAddress }) => rawAddress).concat(importedAccounts.map(({ rawAddress }) => rawAddress)).concat([DEFAULT_USER_ADDRESS]),
     [accounts, importedAccounts]
   )
 

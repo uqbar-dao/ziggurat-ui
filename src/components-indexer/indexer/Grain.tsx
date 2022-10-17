@@ -9,6 +9,7 @@ import Text from '../../components/text/Text'
 import HexNum from '../../components/text/HexNum'
 
 import './Grain.scss'
+import Row from '../../components/spacing/Row'
 
 interface GrainEntryProps {
   grain: Grain
@@ -26,36 +27,44 @@ export const GrainEntry = ({
     grain.id !== grain.lord ? (
       <Entry divide className='indexer-grain' key={grain.id}>
         <Field className='id' name='ID:'>
-          <Link href={`/grain/${addHexDots(grain.id)}`}>
-            <HexNum mono num={addHexDots(grain.id)} />
-          </Link>
-          <CopyIcon text={addHexDots(grain.id)}></CopyIcon>
+          <Row>
+            <Link href={`/grain/${addHexDots(grain.id)}`}>
+              <HexNum mono style={{ margin: 2 }} num={addHexDots(grain.id)} />
+            </Link>
+            <CopyIcon text={addHexDots(grain.id)}></CopyIcon>
+          </Row>
         </Field>
         {isWalletAddress ? (
           <Field name='Lord:'>
-            <Link href={`/grain/${addHexDots(grain.lord)}`}>
-              <HexNum mono num={addHexDots(grain.lord)} />
-            </Link>
-            <CopyIcon text={addHexDots(grain.lord)}></CopyIcon>
+            <Row>
+              <Link href={`/grain/${addHexDots(grain.lord)}`}>
+                <HexNum mono style={{ margin: 2 }} num={addHexDots(grain.lord)} />
+              </Link>
+              <CopyIcon text={addHexDots(grain.lord)}></CopyIcon>
+            </Row>
           </Field>
         ) : (
           grain.holder !== grain.lord && (
             <Field name='Holder:'>
-              <Link href={`/address/${addHexDots(grain.holder)}`}>
-                <HexNum mono num={addHexDots(grain.holder)} />
-              </Link>
-              <CopyIcon text={addHexDots(grain.holder)}></CopyIcon>
+              <Row>
+                <Link href={`/address/${addHexDots(grain.holder)}`}>
+                  <HexNum mono style={{ margin: 2 }} num={addHexDots(grain.holder)} />
+                </Link>
+                <CopyIcon text={addHexDots(grain.holder)}></CopyIcon>
+              </Row>
             </Field>
           )
         )}
         {Boolean(tokenMetadata) && (
           <Field name='Token:'>
-            <Text mono oneLine>{tokenMetadata?.data?.symbol}</Text>
-            <CopyIcon text={tokenMetadata?.data?.symbol!}></CopyIcon>
+            <Row>
+              <Text mono oneLine>{tokenMetadata?.data?.symbol}</Text>
+              <CopyIcon text={tokenMetadata?.data?.symbol!}></CopyIcon>
+            </Row>
           </Field>
         )}
         <Field name='Town:'>
-          <HexNum mono num={grain['town-id'].toString()} />
+          <HexNum mono style={{ margin: 2 }} num={grain['town-id'].toString()} />
           {/* <CopyIcon text={`${grain.townId}`}></CopyIcon> */}
         </Field>
       </Entry>

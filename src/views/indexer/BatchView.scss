@@ -12,10 +12,16 @@
   }
 
   .transaction {
-    padding-top: 8px;
+    margin: 8px 2px;
   }
 
   .purple {
     color: colors.$uq-purple;
+  }
+
+  .expanded-details {
+    overflow-y: scroll;
+    display: block;
+    max-height: 300px;
   }
 }

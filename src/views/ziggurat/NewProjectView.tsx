@@ -173,7 +173,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
           </Row>
           <Input
             style={{ width: 240 }}
-            onChange={(e) => setOptions({ title: e.target.value?.replace(' ', '') })}
+            onChange={(e) => setOptions({ title: e.target.value?.replace(' ', '').toLowerCase() })}
             value={options.title || ''}
             placeholder="Title (no spaces)"
           />

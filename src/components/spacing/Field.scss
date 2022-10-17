@@ -14,9 +14,7 @@
   .content {
     flex-basis: 100%;
     word-break: break-all;
-    overflow-y: scroll;
     max-height: 300px;
-    display: block;
 
     &::-webkit-scrollbar {
       width: 0px;

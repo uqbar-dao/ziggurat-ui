@@ -1,5 +1,6 @@
 import create from "zustand"
 import { persist } from "zustand/middleware"
+import { toast } from "react-toastify";
 import api from "../api";
 import { HardwareWallet, HardwareWalletType, HotWallet, processAccount, RawAccount } from "../types/wallet/Accounts";
 import { GallApps } from "../types/ziggurat/GallApp";
@@ -151,25 +152,27 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
     createProject: async (options: { [key: string]: string }) => {
       set({ loading: 'Creating project...' })
       const project = options.title
-      console.log(1, get().userAddress)
 
-      if (options?.project === 'contract') {
-        const json = { project, action: { "new-contract-project": { template: options.token, 'user-address': get().userAddress } } }
-        console.log(2, json)
-        await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
-      } else if (options?.project === 'gall') {
-        const json = { project, action: { "new-app-project": null } }
-        await api.poke({ app: 'ziggurat', mark: 'ziggurat-app-action', json })
+      try {
+        if (options?.project === 'contract') {
+          const json = { project, action: { "new-contract-project": { template: options.token, 'user-address': get().userAddress } } }
+          await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
+        } else if (options?.project === 'gall') {
+          const json = { project, action: { "new-app-project": null } }
+          await api.poke({ app: 'ziggurat', mark: 'ziggurat-app-action', json })
+        }
+
+        setTimeout(async () => {
+          await get().getProjects()
+          set({ loading: undefined, currentProject: options.title })
+        }, 1000)
+      } catch (err) {
+        toast.error(`Error creating '${options.title}'`)
+        set({ loading: undefined })
       }
-
-      setTimeout(async () => {
-        await get().getProjects()
-        set({ loading: undefined, currentProject: options.title })
-      }, 1000)
     },
     populateTemplate: async (project: string, template: 'nft' | 'fungible', metadata: TestGrainInput) => {
       const json = { project, action: { "populate-template": { template, metadata } } }
-      console.log('POPULATE', json)
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json })
     },
     setCurrentProject: (currentProject: string) => set({ currentProject }),
