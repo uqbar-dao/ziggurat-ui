@@ -53,7 +53,7 @@ export const Sidebar = () => {
     [<FaRegPlusSquare />, () => nav('/new'), 'new project'],
     [<FaSave />, () => saveFiles(currentProject), 'save project'],
     [<FaFileAlt size={15} />, () => {
-      if (isGall) {
+      if (isGall && currentFolder) {
         setNewFile(`/${currentFolder}/`)
       }
       setShowAddFileModal(true)
