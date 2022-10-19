@@ -11,7 +11,7 @@ import Text from "../../components/text/Text"
 import { displayPubKey } from "../../utils/account"
 
 type DeployFormField = 'address' | 'location' | 'town' | 'rate' | 'budget'
-const BLANK_DEPLOY_FORM = { address: '', location: 'test', town: '0x0', rate: DEFAULT_RATE.toString(), budget: DEFAULT_BUDGET.toString() }
+const BLANK_DEPLOY_FORM = { address: '', location: 'local', town: '0x0', rate: DEFAULT_RATE.toString(), budget: DEFAULT_BUDGET.toString() }
 
 interface DeployModalProps {
   project: string
@@ -57,12 +57,12 @@ export const DeployModal = ({ project, show, hide }: DeployModalProps) => {
             {userAddresses.map(a => <option key={a} value={a}>{displayPubKey(a)}</option>)}
           </Select>
         </Col>
-        <Col>
+        {/* <Col>
           <Text mr1 style={{ marginBottom: 4, marginTop: 2 }}>Location</Text>
           <Select style={{ height: 30.5, }} value={deployForm.location} onChange={(e) => updateField('location', e.target.value)}>
-            {['~bacdun', 'local', 'custom'].map(a => <option key={a} value={a}>{a}</option>)}
+            {['local', '~bacdun', 'custom'].map(a => <option key={a} value={a}>{a}</option>)}
           </Select>
-        </Col>
+        </Col> */}
         {deployForm.location === 'custom' && <Input
           label='Custom Location'
           value={customLocation}

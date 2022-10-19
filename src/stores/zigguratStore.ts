@@ -184,14 +184,16 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
 
       await api.poke({ app: 'ziggurat', mark: `ziggurat-${get().contracts[project] ? 'contract' : 'app'}-action`, json: { project, action: { "delete-project": null } } })
 
-      const openFiles = get().openFiles.filter(of => of.project !== project)
-      set({ openFiles })
+      set({ openFiles: get().openFiles.filter(of => of.project !== project) })
 
       get().getProjects()
 
+      console.log(1)
       if (project === get().currentProject) {
+        console.log(2)
         const nextProject = Object.keys(get().contracts)[0] || ''
         set({ currentProject: nextProject })
+        console.log(3, nextProject)
         return nextProject
       }
 
@@ -386,12 +388,12 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
     },
     deployContract: async (project: string, address: string, location: string, town: string, rate: number, bud: number, upgradable: boolean) => {
       // address is the public key address of the user's wallet
-      // location is either "local" or the urbit ship running the testnet
+      // location is not used for now. either "local" or the urbit ship running the testnet
       set({ loading: 'Deploying contract...' })
       const json = {
         project,
         action: {
-          "deploy-contract": { address, rate, bud, upgradable, "deploy-location": location, "town-id": town, }
+          "deploy-contract": { address, rate, bud, upgradable, "deploy-location": location, "town-id": town }
         }
       }
       console.log('DEPLOYING CONTRACT:', json)

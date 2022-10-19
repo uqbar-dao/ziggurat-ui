@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { FaChevronRight, FaChevronDown, FaTrash, FaUpload } from 'react-icons/fa';
+import React, { useCallback, useState } from 'react'
+import { FaChevronRight, FaChevronDown, FaTrash, FaUpload, FaDownload } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import useZigguratStore from '../../stores/zigguratStore'
 import { Contract } from '../../types/ziggurat/Contracts';
@@ -10,6 +10,7 @@ import Row from '../../components/spacing/Row'
 import Text from '../../components/text/Text'
 import { DeployModal } from './DeployModal';
 import { BUTTON_STYLE, FileLink } from './FileLink';
+import { downloadContractZip } from '../../utils/gall';
 
 interface ContractDirectoryProps {
   project: Contract
@@ -17,13 +18,31 @@ interface ContractDirectoryProps {
 
 export const ContractDirectory = ({ project }: ContractDirectoryProps) => {
   const nav = useNavigate()
-  const { deleteProject, setProjectExpanded } = useZigguratStore()
+  const { currentProject, openFiles, deleteProject, setProjectExpanded } = useZigguratStore()
   const [showButtons, setShowButtons] = useState(false)
   const [showDeployModal, setShowDeployModal] = useState(false)
 
   const { title, libs, expanded } = project
 
-  // TODO: download icon should save all project files in a zip
+  const downloadZip = useCallback((e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    downloadContractZip(project)
+  }, [project])
+
+  console.log(currentProject)
+
+  const onDelete = useCallback(async () => {
+    if (window.confirm(`Are you sure you want to delete the ${title} project?`)) {
+      await deleteProject(title)
+      const file = openFiles.filter(of => of.project !== title)[0]
+      if (file) {
+        nav(`/${file.project}/${encodeURIComponent(file.file)}`)
+      } else {
+        nav('/')
+      }
+    }
+  }, [title, openFiles, deleteProject, nav])
 
   return (
     <Col style={{ padding: '0px 4px', fontSize: 14 }} onMouseEnter={() => setShowButtons(true)} onMouseLeave={() => setShowButtons(false)}>
@@ -37,21 +56,11 @@ export const ContractDirectory = ({ project }: ContractDirectoryProps) => {
             <Tooltip tip='deploy contract' right>
               <Button style={BUTTON_STYLE} variant='unstyled' iconOnly icon={<FaUpload size={14} />} onClick={() => setShowDeployModal(true)} />
             </Tooltip>
-            {/* 
             <Tooltip tip='download zip' right>
-              <Button style={BUTTON_STYLE} variant='unstyled' iconOnly icon={<FaDownload size={14} />} onClick={() => alert('This feature is currently in development.')} />
-            </Tooltip> */}
+              <Button style={BUTTON_STYLE} variant='unstyled' iconOnly icon={<FaDownload size={14} />} onClick={downloadZip} />
+            </Tooltip>
             <Tooltip tip='delete' right>
-              <Button style={BUTTON_STYLE} variant='unstyled' iconOnly icon={<FaTrash size={14} />} onClick={async () => {
-                if (window.confirm(`Are you sure you want to delete the ${title} project?`)) {
-                  const navigateTo = await deleteProject(title)
-                  if (navigateTo) {
-                    nav(`/${navigateTo}/main`)
-                  } else if (navigateTo === '') {
-                    nav('/')
-                  }
-                }
-              }} />
+              <Button style={BUTTON_STYLE} variant='unstyled' iconOnly icon={<FaTrash size={14} />} onClick={onDelete} />
             </Tooltip>
           </Row>
         )}
