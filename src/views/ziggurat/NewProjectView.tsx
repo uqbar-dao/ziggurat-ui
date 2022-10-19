@@ -1,12 +1,14 @@
-import React, { useCallback, useState } from 'react'
-import { FaArrowLeft } from 'react-icons/fa';
+import React, { useCallback, useEffect, useState } from 'react'
+import { FaArrowLeft, FaGithub } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
 import 'codemirror/addon/display/placeholder'
+import { Octokit } from 'octokit'
 import Button from '../../components/form/Button'
 import Col from '../../components/spacing/Col'
 import Row from '../../components/spacing/Row'
+import Text from '../../components/text/Text'
 import useZigguratStore from '../../stores/zigguratStore';
 import Input from '../../components/form/Input';
 import { generateInitialMetadata } from '../../utils/fungible';
@@ -18,17 +20,20 @@ import { addHexDots } from '../../utils/format';
 import { RawMetadata } from '../../types/ziggurat/Metadata';
 
 import './NewProjectView.scss'
+import Form from '../../components/form/Form';
 
-type CreationStep = 'title' | 'project' | 'gall' | 'token' | 'template' | 'metadata'
+type CreationStep = 'title' | 'project' | 'gall' | 'token' | 'template' | 'metadata' | 'import' | 'github' | 'zip'
 type ProjectOption = 'contract' | 'gall' | 'contract-gall'
 type TokenOption = 'fungible' | 'nft' | 'blank'
 type TemplateOption = 'issue' | 'wrapper'
+type ImportOption = 'github' | 'upload'
 export interface CreationOptions {
   title?: string
   project?: ProjectOption
   token?: TokenOption
   template?: TemplateOption
   gall?: string
+  import?: ImportOption
 }
 
 const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
@@ -40,6 +45,22 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
   // TODO: get default minter from the wallet and then figure out the default deployer
   const [metadata, setMetadata] = useState<RawMetadata>(generateInitialMetadata([userAddress], userAddress, 'fungible'))
   const [loading, setLoading] = useState(false)
+  const [repoUrl, setRepoUrl] = useState('')
+  const [repos, setRepos] = useState([])
+
+  const authWithGithub = async (token: string) => {
+    try {
+
+      const octokit = new Octokit({ auth: token })
+      const result:any = await octokit.request('GET /user/repos', { visibility: 'private', per_page: 100 })
+      console.log(result)
+      if (result && result.data && result.data.length > 0) {
+        setRepos(result.data)
+      }
+    } catch {
+      alert('Unable to fetch repositories from Github. Please check your API key is correct and has repo access to your account.')
+    }
+  }
 
   const submitNewProject = useCallback(async (options: CreationOptions, md?: RawMetadata) => {
     setLoading(true)
@@ -78,8 +99,8 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
         if (contracts[options.title!]) {
           window.alert('You already have a project with that name')
           break
-        } else if (options.title === 'app' || options.title === 'new') {
-          window.alert('You cannot name your project "app" or "new"')
+        } else if (['new', 'app', 'nft', 'fungible'].indexOf(options.title!)>-1) {
+          window.alert('You cannot name your project a reserved title.')
           break
         }
         setStep('project')
@@ -90,8 +111,10 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
 
         if (option === 'gall') {
           submitNewProject({ ...options, project: option as ProjectOption })
-        } else {
-          setStep(option === 'contract' ? 'token' : 'gall')
+        } else if (option === 'contract') {
+          setStep('token')
+        } else if (option === 'import') {
+          setStep('import')
         }
         break
       case 'gall':
@@ -105,6 +128,12 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
           setOptions({ ...options, token: option as TokenOption })
           setMetadata(generateInitialMetadata([userAddress], userAddress, option as TokenOption))
           setStep('metadata')
+        }
+        break
+      case 'import':
+        setOptions({ ...options, import: option as ImportOption })
+        if (option === 'github') {
+          setStep('github')
         }
         break
       // TODO: skipping this, we may not want it. Maybe replace with option to input interface(s)
@@ -137,6 +166,14 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
         setOptions({ ...options, project: undefined })
         setStep('project')
         break
+      case 'import':
+        setOptions({ ...options, project: undefined })
+        setStep('project')
+        break
+      case 'github':
+        setOptions({ ...options, import: undefined })
+        setStep('import')
+        break
       case 'token':
         setOptions({ ...options, gall: undefined })
         setStep(options.project === 'contract' ? 'project' : 'gall')
@@ -153,10 +190,10 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     }
   }, [step, setStep, options, setOptions, nav])
 
+
   const renderContent = () => {
     const buttonStyle = {
-      width: '48%',
-      minWidth: 240,
+      width: '31%',
       height: '60px',
       verticalAlign: 'middle',
       justifyContent: 'center',
@@ -190,14 +227,17 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
             <h3>Select Your Project Type:</h3>
           </Row>
           <Row style={{ flexWrap: 'wrap', width: '100%', justifyContent: 'space-between', marginTop: 12 }}>
-            <Button style={{ ...buttonStyle, width: '48%', minWidth: 240 }} onClick={onSelect('contract')}>
+            <Button style={{ ...buttonStyle }} onClick={onSelect('contract')}>
               Uqbar Contract
             </Button>
             {/* <Button style={{ ...buttonStyle, width: '48%', minWidth: 240 }} onClick={onSelect('contract-gall')}>
               Uqbar Contract + Gall App
             </Button> */}
-            <Button style={{ ...buttonStyle, width: '48%', minWidth: 240 }} onClick={onSelect('gall')}>
+            <Button style={{ ...buttonStyle }} onClick={onSelect('gall')}>
               Gall App
+            </Button>
+            <Button style={{ ...buttonStyle }} onClick={onSelect('import')}>
+              Import a Project
             </Button>
           </Row>
         </>
@@ -237,6 +277,78 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
           </Row>
         </>
       )
+    } else if (step === 'import') {
+      return (
+        <>
+          <Row style={{ width: '100%', position: 'relative', justifyContent: 'center' }}>
+            {backButton}
+            <h3>Select Import Type:</h3>
+          </Row>
+          <Row style={{ flexWrap: 'wrap', width: '100%', justifyContent: 'space-between', marginTop: 12 }}>
+            <Button style={{ ...buttonStyle, width: '48%', minWidth: 160 }} onClick={onSelect('github')}>
+              Import from Github
+            </Button>
+            <Button style={{ ...buttonStyle, width: '48%', minWidth: 160 }} onClick={onSelect('zip')}>
+              Upload .zip file
+            </Button>
+          </Row>
+        </>
+      )
+    } else if (step === 'github') {
+      return (
+        <>
+          <h3>Github URL:</h3>
+          <Row style={{ width: '100%', position: 'relative', justifyContent: 'center' }}>
+            {backButton}
+            <Form style={{ borderRadius: 4, alignItems: 'center' }}
+              onSubmit={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                // check github url
+
+              }}
+            >
+              <Input
+                containerStyle={{ marginTop: 8 }}
+                style={{ width: 300 }}
+                onChange={(e) => setRepoUrl(e.target.value)}
+                value={metadata.name}
+                label='Repository URL'
+                placeholder='https://github.com/username/repository'
+                autoFocus
+                required
+              />
+              <Button variant='dark' type="submit" style={{ margin: '16px 0px 8px', width: '100%', justifyContent: 'center' }}>
+                Import
+              </Button>
+            </Form>
+          </Row>
+          { !repos.length && <>
+            <h3>Or, to access a private repository:</h3>
+            <Form style={{ borderRadius: 4, alignItems: 'center' }}
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  authWithGithub((e.target as any).apitoken.value)
+                }}
+              >
+              <Input
+                name='apitoken'
+                containerStyle={{ marginTop: 8 }}
+                style={{ width: 300 }}
+                label='Github API key with `repo` access:'
+                placeholder='ghp_abc123XYZ...'
+                type='password'
+              />
+              <Button variant='dark' type="submit" style={{ margin: '16px 0px 8px', width: '100%', justifyContent: 'center' }}>
+                Fetch repositories
+              </Button>
+            </Form>
+          </> }
+          { repos.length > 0 && repos.map((r:any, i)=> <Text mono key={i}>{r.owner?.login}/{r.name}</Text>) }
+        </>
+      )
+    } else if (step === 'zip') {
     } else if (step === 'template') {
       return (
         <>

@@ -53,7 +53,7 @@ export const FileLink = ({ project, file, isGall = false }: FileLinkProps) => {
         {tar} {fileName}
       </Link>
       {showButtons && !isTests && file !== project && (
-        <Tooltip style={{ position: 'absolute', right: 0, top: 0 }} tip="delete">
+        <Tooltip style={{ position: 'absolute', top: 0 }} tip="delete" right={true}>
           <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={() => deleteFile(project, file)} />
         </Tooltip>
       )}

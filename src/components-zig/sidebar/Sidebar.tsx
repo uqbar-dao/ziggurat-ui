@@ -1,7 +1,7 @@
 import Link from '../nav/Link'
 import logo from '../../assets/img/logo192.png'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { FaRegPlusSquare, FaSave, FaFileAlt } from 'react-icons/fa';
+import { FaRegPlusSquare, FaSave, FaFileAlt, FaUpload, FaGithub } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import useZigguratStore from '../../stores/zigguratStore'
 import Button from '../../components/form/Button';
@@ -29,6 +29,7 @@ export const Sidebar = () => {
   const [showToolModal, setShowToolModal] = useState(false)
   const [toolToAdd, setToolToAdd] = useState('')
   const [showAddFileModal, setShowAddFileModal] = useState(false)
+  const [showImportModal, setShowImportModal] = useState(false)
   const [newFile, setNewFile] = useState('')
   const nav = useNavigate()
 
@@ -52,6 +53,9 @@ export const Sidebar = () => {
   const buttons = [
     [<FaRegPlusSquare />, () => nav('/new'), 'new project'],
     [<FaSave />, () => saveFiles(currentProject), 'save project'],
+    [<FaUpload />, () => {
+      setShowImportModal(true)
+    }, 'import project'],
     [<FaFileAlt size={15} />, () => {
       if (isGall && currentFolder) {
         setNewFile(`/${currentFolder}/`)
@@ -158,7 +162,11 @@ export const Sidebar = () => {
           label={isGall ? 'Please include the full file path' : undefined}
           autoFocus
         />
-        <Button style={{ margin: '16px auto 0', width: '100%' }} variant='dark' onClick={addNewFile}>Add</Button>
+        <Button fullWidth variant='dark' onClick={addNewFile}>Add</Button>
+      </Modal>
+      <Modal title='Import Project' show={showImportModal} hide={() => setShowImportModal(false)} style={{minWidth: 300}}>
+        <Button fullWidth onClick={() => {}}>Upload Folder</Button>
+        <Button fullWidth variant='dark' onClick={() => {}}><FaGithub /> Github Import</Button>
       </Modal>
     </Col>
   )
