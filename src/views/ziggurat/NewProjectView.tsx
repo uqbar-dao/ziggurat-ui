@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { FaArrowLeft, FaGithub } from 'react-icons/fa';
+import { FaArrowLeft, FaExclamationTriangle, FaGithub, FaInfoCircle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import {unzip} from 'unzipit';
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
 import 'codemirror/addon/display/placeholder'
@@ -21,6 +22,8 @@ import { RawMetadata } from '../../types/ziggurat/Metadata';
 
 import './NewProjectView.scss'
 import Form from '../../components/form/Form';
+import { Select } from '../../components/form/Select';
+import { stellarGetAddress } from '@trezor/connect/lib/types/api/stellarGetAddress';
 
 type CreationStep = 'title' | 'project' | 'gall' | 'token' | 'template' | 'metadata' | 'import' | 'github' | 'zip'
 type ProjectOption = 'contract' | 'gall' | 'contract-gall'
@@ -37,33 +40,99 @@ export interface CreationOptions {
 }
 
 const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
-  const { userAddress, contracts, createProject, populateTemplate, openFiles, setOpenFiles } = useZigguratStore()
+  const { userAddress, approveCorsDomain, contracts, createProject, populateTemplate, openFiles, setOpenFiles } = useZigguratStore()
   const nav = useNavigate()
 
   const [step, setStep] = useState<CreationStep>('title')
   const [options, setOptions] = useState<CreationOptions>({ title: '' })
   // TODO: get default minter from the wallet and then figure out the default deployer
   const [metadata, setMetadata] = useState<RawMetadata>(generateInitialMetadata([userAddress], userAddress, 'fungible'))
-  const [loading, setLoading] = useState(false)
+  const [loadingText, setLoadingText] = useState('')
   const [repoUrl, setRepoUrl] = useState('')
-  const [repos, setRepos] = useState([])
+  const [repos, setRepos] = useState<any[]>([])
+  const [githubToken, setGithubToken] = useState('')
+  const [repoContents, setRepoContents] = useState<any>()
+
+  const repotoken='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'
 
   const authWithGithub = async (token: string) => {
+    setLoadingText('Fetching private repositories...')
     try {
-
-      const octokit = new Octokit({ auth: token })
-      const result:any = await octokit.request('GET /user/repos', { visibility: 'private', per_page: 100 })
-      console.log(result)
+      const o = new Octokit({ auth: token })
+      let _repos: any[] = []
+      let result: any = await o.request('GET /user/repos', { per_page: 100 })
+      let page = 1
+      console.log ({ page, result })
       if (result && result.data && result.data.length > 0) {
-        setRepos(result.data)
+        _repos = [...result.data]
+        
+        while (true) {
+          page += 1
+
+          try {
+            result = await o.request('GET /user/repos', { page, per_page: 100 })
+          } catch {
+            break
+          }
+
+          console.log ({ page, result })
+          if (result && result.data && result.data.find((r: any) => !_repos.includes(r))) 
+            _repos = [..._repos, ...result.data]
+          else break
+        }
+
+        setRepos(_repos)
       }
-    } catch {
+    } catch (e) {
+      debugger
       alert('Unable to fetch repositories from Github. Please check your API key is correct and has repo access to your account.')
+    } finally {
+      setLoadingText('')
+    }
+  }
+
+  const getRepoContents = async (ownerRepo: string) => {
+    setLoadingText('Fetching repo contents...')
+    try {
+      const o = new Octokit({ auth: githubToken })
+      const result: any = await o?.request(`GET /repos/${ownerRepo}`)
+      console.log('repo contents:', result)
+      setRepoContents(result.data)
+    } catch {
+      setRepoContents(undefined)
+      alert('Unable to fetch repository data. Is the repo private? Please add an API key with `repo` access to get a private repository.')
+    } finally {
+      setLoadingText('')
+    }
+  }
+
+  const downloadGithubZipFromUrl = async (url: string) => {
+    setLoadingText('Downloading files...')
+    try {
+      const prefix = 'https://' // 'https://cors-anywhere2.herokuapp.com/'
+      const zipUrl = `github.com/${url}/archive/refs/heads/master.zip`
+      const output = await fetch(prefix+zipUrl, {
+        // headers: new Headers({
+        //   'Authorization': 'Bearer '+githubToken,
+        // })
+      })
+      debugger
+      const { entries } = await unzip(prefix+zipUrl as string)
+      const outries: any[] = []
+      await Promise.all(Object.values(entries).map(async (entry) => {
+        outries.push( await entry.arrayBuffer() )
+      })).then(() => {
+        console.log('UNZIP DONE', {outries})
+      })
+    } catch {
+      alert('Unable to download files.')
+    } finally {
+      setLoadingText('')
     }
   }
 
   const submitNewProject = useCallback(async (options: CreationOptions, md?: RawMetadata) => {
-    setLoading(true)
+    setLoadingText('Submitting project...')
 
     const metadata = !md ? undefined : {
       id: METADATA_GRAIN_ID,
@@ -89,7 +158,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       } else if (options?.project === 'gall') {
         nav(`/${options.title}/${encodeURIComponent(`/app/${options.title}/hoon`)}`)
       }
-      setLoading(false)
+      setLoadingText('')
     }, 500)
   }, [userAddress, nav, createProject, populateTemplate, openFiles, setOpenFiles])
 
@@ -226,7 +295,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
             {backButton}
             <h3>Select Your Project Type:</h3>
           </Row>
-          <Row style={{ flexWrap: 'wrap', width: '100%', justifyContent: 'space-between', marginTop: 12 }}>
+          <Row between style={{ flexWrap: 'wrap', width: '100%', marginTop: 12 }}>
             <Button style={{ ...buttonStyle }} onClick={onSelect('contract')}>
               Uqbar Contract
             </Button>
@@ -250,7 +319,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
             <h3>Select Your Gall Template:</h3>
             <h4>(Do we even need this step?)</h4>
           </Row>
-          <Row style={{ flexWrap: 'wrap', width: '100%', justifyContent: 'space-between', marginTop: 12 }}>
+          <Row between style={{ flexWrap: 'wrap', width: '100%', marginTop: 12 }}>
             <Button style={buttonStyle} onClick={onSelect('gall-app-template')}>
               Blank Template
             </Button>
@@ -264,7 +333,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
             {backButton}
             <h3>Select Contract Type:</h3>
           </Row>
-          <Row style={{ flexWrap: 'wrap', width: '100%', justifyContent: 'space-between', marginTop: 12 }}>
+          <Row between style={{ flexWrap: 'wrap', width: '100%', marginTop: 12 }}>
             <Button style={{ ...buttonStyle, width: '32%', minWidth: 160 }} onClick={onSelect('fungible')}>
               Fungible Token
             </Button>
@@ -284,52 +353,31 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
             {backButton}
             <h3>Select Import Type:</h3>
           </Row>
-          <Row style={{ flexWrap: 'wrap', width: '100%', justifyContent: 'space-between', marginTop: 12 }}>
+          <Row between style={{ flexWrap: 'wrap', width: '100%',  marginTop: 12 }}>
             <Button style={{ ...buttonStyle, width: '48%', minWidth: 160 }} onClick={onSelect('github')}>
-              Import from Github
+              <Row> <FaGithub fontSize='xx-large' className='mr1' /> Import from Github </Row>
             </Button>
-            <Button style={{ ...buttonStyle, width: '48%', minWidth: 160 }} onClick={onSelect('zip')}>
-              Upload .zip file
-            </Button>
+            <label style={{ width: '48%', minWidth: 160 }}>
+              <input hidden type='file' />
+              <Button style={{ pointerEvents: 'none', cursor: 'pointer', ...buttonStyle, width: '100%', minWidth: 160 }}>
+                Upload .zip file
+              </Button>
+            </label>
           </Row>
         </>
       )
     } else if (step === 'github') {
       return (
         <>
-          <h3>Github URL:</h3>
-          <Row style={{ width: '100%', position: 'relative', justifyContent: 'center' }}>
-            {backButton}
-            <Form style={{ borderRadius: 4, alignItems: 'center' }}
-              onSubmit={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                // check github url
-
-              }}
-            >
-              <Input
-                containerStyle={{ marginTop: 8 }}
-                style={{ width: 300 }}
-                onChange={(e) => setRepoUrl(e.target.value)}
-                value={metadata.name}
-                label='Repository URL'
-                placeholder='https://github.com/username/repository'
-                autoFocus
-                required
-              />
-              <Button variant='dark' type="submit" style={{ margin: '16px 0px 8px', width: '100%', justifyContent: 'center' }}>
-                Import
-              </Button>
-            </Form>
-          </Row>
-          { !repos.length && <>
-            <h3>Or, to access a private repository:</h3>
+          {!repos.length && <>
+            <h3>Github API key:</h3>
             <Form style={{ borderRadius: 4, alignItems: 'center' }}
                 onSubmit={(e) => {
                   e.preventDefault()
                   e.stopPropagation()
-                  authWithGithub((e.target as any).apitoken.value)
+                  const token = (e.target as any).apitoken.value
+                  setGithubToken(token)
+                  authWithGithub(token)
                 }}
               >
               <Input
@@ -339,13 +387,73 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
                 label='Github API key with `repo` access:'
                 placeholder='ghp_abc123XYZ...'
                 type='password'
+                onChange={() => {
+                  setRepoUrl('')
+                  setRepoContents('')
+                }}
               />
               <Button variant='dark' type="submit" style={{ margin: '16px 0px 8px', width: '100%', justifyContent: 'center' }}>
                 Fetch repositories
               </Button>
             </Form>
-          </> }
-          { repos.length > 0 && repos.map((r:any, i)=> <Text mono key={i}>{r.owner?.login}/{r.name}</Text>) }
+          </>}
+          <h3>Github username/repository:</h3>
+          <Row style={{ width: '100%', position: 'relative', justifyContent: 'center' }}>
+            {backButton}
+            <Form style={{ borderRadius: 4, alignItems: 'center' }}
+              onSubmit={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                alert(repoUrl)
+              }}
+            > <Row>
+                <Text>github.com/</Text>
+                <Input
+                  style={{ width: 300 }}
+                  onChange={(e) => {
+                    setRepoUrl(e.target.value)
+                    setRepoContents('')
+                  }}
+                  placeholder='username/repository'
+                  autoFocus />
+              </Row>
+            </Form>
+          </Row>
+          {repos.length > 0 && <>
+            <h3>Personal repositories ({repos.length}):</h3>
+            <Form style={{ borderRadius: 4, alignItems: 'center', padding: 16 }}>
+              <Select name='repo' required onChange={(e) => {
+                setRepoUrl(e.target.value)
+                setRepoContents('')
+              }}>
+                <option>Select a repository...</option>
+                {repos.map((r:any, i)=> (
+                  <option key={i} value={`${r.owner.login}/${r.name}`}>
+                    {r.owner.login}/{r.name}
+                  </option>
+                ))}
+              </Select>
+            </Form>
+          </>}
+          {Boolean(repoUrl) && <Row>
+            {!repoContents && <Button fullWidth className='mt1' type='button' 
+                onClick={() => getRepoContents(repoUrl)}
+              >
+                Fetch repo data
+            </Button>}
+            {repoContents && 
+              <Button fullWidth variant='dark' className='mt1' type='button'
+                onClick={() => {
+                  downloadGithubZipFromUrl(repoUrl)
+                }}>
+                Import ({repoContents.size > 1000 ? 
+                  repoContents.size > 1000000 ? 
+                    repoContents.size/1000000 + ' GB' 
+                    : repoContents.size/1000 + ' MB' 
+                  : repoContents.size + ' KB'
+                })
+            </Button>}
+          </Row>}
         </>
       )
     } else if (step === 'zip') {
@@ -356,7 +464,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
             {backButton}
             <h3>Select Template Type:</h3>
           </Row>
-          <Row style={{ flexWrap: 'wrap', width: '100%', justifyContent: 'space-between', marginTop: 12 }}>
+          <Row between style={{ flexWrap: 'wrap', width: '100%', marginTop: 12 }}>
             <Button style={buttonStyle} onClick={onSelect('issue')}>
               Issue New Token
             </Button>
@@ -382,7 +490,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
   return (
     <Col style={{ position: 'absolute', visibility: hide ? 'hidden' : 'visible', width: '100%', maxWidth: 600, height: '100%', justifyContent: 'center', alignItems: 'center', alignSelf: 'center', justifySelf: 'center' }}>
       {renderContent()}
-      <LoadingOverlay loading={loading} />
+      <LoadingOverlay loading={Boolean(loadingText)} text={loadingText} />
     </Col>
   )
 }

@@ -21,7 +21,7 @@ export const GrainDisplaySmall = ({ grain, field, test }: { grain: string, field
   }, [test])
 
   return (
-    <Row style={{ justifyContent: 'space-between', margin: 4, padding: '2px 6px', background: 'white', borderRadius: 4 }}>
+    <Row between style={{ margin: 4, padding: '2px 6px', background: 'white', borderRadius: 4 }}>
       <Text mono style={{ marginRight: 8 }}>ID: {grain.length > 11 ? truncateString(grain) : grain}</Text>
       <Button
         onClick={removeGrain}

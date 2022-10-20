@@ -31,7 +31,7 @@ const AccountBalance: React.FC<AccountBalanceProps> = ({
 
   return (
     <div {...props} className={`account-balance ${props.className || ''}`} style={{ ...props.style, marginBottom: balances.length ? 8 : 16 }}>
-      <Row style={{ justifyContent: 'space-between' }}>
+      <Row between style={{  }}>
         <Col>
           <Row style={{ alignItems: 'center' }}>
             <h4 style={{ fontFamily: 'monospace, monospace', margin: 0, cursor: 'pointer' }} onClick={() => nav(`/accounts/${pubKey}`)}>

@@ -191,7 +191,7 @@ const SendTransactionForm = ({
           <Row style={{ marginTop: 16, fontWeight: 'bold' }}>Hash: <CopyIcon text={pendingHash}/></Row>
           <Row style={{ wordBreak: 'break-all' }}>{pendingHash}</Row>
         </Col>
-        <Row style={{ justifyContent: 'space-between', marginTop: 12 }}>
+        <Row between style={{ marginTop: 12 }}>
           <Input
             label='Gas Price:'
             placeholder='Gas price'

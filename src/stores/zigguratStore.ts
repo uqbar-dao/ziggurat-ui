@@ -50,6 +50,7 @@ export interface ZigguratStore {
   deleteFile: (project: string, file: string) => Promise<void>
   setOpenFiles: (openFiles: OpenFile[]) => void
   toggleTest: (project: string, testId: string) => void
+  approveCorsDomain: (domain: string) => Promise<void>
 
   addGrain: (rice: TestGrainInput) => Promise<void>
   deleteGrain: (riceId: string, testId?: string) => Promise<void>
@@ -310,6 +311,9 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       }
     },
     setOpenFiles: (openFiles: OpenFile[]) => set({ openFiles }),
+    approveCorsDomain: async (domain: string) => {
+      await api.poke({ app: 'ziggurat', mark: 'ziggurat-app-action', json: { project: '', action: { 'approve-cors-domain': { domain } } } })
+    },
     addGrain: async (rice: TestGrainInput) => {
       const project = get().currentProject
       const ryce: any = { ...rice }
