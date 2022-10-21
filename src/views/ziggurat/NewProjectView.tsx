@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { FaArrowLeft, FaExclamationTriangle, FaGithub, FaInfoCircle } from 'react-icons/fa';
+import { FaArrowLeft, FaExclamationTriangle, FaGithub, FaInfoCircle, FaRuler } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import {unzip} from 'unzipit';
 import 'codemirror/lib/codemirror.css'
@@ -24,6 +24,7 @@ import './NewProjectView.scss'
 import Form from '../../components/form/Form';
 import { Select } from '../../components/form/Select';
 import { stellarGetAddress } from '@trezor/connect/lib/types/api/stellarGetAddress';
+import Divider from '../../components/spacing/Divider';
 
 type CreationStep = 'title' | 'project' | 'gall' | 'token' | 'template' | 'metadata' | 'import' | 'github' | 'zip'
 type ProjectOption = 'contract' | 'gall' | 'contract-gall'
@@ -39,8 +40,34 @@ export interface CreationOptions {
   import?: ImportOption
 }
 
+export interface RepoInfo {
+  owner: {
+    login: string
+  }
+  name: string
+}
+
+export interface RepoContents {
+  size: number
+}
+
+export interface TreeFile { 
+  mode: string
+  path: string
+  sha: string
+  size: number
+  type: string
+  url: string
+}
+
+export interface DownloadedFile {
+  type: string
+  path: string
+  content: string
+}
+
 const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
-  const { userAddress, approveCorsDomain, contracts, createProject, populateTemplate, openFiles, setOpenFiles } = useZigguratStore()
+  const { userAddress, approveCorsDomain, contracts, createProject, populateTemplate, openFiles, setOpenFiles, addFile } = useZigguratStore()
   const nav = useNavigate()
 
   const [step, setStep] = useState<CreationStep>('title')
@@ -49,14 +76,14 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
   const [metadata, setMetadata] = useState<RawMetadata>(generateInitialMetadata([userAddress], userAddress, 'fungible'))
   const [loadingText, setLoadingText] = useState('')
   const [repoUrl, setRepoUrl] = useState('')
-  const [repos, setRepos] = useState<any[]>([])
+  const [repos, setRepos] = useState<RepoInfo[]>([])
   const [githubToken, setGithubToken] = useState('')
-  const [repoContents, setRepoContents] = useState<any>()
+  const [repoContents, setRepoContents] = useState<RepoContents>()
 
-  const repotoken='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'
-
+  // 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
+  
   const authWithGithub = async (token: string) => {
-    setLoadingText('Fetching private repositories...')
+    setLoadingText('Fetching repositories...')
     try {
       const o = new Octokit({ auth: token })
       let _repos: any[] = []
@@ -66,6 +93,9 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       if (result && result.data && result.data.length > 0) {
         _repos = [...result.data]
         
+        setLoadingText(`Fetching repositories (${_repos.length} so far)...`)
+
+        // if more than 100 repos, we need to make more requests until last page
         while (true) {
           page += 1
 
@@ -79,12 +109,13 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
           if (result && result.data && result.data.find((r: any) => !_repos.includes(r))) 
             _repos = [..._repos, ...result.data]
           else break
+
+          setLoadingText(`Fetching repositories (${_repos.length} so far)...`)
         }
 
         setRepos(_repos)
       }
     } catch (e) {
-      debugger
       alert('Unable to fetch repositories from Github. Please check your API key is correct and has repo access to your account.')
     } finally {
       setLoadingText('')
@@ -106,32 +137,68 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     }
   }
 
-  const downloadGithubZipFromUrl = async (url: string) => {
-    setLoadingText('Downloading files...')
+  const downloadFiles = async () => {
+    const proj = await submitNewProject({ ...options, project: 'gall' }, undefined, false)
+    
+    setLoadingText('Gathering file data...')
+    let result: any = ''
+    const o = new Octokit({ auth: githubToken })
     try {
-      const prefix = 'https://' // 'https://cors-anywhere2.herokuapp.com/'
-      const zipUrl = `github.com/${url}/archive/refs/heads/master.zip`
-      const output = await fetch(prefix+zipUrl, {
-        // headers: new Headers({
-        //   'Authorization': 'Bearer '+githubToken,
-        // })
+      result = await o.request(`GET /repos/${repoUrl}/git/trees/master`, {
+        recursive: true
       })
-      debugger
-      const { entries } = await unzip(prefix+zipUrl as string)
-      const outries: any[] = []
-      await Promise.all(Object.values(entries).map(async (entry) => {
-        outries.push( await entry.arrayBuffer() )
-      })).then(() => {
-        console.log('UNZIP DONE', {outries})
-      })
+      console.log(1, { result })
+
+      if (!result || !result.data || !result.data.tree) {
+        throw 'Bad result: ' + JSON.stringify(result)
+      }
     } catch {
-      alert('Unable to download files.')
-    } finally {
+      alert('Unable to gather file data.')
       setLoadingText('')
+      return
     }
+
+    let _downloadedFiles: DownloadedFile[] = []
+    try {
+      setLoadingText(`Downloading files...`)
+    
+      await Promise.allSettled(result.data.tree
+        .filter((branch: TreeFile) => branch.type == 'blob')
+        .map(async (file: TreeFile, i: number) => {
+          const { data: { content, path } } = await o.request(`GET /repos/${repoUrl}/contents/${file.path}`)
+          const text = Buffer.from(content, 'base64').toString()
+          
+          console.log(2, { title: options.title!, path, text })
+          
+          await addFile(options.title!, path, true, text)
+      }))
+
+      console.log(3, { _downloadedFiles })
+    } catch {
+      alert(`Unable to download files. Halted at ${_downloadedFiles.length}/${result.data.tree.length}`)
+      setLoadingText('')
+      return
+    }
+
+    let _savedFiles: any[] = []
+    try {
+      setLoadingText(`Saving files...`)
+      
+      await Promise.allSettled(_downloadedFiles.map(async (file, i) => {
+        console.log ({ file })
+        const addedFile = await addFile(options.title!, file.path, true, file.content)
+      }))
+    } catch {
+      alert(`Unable to save files. Halted at ${_savedFiles.length}/${_downloadedFiles.length}`)
+      setLoadingText('')
+      return
+    }
+
+    setLoadingText('')
+    nav(`/${options.title!}/${options.title!}`)
   }
 
-  const submitNewProject = useCallback(async (options: CreationOptions, md?: RawMetadata) => {
+  const submitNewProject = useCallback(async (options: CreationOptions, md?: RawMetadata, navOnFinish?: boolean) => {
     setLoadingText('Submitting project...')
 
     const metadata = !md ? undefined : {
@@ -154,9 +221,9 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     setTimeout(() => {
       if (options?.project === 'contract') {
         setOpenFiles(openFiles.concat([{ project: options.title!, file: options.title! }]))
-        nav(`/${options.title}/${options.title}`)
+        if (navOnFinish) nav(`/${options.title}/${options.title}`)
       } else if (options?.project === 'gall') {
-        nav(`/${options.title}/${encodeURIComponent(`/app/${options.title}/hoon`)}`)
+        if (navOnFinish) nav(`/${options.title}/${encodeURIComponent(`/app/${options.title}/hoon`)}`)
       }
       setLoadingText('')
     }, 500)
@@ -389,15 +456,16 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
                 type='password'
                 onChange={() => {
                   setRepoUrl('')
-                  setRepoContents('')
+                  setRepoContents(undefined)
                 }}
               />
               <Button variant='dark' type="submit" style={{ margin: '16px 0px 8px', width: '100%', justifyContent: 'center' }}>
-                Fetch repositories
+                Fetch personal repos
               </Button>
             </Form>
+            <Divider className='mt1'/>
           </>}
-          <h3>Github username/repository:</h3>
+          <h3>Github username/repo:</h3>
           <Row style={{ width: '100%', position: 'relative', justifyContent: 'center' }}>
             {backButton}
             <Form style={{ borderRadius: 4, alignItems: 'center' }}
@@ -412,48 +480,53 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
                   style={{ width: 300 }}
                   onChange={(e) => {
                     setRepoUrl(e.target.value)
-                    setRepoContents('')
+                    setRepoContents(undefined)
                   }}
-                  placeholder='username/repository'
+                  placeholder='username/repo'
                   autoFocus />
               </Row>
             </Form>
           </Row>
+          {repos.length > 0 && <Divider className='mt1' />}
           {repos.length > 0 && <>
-            <h3>Personal repositories ({repos.length}):</h3>
+            <h3>Personal repos ({repos.length}):</h3>
             <Form style={{ borderRadius: 4, alignItems: 'center', padding: 16 }}>
               <Select name='repo' required onChange={(e) => {
                 setRepoUrl(e.target.value)
-                setRepoContents('')
+                setRepoContents(undefined)
               }}>
-                <option>Select a repository...</option>
+                <option>Select a repo...</option>
                 {repos.map((r:any, i)=> (
                   <option key={i} value={`${r.owner.login}/${r.name}`}>
                     {r.owner.login}/{r.name}
                   </option>
                 ))}
               </Select>
+              <Row>
+                <Button wide className='mt1 mr1' type='button' 
+                  disabled={!Boolean(repoUrl)}
+                  onClick={() => getRepoContents(repoUrl)}
+                >
+                    Fetch repo data
+                </Button>
+      {/* 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 */}
+                <Button wide variant='dark' className='mt1' type='button'
+                  disabled={!Boolean(repoContents)}
+                  onClick={() => {
+                    downloadFiles()
+                  }}>
+                  Import {repoContents ? 
+                    repoContents.size > 1000 ? 
+                      repoContents.size > 1000000 ? 
+                        `(${repoContents.size/1000000} GB)`
+                        : `(${repoContents.size/1000} MB)`
+                      : `(${repoContents.size} KB)`
+                    : ''
+                  }
+                </Button>
+              </Row>
             </Form>
           </>}
-          {Boolean(repoUrl) && <Row>
-            {!repoContents && <Button fullWidth className='mt1' type='button' 
-                onClick={() => getRepoContents(repoUrl)}
-              >
-                Fetch repo data
-            </Button>}
-            {repoContents && 
-              <Button fullWidth variant='dark' className='mt1' type='button'
-                onClick={() => {
-                  downloadGithubZipFromUrl(repoUrl)
-                }}>
-                Import ({repoContents.size > 1000 ? 
-                  repoContents.size > 1000000 ? 
-                    repoContents.size/1000000 + ' GB' 
-                    : repoContents.size/1000 + ' MB' 
-                  : repoContents.size + ' KB'
-                })
-            </Button>}
-          </Row>}
         </>
       )
     } else if (step === 'zip') {
