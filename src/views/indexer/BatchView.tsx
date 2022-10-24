@@ -77,15 +77,15 @@ const BatchView = () => {
           </Field>
         </Entry>
         <Entry>
-          <Field name={`Granary: (${Object.keys(batch.batch.town.land.granary).length})`}>
+          <Field name={`Granary: (${Object.keys(batch.batch.town.chain.state).length})`}>
             <Col>
               <Row className='purple pointer' onClick={() => setExpandGranary(!expandGranary)}>
                 {expandGranary ? <FaCaretDown /> : <FaCaretRight />}
                 <Text>{expandGranary ? 'Collapse' : 'Expand'}</Text>
               </Row>
-              {expandGranary && 
+              {expandGranary &&
                 <Col className='expanded-details'>
-                  {Object.keys(batch.batch.town.land.granary).map(grainId => (
+                  {Object.keys(batch.batch.town.chain.state).map(grainId => (
                     <Col className="transaction">
                       <Link href={`/grain/${addHexDots(grainId || '')}`} key={grainId}>
                         <HexNum num={grainId} />
@@ -98,15 +98,15 @@ const BatchView = () => {
           </Field>
         </Entry>
         <Entry>
-          <Field name={`Populace: (${Object.keys(batch.batch.town.land.populace).length})`}>
+          <Field name={`Populace: (${Object.keys(batch.batch.town.chain.nonces).length})`}>
             <Col>
               <Row className='purple pointer' onClick={() => setExpandPopulace(!expandPopulace)}>
                 {expandPopulace ? <FaCaretDown /> : <FaCaretRight />}
                 <Text>{expandPopulace ? 'Collapse' : 'Expand'}</Text>
               </Row>
-              {expandPopulace && 
+              {expandPopulace &&
                 <Col className='expanded-details'>
-                  {Object.keys(batch.batch.town.land.populace).map(userAddress => (
+                  {Object.keys(batch.batch.town.chain.nonces).map(userAddress => (
                     <Col className="transaction">
                       <Link href={`/address/${addHexDots(userAddress || '')}`} className="transaction" key={userAddress}>
                         <HexNum num={userAddress} />
@@ -125,7 +125,7 @@ const BatchView = () => {
                 {expandTransactions ? <FaCaretDown /> : <FaCaretRight />}
                 <Text>{expandTransactions ? 'Collapse' : 'Expand'}</Text>
               </Row>
-              {expandTransactions && 
+              {expandTransactions &&
                 <Col className='expanded-details'>
                   {batch.batch.transactions.map((tx, i) => (
                     <Col className="transaction">
