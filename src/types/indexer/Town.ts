@@ -19,8 +19,8 @@ export interface Town {
     roots: string
     "town-id": "0x0"
   },
-  land: {
-    granary: Granary
-    populace: Populace
+  chain: {
+    state: Granary
+    nonces: Populace
   }
 }
