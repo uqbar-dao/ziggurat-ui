@@ -16,7 +16,7 @@ TrezorConnect.init({
 
 export const getTrezorAddress = async (path?: string) => {
   try {
-    // todo: make this secure via the method herein https://github.com/trezor/trezor-suite/blob/develop/docs/packages/connect/methods/requestLogin.md 
+    // todo: make this secure via the method herein https://github.com/trezor/trezor-suite/blob/develop/docs/packages/connect/methods/requestLogin.md
     const login = await TrezorConnect.requestLogin({
         challengeHidden: '2718281828459045',
         challengeVisual: 'Login to Uqbar Wallet',
@@ -26,7 +26,7 @@ export const getTrezorAddress = async (path?: string) => {
         alert('Could not login to Trezor.')
         return ''
     }
-    
+
     const result = await TrezorConnect.ethereumGetAddress({
         path: path || "m/44'/60'/0'/0/0"
     })
@@ -51,7 +51,7 @@ export const deriveTrezorAddress = async (path: string) => {
   return await getTrezorAddress(path)
 }
 
-export const signTrezorTransaction = async (address: string, hash: string, egg: any) => {
+export const signTrezorTransaction = async (address: string, hash: string, txn: any) => {
   try {
 //     const transport = await TransportWebUSB.create()
 //     listen(log => console.log(log))
@@ -61,9 +61,9 @@ export const signTrezorTransaction = async (address: string, hash: string, egg: 
 //     // const signature = await wallet.signMessage(hash)
 //     // const { r: r1, s: s1, v: v1 } = ethers.utils.splitSignature(signature)
 
-//     // TODO: fill these out from the egg
-//     console.log('EGG:', egg)
-//     const to = (Object.values(egg.args)[0] as any)?.to
+//     // TODO: fill these out from the txn
+//     console.log('EGG:', txn)
+//     const to = (Object.values(txn.args)[0] as any)?.to
 
 
 //   //Serializing the transaction to pass it to Trezor Nano for signing
@@ -71,10 +71,10 @@ export const signTrezorTransaction = async (address: string, hash: string, egg: 
 //     // Need a working version of this
 //     const ethHash = ethers.utils.serializeTransaction({
 //       to: removeDots(to).substring(0, 42),
-//       gasPrice: '0x' + parseInt(egg.rate).toString(16),
-//       gasLimit: ethers.utils.hexlify(egg.bud),
-//       nonce: egg.nonce,
-//       chainId: egg.town,
+//       gasPrice: '0x' + parseInt(txn.rate).toString(16),
+//       gasLimit: ethers.utils.hexlify(txn.bud),
+//       nonce: txn.nonce,
+//       chainId: txn.town,
 //       data: removeDots(hash),
 //       // value: ethers.utils.parseUnits(1, "ether")._hex
 //     })

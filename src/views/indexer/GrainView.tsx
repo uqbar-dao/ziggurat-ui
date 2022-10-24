@@ -41,15 +41,15 @@ const GrainView = () => {
   useEffect(() => {
     const getData = async () => {
       try {
-        const [rawData, grainEggs, grainInfo] = await Promise.all([
+        const [rawData, grainTxns, grainInfo] = await Promise.all([
           scry<HashData>(`/hash/${grainId}`),
-          scry<any>(`/grain-eggs/${grainId}`),
+          scry<any>(`/grain-txns/${grainId}`),
           scry<{ grain: { [key: string]: { grain: Grain; location: Location, timestamp: number }[] } }>(`/grain/${grainId}`)
         ])
 
         // console.log('SCRY: ', rawData, grainInfo)
-        console.log(grainEggs)
-        
+        console.log(grainTxns)
+
         try {
           const grainIsRice = Boolean(
             Object.values(grainInfo?.grain || {})[0][0]?.grain?.['is-rice']
@@ -60,7 +60,7 @@ const GrainView = () => {
 
         if (rawData) {
           const { hash }: HashData = rawData
-          const txns = Object.keys(hash.eggs).map(txnHash => ({ ...hash.eggs[txnHash], hash: txnHash }))
+          const txns = Object.keys(hash.txns).map(txnHash => ({ ...hash.txns[txnHash], hash: txnHash }))
           setTransactions(txns)
         }
 
@@ -86,7 +86,7 @@ const GrainView = () => {
       </PageHeader>
       <Entry>
         <Card>
-          {/* <CardHeader style={{ padding: '0 1em 0 0' }}> 
+          {/* <CardHeader style={{ padding: '0 1em 0 0' }}>
             <Row fullWidth between>
               <Row>
                 <Text onClick={() => setDisplay('details')} className={`selector ${display === 'details' && 'selected'}`}>

@@ -49,15 +49,15 @@ const AddressView = () => {
         ])
 
         console.log('SCRY: ', rawData, grainInfo)
-        
+
         const newGrains = Object.keys(rawData?.hash?.grains || {}).reduce((acc, cur) =>
           acc.concat([{ ...rawData?.hash?.grains[cur][0].grain, id: cur } as any]), [] as Grain[])
-        
+
         setGrains(newGrains)
 
         if (rawData) {
           const { hash }: HashData = rawData
-          const txns = Object.keys(hash.eggs).map(txnHash => ({ ...hash.eggs[txnHash], hash: txnHash }))
+          const txns = Object.keys(hash.txns).map(txnHash => ({ ...hash.txns[txnHash], hash: txnHash }))
           setTransactions(txns)
         }
 
@@ -107,7 +107,7 @@ const AddressView = () => {
       </PageHeader>
       <Entry>
         <Card>
-          <CardHeader style={{ padding: '0 1em 0 0' }}> 
+          <CardHeader style={{ padding: '0 1em 0 0' }}>
             <Row fullWidth between>
               <Row>
                 <Text onClick={() => setDisplay('txns')} className={`selector ${display === 'txns' && 'selected'}`}>

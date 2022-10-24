@@ -19,7 +19,7 @@ export interface SendTokenPayload extends SendAssetPayload {
 
 export interface SendNftPayload extends SendAssetPayload {}
 
-export interface Egg {
+export interface Txn {
   to: string
   rate: number
   budget: number

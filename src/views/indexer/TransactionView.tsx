@@ -31,11 +31,11 @@ const TransactionView = () => {
   useEffect(() => {
     const getData = async () => {
       // 0x523515b872fce8297919a3e40bfd48dec4d27d9700dd44dd81efc254ef8aa3e6
-      
-      const result = await scry<{ egg: { [key: string]: Transaction } }>(`/json/egg/${txnHash}`)
+
+      const result = await scry<{ txn: { [key: string]: Transaction } }>(`/json/txn/${txnHash}`)
 
       if (result) {
-        setTransaction(Object.values(result.egg)[0])
+        setTransaction(Object.values(result.txn)[0])
       }
       setLoading(false)
     }
@@ -52,7 +52,7 @@ const TransactionView = () => {
       <Text>No transaction data</Text>
   }
 
-  const { location: loc, egg: { shell, yolk } } = transaction
+  const { location: loc, txn: { shell, calldata } } = transaction
   console.log('LOCATION:', loc)
 
   return (
@@ -71,10 +71,10 @@ const TransactionView = () => {
           </Entry>
           <Entry>
             <Field name='From:'>
-              <Link href={`/address/${addHexDots(shell.from.id)}`} className='address'>
-                <HexNum mono num={addHexDots(shell.from.id)} />
+              <Link href={`/address/${addHexDots(shell.caller.id)}`} className='address'>
+                <HexNum mono num={addHexDots(shell.caller.id)} />
               </Link>
-              <CopyIcon iconOnly={true} text={addHexDots(shell.from.id)} />
+              <CopyIcon iconOnly={true} text={addHexDots(shell.caller.id)} />
             </Field>
             <Field name='To:'>
               <Link href={`/address/${addHexDots(shell.contract)}`} className='address'>
@@ -95,15 +95,15 @@ const TransactionView = () => {
           </Entry>
           <Entry>
             <Field name='Caller:'>
-              <Link href={`/address/${addHexDots(shell.from.id)}`} className='address'>
-                <HexNum mono num={addHexDots(shell.from.id)} />
+              <Link href={`/address/${addHexDots(shell.caller.id)}`} className='address'>
+                <HexNum mono num={addHexDots(shell.caller.id)} />
               </Link>
-              <CopyIcon iconOnly={true} text={addHexDots(shell.from.id)} />
+              <CopyIcon iconOnly={true} text={addHexDots(shell.caller.id)} />
             </Field>
           </Entry>
           <Entry>
             <Field name='Action:'>
-              <Text mono breakAll>{JSON.stringify(yolk)}</Text>
+              <Text mono breakAll>{JSON.stringify(calldata)}</Text>
             </Field>
           </Entry>
         </Card>

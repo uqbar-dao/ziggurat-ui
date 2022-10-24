@@ -1,13 +1,13 @@
-import { Egg } from "./Egg"
+import { Txn } from "./Txn"
 import { Location } from "./Location"
 
 export interface HashTransaction {
-  egg: Egg,
+  txn: Txn,
   hash: string
 }
 
 export interface Transaction {
-  egg: Egg
+  txn: Txn
   location: Location
   hash: string
   timestamp: number
