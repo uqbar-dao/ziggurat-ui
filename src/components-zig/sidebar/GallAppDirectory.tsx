@@ -38,7 +38,7 @@ const SubDirectory = ({ projectTitle, folder, indent }: SubDirectoryProps) => {
 
   return (
     <Col style={{ padding: '0px 4px', fontSize: 14 }} onClick={() => setCurrentFolder(name)}>
-      <Row style={{ padding: 2, cursor: 'pointer', justifyContent: 'space-between' }} onClick={(e) => {
+      <Row between style={{ padding: 2, cursor: 'pointer',  }} onClick={(e) => {
         if (!(expanded && !selected))
           toggleGallFolder(projectTitle, name)
       }}>
@@ -100,7 +100,7 @@ export const GallAppDirectory = ({ project }: GallAppDirectoryProps) => {
 
   return (
     <Col style={{ padding: '0px 4px', fontSize: 14 }} onMouseEnter={() => setShowButtons(true)} onMouseLeave={() => setShowButtons(false)} onClick={() => setCurrentProject(title)}>
-      <Row style={{ padding: 2, marginBottom: 2, cursor: 'pointer', justifyContent: 'space-between' }} onClick={() => setProjectExpanded(title, !expanded)}>
+      <Row between style={{ padding: 2, marginBottom: 2, cursor: 'pointer',  }} onClick={() => setProjectExpanded(title, !expanded)}>
         <Row>
           <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={expanded ? <FaChevronDown size={12} /> : <FaChevronRight size={12} />} />
           <Text style={{ marginLeft: 4, marginBottom: 2, }}>{title}</Text>

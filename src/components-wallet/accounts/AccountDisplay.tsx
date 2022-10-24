@@ -51,7 +51,7 @@ const AccountDisplay: React.FC<AccountDisplayProps> = ({
 
   return (
     <Col {...props} className={`account-display ${props.className || ''}`}>
-      <Row style={{ justifyContent: 'space-between' }}>
+      <Row between style={{  }}>
         <Row>
           {hardware && hardware.type && <Text style={{marginRight: '1em'}}>{hardware.type}</Text>}
           <Input

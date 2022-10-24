@@ -17,7 +17,7 @@ const IndexerNavbar = () => {
 
   return (
     <Row className='navbar'>
-      <Row style={{ width: '100%', justifyContent: 'space-between' }}>
+      <Row between style={{ width: '100%',  }}>
         <Row className='logo-text'>
           <Link external title='Home' href='/apps/ziggurat' className='nav-link logo'>
             <Row>

@@ -44,7 +44,7 @@ export const ContractDirectory = ({ project }: ContractDirectoryProps) => {
 
   return (
     <Col style={{ padding: '0px 4px', fontSize: 14 }} onMouseEnter={() => setShowButtons(true)} onMouseLeave={() => setShowButtons(false)}>
-      <Row style={{ padding: 2, marginBottom: 2, cursor: 'pointer', justifyContent: 'space-between' }} onClick={() => setProjectExpanded(title, !expanded)}>
+      <Row between style={{ padding: 2, marginBottom: 2, cursor: 'pointer',  }} onClick={() => setProjectExpanded(title, !expanded)}>
         <Row>
           <Button style={BUTTON_STYLE} variant='unstyled' iconOnly icon={expanded ? <FaChevronDown size={12} /> : <FaChevronRight size={12} />} />
           <Text style={{ marginLeft: 4, marginBottom: 2, }}>{title}</Text>

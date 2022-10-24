@@ -64,4 +64,12 @@ button.button {
     margin-top: 2px; 
     align-self: flex-start;
   }
+
+  &[disabled]{
+    background-color: colors.$light-gray;
+    outline: 1px dashed black;
+    color:black;
+    pointer-events: none;
+    border: 1px solid transparent;
+  }
 }

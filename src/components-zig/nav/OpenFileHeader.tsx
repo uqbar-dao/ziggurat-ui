@@ -49,7 +49,6 @@ export const OpenFileHeader = () => {
           <Link key={project + file} className={`tab ${pathname.includes(href) ? 'selected' : ''}`} href={href} onClick={() => setCurrentProject(project)}>
             <Row between style={{ width: '100%' }}> 
               <Text className='tabName'>
-                {isGall && <FaGoodreadsG fontSize={12} className='mr1' />}
                 {tar}
                 {fileName}{prependProject ? ` - ${project}` : ''}
               </Text>
