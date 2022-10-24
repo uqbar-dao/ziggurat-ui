@@ -5,7 +5,7 @@ export const METADATA_GRAIN_ID = '0xdada.dada'
 export const DUMMY_METADATA = {
   id: METADATA_GRAIN_ID,
   holder: MY_CONTRACT_ID,
-  lord: MY_CONTRACT_ID,
+  source: MY_CONTRACT_ID,
   town_id: '0x0',
   label: 'token-metadata',
   salt: '3859435834985',
@@ -39,7 +39,7 @@ export const STATUS_CODES : { [key: number] : string } = {
   206: 'crash in contract execution',
   207: 'validation of changed/issued/burned rice failed',
   208: 'ran out of gas',
-  209: 'superceded by another egg in batch',
+  209: 'superceded by another txn in batch',
 }
 
 export const STATUS_CODES_RAW : { [key: number] : string } = {
@@ -52,7 +52,7 @@ export const STATUS_CODES_RAW : { [key: number] : string } = {
   6: 'crash in contract execution',
   7: 'validation of changed/issued/burned rice failed',
   8: 'ran out of gas',
-  9: 'superceded by another egg in batch',
+  9: 'superceded by another txn in batch',
 }
 
 export const UNSIGNED_STATUS = 100

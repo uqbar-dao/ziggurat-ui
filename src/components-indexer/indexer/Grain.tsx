@@ -24,7 +24,7 @@ export const GrainEntry = ({
   const tokenMetadata = grain.salt ? metadata[grain.salt] : null
 
   return (
-    grain.id !== grain.lord ? (
+    grain.id !== grain.source ? (
       <Entry divide className='indexer-grain' key={grain.id}>
         <Field className='id' name='ID:'>
           <Row>
@@ -37,14 +37,14 @@ export const GrainEntry = ({
         {isWalletAddress ? (
           <Field name='Lord:'>
             <Row>
-              <Link href={`/grain/${addHexDots(grain.lord)}`}>
-                <HexNum mono style={{ margin: 2 }} num={addHexDots(grain.lord)} />
+              <Link href={`/grain/${addHexDots(grain.source)}`}>
+                <HexNum mono style={{ margin: 2 }} num={addHexDots(grain.source)} />
               </Link>
-              <CopyIcon text={addHexDots(grain.lord)}></CopyIcon>
+              <CopyIcon text={addHexDots(grain.source)}></CopyIcon>
             </Row>
           </Field>
         ) : (
-          grain.holder !== grain.lord && (
+          grain.holder !== grain.source && (
             <Field name='Holder:'>
               <Row>
                 <Link href={`/address/${addHexDots(grain.holder)}`}>

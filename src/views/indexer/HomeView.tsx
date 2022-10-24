@@ -90,7 +90,7 @@ const HomeView = () => {
       <Col className='info'>
         {/* <Card className='highlights'>
           <Row>
-            
+
           </Row>
         </Card> */}
         <Row className='latest'>
@@ -129,15 +129,15 @@ const HomeView = () => {
                     </Link>
                   </Field>
                   <Field name='From:'>
-                    <Link href={`/address/${addHexDots(tx.egg.shell.from.id)}`}>
-                      <Text mono >{abbreviateHex(tx.egg.shell.from.id, 6, 4)}</Text>
+                    <Link href={`/address/${addHexDots(tx.txn.shell.caller.id)}`}>
+                      <Text mono >{abbreviateHex(tx.txn.shell.caller.id, 6, 4)}</Text>
                     </Link>
                   </Field>
                   <Field name='Nonce:'>
-                    <Text mono >{tx.egg.shell.from.nonce}</Text>
+                    <Text mono >{tx.txn.shell.caller.nonce}</Text>
                   </Field>
                   <Field name='Status:'>
-                    <Text>{getRawStatus(tx.egg.shell.status)}</Text>
+                    <Text>{getRawStatus(tx.txn.shell.status)}</Text>
                   </Field>
                 </Entry>
               ))}

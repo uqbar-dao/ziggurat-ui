@@ -60,7 +60,7 @@ const useIndexerStore = create<IndexerStore>(
       // if (mockData) {
       //   return set({ loadingText: null, batches: [], transactions: mockTransactions.map(t => ({ ...t, hash: '' })) })
       // }
-      
+
       try {
         api.subscribe(createSubscription('wallet', '/metadata-updates', handleMetadataUpdate(get, set)))
         api.subscribe(createSubscription('indexer', `/town/${DEFAULT_TOWN_ID}/no-init`, handleLatestBatch(get, set)))
@@ -111,7 +111,7 @@ const useIndexerStore = create<IndexerStore>(
     //   console.log('CHUNKS:', chunks)
     // },
     // getTransactionInfo: async (transaction: string) => {
-    //   await api.scry({app: "indexer", path: `/egg/${transaction}`})
+    //   await api.scry({app: "indexer", path: `/txn/${transaction}`})
     // },
     // getAddressInfo: async (address: string) => {
     //   await api.scry({app: "indexer", path: `/from/${address}`})

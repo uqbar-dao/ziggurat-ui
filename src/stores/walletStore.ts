@@ -52,7 +52,7 @@ export interface WalletStore {
   sendTokens: (payload: SendTokenPayload) => Promise<void>,
   sendNft: (payload: SendNftPayload) => Promise<void>,
   sendCustomTransaction: (payload: SendCustomTransactionPayload) => Promise<void>,
-  getPendingHash: () => Promise<{ hash: string; egg: any; }>
+  getPendingHash: () => Promise<{ hash: string; txn: any; }>
   deleteUnsignedTransaction: (address: string, hash: string) => Promise<void>
   getUnsignedTransactions: () => Promise<{ [hash: string]: Transaction }>
   submitSignedHash: (from: string, hash: string, rate: number, bud: number, ethHash?: string, sig?: { v: number; r: string; s: string; }) => Promise<void>
@@ -253,8 +253,8 @@ const useWalletStore = create<WalletStore>(
       await pokeWithAlert(json)
     },
     getPendingHash: async () => {
-      const { hash, egg } = await api.scry<{ hash: string; egg: any }>({ app: 'wallet', path: '/pending' }) || {}
-      return { hash, egg }
+      const { hash, txn } = await api.scry<{ hash: string; txn: any }>({ app: 'wallet', path: '/pending' }) || {}
+      return { hash, txn }
     },
     deleteUnsignedTransaction: async (address: string, hash: string) => {
       const json = { 'delete-pending': { from: address, hash } }

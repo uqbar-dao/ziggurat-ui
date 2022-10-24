@@ -4,7 +4,7 @@ import { listen } from "@ledgerhq/logs"
 import Eth from "@ledgerhq/hw-app-eth"
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb" // eslint-disable-line
 import { removeDots, addHexDots } from './format'
-import { Egg } from '../types/wallet/SendTransaction'
+import { Txn } from '../types/wallet/SendTransaction'
 
 export const getLedgerAddress = async () => {
   try {
@@ -28,7 +28,7 @@ export const deriveLedgerAddress = async (path: string) => {
   return publicKey
 }
 
-export const signLedgerTransaction = async (address: string, hash: string, egg: Egg) => {
+export const signLedgerTransaction = async (address: string, hash: string, txn: Txn) => {
   try {
     const transport = await TransportWebUSB.create()
     listen(log => console.log(log))
@@ -38,18 +38,18 @@ export const signLedgerTransaction = async (address: string, hash: string, egg: 
     // const signature = await wallet.signMessage(hash)
     // const { r: r1, s: s1, v: v1 } = ethers.utils.splitSignature(signature)
 
-    // TODO: fill these out from the egg
-    console.log('EGG:', egg)
+    // TODO: fill these out from the txn
+    console.log('EGG:', txn)
 
     //Serializing the transaction to pass it to Ledger Nano for signing
 
     // Need a working version of this
     const ethHash = ethers.utils.serializeTransaction({
-      to: removeDots(egg.to).substring(0, 42),
-      gasPrice: '0x' + egg.rate.toString(16),
-      gasLimit: ethers.utils.hexlify(egg.budget),
-      nonce: egg.nonce,
-      chainId: parseInt(egg.town, 16),
+      to: removeDots(txn.to).substring(0, 42),
+      gasPrice: '0x' + txn.rate.toString(16),
+      gasLimit: ethers.utils.hexlify(txn.budget),
+      nonce: txn.nonce,
+      chainId: parseInt(txn.town, 16),
       data: removeDots(hash),
       // value: ethers.utils.parseUnits(1, "ether")._hex
     })
