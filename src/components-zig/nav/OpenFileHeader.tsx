@@ -37,7 +37,7 @@ export const OpenFileHeader = () => {
         const prependProject = openFiles.find(of => of.project !== project && of.file === file)
         const isGall = Boolean(gallApps[project])
         const href = genHref(project, file, isGall)
-        const fileName = isGall ? 
+        const fileName = isGall ?
           file.split('/').slice(-2).join('.') // /file/txt -> file.txt
           : file.match('(^tests$|\.[\w]+$)') ? file // file.txt -> file.txt
           : file + '.hoon' // file -> file.hoon

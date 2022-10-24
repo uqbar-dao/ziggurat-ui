@@ -185,14 +185,16 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
 
       await api.poke({ app: 'ziggurat', mark: `ziggurat-action`, json: { project, action: { "delete-project": null } } })
 
-      const openFiles = get().openFiles.filter(of => of.project !== project)
-      set({ openFiles })
+      set({ openFiles: get().openFiles.filter(of => of.project !== project) })
 
       get().getProjects()
 
+      console.log(1)
       if (project === get().currentProject) {
+        console.log(2)
         const nextProject = Object.keys(get().contracts)[0] || ''
         set({ currentProject: nextProject })
+        console.log(3, nextProject)
         return nextProject
       }
 
@@ -244,31 +246,36 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       const contract = get().contracts[project]
       const gallApp = get().gallApps[project]
       set({ loading: `Saving ${gallApp ? 'gall app' : 'contract'}...` })
-      if (contract && contract.modifiedFiles.size) {
-        console.log(2)
-        await Promise.all(
-          Array.from(contract.modifiedFiles.values()).map(async (name) => {
-            const text = name === project ? contract.main : contract.libs[name]
-            await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { 'save-file': { name, text } } } })
-          })
-        )
-        const newContracts = { ...get().contracts }
-        newContracts[project].modifiedFiles = new Set<string>()
-        newContracts[project].molds = generateMolds(newContracts[project])
-        set({ contracts: newContracts })
-      } else if (gallApp && gallApp.modifiedFiles.size) {
-        const files = await Promise.all(
-          Array.from(gallApp.modifiedFiles.values()).map(async (file) => {
-            const text = getFileText(gallApp.folder, file.split('/').slice(1), file)
-            await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { 'save-file': { file, text } } } })
-            return file
-          })
-        )
-        const newApps = { ...get().gallApps }
-        newApps[project].modifiedFiles = new Set<string>()
-        set({ gallApps: newApps })
-        await Promise.all(files.map(file => get().getGallFile(project, file)))
-      }
+      try {
+        if (contract && contract.modifiedFiles.size) {
+          await Promise.all(
+            Array.from(contract.modifiedFiles.values()).map(async (name) => {
+              const text = name === project ? contract.main : contract.libs[name]
+              await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { 'save-file': { name, text } } } })
+            })
+          )
+          const newContracts = { ...get().contracts }
+          newContracts[project].modifiedFiles = new Set<string>()
+          newContracts[project].molds = generateMolds(newContracts[project])
+          set({ contracts: newContracts })
+        } else if (gallApp && gallApp.modifiedFiles.size) {
+          await Promise.all(
+            Array.from(gallApp.modifiedFiles.values()).map(async (file) => {
+              const text = getFileText(gallApp.folder, file.split('/').slice(1), file)
+              try {
+                await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { 'save-file': { file, text } } } })
+                get().getGallFile(project, file)
+              } catch (err) {
+                toast.error(`Error saving ${file}`)
+              }
+              return file
+            })
+          )
+          const newApps = { ...get().gallApps }
+          newApps[project].modifiedFiles = new Set<string>()
+          set({ gallApps: newApps })
+        }
+      } catch (err) {}
       set({ loading: undefined })
     },
     addFile: async (project: string, filename: string, isGall: boolean, fileContent?: string) => {
@@ -390,12 +397,12 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
     },
     deployContract: async (project: string, address: string, location: string, town: string, rate: number, bud: number, upgradable: boolean) => {
       // address is the public key address of the user's wallet
-      // location is either "local" or the urbit ship running the testnet
+      // location is not used for now. either "local" or the urbit ship running the testnet
       set({ loading: 'Deploying contract...' })
       const json = {
         project,
         action: {
-          "deploy-contract": { address, rate, bud, upgradable, "deploy-location": location, "town-id": town, }
+          "deploy-contract": { address, rate, bud, upgradable, "deploy-location": location, "town-id": town }
         }
       }
       console.log('DEPLOYING CONTRACT:', json)

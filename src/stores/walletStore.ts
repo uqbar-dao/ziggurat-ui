@@ -17,7 +17,7 @@ import { generateSendTokenPayload } from "./util"
 
 const pokeWithAlert = async (json: any) => {
   try {
-    await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json })
+    await api.poke({ app: 'wallet', mark: 'wallet-poke', json })
   } catch (error) {
     alert(`Error with transaction: ${String(error)}`)
   }
@@ -83,12 +83,12 @@ const useWalletStore = create<WalletStore>(
           api.subscribe(createSubscription('wallet', '/metadata-updates', handleMetadataUpdate(get, set)))
           api.subscribe(createSubscription('wallet', '/tx-updates', handleTxnUpdate(get, set)))
         }
-    
+
         // only wait for accounts before removing the loading text
         await getAccounts()
         getTransactions()
         getUnsignedTransactions()
-        
+
       } catch (error) {
         console.warn('INIT ERROR:', error)
       }
@@ -135,7 +135,7 @@ const useWalletStore = create<WalletStore>(
       }
     },
     createAccount: async (password: string, nick: string) => {
-      await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json: { 'generate-hot-wallet': { password, nick } } })
+      await api.poke({ app: 'wallet', mark: 'wallet-poke', json: { 'generate-hot-wallet': { password, nick } } })
       get().getAccounts()
     },
     deriveNewAddress: async (hdpath: string, nick: string, type?: HardwareWalletType) => {
@@ -149,7 +149,7 @@ const useWalletStore = create<WalletStore>(
           else if (type === 'trezor') {
             deriveAddress = deriveTrezorAddress
           }
-    
+
           if (deriveAddress !== undefined) {
             const importedAddress = await deriveAddress(hdpath)
             if (importedAddress) {
@@ -157,7 +157,7 @@ const useWalletStore = create<WalletStore>(
               if (!importedAccounts.find(({ address }) => importedAddress === address)) {
                 await api.poke({
                   app: 'wallet',
-                  mark: 'zig-wallet-poke',
+                  mark: 'wallet-poke',
                   json: {
                     'add-tracked-address': { address: addHexDots(importedAddress), nick: `${nick}//${type}` }
                   }
@@ -168,7 +168,7 @@ const useWalletStore = create<WalletStore>(
             }
           }
         } else {
-          await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json: { 'derive-new-address': { hdpath, nick } } })
+          await api.poke({ app: 'wallet', mark: 'wallet-poke', json: { 'derive-new-address': { hdpath, nick } } })
         }
         get().getAccounts()
       } catch (error) {
@@ -178,15 +178,15 @@ const useWalletStore = create<WalletStore>(
       set({ loadingText: null })
     },
     trackAddress: async (address: string, nick: string) => {
-      await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json: { 'add-tracked-address': { address, nick } } })
+      await api.poke({ app: 'wallet', mark: 'wallet-poke', json: { 'add-tracked-address': { address, nick } } })
       get().getAccounts()
     },
     editNickname: async (address: string, nick: string) => {
-      await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json: { 'edit-nickname': { address, nick } } })
+      await api.poke({ app: 'wallet', mark: 'wallet-poke', json: { 'edit-nickname': { address, nick } } })
       get().getAccounts()
     },
     restoreAccount: async (mnemonic: string, password: string, nick: string) => {
-      await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json: { 'import-seed': { mnemonic, password, nick } } })
+      await api.poke({ app: 'wallet', mark: 'wallet-poke', json: { 'import-seed': { mnemonic, password, nick } } })
       get().getAccounts()
     },
     importAccount: async (type: HardwareWalletType, nick: string) => {
@@ -208,7 +208,7 @@ const useWalletStore = create<WalletStore>(
         if (!importedAccounts.find(({ address }) => importedAddress === address)) {
           await api.poke({
             app: 'wallet',
-            mark: 'zig-wallet-poke',
+            mark: 'wallet-poke',
             json: {
               'add-tracked-address': { address: addHexDots(importedAddress), nick: `${nick}//${type}` }
             }
@@ -223,7 +223,7 @@ const useWalletStore = create<WalletStore>(
     },
     deleteAccount: async (address: string) => {
       if (window.confirm(`Are you sure you want to remove this address?\n\n${addHexDots(address)}`)) {
-        await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json: { 'delete-address': { address } } })
+        await api.poke({ app: 'wallet', mark: 'wallet-poke', json: { 'delete-address': { address } } })
         get().getAccounts()
       }
     },
@@ -233,12 +233,12 @@ const useWalletStore = create<WalletStore>(
     },
     setNode: async (town: number, ship: string) => {
       const json = { 'set-node': { town, ship } }
-      await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json  })
+      await api.poke({ app: 'wallet', mark: 'wallet-poke', json  })
       set({ selectedTown: town })
     },
     setIndexer: async (ship: string) => {
       const json = { 'set-indexer': { ship } }
-      await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json })
+      await api.poke({ app: 'wallet', mark: 'wallet-poke', json })
     },
     sendTokens: async (payload: SendTokenPayload) => {
       const json = generateSendTokenPayload(payload)
@@ -258,7 +258,7 @@ const useWalletStore = create<WalletStore>(
     },
     deleteUnsignedTransaction: async (address: string, hash: string) => {
       const json = { 'delete-pending': { from: address, hash } }
-      await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json })
+      await api.poke({ app: 'wallet', mark: 'wallet-poke', json })
       get().getUnsignedTransactions()
     },
     getUnsignedTransactions: async () => {
@@ -283,7 +283,7 @@ const useWalletStore = create<WalletStore>(
       const json = ethHash && sig ?
         { 'submit-signed': { from, hash, gas: { rate, bud }, 'eth-hash': ethHash, sig } } :
         { 'submit': { from, hash, gas: { rate, bud } } }
-      await api.poke({ app: 'wallet', mark: 'zig-wallet-poke', json })
+      await api.poke({ app: 'wallet', mark: 'wallet-poke', json })
       get().getUnsignedTransactions()
     },
     setPathname: (pathname: string) => set({ pathname }),

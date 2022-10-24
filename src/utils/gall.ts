@@ -2,6 +2,7 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { Folder, FolderContents } from "../types/ziggurat/Folder"
 import { GallApp } from "../types/ziggurat/GallApp"
+import { Contract } from '../types/ziggurat/Contracts';
 
 export const getFolder = (folder: Folder, path: string[]) : null | Folder => {
   if (path.length < 1) {
@@ -70,6 +71,16 @@ export const downloadProjectZip = async (project: GallApp) => {
 
   const zip = new JSZip()
   zipUpFolder(project.folder, zip)
+  const zipBlob = await zip.generateAsync({ type: 'blob' })
+  saveAs(zipBlob, `${project.title}.zip`)
+}
+
+export const downloadContractZip = async (project: Contract) => {
+  const zip = new JSZip()
+
+  zip.file(project.title, project.main)
+  Object.keys(project.libs).forEach(filename => zip.file(`${filename}.hoon`, project.libs[filename]))
+
   const zipBlob = await zip.generateAsync({ type: 'blob' })
   saveAs(zipBlob, `${project.title}.zip`)
 }

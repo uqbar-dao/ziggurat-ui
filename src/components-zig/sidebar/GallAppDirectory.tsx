@@ -71,15 +71,32 @@ interface GallAppDirectoryProps {
 
 export const GallAppDirectory = ({ project }: GallAppDirectoryProps) => {
   const nav = useNavigate()
-  const { deleteProject, setProjectExpanded, setCurrentProject } = useZigguratStore()
+  const { openFiles, deleteProject, setProjectExpanded, setCurrentProject } = useZigguratStore()
   const [showButtons, setShowButtons] = useState(false)
   const [showPublishModal, setShowPublishModal] = useState(false)
 
   const { title, folder, expanded } = project
 
-  const downloadZip = useCallback(async () => {
+  const downloadZip = useCallback((e) => {
+    e.preventDefault()
+    e.stopPropagation()
     downloadProjectZip(project)
   }, [project])
+
+  const onDelete = useCallback(async (e) => {
+    e.stopPropagation()
+
+    if (window.confirm(`Are you sure you want to delete the ${title} project?`)) {
+      await deleteProject(title)
+      const file = openFiles.filter(of => of.project !== title)[0]
+      console.log(file, openFiles)
+      if (file) {
+        nav(`/${file.project}/${file.file[0] === '/' ? file.file.slice(1) : file}`)
+      } else {
+        nav('/')
+      }
+    }
+  }, [title, openFiles, deleteProject, nav])
 
   return (
     <Col style={{ padding: '0px 4px', fontSize: 14 }} onMouseEnter={() => setShowButtons(true)} onMouseLeave={() => setShowButtons(false)} onClick={() => setCurrentProject(title)}>
@@ -97,17 +114,7 @@ export const GallAppDirectory = ({ project }: GallAppDirectoryProps) => {
               <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaDownload size={14} />} onClick={downloadZip} />
             </Tooltip>
             <Tooltip tip="delete" right>
-              <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={async (e) => {
-                e.stopPropagation()
-                if (window.confirm(`Are you sure you want to delete the ${title} project?`)) {
-                  const navigateTo = await deleteProject(title)
-                  if (navigateTo) {
-                    nav(`/${navigateTo}/main`)
-                  } else if (navigateTo === '') {
-                    nav('/')
-                  }
-                }
-              }} />
+              <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={onDelete} />
             </Tooltip>
           </Row>
         )}
