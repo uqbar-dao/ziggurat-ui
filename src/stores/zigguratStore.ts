@@ -245,31 +245,36 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       const contract = get().contracts[project]
       const gallApp = get().gallApps[project]
       set({ loading: `Saving ${gallApp ? 'gall app' : 'contract'}...` })
-      if (contract && contract.modifiedFiles.size) {
-        console.log(2)
-        await Promise.all(
-          Array.from(contract.modifiedFiles.values()).map(async (name) => {
-            const text = name === project ? contract.main : contract.libs[name]
-            await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json: { project, action: { 'save-file': { name, text } } } })
-          })
-        )
-        const newContracts = { ...get().contracts }
-        newContracts[project].modifiedFiles = new Set<string>()
-        newContracts[project].molds = generateMolds(newContracts[project])
-        set({ contracts: newContracts })
-      } else if (gallApp && gallApp.modifiedFiles.size) {
-        const files = await Promise.all(
-          Array.from(gallApp.modifiedFiles.values()).map(async (file) => {
-            const text = getFileText(gallApp.folder, file.split('/').slice(1), file)
-            await api.poke({ app: 'ziggurat', mark: 'ziggurat-app-action', json: { project, action: { 'save-file': { file, text } } } })
-            return file
-          })
-        )
-        const newApps = { ...get().gallApps }
-        newApps[project].modifiedFiles = new Set<string>()
-        set({ gallApps: newApps })
-        await Promise.all(files.map(file => get().getGallFile(project, file)))
-      }
+      try {
+        if (contract && contract.modifiedFiles.size) {
+          await Promise.all(
+            Array.from(contract.modifiedFiles.values()).map(async (name) => {
+              const text = name === project ? contract.main : contract.libs[name]
+              await api.poke({ app: 'ziggurat', mark: 'ziggurat-contract-action', json: { project, action: { 'save-file': { name, text } } } })
+            })
+          )
+          const newContracts = { ...get().contracts }
+          newContracts[project].modifiedFiles = new Set<string>()
+          newContracts[project].molds = generateMolds(newContracts[project])
+          set({ contracts: newContracts })
+        } else if (gallApp && gallApp.modifiedFiles.size) {
+          await Promise.all(
+            Array.from(gallApp.modifiedFiles.values()).map(async (file) => {
+              const text = getFileText(gallApp.folder, file.split('/').slice(1), file)
+              try {
+                await api.poke({ app: 'ziggurat', mark: 'ziggurat-app-action', json: { project, action: { 'save-file': { file, text } } } })
+                get().getGallFile(project, file)
+              } catch (err) {
+                toast.error(`Error saving ${file}`)
+              }
+              return file
+            })
+          )
+          const newApps = { ...get().gallApps }
+          newApps[project].modifiedFiles = new Set<string>()
+          set({ gallApps: newApps })
+        }
+      } catch (err) {}
       set({ loading: undefined })
     },
     addFile: async (project: string, filename: string, isGall: boolean) => {
