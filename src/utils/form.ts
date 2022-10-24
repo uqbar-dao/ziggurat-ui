@@ -6,7 +6,7 @@ import { formatType, removeDots } from "./format"
 
 export const GRAIN_FORM_VALUES_COMMON: { [key: string]: any } = {
   // id: '%id', // id is calculated on backend
-  lord: '%id',
+  source: '%id',
   holder: '%id',
   town_id: '@ux',
   salt: '@',
@@ -104,7 +104,7 @@ export const copyFormValues = (values: FormValues) => Object.keys(values).reduce
 
 export const grainFromForm = (testGrainValues: FormValues) => ({
   id: formatType(testGrainValues.id.type, testGrainValues.id.value),
-  lord: formatType(testGrainValues.lord.type, testGrainValues.lord.value),
+  source: formatType(testGrainValues.source.type, testGrainValues.source.value),
   holder: formatType(testGrainValues.holder.type, testGrainValues.holder.value),
   'town-id': formatType(testGrainValues.town_id.type, testGrainValues.town_id.value),
   label: formatType(testGrainValues.label.type, testGrainValues.label.value),
@@ -145,7 +145,7 @@ export const validateWithType = (type: UqbarType, value: string) => {
       return !isNaN(Number(value.slice(1)))
     case '@t': // @t	Text (“cord”)	'hello'	One of Urbit's several text types; only UTF-8 values are valid.
       return true
-    case '@ub': // @ub	Binary value	0b1100.0101	
+    case '@ub': // @ub	Binary value	0b1100.0101
       return BIN_REGEX.test(value.replace(/\./gi, ''))
     case '@ud': // @ud	Decimal value	100.000	Note that German-style thousands separator is used, . dot.
       return !isNaN(Number(value.replace(/\./ig, '').replace(/,/gi, '.')))

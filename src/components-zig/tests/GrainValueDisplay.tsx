@@ -73,7 +73,7 @@ export const GrainValueDisplay = ({ grain, grainIndex, editGrain, testId, isExpe
       </Row>
       {expanded && <Entry>
         <Field name='Holder'> {grain.holder}</Field>
-        <Field name='Lord'> {grain.lord}</Field>
+        <Field name='Lord'> {grain.source}</Field>
         <Field name='Town'> {grain.town_id}</Field>
         <Field name='Label'> {grain.label}</Field>
         <Field name='Data'>

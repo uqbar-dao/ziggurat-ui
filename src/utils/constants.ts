@@ -5,7 +5,7 @@ export const METADATA_GRAIN_ID = '0xdada.dada'
 export const DUMMY_METADATA = {
   id: METADATA_GRAIN_ID,
   holder: MY_CONTRACT_ID,
-  lord: MY_CONTRACT_ID,
+  source: MY_CONTRACT_ID,
   town_id: '0x0',
   label: 'token-metadata',
   salt: '3859435834985',
