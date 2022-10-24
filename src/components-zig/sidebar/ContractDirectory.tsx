@@ -18,7 +18,7 @@ interface ContractDirectoryProps {
 
 export const ContractDirectory = ({ project }: ContractDirectoryProps) => {
   const nav = useNavigate()
-  const { currentProject, openFiles, deleteProject, setProjectExpanded } = useZigguratStore()
+  const { openFiles, deleteProject, setProjectExpanded } = useZigguratStore()
   const [showButtons, setShowButtons] = useState(false)
   const [showDeployModal, setShowDeployModal] = useState(false)
 
@@ -29,8 +29,6 @@ export const ContractDirectory = ({ project }: ContractDirectoryProps) => {
     e.stopPropagation()
     downloadContractZip(project)
   }, [project])
-
-  console.log(currentProject)
 
   const onDelete = useCallback(async () => {
     if (window.confirm(`Are you sure you want to delete the ${title} project?`)) {

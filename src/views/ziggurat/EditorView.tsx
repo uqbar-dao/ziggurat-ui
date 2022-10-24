@@ -21,11 +21,22 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
   const editorRef = useRef<CodeMirrorShim>()
   const nav = useNavigate()
   const { projectTitle, file } = useParams()
-  const { contracts, gallApps, toastMessages, setProjectText, getGallFile } = useZigguratStore()
+  const { contracts, gallApps, toastMessages, openFiles, currentProject, setProjectText, getGallFile, setOpenFiles, setCurrentProject } = useZigguratStore()
 
   const contract = useMemo(() => contracts[projectTitle || ''], [projectTitle, contracts])
   const gallApp = useMemo(() => gallApps[projectTitle || ''], [projectTitle, gallApps])
   const isGall = useMemo(() => Boolean(gallApp), [gallApp])
+
+  useEffect(() => {
+    if (projectTitle && file) {
+      if (!openFiles.find((of) => of.project === projectTitle && of.file === file)) {
+        setOpenFiles(openFiles.concat([{ project: projectTitle, file }]))
+      }
+      if (projectTitle !== currentProject) {
+        setCurrentProject(projectTitle)
+      }
+    }
+  }, []) // eslint-disable-line
 
   useEffect(() => {
     if (gallApp && file && projectTitle) {
