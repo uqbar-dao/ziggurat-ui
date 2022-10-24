@@ -80,8 +80,6 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
   const [githubToken, setGithubToken] = useState('')
   const [repoContents, setRepoContents] = useState<RepoContents>()
 
-  // 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
-  
   const authWithGithub = async (token: string) => {
     setLoadingText('Fetching repositories...')
     try {

@@ -146,7 +146,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       }, {} as Subscriptions)
 
       Object.keys(gallApps).forEach((gp) => subscriptions[gp] = [
-        api.subscribe(createSubscription('ziggurat', `/app-project/${gp}`, handleGallUpdate(get, set, gp)))
+        api.subscribe(createSubscription('ziggurat', `/project/${gp}`, handleGallUpdate(get, set, gp)))
       ])
 
       set({ contracts, subscriptions, gallApps })
@@ -161,7 +161,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
           const json = { project, action: { "new-contract-project": { template: options.token, 'user-address': get().userAddress } } }
           await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
         } else if (options?.project === 'gall') {
-          const json = { project, action: { "new-app-project": null } }
+          const json = { project, action: { "new-project": null } }
           await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
         }
 
