@@ -25,7 +25,7 @@ export const TransactionEntry = ({
 }: TransactionProps) => {
   return (
     <Entry divide={displayIndex > 1}>
-      <Field className='transaction' name={displayIndex + '.'}> 
+      <Field className='transaction' name={displayIndex + '.'}>
         <Col>
           <Field name='Time:'>
             <Text mono oneLine>{formatIndexerTimestamp(tx.timestamp)}</Text>
@@ -38,21 +38,21 @@ export const TransactionEntry = ({
           </Field>
           {isWalletAddress ? (
             <Field name='To:'>
-              <Link href={`/grain/${addHexDots(tx.egg.shell.contract)}`}>
-                <HexNum mono style={{ margin: 2 }} num={addHexDots(tx.egg.shell.contract)} />
+              <Link href={`/grain/${addHexDots(tx.txn.shell.contract)}`}>
+                <HexNum mono style={{ margin: 2 }} num={addHexDots(tx.txn.shell.contract)} />
               </Link>
-              <CopyIcon text={tx.egg.shell.contract} />
+              <CopyIcon text={tx.txn.shell.contract} />
             </Field>
           ) : (
             <Field name='From:'>
-              <Link href={`/grain/${addHexDots(tx.egg.shell.from.id)}`}>
-                <HexNum mono style={{ margin: 2 }} num={addHexDots(tx.egg.shell.from.id)} />
+              <Link href={`/grain/${addHexDots(tx.txn.shell.caller.id)}`}>
+                <HexNum mono style={{ margin: 2 }} num={addHexDots(tx.txn.shell.caller.id)} />
               </Link>
-              <CopyIcon text={tx.egg.shell.from.id} />
+              <CopyIcon text={tx.txn.shell.caller.id} />
             </Field>
           )}
           <Field name='Status:'>
-            <Text mono oneLine>{getRawStatus(tx.egg.shell.status)}</Text>
+            <Text mono oneLine>{getRawStatus(tx.txn.shell.status)}</Text>
           </Field>
         </Col>
       </Field>

@@ -2,7 +2,7 @@ export type TestRiceValue = string | TestRiceValue[] | { [key: string]: string |
 
 export type TestGrainField = 'id'
   | 'holder'
-  | 'lord'
+  | 'source'
   | 'town_id'
   | 'label'
   | 'salt'
@@ -12,7 +12,7 @@ export type TestGrainField = 'id'
 export interface GrainTemplate {
   id: string
   holder: string
-  lord: string
+  source: string
   label?: string
   data?: string
   contract?: boolean

@@ -41,26 +41,26 @@ const GrainView = () => {
   useEffect(() => {
     const getData = async () => {
       try {
-        const [rawData, grainEggs, grainInfo] = await Promise.all([
+        const [rawData, grainInfo] = await Promise.all([
           scry<HashData>(`/hash/${grainId}`),
-          scry<any>(`/grain-eggs/${grainId}`),
-          scry<{ grain: { [key: string]: { grain: Grain; location: Location, timestamp: number }[] } }>(`/grain/${grainId}`)
+          //  scry<any>(`/item-txns/${grainId}`),
+          scry<{ item: { [key: string]: { item: Grain; location: Location, timestamp: number }[] } }>(`/item/${grainId}`)
         ])
 
         // console.log('SCRY: ', rawData, grainInfo)
-        console.log(grainEggs)
-        
+        console.log(grainInfo)
+
         try {
           const grainIsRice = Boolean(
-            Object.values(grainInfo?.grain || {})[0][0]?.grain?.['is-rice']
+            Object.values(grainInfo?.item || {})[0][0]?.item?.['is-rice']
           )
           setGrainIsRice(grainIsRice)
-          setGrain(Object.values(grainInfo?.grain || {})[0][0]?.grain)
+          setGrain(Object.values(grainInfo?.item || {})[0][0]?.item)
         } catch (err) {}
 
         if (rawData) {
           const { hash }: HashData = rawData
-          const txns = Object.keys(hash.eggs).map(txnHash => ({ ...hash.eggs[txnHash], hash: txnHash }))
+          const txns = Object.keys(hash.txns).map(txnHash => ({ ...hash.txns[txnHash], hash: txnHash }))
           setTransactions(txns)
         }
 
@@ -86,7 +86,7 @@ const GrainView = () => {
       </PageHeader>
       <Entry>
         <Card>
-          {/* <CardHeader style={{ padding: '0 1em 0 0' }}> 
+          {/* <CardHeader style={{ padding: '0 1em 0 0' }}>
             <Row fullWidth between>
               <Row>
                 <Text onClick={() => setDisplay('details')} className={`selector ${display === 'details' && 'selected'}`}>
@@ -127,10 +127,10 @@ const GrainView = () => {
                         </Field>
                       )}
                       <Field name='Lord:'>
-                        <Link href={`/address/${addHexDots(grain.lord)}`}>
-                          <Text mono oneLine>{addHexDots(grain.lord)}</Text>
+                        <Link href={`/address/${addHexDots(grain.source)}`}>
+                          <Text mono oneLine>{addHexDots(grain.source)}</Text>
                         </Link>
-                        <CopyIcon text={addHexDots(grain.lord)}></CopyIcon>
+                        <CopyIcon text={addHexDots(grain.source)}></CopyIcon>
                       </Field>
                       <Field name='Holder:'>
                         <Link href={`/address/${addHexDots(grain.holder)}`}>

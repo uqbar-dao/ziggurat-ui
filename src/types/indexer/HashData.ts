@@ -5,7 +5,7 @@ import { Transaction } from "./Transaction"
 
 export interface HashData {
   hash: {
-    eggs: {
+    txns: {
       [key: string]: Transaction
     }
     grains: {

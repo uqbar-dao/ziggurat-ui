@@ -2,7 +2,7 @@ export interface Grain {
   salt: number
   holder: string
   id: string
-  lord: string
+  source: string
   label: string
   cont?: null | string
   'town-id': string

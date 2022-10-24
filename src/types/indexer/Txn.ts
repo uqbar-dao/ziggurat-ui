@@ -4,11 +4,15 @@ export interface Sig {
   r: number
 }
 
+export interface Calldata {
+  give: string
+}
+
 export interface Shell {
   status: number
   contract: string
   budget: number
-  from: {
+  caller: {
     id: string
     nonce: number
     zigs: string
@@ -18,12 +22,8 @@ export interface Shell {
   "town-id": string
 }
 
-export interface Yolk {
-  give: string
-}
-
-export interface Egg {
-  yolk: Yolk
-  shell: Shell
+export interface Txn {
   sig?: Sig
+  shell: Shell
+  calldata: Calldata
 }

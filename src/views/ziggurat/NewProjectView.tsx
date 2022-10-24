@@ -47,7 +47,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     const metadata = !md ? undefined : {
       id: METADATA_GRAIN_ID,
       holder: MY_CONTRACT_ID,
-      lord: MY_CONTRACT_ID,
+      source: MY_CONTRACT_ID,
       'town-id': '0x0',
       label: 'token-metadata',
       salt: Number(md.salt),
@@ -97,7 +97,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       case 'gall':
           setOptions({ ...options, project: option as ProjectOption })
           setStep('token')
-          break        
+          break
       case 'token':
         if (option === 'blank') {
           submitNewProject({ ...options, token: option as TokenOption })

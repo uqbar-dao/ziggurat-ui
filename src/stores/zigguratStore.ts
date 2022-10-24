@@ -135,7 +135,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       const rawProjects = await api.scry({ app: 'ziggurat', path: '/all-projects' })
       const { contracts, gallApps } = generateProjects(rawProjects, get().contracts, get().gallApps)
       console.log('PROJECTS:', contracts, gallApps)
-      
+
       const subscriptions = Object.keys(contracts).reduce((subs, p) => {
         subs[p] = [
           api.subscribe(createSubscription('ziggurat', `/contract-project/${p}`, handleContractUpdate(get, set, p))),
@@ -217,7 +217,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       const targetFolder = getFolder(targetApp.folder, folder.split('/'))
       if (targetFolder)
         targetFolder.expanded = !targetFolder.expanded
-      
+
       set({ gallApps: newApps })
     },
     setProjectText: (project: string, file: string, text: string) => {
@@ -353,7 +353,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
         salt: expected.salt,
         label: expected.label,
         data: expected.data,
-        lord: expected.lord,
+        source: expected.source,
         holder: expected.holder,
         'town-id': expected['town-id'],
         // id: expected.id // ids are calculated on backend
@@ -434,7 +434,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       const folder = getFolderForFile(targetApp.folder, file)
       if (folder)
         folder.contents[file] = text
-      
+
       set({ gallApps: newApps })
     },
     addEndpoint: async (endpoint: EndpointForm, id?: string) => {
