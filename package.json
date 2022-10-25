@@ -29,6 +29,7 @@
     "jszip": "^3.10.1",
     "moment": "^2.29.4",
     "octokit": "^2.0.9",
+    "p-waterfall": "^3.0.0",
     "re-resizable": "^6.9.9",
     "react": "^17.0.2",
     "react-beautiful-dnd": "^13.1.0",

@@ -17,6 +17,7 @@ import { Endpoint } from '../types/ziggurat/Endpoint';
 import { EndpointForm } from "../types/ziggurat/EndpointForm";
 import { genRanHex } from "../utils/number";
 import { handleEndpointUpdate } from "./subscriptions/endpoint";
+import pWaterfall from "p-waterfall";
 
 export interface ZigguratStore {
   loading?: string
@@ -51,6 +52,7 @@ export interface ZigguratStore {
   addFile: (project: string, filename: string, isGall: boolean, fileContent?: string) => Promise<void>
   deleteFile: (project: string, file: string) => Promise<void>
   setOpenFiles: (openFiles: OpenFile[]) => void
+  saveFileList: (files: { path: string, type: string, content: string }[], project: string) => Promise<void>
   toggleTest: (project: string, testId: string) => void
   approveCorsDomain: (domain: string) => Promise<void>
 
@@ -278,6 +280,34 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
           set({ gallApps: newApps })
         }
       } catch (err) {}
+      set({ loading: undefined })
+    },
+    saveFileList: async (downloadedFiles, project: string) => {
+      let lastFile = ''
+
+      try {
+        set({ loading: 'Saving files...' })
+        
+        const txtMar = await api.scry({ app: 'ziggurat', path: `/read-file/zig/mar/txt/hoon` })
+        await pWaterfall(downloadedFiles.map(({ path, type, content }, i) => async () => {
+          lastFile = path
+          const hasMar = await api.scry({ app: 'ziggurat', path: `/read-file/zig/mar/${type}/hoon` })
+          console.log({ path, type, hasMar })
+
+          // create mar for unknown filetypes. treat all unmarked files as txt
+          if (!hasMar) {
+            await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { "save-file": { file: `/zig/mar/${type}/hoon`, text: txtMar } } } })
+          }
+  
+          set({ loading: `Saving files... ${path} (${i}/${downloadedFiles.length})` })
+          await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { "save-file": { file: `/${project}/${path}`, text: content || '' } } } })
+        }))
+      } catch {
+        alert(`Unable to save all files. Halted at ${lastFile}`)
+        set({ loading: undefined })
+        return
+      }
+  
       set({ loading: undefined })
     },
     fileExists: async (project: string, path: string) => await api.scry({ 

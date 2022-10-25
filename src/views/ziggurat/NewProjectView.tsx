@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { FaArrowLeft, FaExclamationTriangle, FaGithub, FaInfoCircle, FaRuler } from 'react-icons/fa';
+import { FaArrowLeft, FaExclamationTriangle, FaGithub, FaInfoCircle, FaRuler, FaTicketAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import {unzip} from 'unzipit';
 import 'codemirror/lib/codemirror.css'
@@ -26,6 +26,7 @@ import { Select } from '../../components/form/Select';
 import { stellarGetAddress } from '@trezor/connect/lib/types/api/stellarGetAddress';
 import Divider from '../../components/spacing/Divider';
 import { getFileText } from '../../utils/gall';
+import pWaterfall from 'p-waterfall';
 
 type CreationStep = 'title' | 'project' | 'gall' | 'token' | 'template' | 'metadata' | 'import' | 'github' | 'zip'
 type ProjectOption = 'contract' | 'gall' | 'contract-gall'
@@ -68,7 +69,7 @@ export interface DownloadedFile {
 }
 
 const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
-  const { userAddress, readFile, fileExists, contracts, createProject, populateTemplate, openFiles, setOpenFiles, addFile } = useZigguratStore()
+  const { userAddress, saveFileList, contracts, createProject, populateTemplate, openFiles, setOpenFiles, addFile } = useZigguratStore()
   const nav = useNavigate()
 
   const [step, setStep] = useState<CreationStep>('title')
@@ -80,6 +81,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
   const [repos, setRepos] = useState<RepoInfo[]>([])
   const [githubToken, setGithubToken] = useState('')
   const [repoContents, setRepoContents] = useState<RepoContents>()
+  const [zip, setZip] = useState<any>()
 
   const authWithGithub = async (token: string) => {
     setLoadingText('Fetching repositories...')
@@ -136,8 +138,8 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     }
   }
 
-  const downloadFiles = async () => {
-    const proj = await submitNewProject({ ...options, project: 'gall' }, undefined, false)
+  const downloadFilesFromGithub = async () => {
+    await submitNewProject({ ...options, project: 'gall' }, undefined, false)
     
     setLoadingText('Gathering file data...')
     let result: any = ''
@@ -151,63 +153,55 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
         throw 'Bad result: ' + JSON.stringify(result)
       }
     } catch {
-      alert('Unable to gather file data.')
+     
+    }
+
+    if (!result) {
+      alert('Unable to gather file data. Please verify your Github access token has the correct permissions.')
       setLoadingText('')
       return
     }
 
-    let _downloadedFiles: DownloadedFile[] = []
-    try {
-      setLoadingText(`Downloading files...`)
-    
-      await Promise.allSettled(result.data.tree
-        .filter((branch: TreeFile) => branch.type == 'blob')
-        .map(async (file: TreeFile, i: number) => {
-          const { data: { content, path } } = await o.request(`GET /repos/${repoUrl}/contents/${file.path}`)
-          const text = Buffer.from(content, 'base64').toString()
-          const type = path.match(/\w+$/)
-          _downloadedFiles.push({ path, content: text, type })
-        }))
-    } catch {
-      alert(`Unable to download files. Halted at ${_downloadedFiles.length}/${result.data.tree.length}`)
-      setLoadingText('')
-      return
-    }
+    const filesToDownload = result.data.tree
+    .filter((branch: TreeFile) => branch.type == 'blob')
 
-    let neededMarks: any[] = []
+    let lastFile = ''
+    let downloadedFiles: DownloadedFile[] = []
     try {
-      setLoadingText('Checking file marks...')
+      setLoadingText(`Downloading files from Github...`)
       
-      await Promise.allSettled(_downloadedFiles.map(async ({ path, type }) => {
-        const hasMar = await fileExists('zig', `/mar/${type}`)
-        console.log({ path, hasMar })
-        if (!hasMar) {
-          // treat all unmarked files as txt
-          const txtMar = await readFile('zig', '/mar/txt/hoon')
-          await addFile(options.title!, `/zig/mar/${type}/hoon`, true, txtMar)
-        }
+      await pWaterfall(filesToDownload.map((file: TreeFile, i: number) => async () => {
+        lastFile = file.path
+        setLoadingText(`Downloading files... (${i}/${filesToDownload.length})`)
+        const { data: { content, filePath } } = await o.request(`GET /repos/${repoUrl}/contents/${file.path}`)
+        const text = Buffer.from(content, 'base64').toString()
+        const type = filePath.replace(/.*\//g, '')
+        const path = filePath[0] === '/' ? filePath.replace(/\./g, '/') : `/${filePath.replace(/\./g, '/')}`
+        downloadedFiles.push({ path, content: text, type })
       }))
     } catch {
-      alert('Problem creating marks.')
-      setLoadingText('')
-    }
-
-    let _savedFiles: any[] = []
-    try {
-      setLoadingText(`Saving files...`)
-      
-      await Promise.allSettled(_downloadedFiles.map(async (file, i) => {
-        console.log ({ file })
-        const addedFile = await addFile(options.title!, file.path, true, file.content)
-      }))
-    } catch {
-      alert(`Unable to save files. Halted at ${_savedFiles.length}/${_downloadedFiles.length}`)
+      alert(`Unable to download files. Halted at ${lastFile}`)
       setLoadingText('')
       return
     }
 
-    setLoadingText('')
+    await saveFileList(downloadedFiles, options.title!)
     nav(`/${options.title!}/${options.title!}`)
+  }
+
+  const importZip = async () => {
+    const { entries } = await unzip(zip)
+
+    const filesToImport = []
+    for (const [name, entry] of Object.entries(entries)) {
+      const path = name[0] === '/' ? name.replace(/\./g, '/') : `/${name.replace(/\./g, '/')}`
+      const type = path.replace(/.*\//g, '')
+      const content = await entry.text()
+      filesToImport.push({ path, content, type })
+    }
+
+    await saveFileList(filesToImport, options.title!)
+    nav(`/${options.title!}`)
   }
 
   const submitNewProject = useCallback(async (options: CreationOptions, md?: RawMetadata, navOnFinish?: boolean) => {
@@ -283,6 +277,9 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
         if (option === 'github') {
           setStep('github')
         }
+        if (option === 'zip') {
+          setStep('zip')
+        }
         break
       // TODO: skipping this, we may not want it. Maybe replace with option to input interface(s)
       case 'template':
@@ -319,6 +316,10 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
         setStep('project')
         break
       case 'github':
+        setOptions({ ...options, import: undefined })
+        setStep('import')
+        break
+      case 'zip':
         setOptions({ ...options, import: undefined })
         setStep('import')
         break
@@ -436,12 +437,9 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
             <Button style={{ ...buttonStyle, width: '48%', minWidth: 160 }} onClick={onSelect('github')}>
               <Row> <FaGithub fontSize='xx-large' className='mr1' /> Import from Github </Row>
             </Button>
-            <label style={{ width: '48%', minWidth: 160 }}>
-              <input hidden type='file' />
-              <Button style={{ pointerEvents: 'none', cursor: 'pointer', ...buttonStyle, width: '100%', minWidth: 160 }}>
-                Upload .zip file
-              </Button>
-            </label>
+            <Button style={{ ...buttonStyle, width: '48%', minWidth: 160 }} onClick={onSelect('zip')}>
+              Upload .zip file
+            </Button>
           </Row>
         </>
       )
@@ -494,8 +492,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
                     setRepoUrl(e.target.value)
                     setRepoContents(undefined)
                   }}
-                  placeholder='username/repo'
-                  autoFocus />
+                  placeholder='username/repo' />
               </Row>
             </Form>
           </Row>
@@ -525,7 +522,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
                 <Button wide variant='dark' className='mt1' type='button'
                   disabled={!Boolean(repoContents)}
                   onClick={() => {
-                    downloadFiles()
+                    downloadFilesFromGithub()
                   }}>
                   Import {repoContents ? 
                     repoContents.size > 1000 ? 
@@ -542,6 +539,25 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
         </>
       )
     } else if (step === 'zip') {
+      return (
+        <>
+          <Row style={{ width: '100%', position: 'relative', justifyContent: 'center' }}>
+            {backButton}
+            <h3>Upload zip:</h3>
+          </Row>
+          <Form>
+            <Input type='file' name='zip' label='Upload .zip archive' onChange={(e) => {
+              setZip(e.target.files? e.target.files[0] : null)
+            }} />
+            <Button disabled={!Boolean(zip)} fullWidth variant='dark' className='mt1' onClick={(e) => {
+              e.preventDefault()
+              importZip()
+            }}>
+              Import zip
+            </Button>
+          </Form>
+        </>
+      )
     } else if (step === 'template') {
       return (
         <>
