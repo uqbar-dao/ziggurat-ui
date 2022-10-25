@@ -46,6 +46,8 @@ export interface ZigguratStore {
   toggleGallFolder: (project: string, folder: string) => void
   setProjectText: (project: string, file: string, text: string) => void
   saveFiles: (projectTitle: string) => Promise<void>
+  fileExists: (project: string, path: string) => Promise<boolean>
+  readFile: (project: string, path: string) => Promise<string>
   addFile: (project: string, filename: string, isGall: boolean, fileContent?: string) => Promise<void>
   deleteFile: (project: string, file: string) => Promise<void>
   setOpenFiles: (openFiles: OpenFile[]) => void
@@ -278,6 +280,14 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       } catch (err) {}
       set({ loading: undefined })
     },
+    fileExists: async (project: string, path: string) => await api.scry({ 
+      app: 'ziggurat', 
+      path: `/file-exists/${project}/${path}`
+    }),
+    readFile: async (project: string, path: string) => await api.scry({
+      app: 'ziggurat',
+      path: `/read-file/${project}/${path}`
+    }),
     addFile: async (project: string, filename: string, isGall: boolean, fileContent?: string) => {
       set({ loading: 'Saving file...' })
       if (isGall) {

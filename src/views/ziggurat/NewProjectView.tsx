@@ -25,6 +25,7 @@ import Form from '../../components/form/Form';
 import { Select } from '../../components/form/Select';
 import { stellarGetAddress } from '@trezor/connect/lib/types/api/stellarGetAddress';
 import Divider from '../../components/spacing/Divider';
+import { getFileText } from '../../utils/gall';
 
 type CreationStep = 'title' | 'project' | 'gall' | 'token' | 'template' | 'metadata' | 'import' | 'github' | 'zip'
 type ProjectOption = 'contract' | 'gall' | 'contract-gall'
@@ -67,7 +68,7 @@ export interface DownloadedFile {
 }
 
 const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
-  const { userAddress, approveCorsDomain, contracts, createProject, populateTemplate, openFiles, setOpenFiles, addFile } = useZigguratStore()
+  const { userAddress, readFile, fileExists, contracts, createProject, populateTemplate, openFiles, setOpenFiles, addFile } = useZigguratStore()
   const nav = useNavigate()
 
   const [step, setStep] = useState<CreationStep>('title')
@@ -145,7 +146,6 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       result = await o.request(`GET /repos/${repoUrl}/git/trees/master`, {
         recursive: true
       })
-      console.log(1, { result })
 
       if (!result || !result.data || !result.data.tree) {
         throw 'Bad result: ' + JSON.stringify(result)
@@ -165,17 +165,31 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
         .map(async (file: TreeFile, i: number) => {
           const { data: { content, path } } = await o.request(`GET /repos/${repoUrl}/contents/${file.path}`)
           const text = Buffer.from(content, 'base64').toString()
-          
-          console.log(2, { title: options.title!, path, text })
-          
-          await addFile(options.title!, path, true, text)
-      }))
-
-      console.log(3, { _downloadedFiles })
+          const type = path.match(/\w+$/)
+          _downloadedFiles.push({ path, content: text, type })
+        }))
     } catch {
       alert(`Unable to download files. Halted at ${_downloadedFiles.length}/${result.data.tree.length}`)
       setLoadingText('')
       return
+    }
+
+    let neededMarks: any[] = []
+    try {
+      setLoadingText('Checking file marks...')
+      
+      await Promise.allSettled(_downloadedFiles.map(async ({ path, type }) => {
+        const hasMar = await fileExists('zig', `/mar/${type}`)
+        console.log({ path, hasMar })
+        if (!hasMar) {
+          // treat all unmarked files as txt
+          const txtMar = await readFile('zig', '/mar/txt/hoon')
+          await addFile(options.title!, `/zig/mar/${type}/hoon`, true, txtMar)
+        }
+      }))
+    } catch {
+      alert('Problem creating marks.')
+      setLoadingText('')
     }
 
     let _savedFiles: any[] = []
