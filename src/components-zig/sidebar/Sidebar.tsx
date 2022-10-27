@@ -53,9 +53,6 @@ export const Sidebar = () => {
   const buttons = [
     [<FaRegPlusSquare />, () => nav('/new'), 'new project'],
     [<FaSave />, () => saveFiles(currentProject), 'save project'],
-    [<FaUpload />, () => {
-      setShowImportModal(true)
-    }, 'import project'],
     [<FaFileAlt size={15} />, () => {
       if (isGall && currentFolder) {
         setNewFile(`/${currentFolder}/`)
@@ -163,10 +160,6 @@ export const Sidebar = () => {
           autoFocus
         />
         <Button fullWidth variant='dark' onClick={addNewFile}>Add</Button>
-      </Modal>
-      <Modal title='Import Project' show={showImportModal} hide={() => setShowImportModal(false)} style={{minWidth: 300}}>
-        <Button fullWidth onClick={() => {}}>Upload Folder</Button>
-        <Button fullWidth variant='dark' onClick={() => {}}><FaGithub /> Github Import</Button>
       </Modal>
     </Col>
   )

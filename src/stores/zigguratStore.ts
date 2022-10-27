@@ -17,7 +17,8 @@ import { Endpoint } from '../types/ziggurat/Endpoint';
 import { EndpointForm } from "../types/ziggurat/EndpointForm";
 import { genRanHex } from "../utils/number";
 import { handleEndpointUpdate } from "./subscriptions/endpoint";
-import pWaterfall from "p-waterfall";
+import pMap from "p-map";
+import { DownloadedFile } from "../views/ziggurat/NewProjectView";
 
 export interface ZigguratStore {
   loading?: string
@@ -55,7 +56,6 @@ export interface ZigguratStore {
   setOpenFiles: (openFiles: OpenFile[]) => void
   saveFileList: (files: { path: string, type: string, content: string }[], project: string) => Promise<void>
   toggleTest: (project: string, testId: string) => void
-  approveCorsDomain: (domain: string) => Promise<void>
 
   addGrain: (rice: TestGrainInput) => Promise<void>
   deleteGrain: (riceId: string, testId?: string) => Promise<void>
@@ -291,28 +291,24 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
         set({ loading: 'Saving files...' })
         
         const txtMar = await api.scry({ app: 'ziggurat', path: `/read-file/zig/mar/txt/hoon` })
-        await pWaterfall(downloadedFiles.map(({ path, type, content }, i) => async () => {
+        
+        const saveFile = async ({ path, type, content }: DownloadedFile, i: number) => {
           lastFile = path
           const hasMar = (get().knownMars.indexOf(type) > -1) 
             || (await api.scry({ app: 'ziggurat', path: `/file-exists/zig/mar/${type}/hoon` }))
-          console.log({ path, type, hasMar })
-
+          // console.log({ path, type, hasMar, content })
           // create mar for unknown filetypes. treat all unmarked files as txt
           if (!hasMar) {
             await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { "save-file": { file: `/zig/mar/${type}/hoon`, text: txtMar } } } })
           }
-  
           set({ 
             loading: `Saving files... ${path} (${i}/${downloadedFiles.length})`,
             knownMars: [ ...get().knownMars, type ]
           })
-          
-          console.log({ path, type, content })
+          return api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { "save-file": { file: `/${path}`, text: content || '' } } } })
+        }
 
-          debugger
-
-          await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { "save-file": { file: `/${path}`, text: content || '' } } } })
-        }))
+        await pMap(downloadedFiles, saveFile, { concurrency: 2, stopOnError: false })
       } catch (err) {
         alert(`Unable to save all files. Halted at ${lastFile}`)
       }
@@ -367,9 +363,6 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       }
     },
     setOpenFiles: (openFiles: OpenFile[]) => set({ openFiles }),
-    approveCorsDomain: async (domain: string) => {
-      await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project: '', action: { 'approve-cors-domain': { domain } } } })
-    },
     addGrain: async (rice: TestGrainInput) => {
       const project = get().currentProject
       const ryce: any = { ...rice }
