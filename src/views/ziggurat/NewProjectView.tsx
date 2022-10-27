@@ -190,11 +190,23 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
   }
 
   const importZip = async () => {
+    await submitNewProject({ ...options, project: 'gall' }, undefined, false)
+    
     const { entries } = await unzip(zip)
-
     const filesToImport = []
+    
     for (const [name, entry] of Object.entries(entries)) {
-      const path = name[0] === '/' ? name.replace(/\./g, '/') : `/${name.replace(/\./g, '/')}`
+      if (entry.isDirectory) continue
+
+      // replace all . with / and ensure path starts with /
+      let path = name[0] === '/' ? name.replace(/\./g, '/') : `/${name.replace(/\./g, '/')}`
+
+      // for zips with a single top level dir, remove the dir from path
+      if (path.match('^/'+zip.name.replace('.zip', ''))) {
+        path = path.replace(/.+?\//, '')
+      }
+
+      // filetype is all of the chars after the last /
       const type = path.replace(/.*\//g, '')
       const content = await entry.text()
       filesToImport.push({ path, content, type })
@@ -363,7 +375,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
             value={options.title || ''}
             placeholder="Title (no spaces)"
           />
-          <Button variant='dark' style={{ marginTop: 16, width: 240, justifyContent: 'center' }} onClick={onSelect('title')}>
+          <Button disabled={!Boolean(options.title)} variant='dark' style={{ marginTop: 16, width: 240, justifyContent: 'center' }} onClick={onSelect('title')}>
             Next
           </Button>
         </>
