@@ -173,11 +173,11 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       await pWaterfall(filesToDownload.map((file: TreeFile, i: number) => async () => {
         lastFile = file.path
         setLoadingText(`Downloading files... (${i}/${filesToDownload.length})`)
-        const { data: { content, filePath } } = await o.request(`GET /repos/${repoUrl}/contents/${file.path}`)
+        const { data: { content, path } } = await o.request(`GET /repos/${repoUrl}/contents/${file.path}`)
         const text = Buffer.from(content, 'base64').toString()
-        const type = filePath.replace(/.*\//g, '')
-        const path = filePath[0] === '/' ? filePath.replace(/\./g, '/') : `/${filePath.replace(/\./g, '/')}`
-        downloadedFiles.push({ path, content: text, type })
+        const type = path.replace(/.*\//g, '')
+        const filePath = path[0] === '/' ? path.replace(/\./g, '/') : `/${path.replace(/\./g, '/')}`
+        downloadedFiles.push({ path: filePath, content: text, type })
       }))
     } catch {
       alert(`Unable to download files. Halted at ${lastFile}`)
