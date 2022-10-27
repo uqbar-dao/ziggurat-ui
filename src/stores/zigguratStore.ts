@@ -17,6 +17,7 @@ import { Endpoint } from '../types/ziggurat/Endpoint';
 import { EndpointForm } from "../types/ziggurat/EndpointForm";
 import { genRanHex } from "../utils/number";
 import { handleEndpointUpdate } from "./subscriptions/endpoint";
+import pWaterfall from "p-waterfall";
 
 export interface ZigguratStore {
   loading?: string
@@ -33,6 +34,7 @@ export interface ZigguratStore {
   toastMessages: { project: string, message: string, id: number | string }[]
   userAddress: string
   endpoints: Endpoint[]
+  knownMars: string[]
   setLoading: (loading?: string) => void
   init: () => Promise<Contracts>
   getAccounts: () => Promise<void>
@@ -46,9 +48,12 @@ export interface ZigguratStore {
   toggleGallFolder: (project: string, folder: string) => void
   setProjectText: (project: string, file: string, text: string) => void
   saveFiles: (projectTitle: string) => Promise<void>
+  fileExists: (project: string, path: string) => Promise<boolean>
+  readFile: (project: string, path: string) => Promise<string>
   addFile: (project: string, filename: string, isGall: boolean, fileContent?: string) => Promise<void>
   deleteFile: (project: string, file: string) => Promise<void>
   setOpenFiles: (openFiles: OpenFile[]) => void
+  saveFileList: (files: { path: string, type: string, content: string }[], project: string) => Promise<void>
   toggleTest: (project: string, testId: string) => void
   approveCorsDomain: (domain: string) => Promise<void>
 
@@ -92,6 +97,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
     toastMessages: [],
     userAddress: DEFAULT_USER_ADDRESS,
     endpoints: [],
+    knownMars: [],
     setLoading: (loading?: string) => set({ loading }),
     init: async () => {
       const contracts = await get().getProjects()
@@ -161,7 +167,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
           const json = { project, action: { "new-contract-project": { template: options.token, 'user-address': get().userAddress } } }
           await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
         } else if (options?.project === 'gall') {
-          const json = { project, action: { "new-project": null } }
+          const json = { project, action: { "new-project": { 'user-address': '0x0' } } }
           await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
         }
 
@@ -278,6 +284,49 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       } catch (err) {}
       set({ loading: undefined })
     },
+    saveFileList: async (downloadedFiles, project: string) => {
+      let lastFile = ''
+
+      try {
+        set({ loading: 'Saving files...' })
+        
+        const txtMar = await api.scry({ app: 'ziggurat', path: `/read-file/zig/mar/txt/hoon` })
+        await pWaterfall(downloadedFiles.map(({ path, type, content }, i) => async () => {
+          lastFile = path
+          const hasMar = (get().knownMars.indexOf(type) > -1) 
+            || (await api.scry({ app: 'ziggurat', path: `/file-exists/zig/mar/${type}/hoon` }))
+          console.log({ path, type, hasMar })
+
+          // create mar for unknown filetypes. treat all unmarked files as txt
+          if (!hasMar) {
+            await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { "save-file": { file: `/zig/mar/${type}/hoon`, text: txtMar } } } })
+          }
+  
+          set({ 
+            loading: `Saving files... ${path} (${i}/${downloadedFiles.length})`,
+            knownMars: [ ...get().knownMars, type ]
+          })
+          
+          console.log({ path, type, content })
+
+          debugger
+
+          await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { "save-file": { file: `/${path}`, text: content || '' } } } })
+        }))
+      } catch (err) {
+        alert(`Unable to save all files. Halted at ${lastFile}`)
+      }
+  
+      set({ loading: undefined })
+    },
+    fileExists: async (project: string, path: string) => await api.scry({ 
+      app: 'ziggurat', 
+      path: `/file-exists/${project}/${path}`
+    }),
+    readFile: async (project: string, path: string) => await api.scry({
+      app: 'ziggurat',
+      path: `/read-file/${project}/${path}`
+    }),
     addFile: async (project: string, filename: string, isGall: boolean, fileContent?: string) => {
       set({ loading: 'Saving file...' })
       if (isGall) {
