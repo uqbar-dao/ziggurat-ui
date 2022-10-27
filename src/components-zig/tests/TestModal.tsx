@@ -27,8 +27,8 @@ export const TestModal = ({
   updateTestFormValue,
   submitTest,
 }: TestModalProps) => {
-  const { contracts, currentProject } = useZigguratStore()
-  const project = useMemo(() => contracts[currentProject], [contracts, currentProject])
+  const { projects, currentProject } = useZigguratStore()
+  const project = useMemo(() => projects[currentProject], [projects, currentProject])
 
   const [mold, setMold] = useState('other')
 

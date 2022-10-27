@@ -9,13 +9,13 @@ import useIndexerStore from '../../stores/indexerStore'
 import { Transaction } from '../../types/indexer/Transaction'
 import { mockData } from '../../utils/constants'
 import { removeDots, addHexDots } from '../../utils/format'
-import { mockHolderGrains, mockTransactions } from '../../mocks/indexer-mocks'
-import { Grain } from '../../types/indexer/Grain'
+import { mockHolderItems, mockTransactions } from '../../mocks/indexer-mocks'
+import { Item } from '../../types/indexer/Item'
 import { Location } from '../../types/indexer/Location'
 import { HashData } from '../../types/indexer/HashData'
 import { ADDRESS_REGEX, ETH_ADDRESS_REGEX } from '../../utils/regex'
 import { TransactionEntry } from '../../components-indexer/indexer/Transaction'
-import { GrainEntry } from '../../components-indexer/indexer/Grain'
+import { ItemEntry } from '../../components-indexer/indexer/Item'
 import PageHeader from '../../components/page/PageHeader'
 import Footer from '../../components-indexer/nav/Footer'
 import CardHeader from '../../components-indexer/card/CardHeader'
@@ -25,13 +25,13 @@ import Loader from '../../components/popups/Loader'
 
 import './AddressView.scss'
 
-type Selection = 'txns' | 'grains'
+type Selection = 'txns' | 'items'
 
 const AddressView = () => {
   const { scry } = useIndexerStore()
   const location = useLocation()
   const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [grains, setGrains] = useState<Grain[]>([])
+  const [items, setItems] = useState<Item[]>([])
   const [display, setDisplay] = useState<Selection>('txns')
   const [town, setTown] = useState<string>('')
   const [loading, setLoading] = useState(true)
@@ -43,17 +43,17 @@ const AddressView = () => {
   useEffect(() => {
     const getData = async () => {
       try {
-        const [rawData, grainInfo] = await Promise.all([
+        const [rawData, itemInfo] = await Promise.all([
           scry<HashData>(`/hash/${address}`),
-          scry<{ grain: { [key: string]: { grain: Grain; location: Location } } }>(`/json/grain/${address}`)
+          scry<{ item: { [key: string]: { item: Item; location: Location } } }>(`/json/item/${address}`)
         ])
 
-        console.log('SCRY: ', rawData, grainInfo)
+        console.log('SCRY: ', rawData, itemInfo)
 
-        const newGrains = Object.keys(rawData?.hash?.grains || {}).reduce((acc, cur) =>
-          acc.concat([{ ...rawData?.hash?.grains[cur][0].grain, id: cur } as any]), [] as Grain[])
+        const newItems = Object.keys(rawData?.hash?.items || {}).reduce((acc, cur) =>
+          acc.concat([{ ...rawData?.hash?.items[cur][0].item, id: cur } as any]), [] as Item[])
 
-        setGrains(newGrains)
+        setItems(newItems)
 
         if (rawData) {
           const { hash }: HashData = rawData
@@ -66,39 +66,27 @@ const AddressView = () => {
     }
 
     if (mockData) {
-      setGrains(mockHolderGrains)
+      setItems(mockHolderItems)
       return setTransactions(mockTransactions)
     }
 
     getData()
   }, [location]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const towns: string[] = (display === 'txns' ? transactions.reduce((acc: string[], cur: Grain | Transaction) => {
-    if ('town-id' in cur) {
-      if (!acc.includes(cur['town-id'])) {
-        acc.push(cur['town-id'])
-      }
-    } else {
-      if (!acc.includes(cur.location['town-id'])) {
-        acc.push(cur.location['town-id'])
-      }
+  const towns: string[] = (display === 'txns' ? transactions.reduce((acc: string[], cur: Transaction) => {
+    if (!acc.includes(cur.location['town-id'])) {
+      acc.push(cur.location['town-id'])
     }
     return acc
-  }, []) : grains.reduce((acc: string[], cur: Grain | Transaction) => {
-    if ('town-id' in cur) {
-      if (!acc.includes(cur['town-id'])) {
-        acc.push(cur['town-id'])
-      }
-    } else {
-      if (!acc.includes(cur.location['town-id'])) {
-        acc.push(cur.location['town-id'])
-      }
+  }, []) : items.reduce((acc: string[], cur: Item) => {
+    if (!acc.includes(cur.town)) {
+      acc.push(cur.town)
     }
     return acc
   }, []))
 
   const displayTransactions = town === '' ? transactions : transactions.filter(tx => tx.location['town-id'] === town)
-  const displayGrains = town === '' ? grains : grains.filter(gr => gr['town-id'] === town)
+  const displayItems = town === '' ? items : items.filter(gr => gr.town === town)
 
   return (
     <Container className='address-view'>
@@ -113,7 +101,7 @@ const AddressView = () => {
                 <Text onClick={() => setDisplay('txns')} className={`selector ${display === 'txns' && 'selected'}`}>
                   Transactions
                 </Text>
-                <Text onClick={() => setDisplay('grains')} className={`selector ${display === 'grains' && 'selected'}`}>
+                <Text onClick={() => setDisplay('items')} className={`selector ${display === 'items' && 'selected'}`}>
                   Assets
                 </Text>
               </Row>
@@ -142,11 +130,11 @@ const AddressView = () => {
                 )
               )
             ) : (
-              displayGrains.length > 0 ? (
-                displayGrains.map((grain, i) => (
-                  <GrainEntry grain={grain} isWalletAddress={isWalletAddress} key={i} />
+              displayItems.length > 0 ? (
+                displayItems.map((item, i) => (
+                  <ItemEntry item={item} isWalletAddress={isWalletAddress} key={i} />
                 ))
-              ) :  grains.length > 0 ? (
+              ) :  items.length > 0 ? (
                 <Text style={{ marginTop: 16 }}>No assets under this town</Text>
               ) : (
                 <Text style={{ marginTop: 16 }}>No assets</Text>

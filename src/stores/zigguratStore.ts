@@ -1,24 +1,25 @@
 import create from "zustand"
 import { persist } from "zustand/middleware"
 import { toast } from "react-toastify";
+import pWaterfall from "p-waterfall";
+import pMap from "p-map";
+
 import api from "../api";
 import { HardwareWallet, HardwareWalletType, HotWallet, processAccount, RawAccount } from "../types/wallet/Accounts";
-import { GallApps } from "../types/ziggurat/GallApp";
 import { OpenFile } from "../types/ziggurat/OpenFile";
-import { Contracts } from "../types/ziggurat/Contracts";
 import { RunTestPayload } from "../types/ziggurat/TestData";
-import { TestGrainInput } from "../types/ziggurat/TestGrain";
+import { TestItemInput } from "../types/ziggurat/TestItem";
 import { DEFAULT_USER_ADDRESS, ZIGGURAT_STORAGE_VERSION } from "../utils/constants";
-import { generateMolds, generateProjects } from "../utils/project";
-import { handleGallUpdate, handleContractUpdate, handleTestUpdate } from "./subscriptions/project";
+import { generateProjects } from "../utils/project";
+import { handleGallUpdate, handleTestUpdate } from "./subscriptions/project";
 import { createSubscription, Subscriptions } from "./subscriptions/createSubscription";
-import { getFilename, getFileText, getFolder, getFolderForFile, mapFilesToFolders } from "../utils/gall";
+import { getFilename, getFileText, getFolder, getFolderForFile, mapFilesToFolders } from "../utils/project";
 import { Endpoint } from '../types/ziggurat/Endpoint';
 import { EndpointForm } from "../types/ziggurat/EndpointForm";
 import { genRanHex } from "../utils/number";
 import { handleEndpointUpdate } from "./subscriptions/endpoint";
-import pMap from "p-map";
 import { DownloadedFile } from "../views/ziggurat/NewProjectView";
+import { Projects } from "../types/ziggurat/Project";
 
 export interface ZigguratStore {
   loading?: string
@@ -26,8 +27,7 @@ export interface ZigguratStore {
   currentFolder: string
   accounts: HotWallet[]
   importedAccounts: HardwareWallet[]
-  contracts: Contracts
-  gallApps: GallApps
+  projects: Projects
   openFiles: OpenFile[]
   openTools: string[]
   currentTool: string
@@ -37,30 +37,31 @@ export interface ZigguratStore {
   endpoints: Endpoint[]
   knownMars: string[]
   setLoading: (loading?: string) => void
-  init: () => Promise<Contracts>
+  init: () => Promise<Projects>
   getAccounts: () => Promise<void>
-  getProjects: () => Promise<Contracts>
+  getProjects: () => Promise<Projects>
   createProject: (options: { [key: string]: string }) => Promise<void>
-  populateTemplate: (project: string, template: 'nft' | 'fungible', metadata: TestGrainInput) => Promise<void>
+  populateTemplate: (project: string, template: 'nft' | 'fungible', metadata: TestItemInput) => Promise<void>
   setCurrentProject: (currentProject: string) => void
   setCurrentFolder: (currentFolder: string) => void
   deleteProject: (project: string) => Promise<string | null>
   setProjectExpanded: (project: string, expanded: boolean) => void
-  toggleGallFolder: (project: string, folder: string) => void
+  toggleProjectFolder: (project: string, folder: string) => void
   setProjectText: (project: string, file: string, text: string) => void
   saveFiles: (projectTitle: string) => Promise<void>
   fileExists: (project: string, path: string) => Promise<boolean>
   readFile: (project: string, path: string) => Promise<string>
-  addFile: (project: string, filename: string, isGall: boolean, fileContent?: string) => Promise<void>
+  addFile: (project: string, filename: string, fileContent?: string) => Promise<void>
   deleteFile: (project: string, file: string) => Promise<void>
   setOpenFiles: (openFiles: OpenFile[]) => void
   saveFileList: (files: { path: string, type: string, content: string }[], project: string) => Promise<void>
   toggleTest: (project: string, testId: string) => void
+  approveCorsDomain: (domain: string) => Promise<void>
 
-  addGrain: (rice: TestGrainInput) => Promise<void>
-  deleteGrain: (riceId: string, testId?: string) => Promise<void>
+  addItem: (rice: TestItemInput) => Promise<void>
+  deleteItem: (riceId: string, testId?: string) => Promise<void>
   addTest: (name: string, action: string, expectedError: number) => Promise<void>
-  addTestExpectation: (testId: string, expectations: TestGrainInput) => Promise<void>
+  addTestExpectation: (testId: string, expectations: TestItemInput) => Promise<void>
   deleteTest: (testId: string) => Promise<void>
   updateTest: (testId: string, name: string, action: string, expectedError: number) => Promise<void>
   runTest: (payload: RunTestPayload) => Promise<void>
@@ -88,8 +89,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
     importedAccounts: [],
     currentProject: '',
     currentFolder: '',
-    contracts: {},
-    gallApps: {},
+    projects: {},
     openFiles: [],
     subscriptions: {},
     openTools: ['webterm'],
@@ -100,11 +100,11 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
     knownMars: [],
     setLoading: (loading?: string) => set({ loading }),
     init: async () => {
-      const contracts = await get().getProjects()
+      const projects = await get().getProjects()
       get().getAccounts()
 
-      if (!get().currentProject && Object.values(contracts)[0]) {
-        set({ currentProject: Object.values(contracts)[0].title || '' })
+      if (!get().currentProject && Object.values(projects)[0]) {
+        set({ currentProject: Object.values(projects)[0].title || '' })
       }
 
       // TODO: set up subscriptions for endpoints, should be
@@ -120,7 +120,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
 
       set({ loading: undefined, endpoints: newEndpoints })
 
-      return contracts
+      return projects
     },
     getAccounts: async () => {
       const accountData = await api.scry<{[key: string]: RawAccount}>({ app: 'wallet', path: '/accounts' }) || {}
@@ -140,23 +140,19 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
     },
     getProjects: async () => {
       const rawProjects = await api.scry({ app: 'ziggurat', path: '/all-projects' })
-      const { contracts, gallApps } = generateProjects(rawProjects, get().contracts, get().gallApps)
-      console.log('PROJECTS:', contracts, gallApps)
+      const projects = generateProjects(rawProjects, get().projects)
+      console.log('PROJECTS:', projects)
 
-      const subscriptions = Object.keys(contracts).reduce((subs, p) => {
+      const subscriptions = Object.keys(projects).reduce((subs, p) => {
         subs[p] = [
-          api.subscribe(createSubscription('ziggurat', `/contract-project/${p}`, handleContractUpdate(get, set, p))),
+          api.subscribe(createSubscription('ziggurat', `/project/${p}`, handleGallUpdate(get, set, p))),
           api.subscribe(createSubscription('ziggurat', `/test-updates/${p}`, handleTestUpdate(get, set, p))),
         ]
         return subs
       }, {} as Subscriptions)
 
-      Object.keys(gallApps).forEach((gp) => subscriptions[gp] = [
-        api.subscribe(createSubscription('ziggurat', `/project/${gp}`, handleGallUpdate(get, set, gp)))
-      ])
-
-      set({ contracts, subscriptions, gallApps })
-      return contracts
+      set({ projects, subscriptions })
+      return projects
     },
     createProject: async (options: { [key: string]: string }) => {
       set({ loading: 'Creating project...' })
@@ -164,7 +160,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
 
       try {
         if (options?.project === 'contract') {
-          const json = { project, action: { "new-contract-project": { template: options.token, 'user-address': get().userAddress } } }
+          const json = { project, action: { "new-project": { 'user-address': get().userAddress } } }
           await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
         } else if (options?.project === 'gall') {
           const json = { project, action: { "new-project": { 'user-address': '0x0' } } }
@@ -180,7 +176,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
         set({ loading: undefined })
       }
     },
-    populateTemplate: async (project: string, template: 'nft' | 'fungible', metadata: TestGrainInput) => {
+    populateTemplate: async (project: string, template: 'blank' | 'nft' | 'fungible', metadata: TestItemInput) => {
       const json = { project, action: { "populate-template": { template, metadata } } }
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
     },
@@ -198,7 +194,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       console.log(1)
       if (project === get().currentProject) {
         console.log(2)
-        const nextProject = Object.keys(get().contracts)[0] || ''
+        const nextProject = Object.keys(get().projects)[0] || ''
         set({ currentProject: nextProject })
         console.log(3, nextProject)
         return nextProject
@@ -207,79 +203,55 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       return null
     },
     setProjectExpanded: (project: string, expanded: boolean) => {
-      const newProjects = { ...get().contracts }
-      const newApps = { ...get().gallApps }
+      const newProjects = { ...get().projects }
 
       if (newProjects[project]) {
         newProjects[project].expanded = expanded
-        set({ contracts: newProjects })
-      } else if (newApps[project]) {
-        newApps[project].expanded = expanded
-        set({ gallApps: newApps })
+        set({ projects: newProjects })
       }
     },
-    toggleGallFolder: (project: string, folder: string) => {
-      const newApps = { ...get().gallApps }
-      const targetApp = newApps[project]
+    toggleProjectFolder: (project: string, folder: string) => {
+      const newProjects = { ...get().projects }
+      const targetApp = newProjects[project]
       const targetFolder = getFolder(targetApp.folder, folder.split('/'))
       if (targetFolder)
         targetFolder.expanded = !targetFolder.expanded
 
-      set({ gallApps: newApps })
+      set({ projects: newProjects })
     },
     setProjectText: (project: string, file: string, text: string) => {
-      const { contracts, gallApps } = get()
-      if (contracts[project]) {
-        const newProjects = { ...contracts }
-        if (file === project) {
-          newProjects[project].main = text
-        } else {
-          newProjects[project].libs[file] = text
-        }
-        newProjects[project].modifiedFiles.add(file)
-        set({ contracts: newProjects })
-      } else if (gallApps[project]) {
-        const newApps = { ...gallApps }
-        const folder = getFolderForFile(newApps[project].folder, file)
+      const { projects } = get()
+      if (projects[project]) {
+        const newProjects = { ...projects }
+        const folder = getFolderForFile(newProjects[project].folder, file)
         if (folder) {
           folder.contents[file] = text
-          newApps[project].modifiedFiles.add(file)
-          set({ gallApps: newApps })
+          newProjects[project].modifiedFiles.add(file)
+          set({ projects: newProjects })
         }
       }
     },
-    saveFiles: async (project: string) => {
-      const contract = get().contracts[project]
-      const gallApp = get().gallApps[project]
-      set({ loading: `Saving ${gallApp ? 'gall app' : 'contract'}...` })
+    saveFiles: async (projectTitle: string) => {
+      const project = get().projects[projectTitle]
+      set({ loading: `Saving project...` })
       try {
-        if (contract && contract.modifiedFiles.size) {
+        if (project && project.modifiedFiles.size) {
           await Promise.all(
-            Array.from(contract.modifiedFiles.values()).map(async (name) => {
-              const text = name === project ? contract.main : contract.libs[name]
-              await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { 'save-file': { name, text } } } })
-            })
-          )
-          const newContracts = { ...get().contracts }
-          newContracts[project].modifiedFiles = new Set<string>()
-          newContracts[project].molds = generateMolds(newContracts[project])
-          set({ contracts: newContracts })
-        } else if (gallApp && gallApp.modifiedFiles.size) {
-          await Promise.all(
-            Array.from(gallApp.modifiedFiles.values()).map(async (file) => {
-              const text = getFileText(gallApp.folder, file.split('/').slice(1), file)
+            Array.from(project.modifiedFiles.values()).map(async (file) => {
+              const text = getFileText(project.folder, file.split('/').slice(1), file)
               try {
                 await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { 'save-file': { file, text } } } })
-                get().getGallFile(project, file)
+                get().getGallFile(projectTitle, file)
               } catch (err) {
                 toast.error(`Error saving ${file}`)
               }
               return file
             })
           )
-          const newApps = { ...get().gallApps }
-          newApps[project].modifiedFiles = new Set<string>()
-          set({ gallApps: newApps })
+          const newProjects = { ...get().projects }
+          newProjects[projectTitle].modifiedFiles = new Set<string>()
+          // newProjects[projectTitle].molds = generateMolds(newProjects[projectTitle])
+          set({ projects: newProjects })
         }
       } catch (err) {}
       set({ loading: undefined })
@@ -323,55 +295,44 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       app: 'ziggurat',
       path: `/read-file/${project}/${path}`
     }),
-    addFile: async (project: string, filename: string, isGall: boolean, fileContent?: string) => {
+    addFile: async (project: string, filename: string, fileContent?: string) => {
       set({ loading: 'Saving file...' })
-      if (isGall) {
-        const file = filename[0] === '/' ? filename.replace(/\./g, '/') : `/${filename.replace(/\./g, '/')}`
-        await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { "save-file": { file, text: fileContent || '' } } } })
-      } else {
-        await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { 'save-file': { name: filename, text: fileContent || '' } } } })
-      }
+      const file = filename[0] === '/' ? filename.replace(/\./g, '/') : `/${filename.replace(/\./g, '/')}`
+      await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { "save-file": { file, text: fileContent || '' } } } })
       await get().getProjects()
       set({ loading: undefined })
     },
     deleteFile: async (project: string, file: string) => {
-      const isGall = Boolean(get().gallApps[project])
-      const filename = isGall ? getFilename(file) : `${file}.hoon`
+      const filename = getFilename(file)
       if (project === file) {
         return alert('You cannot delete the main contract file. Delete the project instead.')
       }
       if (window.confirm(`Are you sure you want to delete ${filename} in project "${project}"?`)) {
-        if (isGall) {
-          await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { 'delete-file': { file } } } })
-          const newApps = { ...get().gallApps }
-          const newDir = newApps[project].dir.filter(f => f !== file)
-          const newModified = newApps[project].modifiedFiles
-          newModified.delete(file)
-          newApps[project] = {
-            ...newApps[project],
-            dir: newDir,
-            folder: mapFilesToFolders(project, newDir, newApps[project]),
-            modifiedFiles:  newModified,
-          }
-          set({ gallApps: newApps })
-        } else {
-          await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { 'delete-file': { name: file } } } })
-          const newContracts = { ...get().contracts }
-          delete newContracts[project].libs[file]
-          set({ contracts: newContracts })
+        await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { 'delete-file': { file } } } })
+        const newProjects = { ...get().projects }
+        const newDir = newProjects[project].dir.filter(f => f !== file)
+        const newModified = newProjects[project].modifiedFiles
+        newModified.delete(file)
+        newProjects[project] = {
+          ...newProjects[project],
+          dir: newDir,
+          folder: mapFilesToFolders(project, newDir, newProjects[project]),
+          modifiedFiles:  newModified,
         }
+        set({ projects: newProjects })
       }
     },
     setOpenFiles: (openFiles: OpenFile[]) => set({ openFiles }),
-    addGrain: async (rice: TestGrainInput) => {
+    approveCorsDomain: async (domain: string) => {
+      await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project: '', action: { 'approve-cors-domain': { domain } } } })
+    },
+    addItem: async (rice: TestItemInput) => {
       const project = get().currentProject
-      const ryce: any = { ...rice }
-      delete ryce.id // id is generated by backend
-      const json = { project, action: { "add-to-state": ryce } }
+      const json = { project, action: { "add-to-state": { ...rice, id: undefined } } }
       console.log('SAVING GRAIN:', json)
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
     },
-    deleteGrain: async (riceId: string, testId?: string) => {
+    deleteItem: async (riceId: string, testId?: string) => {
       const project = get().currentProject
       if (testId) {
         const json = { project, action: { "delete-test-expectation": { id: testId, delete: riceId } } }
@@ -388,21 +349,15 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       try {
         await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
       } catch {
-        const msg = 'Error saving test. Please ensure your hoon data is valid, and that you do not use any molds.'
+        const msg = 'Error saving test. Please ensure your hoon data is valid, and that you do not use any interfaces.'
         alert(msg)
         throw msg
       }
     },
-    addTestExpectation: async (testId: string, expected: TestGrainInput) => {
+    addTestExpectation: async (testId: string, expected: TestItemInput) => {
       const project = get().currentProject
       const json = { project, action: { "add-test-expectation": { id: testId, expected: {
-        salt: expected.salt,
-        label: expected.label,
-        data: expected.data,
-        source: expected.source,
-        holder: expected.holder,
-        'town-id': expected['town-id'],
-        // id: expected.id // ids are calculated on backend
+        ...expected, id: undefined // ids are calculated on backend
       } } } }
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
     },
@@ -418,7 +373,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       try {
         await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
       } catch {
-        const msg = 'Error saving test. Please ensure your hoon data is valid, and that you do not use any molds.'
+        const msg = 'Error saving test. Please ensure your hoon data is valid, and that you do not use any interfaces.'
         alert(msg)
         throw msg
       }
@@ -467,21 +422,21 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       set({ openTools: openTools.filter(a => a !== tool), currentTool: currentTool === tool ? openTools[0] || '' : currentTool })
     },
     toggleTest: (project: string, testId: string) => {
-      const newProjects = { ...get().contracts }
+      const newProjects = { ...get().projects }
       newProjects[project].tests[testId].selected = !newProjects[project].tests[testId].selected
-      set({ contracts: newProjects })
+      set({ projects: newProjects })
     },
     addToastMessage: (project: string, message: string, id: number | string) => set({ toastMessages: get().toastMessages.concat([{ project, message, id }]) }),
     setUserAddress: (userAddress: string) => set({ userAddress }),
     getGallFile: async (project: string, file: string) => {
       const text = await api.scry<string>({ app: 'ziggurat', path: `/read-file/${project}${file}` })
-      const newApps = { ...get().gallApps }
-      const targetApp = newApps[project]
+      const newProjects = { ...get().projects }
+      const targetApp = newProjects[project]
       const folder = getFolderForFile(targetApp.folder, file)
       if (folder)
         folder.contents[file] = text
 
-      set({ gallApps: newApps })
+      set({ projects: newProjects })
     },
     addEndpoint: async (endpoint: EndpointForm, id?: string) => {
       // TODO: add subscriptions

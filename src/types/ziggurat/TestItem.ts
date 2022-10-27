@@ -1,20 +1,21 @@
 export type TestRiceValue = string | TestRiceValue[] | { [key: string]: string | TestRiceValue }
 
-export type TestGrainField = 'id'
+export type TestItemField = 'id'
   | 'holder'
   | 'source'
   | 'town_id'
   | 'label'
   | 'salt'
-  | 'data'
+  | 'noun'
   | 'contract'
 
-export interface GrainTemplate {
+export interface ItemTemplate {
   id: string
   holder: string
   source: string
+  'is-pact'?: boolean
   label?: string
-  data?: string
+  noun?: string
   contract?: boolean
 
   // UI-specific fields
@@ -22,13 +23,13 @@ export interface GrainTemplate {
   riceInvalid?: boolean
 }
 
-export interface TestGrain extends GrainTemplate {
+export interface TestItem extends ItemTemplate {
   town_id: string
   salt?: string
-  data_text: string
+  noun_text: string
 }
 
-export interface TestGrainInput extends GrainTemplate {
-  'town-id': string
+export interface TestItemInput extends ItemTemplate {
+  town: string
   salt: number
 }

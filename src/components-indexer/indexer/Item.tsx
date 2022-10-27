@@ -1,5 +1,5 @@
 import useIndexerStore from '../../stores/indexerStore'
-import { Grain } from '../../types/indexer/Grain'
+import { Item } from '../../types/indexer/Item'
 import { addHexDots } from '../../utils/format'
 import CopyIcon from '../../components/text/CopyIcon'
 import Entry from '../../components/spacing/Entry'
@@ -7,50 +7,50 @@ import Field from '../../components/spacing/Field'
 import Link from '../nav/Link'
 import Text from '../../components/text/Text'
 import HexNum from '../../components/text/HexNum'
-
-import './Grain.scss'
 import Row from '../../components/spacing/Row'
 
-interface GrainEntryProps {
-  grain: Grain
+import './Item.scss'
+
+interface ItemEntryProps {
+  item: Item
   isWalletAddress?: boolean
 }
 
-export const GrainEntry = ({
-  grain,
+export const ItemEntry = ({
+  item,
   isWalletAddress = false,
-}: GrainEntryProps) => {
+}: ItemEntryProps) => {
   const { metadata } = useIndexerStore()
-  const tokenMetadata = grain.salt ? metadata[grain.salt] : null
+  const tokenMetadata = item.salt ? metadata[item.salt] : null
 
   return (
-    grain.id !== grain.source ? (
-      <Entry divide className='indexer-grain' key={grain.id}>
+    item.id !== item.source ? (
+      <Entry divide className='indexer-item' key={item.id}>
         <Field className='id' name='ID:'>
           <Row>
-            <Link href={`/grain/${addHexDots(grain.id)}`}>
-              <HexNum mono style={{ margin: 2 }} num={addHexDots(grain.id)} />
+            <Link href={`/item/${addHexDots(item.id)}`}>
+              <HexNum mono style={{ margin: 2 }} num={addHexDots(item.id)} />
             </Link>
-            <CopyIcon text={addHexDots(grain.id)}></CopyIcon>
+            <CopyIcon text={addHexDots(item.id)}></CopyIcon>
           </Row>
         </Field>
         {isWalletAddress ? (
-          <Field name='Lord:'>
+          <Field name='Source:'>
             <Row>
-              <Link href={`/grain/${addHexDots(grain.source)}`}>
-                <HexNum mono style={{ margin: 2 }} num={addHexDots(grain.source)} />
+              <Link href={`/item/${addHexDots(item.source)}`}>
+                <HexNum mono style={{ margin: 2 }} num={addHexDots(item.source)} />
               </Link>
-              <CopyIcon text={addHexDots(grain.source)}></CopyIcon>
+              <CopyIcon text={addHexDots(item.source)}></CopyIcon>
             </Row>
           </Field>
         ) : (
-          grain.holder !== grain.source && (
+          item.holder !== item.source && (
             <Field name='Holder:'>
               <Row>
-                <Link href={`/address/${addHexDots(grain.holder)}`}>
-                  <HexNum mono style={{ margin: 2 }} num={addHexDots(grain.holder)} />
+                <Link href={`/address/${addHexDots(item.holder)}`}>
+                  <HexNum mono style={{ margin: 2 }} num={addHexDots(item.holder)} />
                 </Link>
-                <CopyIcon text={addHexDots(grain.holder)}></CopyIcon>
+                <CopyIcon text={addHexDots(item.holder)}></CopyIcon>
               </Row>
             </Field>
           )
@@ -64,8 +64,8 @@ export const GrainEntry = ({
           </Field>
         )}
         <Field name='Town:'>
-          <HexNum mono style={{ margin: 2 }} num={grain['town-id'].toString()} />
-          {/* <CopyIcon text={`${grain.townId}`}></CopyIcon> */}
+          <HexNum mono style={{ margin: 2 }} num={item.town.toString()} />
+          {/* <CopyIcon text={`${item.townId}`}></CopyIcon> */}
         </Field>
       </Entry>
     ) : (

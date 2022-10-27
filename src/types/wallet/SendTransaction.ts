@@ -10,7 +10,7 @@ export interface SendCustomTransactionPayload extends SendTransactionPayload {
 
 export interface SendAssetPayload extends SendTransactionPayload {
   to: string
-  grain: string
+  item: string
 }
 
 export interface SendTokenPayload extends SendAssetPayload {

@@ -14,8 +14,7 @@ import Text from '../../components/text/Text'
 import { Select } from '../../components/form/Select';
 import { displayPubKey } from '../../utils/account';
 import { DEFAULT_USER_ADDRESS } from '../../utils/constants';
-import { ContractDirectory } from './ContractDirectory';
-import { GallAppDirectory } from './GallAppDirectory';
+import { ProjectDirectory } from './ProjectDirectory';
 
 import './Sidebar.scss'
 
@@ -24,7 +23,7 @@ const APP_NAMES : { [key: string]: string } = {
 }
 
 export const Sidebar = () => {
-  const { userAddress, contracts, gallApps, currentProject, currentFolder, currentTool, openTools, accounts, importedAccounts,
+  const { userAddress, projects, currentProject, currentFolder, currentTool, openTools, accounts, importedAccounts,
     addTool, setCurrentTool, removeTool, saveFiles, setUserAddress, addFile } = useZigguratStore()
   const [showToolModal, setShowToolModal] = useState(false)
   const [toolToAdd, setToolToAdd] = useState('')
@@ -48,13 +47,11 @@ export const Sidebar = () => {
 
   const BUTTON_STYLE = { marginLeft: 6, padding: 2, marginBottom: -4 }
 
-  const isGall = useMemo(() => Boolean(gallApps[currentProject]), [gallApps, currentProject])
-
   const buttons = [
     [<FaRegPlusSquare />, () => nav('/new'), 'new project'],
     [<FaSave />, () => saveFiles(currentProject), 'save project'],
     [<FaFileAlt size={15} />, () => {
-      if (isGall && currentFolder) {
+      if (currentFolder) {
         setNewFile(`/${currentFolder}/`)
       }
       setShowAddFileModal(true)
@@ -79,10 +76,10 @@ export const Sidebar = () => {
   }, [setCurrentTool, nav])
 
   const addNewFile = useCallback(() => {
-    addFile(currentProject, newFile, Boolean(gallApps[currentProject]))
+    addFile(currentProject, newFile)
     setNewFile('')
     setShowAddFileModal(false)
-  }, [gallApps, currentProject, newFile, addFile, setNewFile, setShowAddFileModal])
+  }, [currentProject, newFile, addFile, setNewFile, setShowAddFileModal])
 
   const userAddresses = useMemo(
     () => accounts.map(({ rawAddress }) => rawAddress).concat(importedAccounts.map(({ rawAddress }) => rawAddress)).concat([DEFAULT_USER_ADDRESS]),
@@ -121,8 +118,7 @@ export const Sidebar = () => {
             </Tooltip>
           ))}
         </Row>
-        {Object.values(contracts).map((p) => <ContractDirectory key={p.title} project={p} />)}
-        {Object.values(gallApps).map((p) => <GallAppDirectory key={p.title} project={p} />)}
+        {Object.values(projects).map((p) => <ProjectDirectory key={p.title} project={p} />)}
       </Col>
       <Col className='tools' style={{ width: '100%', height: '20%', borderTop: '1px solid black', overflow: 'auto' }}>
         <Row style={{ padding: '8px 12px' }}>
@@ -156,7 +152,7 @@ export const Sidebar = () => {
         <div style={{ marginBottom: 12 }}>(adding to project '{currentProject}')</div>
         <Input onChange={(e) => setNewFile(e.target.value)}
           value={newFile} placeholder='file name'
-          label={isGall ? 'Please include the full file path' : undefined}
+          label={'Please include the full file path'}
           autoFocus
         />
         <Button fullWidth variant='dark' onClick={addNewFile}>Add</Button>

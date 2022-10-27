@@ -6,25 +6,25 @@ import Button from "../../components/form/Button"
 import Row from "../../components/spacing/Row"
 import Text from "../../components/text/Text"
 
-export const GrainDisplaySmall = ({ grain, field, test }: { grain: string, field?: string, test: Test }) => {
+export const ItemDisplaySmall = ({ item, field, test }: { item: string, field?: string, test: Test }) => {
   const { updateTest } = useZigguratStore()
 
-  const removeGrain = useCallback(() => {
+  const removeItem = useCallback(() => {
     const newTest = { ...test }
 
     // if (field && newTest.input.action[field] && Array.isArray(newTest.input.action[field])) {
-    //   newTest.input.action[field] = (newTest.input.action[field] as string[]).filter(g => g !== grain)
+    //   newTest.input.action[field] = (newTest.input.action[field] as string[]).filter(g => g !== item)
     // } else {
-    //   newTest.input.cart.grains = newTest.input.cart.grains.filter((g) => g !== grain)
+    //   newTest.input.cart.items = newTest.input.cart.items.filter((g) => g !== item)
     // }
 
   }, [test])
 
   return (
     <Row between style={{ margin: 4, padding: '2px 6px', background: 'white', borderRadius: 4 }}>
-      <Text mono style={{ marginRight: 8 }}>ID: {grain.length > 11 ? truncateString(grain) : grain}</Text>
+      <Text mono style={{ marginRight: 8 }}>ID: {item.length > 11 ? truncateString(item) : item}</Text>
       <Button
-        onClick={removeGrain}
+        onClick={removeItem}
         variant='unstyled'
         className="delete"
         style={{ fontSize: 20 }}

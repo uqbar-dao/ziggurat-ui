@@ -1,7 +1,7 @@
 import { SendNftPayload, SendTokenPayload } from "../types/wallet/SendTransaction";
 
 export const generateSendTokenPayload = (payload: SendTokenPayload | SendNftPayload) => {
-  const { from, contract, town, grain, to } = payload
+  const { from, contract, town, item, to } = payload
 
   const json = {
     transaction: {
@@ -17,14 +17,14 @@ export const generateSendTokenPayload = (payload: SendTokenPayload | SendNftPayl
       give: {
         to,
         amount: payload.amount,
-        grain,
+        item,
       },
     }
   } else {
     json.transaction.action = {
       'give-nft': {
         to,
-        grain,
+        item,
       }
     }
   }

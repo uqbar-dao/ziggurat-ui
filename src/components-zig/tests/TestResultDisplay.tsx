@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Col from '../../components/spacing/Col'
 import Button from '../../components/form/Button';
 import { TestResult } from '../../types/ziggurat/TestData';
-import { getGrainDiff } from '../../utils/tests';
+import { getItemDiff } from '../../utils/tests';
 import Text from '../../components/text/Text';
 import { displayPubKey } from '../../utils/account';
 import Modal from '../../components/popups/Modal';
@@ -25,14 +25,14 @@ const TestResultDisplay = ({ result, expectedError }: { result?: TestResult, exp
           {result?.errorcode !== expectedError && (
             <Field name='Status Code'>{`expected: ${STATUS_CODES_RAW[expectedError]}, got: ${STATUS_CODES_RAW[result.errorcode]}`} </Field>
           )}
-          {Object.keys(result?.grains)
-            .filter(id => !result.grains[id].match)
+          {Object.keys(result?.items)
+            .filter(id => !result.items[id].match)
             .map((id, index, arr) => {
-              const grain = result.grains[id]
-              const errorMsg = (grain.expected === null && grain.match === null) 
-                ? 'Grain was not expected to change.' 
-                : (grain.expected && !grain.made)
-                  ? 'Grain changes did not match expectations.'
+              const item = result.items[id]
+              const errorMsg = (item.expected === null && item.match === null) 
+                ? 'Item was not expected to change.' 
+                : (item.expected && !item.made)
+                  ? 'Item changes did not match expectations.'
                   : ''
 
               if (errorMsg) {
@@ -45,7 +45,7 @@ const TestResultDisplay = ({ result, expectedError }: { result?: TestResult, exp
                 )
               }
               
-              const diff = getGrainDiff(grain.expected, grain.made)
+              const diff = getItemDiff(item.expected, item.made)
               return (
                 <Entry className='ml1' divide key={id}>
                   <h4>Failure #{index+1}</h4>
@@ -65,13 +65,13 @@ const TestResultDisplay = ({ result, expectedError }: { result?: TestResult, exp
       )}
       <Button style={{ margin: '8px 0 0 16px' }} onClick={() => setShowAllResultsModal(true)} small>Show full test output</Button> 
       <Modal title='Full Test Results' show={showAllResultsModal} hide={() => setShowAllResultsModal(false)}>
-        {result?.grains && Object.keys(result.grains).length ? (
-          Object.keys(result.grains).map(id => (
+        {result?.items && Object.keys(result.items).length ? (
+          Object.keys(result.items).map(id => (
             <Entry key={id}>
-              <Field name='Grain ID'>{id}</Field>
-              <Field name='Match'>{JSON.stringify(result.grains[id].match)}</Field>
-              <Field name='Expected'>{JSON.stringify(result.grains[id].expected)}</Field>
-              <Field name='Result'>{JSON.stringify(result.grains[id].made)}</Field>
+              <Field name='Item ID'>{id}</Field>
+              <Field name='Match'>{JSON.stringify(result.items[id].match)}</Field>
+              <Field name='Expected'>{JSON.stringify(result.items[id].expected)}</Field>
+              <Field name='Result'>{JSON.stringify(result.items[id].made)}</Field>
             </Entry>
           ))
         ) : (

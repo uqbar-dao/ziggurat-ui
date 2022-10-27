@@ -1,7 +1,7 @@
-import { Grain } from "./Grain"
+import { Item } from "./Item"
 
-export interface Granary {
-  [grainId: string]: Grain
+export interface ChainState {
+  [itemId: string]: Item
 }
 
 export interface Populace {
@@ -20,7 +20,7 @@ export interface Town {
     "town-id": "0x0"
   },
   chain: {
-    state: Granary
+    state: ChainState
     nonces: Populace
   }
 }

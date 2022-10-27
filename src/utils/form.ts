@@ -1,6 +1,6 @@
 import { FormField, FormValues } from "../types/ziggurat/FormValues"
 import { Test } from "../types/ziggurat/TestData"
-import { TestGrain, TestGrainField } from "../types/ziggurat/TestGrain"
+import { TestItem, TestItemField } from "../types/ziggurat/TestItem"
 import { UqbarType } from "../types/ziggurat/UqbarType"
 import { formatType, removeDots } from "./format"
 
@@ -11,7 +11,7 @@ export const GRAIN_FORM_VALUES_COMMON: { [key: string]: any } = {
   town_id: '@ux',
   salt: '@',
   label: '@tas',
-  data: 'raw hoon',
+  noun: 'raw hoon',
 }
 
 export const TEST_FORM_VALUES_COMMON: { [key: string]: any } = {
@@ -24,7 +24,7 @@ export const TEST_FORM_VALUES_COMMON: { [key: string]: any } = {
 
 export const formatField: { [key: string]: (val: string) => string } = {
   // '%id': (value: string) => value.replace(/[^x0-9A-Fa-f.]/, ''),
-  '%grain': (value: string) => value.replace(/[^x0-9A-Fa-f.]/, ''),
+  '%item': (value: string) => value.replace(/[^x0-9A-Fa-f.]/, ''),
   '@': (value: string) => value.replace(/[^0-9.]/, ''),
   '@da': (value: string) => value,
   '@p': (value: string) => value.replace(/[^A-Za-z~-]/, ''),
@@ -40,14 +40,14 @@ export const formatField: { [key: string]: (val: string) => string } = {
   'any': (value: string) => value,
 }
 
-export const formValuesFromGrain = (grain: TestGrain) =>
+export const formValuesFromItem = (item: TestItem) =>
   Object.keys(GRAIN_FORM_VALUES_COMMON).reduce((acc, key) => {
-    const value = grain && (key === 'data' ? grain.data_text : String(grain[key as TestGrainField] || '')) || ''
+    const value = item && (key === 'noun' ? item.noun_text : String(item[key as TestItemField] || '')) || ''
     acc[key] = { type: GRAIN_FORM_VALUES_COMMON[key], value }
     return acc
   }, {} as FormValues)
 
-export const formValuesForGrain = () =>
+export const formValuesForItem = () =>
   Object.keys(GRAIN_FORM_VALUES_COMMON).reduce((acc, key) => {
     acc[key] = { type: GRAIN_FORM_VALUES_COMMON[key], value: '' }
     return acc
@@ -68,20 +68,20 @@ const findValue = (obj: { [key: string]: any }, key: string) : string => {
 }
 
 interface GenerateFormParams {
-  type: 'grain' | 'test'
+  type: 'item' | 'test'
   name: string
   data: FormValues
   copy?: boolean
-  edit?: Test | TestGrain
+  edit?: Test | TestItem
 }
 
 // export const generateFormValues = ({ type, name, data, copy = false, edit }: GenerateFormParams): FormValues => {
-//   const allFields = type === 'grain' ? { ...GRAIN_FORM_VALUES_COMMON } : { ...TEST_FORM_VALUES_COMMON, ...data }
+//   const allFields = type === 'item' ? { ...GRAIN_FORM_VALUES_COMMON } : { ...TEST_FORM_VALUES_COMMON, ...data }
 //   Object.keys(allFields).forEach((key) => {
 //     // if (edit && 'data' in edit && edit.data[key]) {
 //     //   allFields[key] = edit.data[key]
 //     // } else {
-//       allFields[key] = { type: formatField[allFields[key]] ? allFields[key] : 'any', value: edit ? findValue(edit, key) : allFields[key].includes('%grain') ? [] : '' }
+//       allFields[key] = { type: formatField[allFields[key]] ? allFields[key] : 'any', value: edit ? findValue(edit, key) : allFields[key].includes('%item') ? [] : '' }
 //   })
 //   allFields.label.value = name
 //   return allFields
@@ -102,17 +102,17 @@ export const copyFormValues = (values: FormValues) => Object.keys(values).reduce
 //   input: { action: actionType, formValues: copyFormValues(testFormValues) }
 // })
 
-export const grainFromForm = (testGrainValues: FormValues) => ({
-  id: formatType(testGrainValues.id.type, testGrainValues.id.value),
-  source: formatType(testGrainValues.source.type, testGrainValues.source.value),
-  holder: formatType(testGrainValues.holder.type, testGrainValues.holder.value),
-  'town-id': formatType(testGrainValues.town_id.type, testGrainValues.town_id.value),
-  label: formatType(testGrainValues.label.type, testGrainValues.label.value),
-  salt: Number(removeDots(testGrainValues.salt.value)),
-  data: testGrainValues.data.value.replace(/\n/g, ' '),
-  // data: Object.keys(testGrainValues).reduce((acc, key) => {
+export const itemFromForm = (testItemValues: FormValues) => ({
+  id: formatType(testItemValues.id.type, testItemValues.id.value),
+  source: formatType(testItemValues.source.type, testItemValues.source.value),
+  holder: formatType(testItemValues.holder.type, testItemValues.holder.value),
+  town: formatType(testItemValues.town_id.type, testItemValues.town_id.value),
+  label: formatType(testItemValues.label.type, testItemValues.label.value),
+  salt: Number(removeDots(testItemValues.salt.value)),
+  data: testItemValues.data.value.replace(/\n/g, ' '),
+  // data: Object.keys(testItemValues).reduce((acc, key) => {
   //   if (!Object.keys(GRAIN_FORM_VALUES_COMMON).includes(key)) {
-  //     acc[key] = { type: testGrainValues[key].type, value: formatType(testGrainValues[key].type, testGrainValues[key].value) }
+  //     acc[key] = { type: testItemValues[key].type, value: formatType(testItemValues[key].type, testItemValues[key].value) }
   //   }
   //   return acc
   // }, {} as FormValues),
@@ -167,8 +167,8 @@ export const validateWithType = (type: UqbarType, value: string) => {
 }
 
 export const validate = (type: TypeAnnotation) => (value?: string): boolean => {
-  if (typeof type === 'string' && type.includes('%grain')) {
-    // grains will be handled with drag-and-drop
+  if (typeof type === 'string' && type.includes('%item')) {
+    // items will be handled with drag-and-drop
     return true
   }
 

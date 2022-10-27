@@ -64,8 +64,8 @@ const TransactionView = () => {
         <Card title='Overview'>
           <Entry>
             <Field name='Batch:'>
-              <Link href={`/block/${loc['epoch-num']}/${loc['block-num']}/${loc['town-id']}`} className='address'>
-                <Text mono oneLine>{loc['epoch-num']}-{loc['block-num']}-{loc['town-id']}</Text>
+              <Link href={`/block/${loc['batch-root']}/${loc['town-id']}`} className='address'>
+                <Text mono oneLine>{loc['batch-root']}-{loc['town-id']}</Text>
               </Link>
             </Field>
           </Entry>

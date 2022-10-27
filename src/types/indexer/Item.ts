@@ -1,14 +1,17 @@
-export interface Grain {
+import { Location } from "./Location"
+
+export interface Item {
   salt: number
   holder: string
   id: string
   source: string
   label: string
   cont?: null | string
-  'town-id': string
-  'is-rice': boolean
-  data?: {
-    [grainType: string]: string
+  town: string
+  'is-data': boolean
+  location: Location
+  noun?: {
+    [itemType: string]: string
   }
   interface: {
     [action: string]: any
@@ -21,7 +24,7 @@ export interface Grain {
 //             "to": "ux"
 //         },
 //         {
-//             "grain-id": "ux"
+//             "item-id": "ux"
 //         }
 //     ],
 //     "mint": [
@@ -59,7 +62,7 @@ export interface Grain {
 //                     "who": "ux"
 //                 },
 //                 {
-//                     "grain": "ux"
+//                     "item": "ux"
 //                 },
 //                 {
 //                     "allowed": "?"
@@ -124,7 +127,7 @@ export interface Grain {
 //             "to": "ux"
 //         },
 //         {
-//             "grain-id": "ux"
+//             "item-id": "ux"
 //         }
 //     ]
 // },

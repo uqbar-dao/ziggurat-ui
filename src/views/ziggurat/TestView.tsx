@@ -8,16 +8,16 @@ import Row from '../../components/spacing/Row'
 import useZigguratStore from '../../stores/zigguratStore';
 import Modal from '../../components/popups/Modal';
 import Button from '../../components/form/Button';
-import { formValuesForGrain, formValuesFromGrain, grainFromForm, updateField, validateFormValues } from '../../utils/form';
+import { formValuesForItem, formValuesFromItem, itemFromForm, updateField, validateFormValues } from '../../utils/form';
 import { TestList } from '../../components-zig/tests/TestList';
-import { GrainList } from '../../components-zig/tests/GrainList';
-import { TestGrain, } from '../../types/ziggurat/TestGrain';
+import { ItemList } from '../../components-zig/tests/ItemList';
+import { TestItem } from '../../types/ziggurat/TestItem';
 import { Test } from '../../types/ziggurat/TestData';
 import { TestModal } from '../../components-zig/tests/TestModal';
 import { FormValues } from '../../types/ziggurat/FormValues';
 import { OpenFileHeader } from '../../components-zig/nav/OpenFileHeader';
 import { DEFAULT_BUDGET, DEFAULT_RATE } from '../../utils/constants';
-import { GrainModal } from '../../components-zig/tests/GrainModal';
+import { ItemModal } from '../../components-zig/tests/ItemModal';
 import Text from '../../components/text/Text'
 import { BLANK_TEST_FORM, TestFormField, TestFormValues } from '../../types/ziggurat/TestForm';
 import Field from '../../components/spacing/Field';
@@ -28,27 +28,27 @@ import './TestView.scss'
 export interface TestViewProps {}
 
 export const TestView = () => {
-  const { contracts, currentProject, setLoading, addTest, updateTest, addGrain, runTest, runTests, addTestExpectation } = useZigguratStore()
+  const { projects, currentProject, setLoading, addTest, updateTest, addItem, runTest, runTests, addTestExpectation } = useZigguratStore()
 
   const [showTestModal, setShowTestModal] = useState(false)
   const [testExpectation, setTestExpecation] = useState('')
-  const [showGrainModal, setShowGrainModal] = useState(false)
+  const [showItemModal, setShowItemModal] = useState(false)
   const [showRunModal, setShowRunModal] = useState(false)
-  const [grainFormValues, setGrainFormValues] = useState<FormValues>(formValuesForGrain())
+  const [itemFormValues, setItemFormValues] = useState<FormValues>(formValuesForItem())
   const [testFormValues, setTestFormValues] = useState<TestFormValues>(BLANK_TEST_FORM)
-  const [edit, setEdit] = useState<Test | TestGrain | undefined>()
+  const [edit, setEdit] = useState<Test | TestItem | undefined>()
 
-  const project = useMemo(() => contracts[currentProject], [contracts, currentProject])
+  const project = useMemo(() => projects[currentProject], [projects, currentProject])
 
   const isMobile = isMobileCheck()
 
-  const populateGrainForm = useCallback((grain?: TestGrain) => {
-    if (grain) {
-      setGrainFormValues(formValuesFromGrain(grain))
-      setEdit(grain)
+  const populateItemForm = useCallback((item?: TestItem) => {
+    if (item) {
+      setItemFormValues(formValuesFromItem(item))
+      setEdit(item)
     }
-    setShowGrainModal(true)
-  }, [setEdit, setGrainFormValues, setShowGrainModal])
+    setShowItemModal(true)
+  }, [setEdit, setItemFormValues, setShowItemModal])
 
   const editTest = useCallback((test: Test) => {
     setTestFormValues({ name: test.name || '', action: test.action_text, expectedError: String(test.expected_error || 0) })
@@ -56,11 +56,11 @@ export const TestView = () => {
     setShowTestModal(true)
   }, [setTestFormValues, setShowTestModal])
 
-  const updateGrainFormValue = useCallback((key: string, value: string) => {
-    const newValues = { ...grainFormValues }
+  const updateItemFormValue = useCallback((key: string, value: string) => {
+    const newValues = { ...itemFormValues }
     updateField(newValues[key], value)
-    setGrainFormValues(newValues)
-  }, [grainFormValues, setGrainFormValues])
+    setItemFormValues(newValues)
+  }, [itemFormValues, setItemFormValues])
 
   const updateTestFormValue = useCallback((key: TestFormField, value: string) => {
     const newValues = { ...testFormValues }
@@ -87,52 +87,52 @@ export const TestView = () => {
     setLoading(undefined)
   }, [testFormValues, edit, addTest, updateTest, setLoading])
 
-  const submitGrain = useCallback(async () => {
-    const validationError = validateFormValues(grainFormValues)
+  const submitItem = useCallback(async () => {
+    const validationError = validateFormValues(itemFormValues)
     if (validationError)
       return window.alert(validationError)
       
     // ids are now calculated on backend
-    const newGrain = grainFromForm({...grainFormValues, id: { value: '0x7e57', type: '%id' }})
+    const newItem = itemFromForm({...itemFormValues, id: { value: '0x7e57', type: '%id' }})
 
     // ids are now calculated on backend
-    // const targetProject = contracts[currentProject]
+    // const targetProject = projects[currentProject]
     // if (targetProject && !testExpectation) {
-    //   if (targetProject?.state[newGrain.id] && !edit) {
-    //     return window.alert('You already have a grain with this ID, please change the ID.')
+    //   if (targetProject?.state[newItem.id] && !edit) {
+    //     return window.alert('You already have a item with this ID, please change the ID.')
     //   }
     // }
 
-    setLoading('Saving grain...')
+    setLoading('Saving item...')
     try {
       if (testExpectation) {
-        await addTestExpectation(testExpectation, newGrain)
+        await addTestExpectation(testExpectation, newItem)
       } else {
-        await addGrain(newGrain)
+        await addItem(newItem)
       }
-      setShowGrainModal(false)
-      setGrainFormValues(formValuesForGrain())
+      setShowItemModal(false)
+      setItemFormValues(formValuesForItem())
       setEdit(undefined)
     } catch (e) {
-      toast.error('Error saving grain')
+      toast.error('Error saving item')
     }
     setLoading(undefined)
-  }, [edit, currentProject, contracts, grainFormValues, testExpectation, addTestExpectation, addGrain, setLoading])
+  }, [ itemFormValues, testExpectation, addTestExpectation, addItem, setLoading])
 
-  const handleDragAndDropGrain = useCallback(({ source, destination }) => {
+  const handleDragAndDropItem = useCallback(({ source, destination }) => {
     if (!destination)
       return;
 
-    if (source.droppableId === 'grains') {
-      if (destination.droppableId === 'grains') {
-        const newGrains = [ ...Object.values(contracts[currentProject].state) ]
-        const reorderedItem = newGrains.splice(source.index, 1)[0];
-        newGrains.splice(destination.index, 0, reorderedItem);
+    if (source.droppableId === 'items') {
+      if (destination.droppableId === 'items') {
+        const newItems = [ ...Object.values(projects[currentProject].state) ]
+        const reorderedItem = newItems.splice(source.index, 1)[0];
+        newItems.splice(destination.index, 0, reorderedItem);
         
-        // TODO: update the grain order (is this even possible now?)
+        // TODO: update the item order (is this even possible now?)
       }
     }
-  }, [contracts, currentProject]);
+  }, [projects, currentProject]);
 
   const hideTestModal = () => {
     if (edit) {
@@ -146,23 +146,23 @@ export const TestView = () => {
     }
   }
 
-  const hideGrainModal = () => {
+  const hideItemModal = () => {
     if (edit) {
       if (window.confirm('Are you sure you want to discard your changes?')) {
-        setGrainFormValues(formValuesForGrain())
-        setShowGrainModal(false)
+        setItemFormValues(formValuesForItem())
+        setShowItemModal(false)
         setEdit(undefined)
         setTestExpecation('')
       }
     } else {
-      setShowGrainModal(false)
+      setShowItemModal(false)
     }
   }
 
-  const showTestExpectationModal = useCallback((testId: string) => (grain?: TestGrain) => {
+  const showTestExpectationModal = useCallback((testId: string) => (item?: TestItem) => {
     setTestExpecation(testId)
-    populateGrainForm(grain)
-  }, [setTestExpecation, populateGrainForm])
+    populateItemForm(item)
+  }, [setTestExpecation, populateItemForm])
 
   const runAllTests = useCallback((runSequentially: boolean) => () => {
     const testsToRun = (Object.values(project.tests) || [])
@@ -191,7 +191,7 @@ export const TestView = () => {
   const isEdit = Boolean(edit)
 
   return (
-    <DragDropContext onDragEnd={handleDragAndDropGrain}>
+    <DragDropContext onDragEnd={handleDragAndDropItem}>
       <OpenFileHeader />
       <Row className='tests' style={{ flexDirection: isMobile ? 'column' : 'row' }}>
         <Col className='test-actions' style={{ height: isMobile ? 600 : '100%', width: isMobile ? '100%' : '50%' }}>
@@ -212,14 +212,14 @@ export const TestView = () => {
         <Col className='granary' style={{ height: isMobile ? 600 : '100%', width: isMobile ? '100%' : '50%',  }}>
           <Row className='section-header'>
             <Text className='title'>Chain State</Text>
-            <Button small className='action' onClick={() => populateGrainForm()}>+ Add Data</Button>
+            <Button small className='action' onClick={() => populateItemForm()}>+ Add Data</Button>
           </Row>
-          <GrainList grains={Object.values(project?.state || {})} editGrain={populateGrainForm} />
+          <ItemList items={Object.values(project?.state || {})} editItem={populateItemForm} />
         </Col>
 
         <TestModal {...{ showTestModal, hideTestModal, isEdit, testFormValues, updateTestFormValue, submitTest }} />
 
-        <GrainModal {...{ showGrainModal, hideGrainModal, isEdit, grainFormValues, updateGrainFormValue, setGrainFormValues, submitGrain, testExpectation }} />
+        <ItemModal {...{ showItemModal, hideItemModal, isEdit, itemFormValues, updateItemFormValue, setItemFormValues, submitItem, testExpectation }} />
 
         <Modal title='Run Selected Tests' show={showRunModal} hide={() => setShowRunModal(false)}>
           <Entry>

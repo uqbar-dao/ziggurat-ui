@@ -41,6 +41,7 @@ const BatchView = () => {
         return
       }
       const result = await scry<Batches>(`/batch/${batchId}`)
+      console.log(result)
       if (result?.batch) {
         setBatch({ ...Object.values(result?.batch || {})[0], id: batchId })
       }
@@ -85,10 +86,10 @@ const BatchView = () => {
               </Row>
               {expandGranary &&
                 <Col className='expanded-details'>
-                  {Object.keys(batch.batch.town.chain.state).map(grainId => (
-                    <Col className="transaction">
-                      <Link href={`/grain/${addHexDots(grainId || '')}`} key={grainId}>
-                        <HexNum num={grainId} />
+                  {Object.keys(batch.batch.town.chain.state).map(itemId => (
+                    <Col className="transaction" key={itemId}>
+                      <Link href={`/item/${addHexDots(itemId || '')}`} key={itemId}>
+                        <HexNum num={itemId} />
                       </Link>
                     </Col>
                   ))}

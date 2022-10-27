@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react"
 import useZigguratStore from "../../stores/zigguratStore"
 import { FormValues } from "../../types/ziggurat/FormValues"
 import { METADATA_GRAIN_ID, MY_CONTRACT_ID, ZIGS_ACCOUNT_ID } from "../../utils/constants"
-import { formValuesFromGrain } from "../../utils/form"
+import { formValuesFromItem } from "../../utils/form"
 import Button from "../../components/form/Button"
 import Input from "../../components/form/Input"
 import { Select } from "../../components/form/Select"
@@ -12,54 +12,54 @@ import Col from "../../components/spacing/Col"
 import Row from "../../components/spacing/Row"
 import Text from "../../components/text/Text"
 
-interface GrainModalProps {
-  showGrainModal: boolean
-  hideGrainModal: () => void
+interface ItemModalProps {
+  showItemModal: boolean
+  hideItemModal: () => void
   isEdit: boolean
-  grainFormValues: FormValues
-  updateGrainFormValue: (key: string, value: string) => void
-  setGrainFormValues: (values: FormValues) => void
-  submitGrain: () => void
+  itemFormValues: FormValues
+  updateItemFormValue: (key: string, value: string) => void
+  setItemFormValues: (values: FormValues) => void
+  submitItem: () => void
   testExpectation?: string
 }
 
-export const GrainModal = ({
-  showGrainModal,
-  hideGrainModal,
+export const ItemModal = ({
+  showItemModal,
+  hideItemModal,
   isEdit,
-  grainFormValues,
-  updateGrainFormValue,
-  setGrainFormValues,
-  submitGrain,
+  itemFormValues,
+  updateItemFormValue,
+  setItemFormValues,
+  submitItem,
   testExpectation,
-}: GrainModalProps) => {
-  const { contracts, currentProject } = useZigguratStore()
-  const project = useMemo(() => contracts[currentProject], [contracts, currentProject])
+}: ItemModalProps) => {
+  const { projects, currentProject } = useZigguratStore()
+  const project = useMemo(() => projects[currentProject], [projects, currentProject])
 
   const [mold, setMold] = useState('other')
-  const [selectedGrainId, setSelectedGrainId] = useState('other')
+  const [selectedItemId, setSelectedItemId] = useState('other')
 
   const selectMold = useCallback((action: string) => {
     setMold(action)
     const selectedMold = project.molds.rice.find(m => m.name === action)
     if (selectedMold) {
-      updateGrainFormValue('data', `${selectedMold.mold}`)
-      updateGrainFormValue('label', `${selectedMold.name}`)
+      updateItemFormValue('data', `${selectedMold.mold}`)
+      updateItemFormValue('label', `${selectedMold.name}`)
     }
-  }, [project, setMold, updateGrainFormValue])
+  }, [project, setMold, updateItemFormValue])
 
-  const selectGrain = useCallback((grainId: string) => {
-    setSelectedGrainId(grainId)
-    const grain = project.state[grainId]
-    setGrainFormValues(formValuesFromGrain(grain))
-  }, [project, setSelectedGrainId, setGrainFormValues])
+  const selectItem = useCallback((itemId: string) => {
+    setSelectedItemId(itemId)
+    const item = project.state[itemId]
+    setItemFormValues(formValuesFromItem(item))
+  }, [project, setSelectedItemId, setItemFormValues])
 
   return (
-    <Modal title={ (isEdit ? 'Update' : 'Add New') + ' Grain'} show={showGrainModal} hide={hideGrainModal}>
+    <Modal title={ (isEdit ? 'Update' : 'Add New') + ' Item'} show={showItemModal} hide={hideItemModal}>
       <Col style={{ minWidth: 320, maxHeight: 'calc(100vh - 80px)', overflow: 'scroll' }}>
         {!!project?.molds?.rice?.length && !isEdit && !testExpectation && (
           <>
-            <Text style={{ marginTop: 12, marginBottom: 2 }}>grain type</Text>
+            <Text style={{ marginTop: 12, marginBottom: 2 }}>item type</Text>
             <Select value={mold} onChange={(e) => selectMold(e.target.value)}>
               <option key="other" value="other">other</option>
               {project.molds.rice.map(({ name }) => (
@@ -70,8 +70,8 @@ export const GrainModal = ({
         )}
         {Boolean(testExpectation) && (
           <>
-            <Text style={{ marginTop: 12, marginBottom: 2 }}>copy grain</Text>
-            <Select value={selectedGrainId} onChange={(e) => selectGrain(e.target.value)}>
+            <Text style={{ marginTop: 12, marginBottom: 2 }}>copy item</Text>
+            <Select value={selectedItemId} onChange={(e) => selectItem(e.target.value)}>
               <option key="other" value="other">other</option>
               {Object.keys(project.state)
                 .filter(id => id !== MY_CONTRACT_ID && id !== METADATA_GRAIN_ID)
@@ -82,29 +82,29 @@ export const GrainModal = ({
             </Select>
           </>
         )}
-        {Object.keys(grainFormValues).map((key) => (
+        {Object.keys(itemFormValues).map((key) => (
           <Row key={key}>
             { key === 'data' ? (
               <TextArea
-                onChange={(e) => updateGrainFormValue(key, e.target.value)}
-                value={grainFormValues[key].value}
-                label={`${key} (${JSON.stringify(grainFormValues[key].type).replace(/"/g, '')})`}
+                onChange={(e) => updateItemFormValue(key, e.target.value)}
+                value={itemFormValues[key].value}
+                label={`${key} (${JSON.stringify(itemFormValues[key].type).replace(/"/g, '')})`}
                 placeholder={key}
                 containerStyle={{ marginTop: 4, width: '100%' }}
               />
             ) : (
               <Input
                 disabled={key === 'id' && isEdit}
-                onChange={(e) => updateGrainFormValue(key, e.target.value)}
-                value={grainFormValues[key].value}
-                label={`${key} (${JSON.stringify(grainFormValues[key].type).replace(/"/g, '')})`}
+                onChange={(e) => updateItemFormValue(key, e.target.value)}
+                value={itemFormValues[key].value}
+                label={`${key} (${JSON.stringify(itemFormValues[key].type).replace(/"/g, '')})`}
                 placeholder={key}
                 containerStyle={{ marginTop: 4, width: '100%' }}
               />
             )}
           </Row>
         ))}
-        <Button onClick={submitGrain} style={{ alignSelf: 'center', marginTop: 16 }}>{isEdit ? 'Update' : 'Add'} Grain</Button>
+        <Button onClick={submitItem} style={{ alignSelf: 'center', marginTop: 16 }}>{isEdit ? 'Update' : 'Add'} Item</Button>
       </Col>
     </Modal>
   )

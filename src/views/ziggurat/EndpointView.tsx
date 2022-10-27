@@ -20,7 +20,7 @@ const genFormValues = (app: string) => ({ ...BLANK_ENDPOINT_FORM, app })
 export interface EndpointViewProps {}
 
 export const EndpointView = () => {
-  const { contracts, currentProject, endpoints, setLoading, addEndpoint } = useZigguratStore()
+  const { projects, currentProject, endpoints, setLoading, addEndpoint } = useZigguratStore()
 
   const [showEndpointModal, setShowEndpointModal] = useState(false)
   const [endpointFormValues, setEndpointFormValues] = useState<EndpointForm>(genFormValues(currentProject))
@@ -63,20 +63,20 @@ export const EndpointView = () => {
     setLoading(undefined)
   }, [endpointFormValues, edit, currentProject, setLoading, addEndpoint])
 
-  const handleDragAndDropGrain = useCallback(({ source, destination }) => {
+  const handleDragAndDropItem = useCallback(({ source, destination }) => {
     if (!destination)
       return;
 
-    if (source.droppableId === 'grains') {
-      if (destination.droppableId === 'grains') {
-        const newGrains = [ ...Object.values(contracts[currentProject].state) ]
-        const reorderedItem = newGrains.splice(source.index, 1)[0];
-        newGrains.splice(destination.index, 0, reorderedItem);
+    if (source.droppableId === 'items') {
+      if (destination.droppableId === 'items') {
+        const newItems = [ ...Object.values(projects[currentProject].state) ]
+        const reorderedItem = newItems.splice(source.index, 1)[0];
+        newItems.splice(destination.index, 0, reorderedItem);
         
-        // TODO: update the grain order (is this even possible now?)
+        // TODO: update the item order (is this even possible now?)
       }
     }
-  }, [contracts, currentProject]);
+  }, [projects, currentProject]);
 
   const hideEndpointModal = useCallback(() => {
     if (edit) {
@@ -93,7 +93,7 @@ export const EndpointView = () => {
   const isEdit = Boolean(edit)
 
   return (
-    <DragDropContext onDragEnd={handleDragAndDropGrain}>
+    <DragDropContext onDragEnd={handleDragAndDropItem}>
       <OpenFileHeader />
       <Row className='tests' style={{ flexDirection: isMobile ? 'column' : 'row' }}>
         <Col className='test-actions' style={{ height: isMobile ? 600 : '100%', width: '100%' }}>

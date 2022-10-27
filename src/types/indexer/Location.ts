@@ -1,6 +1,4 @@
 export interface Location {
-  'block-num': number
-  'txn-num': number
-  'epoch-num': number
+  'batch-root': number
   'town-id': string
 }

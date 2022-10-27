@@ -24,7 +24,7 @@ export const mockTransactions = [
     'hash': '0xb3cb.cbe3.65b0.f6e1.588d.fe02.11df.ef88',
     'action': {
       'give': {
-        'grain': '0x89a0.89d8.dddf.d13a.418c.0d93.d4b4.e7c7.637a.d56c.96c0.7f91.3a14.8174.c7a7.71e6',
+        'item': '0x89a0.89d8.dddf.d13a.418c.0d93.d4b4.e7c7.637a.d56c.96c0.7f91.3a14.8174.c7a7.71e6',
         'to': '0xd6dc.c8ff.7ec5.4416.6d4e.b701.d1a6.8e97.b464.76de'
       }
     },

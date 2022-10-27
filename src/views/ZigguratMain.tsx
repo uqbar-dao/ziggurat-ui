@@ -18,7 +18,7 @@ import { ToastContainer } from 'react-toastify';
 import { EndpointView } from './ziggurat/EndpointView';
 
 function ZigguratMain() {
-  const { loading, init, contracts } = useZigguratStore()
+  const { loading, init, projects } = useZigguratStore()
 
   const promptIfUnsavedFiles = (ev: BeforeUnloadEvent) => {
     ev.preventDefault()
@@ -27,10 +27,10 @@ function ZigguratMain() {
 
   useEffect(() => {
     window.removeEventListener('beforeunload', promptIfUnsavedFiles)
-    if (Object.keys(contracts).find(k => contracts[k]?.modifiedFiles.size > 0)) {
+    if (Object.keys(projects).find(k => projects[k]?.modifiedFiles.size > 0)) {
       window.addEventListener('beforeunload', promptIfUnsavedFiles)
     }
-  }, [contracts, loading])
+  }, [projects, loading])
 
   useEffect(() => {
     init()
