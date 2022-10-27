@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { FaArrowLeft, FaExclamationTriangle, FaGithub, FaInfoCircle, FaRuler, FaTicketAlt } from 'react-icons/fa';
+import React, { useCallback, useState } from 'react'
+import { FaArrowLeft, FaGithub } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import {unzip} from 'unzipit';
 import 'codemirror/lib/codemirror.css'
@@ -23,9 +23,7 @@ import { RawMetadata } from '../../types/ziggurat/Metadata';
 import './NewProjectView.scss'
 import Form from '../../components/form/Form';
 import { Select } from '../../components/form/Select';
-import { stellarGetAddress } from '@trezor/connect/lib/types/api/stellarGetAddress';
 import Divider from '../../components/spacing/Divider';
-import { getFileText } from '../../utils/gall';
 import pWaterfall from 'p-waterfall';
 
 type CreationStep = 'title' | 'project' | 'gall' | 'token' | 'template' | 'metadata' | 'import' | 'github' | 'zip'
@@ -69,7 +67,7 @@ export interface DownloadedFile {
 }
 
 const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
-  const { userAddress, saveFileList, contracts, createProject, populateTemplate, openFiles, setOpenFiles, addFile } = useZigguratStore()
+  const { userAddress, saveFileList, contracts, createProject, populateTemplate, openFiles, setOpenFiles } = useZigguratStore()
   const nav = useNavigate()
 
   const [step, setStep] = useState<CreationStep>('title')
@@ -150,7 +148,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       })
 
       if (!result || !result.data || !result.data.tree) {
-        throw 'Bad result: ' + JSON.stringify(result)
+        throw new Error('Bad result: ' + JSON.stringify(result))
       }
     } catch {
      
@@ -163,7 +161,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     }
 
     const filesToDownload = result.data.tree
-    .filter((branch: TreeFile) => branch.type == 'blob')
+    .filter((branch: TreeFile) => branch.type === 'blob')
 
     let lastFile = ''
     let downloadedFiles: DownloadedFile[] = []
@@ -173,11 +171,11 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       await pWaterfall(filesToDownload.map((file: TreeFile, i: number) => async () => {
         lastFile = file.path
         setLoadingText(`Downloading files... (${i}/${filesToDownload.length})`)
-        const { data: { content, filePath } } = await o.request(`GET /repos/${repoUrl}/contents/${file.path}`)
+        const { data: { content, path } } = await o.request(`GET /repos/${repoUrl}/contents/${file.path}`)
         const text = Buffer.from(content, 'base64').toString()
-        const type = filePath.replace(/.*\//g, '')
-        const path = filePath[0] === '/' ? filePath.replace(/\./g, '/') : `/${filePath.replace(/\./g, '/')}`
-        downloadedFiles.push({ path, content: text, type })
+        const type = path.replace(/.*\//g, '')
+        const filePath = path[0] === '/' ? path.replace(/\./g, '/') : `/${path.replace(/\./g, '/')}`
+        downloadedFiles.push({ path: filePath, content: text, type })
       }))
     } catch {
       alert(`Unable to download files. Halted at ${lastFile}`)
