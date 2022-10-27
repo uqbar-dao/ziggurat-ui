@@ -98,7 +98,7 @@ const SendTransactionForm = ({
           contract: selectedToken.contract,
           town: selectedToken.town,
           to: addHexDots(to),
-          grain: selectedToken.id,
+          item: selectedToken.id,
         }
         setLoading('Generating transaction...')
         

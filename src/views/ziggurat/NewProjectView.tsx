@@ -6,6 +6,8 @@ import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
 import 'codemirror/addon/display/placeholder'
 import { Octokit } from 'octokit'
+import pWaterfall from 'p-waterfall'
+
 import Button from '../../components/form/Button'
 import Col from '../../components/spacing/Col'
 import Row from '../../components/spacing/Row'
@@ -19,14 +21,13 @@ import { METADATA_GRAIN_ID, MY_CONTRACT_ID } from '../../utils/constants';
 import { numToUd } from '../../utils/number';
 import { addHexDots } from '../../utils/format';
 import { RawMetadata } from '../../types/ziggurat/Metadata';
-
-import './NewProjectView.scss'
 import Form from '../../components/form/Form';
 import { Select } from '../../components/form/Select';
 import Divider from '../../components/spacing/Divider';
-import pWaterfall from 'p-waterfall';
 
-type CreationStep = 'title' | 'project' | 'gall' | 'token' | 'template' | 'metadata' | 'import' | 'github' | 'zip'
+import './NewProjectView.scss'
+
+type CreationStep = 'title' | 'project' | 'token' | 'template' | 'metadata' | 'import' | 'github' | 'zip'
 type ProjectOption = 'contract' | 'gall' | 'contract-gall'
 type TokenOption = 'fungible' | 'nft' | 'blank'
 type TemplateOption = 'issue' | 'wrapper'
@@ -67,7 +68,7 @@ export interface DownloadedFile {
 }
 
 const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
-  const { userAddress, saveFileList, contracts, createProject, populateTemplate, openFiles, setOpenFiles } = useZigguratStore()
+  const { userAddress, saveFileList, projects, createProject, populateTemplate, openFiles, setOpenFiles } = useZigguratStore()
   const nav = useNavigate()
 
   const [step, setStep] = useState<CreationStep>('title')
@@ -219,12 +220,13 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
 
     const metadata = !md ? undefined : {
       id: METADATA_GRAIN_ID,
-      holder: MY_CONTRACT_ID,
       source: MY_CONTRACT_ID,
-      'town-id': '0x0',
+      holder: MY_CONTRACT_ID,
+      town: '0x0',
       label: 'token-metadata',
       salt: Number(md.salt),
-      data: `[name='${md.name}' symbol='${md.symbol}' ${md.decimals ? `decimals=${numToUd(md.decimals)}` : `properties=(~(gas pn *(pset @tas)) ~[${md.properties?.map(p => `%${p}`).join(' ') || ''}])`} supply=${numToUd(md.supply)} cap=${!md.cap || md.cap === '~' ? '~' : `\`${numToUd(Math.max(Number(md.cap), Number(md.supply)))}`} mintable=${md.mintable === 't' ? '&' : '|'} minters=(~(gas pn *(pset address)) ~[${md.minters.join(' ')}]) deployer=${addHexDots(md.deployer)} salt=${numToUd(md.salt)}]`
+      // "noun": "[%foonft %foo (make-pset `(list @tas)`~[%hat %eyes]) 1 ~ %.y ~ 0x1234.5678 `@`%foonft-salt]"}}}}
+      noun: `[name='${md.name}' symbol='${md.symbol}' ${md.decimals ? `decimals=${numToUd(md.decimals)}` : `properties=(~(gas pn *(pset @tas)) ~[${md.properties?.map(p => `%${p}`).join(' ') || ''}])`} supply=${numToUd(md.supply)} cap=${!md.cap || md.cap === '~' ? '~' : `\`${numToUd(Math.max(Number(md.cap), Number(md.supply)))}`} mintable=${md.mintable === 't' ? '&' : '|'} minters=(~(gas pn *(pset address)) ~[${md.minters.join(' ')}]) deployer=${addHexDots(md.deployer)} salt=${numToUd(md.salt)}]`
     }
 
     await createProject(options as { [key: string]: string })
@@ -237,9 +239,11 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     setTimeout(() => {
       if (options?.project === 'contract') {
         setOpenFiles(openFiles.concat([{ project: options.title!, file: options.title! }]))
-        if (navOnFinish) nav(`/${options.title}/${options.title}`)
+        // if (navOnFinish) nav(`/${options.title}/${options.title}`)
+        // TODO: where do we route or what do we show after creating a contract project?
       } else if (options?.project === 'gall') {
-        if (navOnFinish) nav(`/${options.title}/${encodeURIComponent(`/app/${options.title}/hoon`)}`)
+        // if (navOnFinish) nav(`/${options.title}/${encodeURIComponent(`/app/${options.title}/hoon`)}`)
+        // TODO: where do we route or what do we show after creating a gall project?
       }
       setLoadingText('')
     }, 500)
@@ -248,7 +252,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
   const onSelect = useCallback((option: string) => async () => {
     switch (step) {
       case 'title':
-        if (contracts[options.title!]) {
+        if (projects[options.title!]) {
           window.alert('You already have a project with that name')
           break
         } else if (['new', 'app', 'nft', 'fungible'].indexOf(options.title!)>-1) {
@@ -269,10 +273,6 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
           setStep('import')
         }
         break
-      case 'gall':
-          setOptions({ ...options, project: option as ProjectOption })
-          setStep('token')
-          break
       case 'token':
         if (option === 'blank') {
           submitNewProject({ ...options, token: option as TokenOption })
@@ -306,7 +306,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
         nav('/')
         break
     }
-  }, [userAddress, step, setStep, options, setOptions, contracts, submitNewProject, metadata, setMetadata, nav])
+  }, [userAddress, step, setStep, options, setOptions, projects, submitNewProject, metadata, setMetadata, nav])
 
   const onBack = useCallback(() => {
     switch (step) {
@@ -316,10 +316,6 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       case 'project':
         setOptions({ ...options, title: '' })
         setStep('title')
-        break
-      case 'gall':
-        setOptions({ ...options, project: undefined })
-        setStep('project')
         break
       case 'import':
         setOptions({ ...options, project: undefined })
@@ -335,7 +331,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
         break
       case 'token':
         setOptions({ ...options, gall: undefined })
-        setStep(options.project === 'contract' ? 'project' : 'gall')
+        setStep('project')
         break
       case 'template':
         setOptions({ ...options, token: undefined })
@@ -351,7 +347,14 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
 
 
   const renderContent = () => {
-    const buttonStyle = {
+    const twoButtonStyle = {
+      width: '48%',
+      height: '60px',
+      verticalAlign: 'middle',
+      justifyContent: 'center',
+    }
+    
+    const threeButtonStyle = {
       width: '31%',
       height: '60px',
       verticalAlign: 'middle',
@@ -364,7 +367,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       return (
         <>
           <Row style={{ width: '100%', position: 'relative', justifyContent: 'center' }}>
-            {Object.keys(contracts).length > 0 && backButton}
+            {Object.keys(projects).length > 0 && backButton}
             <h3>Create a Project:</h3>
           </Row>
           <Input
@@ -383,35 +386,14 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
         <>
           <Row style={{ width: '100%', position: 'relative', justifyContent: 'center' }}>
             {backButton}
-            <h3>Select Your Project Type:</h3>
+            <h3>Project Source:</h3>
           </Row>
           <Row between style={{ flexWrap: 'wrap', width: '100%', marginTop: 12 }}>
-            <Button style={{ ...buttonStyle }} onClick={onSelect('contract')}>
-              Uqbar Contract
+            <Button style={twoButtonStyle} onClick={onSelect('contract')}>
+              Uqbar Template
             </Button>
-            {/* <Button style={{ ...buttonStyle, width: '48%', minWidth: 240 }} onClick={onSelect('contract-gall')}>
-              Uqbar Contract + Gall App
-            </Button> */}
-            <Button style={{ ...buttonStyle }} onClick={onSelect('gall')}>
-              Gall App
-            </Button>
-            <Button style={{ ...buttonStyle }} onClick={onSelect('import')}>
+            <Button style={twoButtonStyle} onClick={onSelect('import')}>
               Import a Project
-            </Button>
-          </Row>
-        </>
-      )
-    } else if (step === 'gall') {
-      return (
-        <>
-          <Row style={{ width: '100%', position: 'relative', justifyContent: 'center' }}>
-            {backButton}
-            <h3>Select Your Gall Template:</h3>
-            <h4>(Do we even need this step?)</h4>
-          </Row>
-          <Row between style={{ flexWrap: 'wrap', width: '100%', marginTop: 12 }}>
-            <Button style={buttonStyle} onClick={onSelect('gall-app-template')}>
-              Blank Template
             </Button>
           </Row>
         </>
@@ -424,13 +406,13 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
             <h3>Select Contract Type:</h3>
           </Row>
           <Row between style={{ flexWrap: 'wrap', width: '100%', marginTop: 12 }}>
-            <Button style={{ ...buttonStyle, width: '32%', minWidth: 160 }} onClick={onSelect('fungible')}>
+            <Button style={threeButtonStyle} onClick={onSelect('fungible')}>
               Fungible Token
             </Button>
-            <Button style={{ ...buttonStyle, width: '32%', minWidth: 160 }} onClick={onSelect('nft')}>
+            <Button style={threeButtonStyle} onClick={onSelect('nft')}>
               Non-Fungible Token (NFT)
             </Button>
-            <Button style={{ ...buttonStyle, width: '32%', minWidth: 160 }} onClick={onSelect('blank')}>
+            <Button style={threeButtonStyle} onClick={onSelect('blank')}>
               Blank Contract
             </Button>
           </Row>
@@ -444,10 +426,10 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
             <h3>Select Import Type:</h3>
           </Row>
           <Row between style={{ flexWrap: 'wrap', width: '100%',  marginTop: 12 }}>
-            <Button style={{ ...buttonStyle, width: '48%', minWidth: 160 }} onClick={onSelect('github')}>
+            <Button style={twoButtonStyle} onClick={onSelect('github')}>
               <Row> <FaGithub fontSize='xx-large' className='mr1' /> Import from Github </Row>
             </Button>
-            <Button style={{ ...buttonStyle, width: '48%', minWidth: 160 }} onClick={onSelect('zip')}>
+            <Button style={twoButtonStyle} onClick={onSelect('zip')}>
               Upload .zip file
             </Button>
           </Row>
@@ -576,10 +558,10 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
             <h3>Select Template Type:</h3>
           </Row>
           <Row between style={{ flexWrap: 'wrap', width: '100%', marginTop: 12 }}>
-            <Button style={buttonStyle} onClick={onSelect('issue')}>
+            <Button style={threeButtonStyle} onClick={onSelect('issue')}>
               Issue New Token
             </Button>
-            <Button style={buttonStyle} onClick={onSelect('wrapper')}>
+            <Button style={threeButtonStyle} onClick={onSelect('wrapper')}>
               Wrapper Logic for Token
             </Button>
           </Row>

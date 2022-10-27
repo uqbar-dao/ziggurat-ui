@@ -6,13 +6,13 @@ import BatchesView from './indexer/BatchesView';
 import BatchView from './indexer/BatchView';
 import TransactionView from './indexer/TransactionView';
 import AddressView from './indexer/AddressView';
-import GrainView from './indexer/GrainView';
+import ItemView from './indexer/ItemView';
 import IndexerNavbar from '../components-indexer/nav/IndexerNavbar';
 import LoadingOverlay from '../components/popups/LoadingOverlay';
 import { PUBLIC_URL } from '../utils/constants';
 // import TransactionsView from './views/TransactionsView';
 // import PendingTransactionsView from './views/PendingTransactionsView';
-// import GrainsView from './views/GrainsView';
+// import ItemsView from './views/ItemsView';
 // import AccountsView from './views/AccountsView';
 
 function IndexerMain() {
@@ -31,11 +31,11 @@ function IndexerMain() {
         <Route path="batch/:batchId" element={<BatchView />} />
         <Route path="tx/:tx" element={<TransactionView />} />
         <Route path="address/:address" element={<AddressView />} />
-        <Route path="grain/:grain" element={<GrainView />} />
+        <Route path="item/:item" element={<ItemView />} />
         {/* <Route path="blocks" element={<BlocksView />} />
         <Route path="txs" element={<TransactionsView />} />
         <Route path="pendingTxs" element={<PendingTransactionsView />} />
-        <Route path="contracts" element={<GrainsView />} /> */}
+        <Route path="projects" element={<ItemsView />} /> */}
         <Route
           path="*"
           element={

@@ -9,7 +9,7 @@ import Container from '../../components/spacing/Container'
 import Card from '../../components-indexer/card/Card'
 import useIndexerStore from '../../stores/indexerStore'
 import Text from '../../components/text/Text'
-import { ADDRESS_REGEX, BLOCK_SEARCH_REGEX, TXN_HASH_REGEX, GRAIN_REGEX, ETH_ADDRESS_REGEX } from '../../utils/regex'
+import { ADDRESS_REGEX, BLOCK_SEARCH_REGEX, TXN_HASH_REGEX, ITEM_REGEX, ETH_ADDRESS_REGEX } from '../../utils/regex'
 import { abbreviateHex, addHexDots, addHexPrefix, removeDots } from '../../utils/format'
 import { getRawStatus } from '../../utils/constants'
 import Link from '../../components-indexer/nav/Link'
@@ -28,6 +28,8 @@ const HomeView = () => {
   const [inputError, setInputError] = useState('')
   const navigate = useNavigate()
 
+  console.log(batches)
+
   const search = () => {
     const cleanValue = addHexPrefix(removeDots(searchValue))
     if (!searchValue) {
@@ -43,9 +45,9 @@ const HomeView = () => {
     } else if (TXN_HASH_REGEX.test(cleanValue)) {
       console.log('TRANSACTION')
       navigate(`/tx/${cleanValue}`)
-    } else if (GRAIN_REGEX.test(cleanValue)) {
-      console.log('GRAIN')
-      navigate(`/grain/${cleanValue}`)
+    } else if (ITEM_REGEX.test(cleanValue)) {
+      console.log('ITEM')
+      navigate(`/item/${cleanValue}`)
     } else {
       setInputError('Must be in address, txn hash, or epoch/block/town format (with slashes)')
     }

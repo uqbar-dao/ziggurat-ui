@@ -63,25 +63,25 @@ const useIndexerStore = create<IndexerStore>(
 
       try {
         api.subscribe(createSubscription('wallet', '/metadata-updates', handleMetadataUpdate(get, set)))
-        api.subscribe(createSubscription('indexer', `/town/${DEFAULT_TOWN_ID}/no-init`, handleLatestBatch(get, set)))
+        api.subscribe(createSubscription('indexer', `/batch-order/${DEFAULT_TOWN_ID}`, handleLatestBatch(get, set)))
 
         get().getAccounts()
-        const result = await get().scry<{ 'batch-order': string[] }>(`/batch-order/${DEFAULT_TOWN_ID}/0/5`)
-        const batchOrder = (result && result['batch-order']) || []
-        const batches = (await Promise.all(
-          batchOrder.map(async (batchId) => ({ id: batchId, result: await get().scry<Batches>(`/batch/${batchId}`) }))
-        )).map(({ id, result }) => {
-          if (result?.batch) {
-            return ({ id, ...Object.values(result?.batch)[0] })
-          }
-          return null
-        }).filter(b => b)
-        console.log('BATCHES:', batches)
+        // const result = await get().scry<{ 'batch-order': string[] }>(`/batch-order/${DEFAULT_TOWN_ID}/0/5`)
+        // const batchOrder = (result && result['batch-order']) || []
+        // const batches = (await Promise.all(
+        //   batchOrder.map(async (batchId) => ({ id: batchId, result: await get().scry<Batches>(`/batch/${batchId}`) }))
+        // )).map(({ id, result }) => {
+        //   if (result?.batch) {
+        //     return ({ id, ...Object.values(result?.batch)[0] })
+        //   }
+        //   return null
+        // }).filter(b => b)
+        // console.log('BATCHES:', batches)
 
-        const transactions = batches.reduce((acc: Transaction[], cur: Batch) => acc.concat(cur.batch.transactions), [])
-        console.log('TRANSACTIONS:', transactions)
+        // const transactions = batches.reduce((acc: Transaction[], cur: Batch) => acc.concat(cur.batch.transactions), [])
+        // console.log('TRANSACTIONS:', transactions)
 
-        set({ batches, transactions })
+        // set({ batches, transactions })
         // TODO: set the transactions
       } catch (err) {
         console.warn(err)

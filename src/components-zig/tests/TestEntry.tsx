@@ -9,7 +9,7 @@ import Input from '../../components/form/Input';
 import { DEFAULT_BUDGET, DEFAULT_RATE,  STATUS_CODES_RAW } from '../../utils/constants';
 import {  parseAction } from '../../utils/tests';
 import Text from '../../components/text/Text';
-import { GrainList } from './GrainList';
+import { ItemList } from './ItemList';
 import TestStatus from './TestStatus'
 import { TestListProps } from './TestList'
 import Entry from '../../components/spacing/Entry';
@@ -133,7 +133,7 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
             + Add
           </Button>
         </Row>
-        {expandExpectations && <GrainList isExpectationsList={true} testId={test.id} grains={Object.values(test?.expected || {})} editGrain={showTestExpectationModal(test.id)} />}
+        {expandExpectations && <ItemList isExpectationsList={true} testId={test.id} items={Object.values(test?.expected || {})} editItem={showTestExpectationModal(test.id)} />}
       </Entry>
     </Col>
   )

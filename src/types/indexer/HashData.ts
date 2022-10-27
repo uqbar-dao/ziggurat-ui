@@ -1,4 +1,4 @@
-import { Grain } from "./Grain"
+import { Item } from "./Item"
 import { Location } from "./Location"
 import { Slot } from "./Slot"
 import { Transaction } from "./Transaction"
@@ -8,14 +8,14 @@ export interface HashData {
     txns: {
       [key: string]: Transaction
     }
-    grains: {
+    items: {
       [key: string]: {
-        grain: Grain
+        item: Item
         location: Location
         timestamp: number
       }[]
     }
-    slots: {
+    batches: {
       [key: string]: Slot
     }
   }

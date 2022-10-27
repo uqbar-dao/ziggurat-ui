@@ -1,22 +1,22 @@
 import { GetState, SetState } from "zustand";
 import { toast } from 'react-toastify';
-import { ContractUpdate } from "../../types/ziggurat/Contracts";
 import { generateState, generateTests } from "../../utils/project";
 import { ZigguratStore } from "../zigguratStore";
-import { GallApp } from "../../types/ziggurat/GallApp";
-import { mapFilesToFolders } from "../../utils/gall";
+import { Project, ProjectUpdate } from "../../types/ziggurat/Project";
+import { mapFilesToFolders } from "../../utils/project";
 import { TestResultUpdate } from "../../types/ziggurat/TestData";
 
-export const handleContractUpdate = (get: GetState<ZigguratStore>, set: SetState<ZigguratStore>, project: string) => (update: ContractUpdate) => {
-  console.log('PROJECT UPDATE FOR:', project, update)
-  const newContracts = { ...get().contracts }
-  newContracts[project] = {
-    ...(newContracts[project] || {}),
+export const handleGallUpdate = (get: GetState<ZigguratStore>, set: SetState<ZigguratStore>, project: string) => (update: ProjectUpdate) => {
+  console.log('GALL UPDATE FOR:', project, update)
+  const newProjects = { ...get().projects }
+  newProjects[project] = {
+    ...(newProjects[project] || {}),
     ...update,
+    folder: mapFilesToFolders(project, update.dir, get().projects[project]),
     state: generateState(update),
-    tests: generateTests(update, newContracts[project]),
+    tests: generateTests(update, newProjects[project]),
   }
-  set({ contracts: newContracts })
+  set({ projects: newProjects })
 
   const { toastMessages } = get()
   if (update.error && !toastMessages.find(t => t.project === project && t.message === update.error)) {
@@ -43,37 +43,26 @@ export const handleContractUpdate = (get: GetState<ZigguratStore>, set: SetState
       id: toast.success(`Built '${project}' successfully.`, { autoClose: 1000 }),
     }
     toastMessages.forEach(t => {
-      if (t.project === project || t.message == successToast.message)
+      if (t.project === project || t.message === successToast.message)
         toast.dismiss(t.id)
     }) 
     set({ toastMessages: toastMessages
-      .filter(t => t.project !== project && t.message != successToast.message)
+      .filter(t => t.project !== project && t.message !== successToast.message)
       .concat([successToast])
     })
   }
 }
 
-export const handleGallUpdate = (get: GetState<ZigguratStore>, set: SetState<ZigguratStore>, project: string) => (update: GallApp) => {
-  console.log('GALL UPDATE FOR:', project, update)
-  const newApps = { ...get().gallApps }
-  newApps[project] = {
-    ...(newApps[project] || {}),
-    ...update,
-    folder: mapFilesToFolders(project, update.dir, get().gallApps[project]),
-  }
-  set({ gallApps: newApps })
-}
-
 export const handleTestUpdate = (get: GetState<ZigguratStore>, set: SetState<ZigguratStore>, project: string) => (update: TestResultUpdate) => {
   console.log('TEST UPDATE FOR:', project, update)
-  // const newContracts = { ...get().contracts }
-  // newContracts[project] = {
-  //   ...(newContracts[project] || {}),
+  // const newProjects = { ...get().projects }
+  // newProjects[project] = {
+  //   ...(newProjects[project] || {}),
   //   ...update,
   //   tests: {
-  //     ...newContracts[project].tests,
+  //     ...newProjects[project].tests,
 
   //   }
   // }
-  // set({ contracts: newContracts })
+  // set({ projects: newProjects })
 }

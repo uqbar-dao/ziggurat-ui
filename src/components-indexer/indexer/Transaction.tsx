@@ -38,14 +38,14 @@ export const TransactionEntry = ({
           </Field>
           {isWalletAddress ? (
             <Field name='To:'>
-              <Link href={`/grain/${addHexDots(tx.txn.shell.contract)}`}>
+              <Link href={`/item/${addHexDots(tx.txn.shell.contract)}`}>
                 <HexNum mono style={{ margin: 2 }} num={addHexDots(tx.txn.shell.contract)} />
               </Link>
               <CopyIcon text={tx.txn.shell.contract} />
             </Field>
           ) : (
             <Field name='From:'>
-              <Link href={`/grain/${addHexDots(tx.txn.shell.caller.id)}`}>
+              <Link href={`/item/${addHexDots(tx.txn.shell.caller.id)}`}>
                 <HexNum mono style={{ margin: 2 }} num={addHexDots(tx.txn.shell.caller.id)} />
               </Link>
               <CopyIcon text={tx.txn.shell.caller.id} />

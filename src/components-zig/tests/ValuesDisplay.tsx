@@ -3,7 +3,7 @@ import { Test } from "../../types/ziggurat/TestData"
 import { truncateString } from "../../utils/format"
 import Col from "../../components/spacing/Col"
 import Row from "../../components/spacing/Row"
-import { GrainDisplaySmall } from './GrainDisplay'
+import { ItemDisplaySmall } from './ItemDisplay'
 
 interface ValuesProps {
   values: any
@@ -28,7 +28,7 @@ export const Values = ({ values, test, indent = 0 }: ValuesProps) => {
 
   return <>
     {Object.keys(values).map((key) => {
-      // if (actionMold && test && (actionMold?.[key] as any)?.includes('%grain')) {
+      // if (actionMold && test && (actionMold?.[key] as any)?.includes('%item')) {
       //   return (
       //     <Row style={{ ...indentStyle, marginTop: 4 }} key={key}>
       //       <div style={{ width: 115 }}>{key}:</div>
@@ -36,8 +36,8 @@ export const Values = ({ values, test, indent = 0 }: ValuesProps) => {
       //         {(provided: any) => (
       //           <Row {...provided.droppableProps} innerRef={provided.innerRef}
       //           style={{ background: 'lightgray', width: 'calc(100% - 120px)', height: 35, borderRadius: 4, overflow: 'scroll', flexWrap: 'wrap', alignItems: 'flex-start' }}>
-      //             {(test.input.action[key] as any).map((grain: string) => (
-      //               <GrainDisplaySmall key={grain} grain={grain} field={key} test={test} />
+      //             {(test.input.action[key] as any).map((item: string) => (
+      //               <ItemDisplaySmall key={item} item={item} field={key} test={test} />
       //             ))}
       //             {provided.placeholder}
       //           </Row>

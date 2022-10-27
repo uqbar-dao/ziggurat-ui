@@ -57,13 +57,13 @@ const AssetsView = () => {
     if (unsignedTransactionHash) {
       const txn = unsignedTransactions[unsignedTransactionHash]
       if (txn) {
-        const grainId = Object.values(txn.action)[0]?.grain
+        const itemId = Object.values(txn.action)[0]?.item
         const isToken = Boolean(Object.values(txn.action)[0]?.amount)
 
         watchTabClose()
         
-        if (grainId) {
-          setId(grainId)
+        if (itemId) {
+          setId(itemId)
           setSendFormType(isToken ? 'tokens' : 'nft')
         } else {
           setSendFormType('custom')

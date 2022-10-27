@@ -6,44 +6,39 @@ import Link from './Link'
 import Button from '../../components/form/Button'
 import Text from '../../components/text/Text'
 import { genHref } from '../../utils/nav'
-import { FaGoodreadsG, FaPlus } from 'react-icons/fa'
+import { FaPlus } from 'react-icons/fa'
 
 import './OpenFileHeader.scss'
 
 export const OpenFileHeader = () => {
   const { pathname } = useLocation()
   const nav = useNavigate()
-  const { contracts, openFiles, gallApps, currentProject, setOpenFiles, setCurrentProject } = useZigguratStore()
+  const { projects, openFiles, setOpenFiles, setCurrentProject } = useZigguratStore()
 
   const removeFile = useCallback((p: string, f: string) => {
     const newOpenFiles = openFiles.filter(({ project, file }) => !(p === project && f === file) )
-    const isGall = Boolean(gallApps[currentProject])
-    const href = genHref(p, f, isGall)
+    const href = genHref(p, f)
 
     if (pathname === href) {
       if (newOpenFiles.length) {
         const { project, file } = newOpenFiles[0]
-        nav(genHref(project, file, Boolean(gallApps[project])))
+        nav(genHref(project, file))
       } else {
         nav('/')
       }
     }
     setOpenFiles(newOpenFiles)
-  }, [openFiles, setOpenFiles, nav, pathname, gallApps, currentProject])
+  }, [openFiles, setOpenFiles, nav, pathname])
 
   return (
     <Row className='open-file-header'>
       {openFiles.map(({ project, file }) => {
         const prependProject = openFiles.find(of => of.project !== project && of.file === file)
-        const isGall = Boolean(gallApps[project])
-        const href = genHref(project, file, isGall)
-        const fileName = isGall ?
-          file.split('/').slice(-2).join('.') // /file/txt -> file.txt
-          : file.match('(^tests$|\.[\w]+$)') ? file // file.txt -> file.txt
-          : file + '.hoon' // file -> file.hoon
-        const tar = contracts[project] && contracts[project].modifiedFiles
-          && contracts[project].modifiedFiles.has
-          && contracts[project].modifiedFiles.has(file) ? '* ' : ' '
+        const href = genHref(project, file)
+        const fileName = file.split('/').slice(-2).join('.') // /file/txt -> file.txt
+        const tar = projects[project] && projects[project].modifiedFiles
+          && projects[project].modifiedFiles.has
+          && projects[project].modifiedFiles.has(file) ? '* ' : ' '
 
         return (
           <Link key={project + file} className={`tab ${pathname.includes(href) ? 'selected' : ''}`} href={href} onClick={() => setCurrentProject(project)}>

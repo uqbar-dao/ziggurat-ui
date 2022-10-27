@@ -1,4 +1,4 @@
-import { TestGrain } from "./TestGrain"
+import { TestItem } from "./TestItem"
 
 export interface RunTestPayload {
   id: string
@@ -8,25 +8,25 @@ export interface RunTestPayload {
 
 export interface TestExpectation {
   match: boolean | null
-  expected: TestGrain | null
-  made: TestGrain | null
+  expected: TestItem | null
+  made: TestItem | null
 }
 
 export interface TestResult {
   fee: number
   errorcode: number
   success?: boolean | null
-  grains: {
-    [grainId: string]: {
-      expected: TestGrain
-      made: TestGrain
+  items: {
+    [itemId: string]: {
+      expected: TestItem
+      made: TestItem
       match: boolean | null
     }
   }
 }
 
 export interface TestResultUpdate {
-  result: { [grain: string]: TestGrain }
+  result: { [item: string]: TestItem }
 }
 
 export interface Test {
@@ -36,7 +36,7 @@ export interface Test {
   action_text: string
   expected_error: number
   expected: {
-    [grainId: string]: TestGrain
+    [itemId: string]: TestItem
   }
   result: TestResult
   events: any

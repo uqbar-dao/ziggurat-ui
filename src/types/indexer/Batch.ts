@@ -16,6 +16,6 @@ export interface Batch {
   }
 }
 
-export interface NewBatch extends Batch {
-  'batch-id': string
+export interface NewBatch {
+  'batch-order': string[]
 }

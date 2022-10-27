@@ -7,24 +7,21 @@ import { Tooltip } from '../../components/popups/Tooltip';
 import Row from '../../components/spacing/Row'
 import Link from '../nav/Link';
 import { genHref } from '../../utils/nav';
-import { getFilename } from '../../utils/gall';
+import { getFilename } from '../../utils/project';
 
 export const BUTTON_STYLE = { marginLeft: 6, padding: 2 }
 
 interface FileLinkProps {
   project: string
   file: string
-  isGall?: boolean
 }
 
-export const FileLink = ({ project, file, isGall = false }: FileLinkProps) => {
+export const FileLink = ({ project, file }: FileLinkProps) => {
   const { pathname } = useLocation()
-  const { currentProject, openFiles, setCurrentProject, setOpenFiles, deleteFile, contracts } = useZigguratStore()
+  const { currentProject, openFiles, setCurrentProject, setOpenFiles, deleteFile, projects } = useZigguratStore()
   const [showButtons, setShowButtons] = useState(false)
   const isTests = file === 'tests'
-  const fileName = isGall ? getFilename(file) :
-    !isTests ? `${file}.hoon` :
-    file
+  const fileName = isTests ? 'contract tests' : getFilename(file)
 
   const selectFile = useCallback(() => {
     if (!openFiles.find((of) => of.project === project && of.file === file)) {
@@ -35,10 +32,10 @@ export const FileLink = ({ project, file, isGall = false }: FileLinkProps) => {
     }
   }, [project, currentProject, file, openFiles, setOpenFiles, setCurrentProject])
 
-  const href = genHref(project, file, isGall)
-  const tar = contracts[project] && contracts[project].modifiedFiles
-    && contracts[project].modifiedFiles.has
-    && contracts[project].modifiedFiles.has(file) ? '*' : ''
+  const href = genHref(project, file)
+  const tar = projects[project] && projects[project].modifiedFiles
+    && projects[project].modifiedFiles.has
+    && projects[project].modifiedFiles.has(file) ? '*' : ''
 
   return (
     <Row style={{ paddingLeft: 8, position: 'relative' }} onMouseEnter={() => setShowButtons(true)} onMouseLeave={() => setShowButtons(false)}>

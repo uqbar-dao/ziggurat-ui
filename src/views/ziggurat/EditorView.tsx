@@ -12,7 +12,7 @@ import Row from '../../components/spacing/Row'
 import { CodeMirrorShim, Editor } from '../../components-zig/editor/Editor'
 import { OpenFileHeader } from '../../components-zig/nav/OpenFileHeader'
 import { isMobileCheck } from '../../utils/dimensions';
-import { getFileText } from '../../utils/gall'
+import { getFileText } from '../../utils/project'
 import { WEBTERM_PATH } from '../../utils/constants'
 
 import './EditorView.scss'
@@ -21,11 +21,9 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
   const editorRef = useRef<CodeMirrorShim>()
   const nav = useNavigate()
   const { projectTitle, file } = useParams()
-  const { contracts, gallApps, toastMessages, openFiles, currentProject, setProjectText, getGallFile, setOpenFiles, setCurrentProject } = useZigguratStore()
+  const { projects, toastMessages, openFiles, currentProject, setProjectText, getGallFile, setOpenFiles, setCurrentProject } = useZigguratStore()
 
-  const contract = useMemo(() => contracts[projectTitle || ''], [projectTitle, contracts])
-  const gallApp = useMemo(() => gallApps[projectTitle || ''], [projectTitle, gallApps])
-  const isGall = useMemo(() => Boolean(gallApp), [gallApp])
+  const project = useMemo(() => projects[projectTitle || ''], [projectTitle, projects])
 
   useEffect(() => {
     if (projectTitle && file) {
@@ -39,26 +37,25 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
   }, []) // eslint-disable-line
 
   useEffect(() => {
-    if (gallApp && file && projectTitle) {
+    if (project && file && projectTitle) {
       getGallFile(projectTitle, decodeURIComponent(file))
     }
-  }, [gallApp, projectTitle, file, getGallFile])
+  }, [project, projectTitle, file, getGallFile])
 
   const text = !file ? '' :
-    gallApp ? getFileText(gallApp.folder, decodeURIComponent(file).split('/').slice(1), decodeURIComponent(file)) || '' :
-    file === projectTitle ? contract?.main : contract?.libs[file] || ''
+    getFileText(project.folder, decodeURIComponent(file).split('/').slice(1), decodeURIComponent(file)) || ''
 
   useEffect(() => {
-    if ((Object.keys(contracts).length < 1 && Object.keys(gallApps).length < 0 )) {
+    if ((Object.keys(projects).length < 1 && Object.keys(projects).length < 0 )) {
       nav ('/')
     }
-  }, [contracts, contract, gallApps, gallApp, text, nav])
+  }, [projects, project, text, nav])
 
   const setText = useCallback((inputText: string) => {
-    if (file && (contract?.title || gallApp?.title)) {
-      setProjectText(contract?.title || gallApp?.title, file, inputText)
+    if (file && (project?.title || project?.title)) {
+      setProjectText(project?.title || project?.title, file, inputText)
     }
-  }, [contract, gallApp, file, setProjectText])
+  }, [project, file, setProjectText])
 
   useEffect(() => {
     if (editorRef?.current) {
@@ -92,9 +89,9 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
               isContract
             />
           </Col>
-          {isGall && <Resizable style={{ position: 'absolute', right: 2, bottom: 0 }} defaultSize={{ width:320, height:200 }}>
+          <Resizable style={{ position: 'absolute', right: 2, bottom: 0 }} defaultSize={{ width:320, height:200 }}>
             <Iframe url={WEBTERM_PATH} height='100%' width='100%' />
-          </Resizable>}
+          </Resizable>
         </Row>
       </Form>
     </>

@@ -74,7 +74,7 @@ const TokenDisplay: React.FC<TokenDisplayProps> = ({
           </Field>
         </Entry>
         <Entry>
-          <Field name='Grain:'>
+          <Field name='Item:'>
             <HexNum copy mono num={id} />
           </Field>
         </Entry>

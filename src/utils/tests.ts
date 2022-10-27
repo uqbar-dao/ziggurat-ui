@@ -1,16 +1,16 @@
 import { Test, TestExpectationDiff } from "../types/ziggurat/TestData";
-import { TestGrain, TestGrainField, TestGrainInput } from "../types/ziggurat/TestGrain";
+import { TestItem, TestItemField, TestItemInput } from "../types/ziggurat/TestItem";
 
 export const parseAction = (test: Test) => `Action: ${test.action_text.split(' ')[0].slice(1)}`
 
-export const grainToGrainInput = (grain: TestGrain) : TestGrainInput => ({ ...grain, 'town-id': grain.town_id, salt: Number(grain.salt!) })
+export const itemToItemInput = (item: TestItem) : TestItemInput => ({ ...item, town: item.town_id, salt: Number(item.salt!) })
 
-export const getGrainDiff = (expectation: TestGrain, result: TestGrain) : TestExpectationDiff =>
+export const getItemDiff = (expectation: TestItem, result: TestItem) : TestExpectationDiff =>
   Object.keys(expectation).reduce((acc, key) => {
-    if (key === 'data_text' || key === 'label' || key === 'salt') {
+    if (key === 'noun_text' || key === 'label' || key === 'salt') {
       return acc
-    } else if (expectation[key as TestGrainField] !== result[key as TestGrainField]) {
-      acc[key] = { expected: expectation[key as TestGrainField], result: result[key as TestGrainField] }
+    } else if (expectation[key as TestItemField] !== result[key as TestItemField]) {
+      acc[key] = { expected: expectation[key as TestItemField], result: result[key as TestItemField] }
     }
 
     return acc
