@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react'
-import { FaArrowLeft, FaGithub } from 'react-icons/fa';
+import { FaArrowLeft, FaGithub, FaUpload } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import {unzip} from 'unzipit';
 import 'codemirror/lib/codemirror.css'
@@ -344,6 +344,28 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     }
   }, [step, setStep, options, setOptions, nav])
 
+  const repoDataFetchingButtons =  <Row>
+    <Button wide className='mt1 mr1' type='button' 
+      disabled={!Boolean(repoUrl)}
+      onClick={() => getRepoContents(repoUrl)}
+    >
+        Fetch repo data
+    </Button>
+    <Button wide variant='dark' className='mt1' type='button'
+      disabled={!Boolean(repoContents)}
+      onClick={() => {
+        downloadFilesFromGithub()
+      }}>
+      Import {repoContents ? 
+        repoContents.size > 1000 ? 
+          repoContents.size > 1000000 ? 
+            `(${repoContents.size/1000000} GB)`
+            : `(${repoContents.size/1000} MB)`
+          : `(${repoContents.size} KB)`
+        : ''
+      }
+    </Button>
+  </Row>
 
   const renderContent = () => {
     const twoButtonStyle = {
@@ -429,7 +451,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
               <Row> <FaGithub fontSize='xx-large' className='mr1' /> Import from Github </Row>
             </Button>
             <Button style={twoButtonStyle} onClick={onSelect('zip')}>
-              Upload .zip file
+              <Row> <FaUpload fontSize='xx-large' className='mr1' /> Upload .zip file </Row>
             </Button>
           </Row>
         </>
@@ -461,7 +483,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
                 }}
               />
               <Button variant='dark' type="submit" style={{ margin: '16px 0px 8px', width: '100%', justifyContent: 'center' }}>
-                Fetch personal repos
+                Fetch private repos
               </Button>
             </Form>
             <Divider className='mt1'/>
@@ -469,27 +491,29 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
           <h3>Github username/repo:</h3>
           <Row style={{ width: '100%', position: 'relative', justifyContent: 'center' }}>
             {backButton}
-            <Form style={{ borderRadius: 4, alignItems: 'center' }}
+            <Form style={{ borderRadius: 4, paddingBottom: 16, alignItems: 'center' }}
               onSubmit={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                alert(repoUrl)
+                getRepoContents(repoUrl)
               }}
             > <Row>
                 <Text>github.com/</Text>
                 <Input
                   style={{ width: 300 }}
                   onChange={(e) => {
-                    setRepoUrl(e.target.value)
+                    const val = e.target.value
+                    setRepoUrl(val)
                     setRepoContents(undefined)
                   }}
                   placeholder='username/repo' />
               </Row>
+              {repoDataFetchingButtons}
             </Form>
           </Row>
           {repos.length > 0 && <Divider className='mt1' />}
           {repos.length > 0 && <>
-            <h3>Personal repos ({repos.length}):</h3>
+            <h3>Private repos ({repos.length}):</h3>
             <Form style={{ borderRadius: 4, alignItems: 'center', padding: 16 }}>
               <Select name='repo' required onChange={(e) => {
                 setRepoUrl(e.target.value)
@@ -502,29 +526,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
                   </option>
                 ))}
               </Select>
-              <Row>
-                <Button wide className='mt1 mr1' type='button' 
-                  disabled={!Boolean(repoUrl)}
-                  onClick={() => getRepoContents(repoUrl)}
-                >
-                    Fetch repo data
-                </Button>
-      {/* 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 */}
-                <Button wide variant='dark' className='mt1' type='button'
-                  disabled={!Boolean(repoContents)}
-                  onClick={() => {
-                    downloadFilesFromGithub()
-                  }}>
-                  Import {repoContents ? 
-                    repoContents.size > 1000 ? 
-                      repoContents.size > 1000000 ? 
-                        `(${repoContents.size/1000000} GB)`
-                        : `(${repoContents.size/1000} MB)`
-                      : `(${repoContents.size} KB)`
-                    : ''
-                  }
-                </Button>
-              </Row>
+              {repoDataFetchingButtons}
             </Form>
           </>}
         </>
