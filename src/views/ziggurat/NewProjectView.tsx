@@ -185,7 +185,6 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
 
     setLoading('')
     await saveFileList(downloadedFiles, options.title!)
-    nav(`/${options.title!}/${options.title!}`)
   }
 
   const importZip = async () => {
@@ -212,19 +211,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     }
 
     await saveFileList(filesToImport, options.title!)
-    .then(() => {
-      debugger
-      setLoading('')
-    })
-    .catch(() => {
-      debugger
-      setLoading('')
-    })
-    .finally(() => {
-      debugger
-      setLoading('')
-    })
-    nav(`/${options.title!}/app/${options.title!}/hoon`)
+    setLoading('')
   }
 
   const submitNewProject = useCallback(async (options: CreationOptions, md?: RawMetadata, navOnFinish?: boolean) => {
