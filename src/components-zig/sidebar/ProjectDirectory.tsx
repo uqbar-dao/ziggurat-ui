@@ -101,13 +101,13 @@ export const ProjectDirectory = ({ project }: ProjectDirectoryProps) => {
 
   return (
     <Col style={{ padding: '0px 4px', fontSize: 14 }} onMouseEnter={() => setShowButtons(true)} onMouseLeave={() => setShowButtons(false)} onClick={() => setCurrentProject(title)}>
-      <Row between style={{ padding: 2, marginBottom: 2, cursor: 'pointer',  }} onClick={() => setProjectExpanded(title, !expanded)}>
+      <Row between style={{ position: 'relative', padding: 2, marginBottom: 2, cursor: 'pointer',  }} onClick={() => setProjectExpanded(title, !expanded)}>
         <Row>
           <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={expanded ? <FaChevronDown size={12} /> : <FaChevronRight size={12} />} />
           <Text style={{ marginLeft: 4, marginBottom: 2, }}>{title}</Text>
         </Row>
         {showButtons && (
-          <Row>
+          <Row style={{ position: 'absolute', right: 0, backgroundColor: 'white', borderRadius: 4 }}>
             <Tooltip tip="publish app" right>
               <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaUpload size={14} />} onClick={(e) => {e.stopPropagation(); setShowPublishModal(true)}} />
             </Tooltip>
@@ -115,7 +115,7 @@ export const ProjectDirectory = ({ project }: ProjectDirectoryProps) => {
               <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaDownload size={14} />} onClick={downloadZip} />
             </Tooltip>
             <Tooltip tip="delete" right>
-              <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={onDelete} />
+              <Button style={{...BUTTON_STYLE, marginRight: 5 }} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={onDelete} />
             </Tooltip>
             {/* <Tooltip tip='deploy contract' right>
               <Button style={BUTTON_STYLE} variant='unstyled' iconOnly icon={<FaUpload size={14} />} onClick={() => setShowDeployModal(true)} />
