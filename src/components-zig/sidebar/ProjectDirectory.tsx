@@ -91,7 +91,6 @@ export const ProjectDirectory = ({ project }: ProjectDirectoryProps) => {
     if (window.confirm(`Are you sure you want to delete the ${title} project?`)) {
       await deleteProject(title)
       const file = openFiles.filter(of => of.project !== title)[0]
-      console.log(file, openFiles)
       if (file) {
         nav(`/${file.project}/${file.file[0] === '/' ? file.file.slice(1) : file}`)
       } else {
@@ -99,8 +98,6 @@ export const ProjectDirectory = ({ project }: ProjectDirectoryProps) => {
       }
     }
   }, [title, openFiles, deleteProject, nav])
-
-  console.log(project.tests)
 
   return (
     <Col style={{ padding: '0px 4px', fontSize: 14 }} onMouseEnter={() => setShowButtons(true)} onMouseLeave={() => setShowButtons(false)} onClick={() => setCurrentProject(title)}>
@@ -135,7 +132,7 @@ export const ProjectDirectory = ({ project }: ProjectDirectoryProps) => {
             }
             return <SubDirectory key={item} projectTitle={title} folder={folder.contents[item] as Folder} indent={1} />
           })}
-          {Object.keys(project.tests).length && <FileLink key={'tests'} project={title} file='tests' />}
+          {Object.keys(project.tests).length > 0 && <FileLink key={'tests'} project={title} file='tests' />}
         </Col>
       )}
       <PublishModal project={title} show={showPublishModal} hide={() => setShowPublishModal(false)} />

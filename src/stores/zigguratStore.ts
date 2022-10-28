@@ -273,19 +273,27 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
           if (!hasMar) {
             await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { "save-file": { file: `/zig/mar/${type}/hoon`, text: txtMar } } } })
           }
-          set({ 
-            loading: `Saving files... ${path} (${i}/${downloadedFiles.length})`,
-            knownMars: [ ...get().knownMars, type ]
-          })
-          return api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { "save-file": { file: `/${path}`, text: content || '' } } } })
+
+          if (i+1 < downloadedFiles.length) {
+            set({ 
+              loading: `Saving files... 
+${path}
+(${i+1}/${downloadedFiles.length})`,
+              knownMars: [ ...get().knownMars, type ]
+            })
+          } else {
+            set({ loading: '' })
+          }
+
+          return api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { "save-file": { file: path, text: content || '' } } } })
         }
 
         await pMap(downloadedFiles, saveFile, { concurrency: 2, stopOnError: false })
       } catch (err) {
         alert(`Unable to save all files. Halted at ${lastFile}`)
+        set({ loading: '' })
       }
-  
-      set({ loading: undefined })
+      set({ loading: '' })
     },
     fileExists: async (project: string, path: string) => await api.scry({ 
       app: 'ziggurat', 

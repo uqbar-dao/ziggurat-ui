@@ -68,14 +68,13 @@ export interface DownloadedFile {
 }
 
 const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
-  const { userAddress, saveFileList, projects, createProject, populateTemplate, openFiles, setOpenFiles } = useZigguratStore()
+  const { setLoading, userAddress, saveFileList, projects, createProject, populateTemplate, openFiles, setOpenFiles } = useZigguratStore()
   const nav = useNavigate()
 
   const [step, setStep] = useState<CreationStep>('title')
   const [options, setOptions] = useState<CreationOptions>({ title: '' })
   // TODO: get default minter from the wallet and then figure out the default deployer
   const [metadata, setMetadata] = useState<RawMetadata>(generateInitialMetadata([userAddress], userAddress, 'fungible'))
-  const [loadingText, setLoadingText] = useState('')
   const [repoUrl, setRepoUrl] = useState('')
   const [repos, setRepos] = useState<RepoInfo[]>([])
   const [githubToken, setGithubToken] = useState('')
@@ -83,7 +82,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
   const [zip, setZip] = useState<any>()
 
   const authWithGithub = async (token: string) => {
-    setLoadingText('Fetching repositories...')
+    setLoading('Fetching repositories...')
     try {
       const o = new Octokit({ auth: token })
       let _repos: any[] = []
@@ -93,7 +92,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       if (result && result.data && result.data.length > 0) {
         _repos = [...result.data]
         
-        setLoadingText(`Fetching repositories (${_repos.length} so far)...`)
+        setLoading(`Fetching repositories (${_repos.length} so far)...`)
 
         // if more than 100 repos, we need to make more requests until last page
         while (true) {
@@ -110,7 +109,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
             _repos = [..._repos, ...result.data]
           else break
 
-          setLoadingText(`Fetching repositories (${_repos.length} so far)...`)
+          setLoading(`Fetching repositories (${_repos.length} so far)...`)
         }
 
         setRepos(_repos)
@@ -118,12 +117,12 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     } catch (e) {
       alert('Unable to fetch repositories from Github. Please check your API key is correct and has repo access to your account.')
     } finally {
-      setLoadingText('')
+      setLoading('')
     }
   }
 
   const getRepoContents = async (ownerRepo: string) => {
-    setLoadingText('Fetching repo contents...')
+    setLoading('Fetching repo contents...')
     try {
       const o = new Octokit({ auth: githubToken })
       const result: any = await o?.request(`GET /repos/${ownerRepo}`)
@@ -133,14 +132,14 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       setRepoContents(undefined)
       alert('Unable to fetch repository data. Is the repo private? Please add an API key with `repo` access to get a private repository.')
     } finally {
-      setLoadingText('')
+      setLoading('')
     }
   }
 
   const downloadFilesFromGithub = async () => {
     await submitNewProject({ ...options, project: 'gall' }, undefined, false)
     
-    setLoadingText('Gathering file data...')
+    setLoading('Gathering file data...')
     let result: any = ''
     const o = new Octokit({ auth: githubToken })
     try {
@@ -157,7 +156,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
 
     if (!result) {
       alert('Unable to gather file data. Please verify your Github access token has the correct permissions.')
-      setLoadingText('')
+      setLoading('')
       return
     }
 
@@ -167,11 +166,11 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     let lastFile = ''
     let downloadedFiles: DownloadedFile[] = []
     try {
-      setLoadingText(`Downloading files from Github...`)
+      setLoading(`Downloading files from Github...`)
       
       await pWaterfall(filesToDownload.map((file: TreeFile, i: number) => async () => {
         lastFile = file.path
-        setLoadingText(`Downloading files... (${i}/${filesToDownload.length})`)
+        setLoading(`Downloading files... (${i}/${filesToDownload.length})`)
         const { data: { content, path } } = await o.request(`GET /repos/${repoUrl}/contents/${file.path}`)
         const text = Buffer.from(content, 'base64').toString()
         const type = path.replace(/.*\//g, '')
@@ -180,10 +179,11 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       }))
     } catch {
       alert(`Unable to download files. Halted at ${lastFile}`)
-      setLoadingText('')
+      setLoading('')
       return
     }
 
+    setLoading('')
     await saveFileList(downloadedFiles, options.title!)
     nav(`/${options.title!}/${options.title!}`)
   }
@@ -202,7 +202,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
 
       // for zips with a single top level dir, remove the dir from path
       if (path.match('^/'+zip.name.replace('.zip', ''))) {
-        path = path.replace(/.+?\//, '')
+        path = path.replace(/.+?\//, '/')
       }
 
       // filetype is all of the chars after the last /
@@ -212,11 +212,23 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     }
 
     await saveFileList(filesToImport, options.title!)
-    nav(`/${options.title!}`)
+    .then(() => {
+      debugger
+      setLoading('')
+    })
+    .catch(() => {
+      debugger
+      setLoading('')
+    })
+    .finally(() => {
+      debugger
+      setLoading('')
+    })
+    nav(`/${options.title!}/app/${options.title!}/hoon`)
   }
 
   const submitNewProject = useCallback(async (options: CreationOptions, md?: RawMetadata, navOnFinish?: boolean) => {
-    setLoadingText('Submitting project...')
+    setLoading('Submitting project...')
 
     const metadata = !md ? undefined : {
       id: METADATA_GRAIN_ID,
@@ -245,7 +257,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
         // if (navOnFinish) nav(`/${options.title}/${encodeURIComponent(`/app/${options.title}/hoon`)}`)
         // TODO: where do we route or what do we show after creating a gall project?
       }
-      setLoadingText('')
+      setLoading('')
     }, 500)
   }, [userAddress, nav, createProject, populateTemplate, openFiles, setOpenFiles])
 
@@ -583,7 +595,6 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
   return (
     <Col style={{ position: 'absolute', visibility: hide ? 'hidden' : 'visible', width: '100%', maxWidth: 600, height: '100%', justifyContent: 'center', alignItems: 'center', alignSelf: 'center', justifySelf: 'center' }}>
       {renderContent()}
-      <LoadingOverlay loading={Boolean(loadingText)} text={loadingText} />
     </Col>
   )
 }
