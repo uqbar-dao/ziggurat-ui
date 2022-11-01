@@ -26,6 +26,9 @@ export const ItemEntry = ({
   return (
     item.id !== item.source ? (
       <Entry divide className='indexer-item' key={item.id}>
+        {Boolean(item.label) && (
+          <Field name='Label:'>{item.label}</Field>
+        )}
         <Field className='id' name='ID:'>
           <Row>
             <Link href={`/item/${addHexDots(item.id)}`}>

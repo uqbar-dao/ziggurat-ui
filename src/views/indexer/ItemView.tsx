@@ -59,12 +59,14 @@ const ItemView = () => {
 
         if (rawData) {
           const { hash }: HashData = rawData
-          const txns = Object.keys(hash.txns).map(txnHash => ({ ...hash.txns[txnHash], hash: txnHash }))
+          const txns = Object.keys(hash.transactions).map(txnHash => ({ ...hash.transactions[txnHash], hash: txnHash }))
           setTransactions(txns)
         }
 
         setLoading(false)
-      } catch (err) {}
+      } catch (err) {
+        alert('There was an error loading item data.')
+      }
     }
 
     if (mockData) {
