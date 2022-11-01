@@ -57,12 +57,15 @@ const AddressView = () => {
 
         if (rawData) {
           const { hash }: HashData = rawData
-          const txns = Object.keys(hash.txns).map(txnHash => ({ ...hash.txns[txnHash], hash: txnHash }))
+          const txns = Object.keys(hash.transactions).map(txnHash => ({ ...hash.transactions[txnHash], hash: txnHash }))
           setTransactions(txns)
         }
 
         setLoading(false)
-      } catch (err) {}
+      } catch (err) {
+        alert('There was an error loading address data.')
+
+      }
     }
 
     if (mockData) {
@@ -105,13 +108,13 @@ const AddressView = () => {
                   Assets
                 </Text>
               </Row>
-              <Row>
+              {towns.length > 0 && <Row>
                 <Text mr1>Town:</Text>
-                <select value={town} className='small text' style={{paddingRight: '1em'}} onChange={(e) => setTown(e.target.value)}>
+                <select value={town} className='small text' style={{paddingRight: 32}} onChange={(e) => setTown(e.target.value)}>
                   <option value={''} key={''}>All</option>
                   {towns.map(t => <option value={t} key={t}>{t}</option>)}
                 </select>
-              </Row>
+              </Row>}
             </Row>
           </CardHeader>
           <Col>
