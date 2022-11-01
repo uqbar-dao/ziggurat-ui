@@ -60,9 +60,9 @@ const AccountDisplay: React.FC<AccountDisplayProps> = ({
             onChange={(e: any) => setNewNick(e.target.value)}
             value={newNick}
           />
-          <Link href={`${PUBLIC_URL}/indexer/address/${address}`}>
+          <Link external href={`${PUBLIC_URL}/indexer/address/${address}`}>
             <Row>
-              <HexNum num={displayPubKey(address)} mono bold />
+              <HexNum num={address} displayNum={displayPubKey(address)} mono bold />
               {!full && <FaArrowRight className='ml1' />}
             </Row>
           </Link>
@@ -82,11 +82,12 @@ const AccountDisplay: React.FC<AccountDisplayProps> = ({
       </Row>
       {full && (
         <Col>
-          <h4>Nonces</h4>
-          {Object.keys(nonces).map((n, i) => (
+          <h4 style={{ marginTop: 16 }}>Nonces</h4>
+          {Object.entries(nonces).length == 0 && <Text className=''>No nonces to display.</Text>}
+          {Object.entries(nonces).map(([k, v], i) => (
             <Row key={i}>
-              <Text style={{ marginRight: 8, width: 72 }}>Town: {n}</Text>
-              <Text>Nonce: {nonces[n]}</Text>
+              <Text style={{ marginRight: 8, width: 72 }}>Town: {k}</Text>
+              <Text>Nonce: {v}</Text>
             </Row>
           ))}
         </Col>

@@ -32,7 +32,7 @@ const TestResultDisplay = ({ result, expectedError }: { result?: TestResult, exp
               const errorMsg = (item.expected === null && item.match === null) 
                 ? 'Item was not expected to change.' 
                 : (item.expected && !item.made)
-                  ? 'Item changes did not match expectations.'
+                  ? 'Item was not present in chain state.'
                   : ''
 
               if (errorMsg) {

@@ -28,8 +28,6 @@ const HomeView = () => {
   const [inputError, setInputError] = useState('')
   const navigate = useNavigate()
 
-  console.log(batches)
-
   const search = () => {
     const cleanValue = addHexPrefix(removeDots(searchValue))
     if (!searchValue) {
@@ -104,7 +102,8 @@ const HomeView = () => {
               </Row>
             </CardHeader>
             <Col>
-              {batches.map((bh, index) => (
+              {!batches.length && <Text className='mt1'>No batches to display.</Text>}
+              {batches.length > 0 && batches.map((bh, index) => (
                 <Entry key={bh.id}>
                   <Field name='Time:'>
                     <Text>{formatIndexerTimestamp(bh.timestamp)}</Text>
@@ -121,7 +120,7 @@ const HomeView = () => {
           <Card className='latest-transactions' title='Latest Transactions'>
             <Col>
               {transactions.length < 1 && (
-                <Text style={{ padding: '8px 16px' }}>There are no transactions in these blocks.</Text>
+                <Text className='mt1'>There are no transactions in these blocks.</Text>
               )}
               {transactions.map((tx, index) => (
                 <Entry key={tx.hash || index}>
