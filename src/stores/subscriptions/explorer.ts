@@ -5,7 +5,7 @@ import { TokenMetadataStore } from "../../types/wallet/TokenMetadata";
 import { IndexerStore } from "../indexerStore";
 
 export const handleLatestBatch = (get: GetState<IndexerStore>, set: SetState<IndexerStore>) => async (b: NewBatch) => {
-  const batchOrder = b['batch-order'].filter(bo => !get().batches.find(({ id }) => id === bo))
+  const batchOrder = !b ? [] : b['batch-order'].filter(bo => !get().batches.find(({ id }) => id === bo))
   console.log('LATEST BATCH:', batchOrder)
   const newBatches = (await Promise.all(
     batchOrder.map(async (batchId) => ({ id: batchId, result: await get().scry<Batches>(`/batch/${batchId}`) }))

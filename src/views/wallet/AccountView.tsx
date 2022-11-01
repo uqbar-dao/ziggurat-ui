@@ -11,7 +11,7 @@ const AccountView = () => {
   const { account } = useParams()
   const { accounts } = useWalletStore()
 
-  const displayAccount = accounts.find(({ address }) => address === account)
+  const displayAccount = accounts.find(({ rawAddress }) => rawAddress === account)
 
   return (
     <Container>

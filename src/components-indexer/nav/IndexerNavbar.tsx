@@ -31,7 +31,7 @@ const IndexerNavbar = () => {
           <Link className={`nav-link ${window.location.pathname === `${process.env.PUBLIC_URL}/` || window.location.pathname === process.env.PUBLIC_URL ? 'selected' : ''}`} href='/'>
             Home
           </Link>
-          {addresses.length > -1 && (
+          {addresses.length > 0 && (
             <Dropdown value='My Accounts' open={open} toggleOpen={() => setOpen(!open)} className='nav-link dropdown' unstyled style={{ padding: '0 0 0 8px', fontSize: 16 }}>
               {addresses.map(a => (
                 <Link href={`/address/${a}`} className='account' key={a} style={{ margin: '2px 0' }}>
