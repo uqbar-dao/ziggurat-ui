@@ -28,6 +28,8 @@ const HomeView = () => {
   const [inputError, setInputError] = useState('')
   const navigate = useNavigate()
 
+  console.log({ batches, transactions })
+
   const search = () => {
     const cleanValue = addHexPrefix(removeDots(searchValue))
     if (!searchValue) {
@@ -130,15 +132,15 @@ const HomeView = () => {
                     </Link>
                   </Field>
                   <Field name='From:'>
-                    <Link href={`/address/${addHexDots(tx.txn.shell.caller.id)}`}>
-                      <Text mono >{abbreviateHex(tx.txn.shell.caller.id, 6, 4)}</Text>
+                    <Link href={`/address/${addHexDots(tx.transaction.shell.caller.id)}`}>
+                      <Text mono >{abbreviateHex(tx.transaction.shell.caller.id, 6, 4)}</Text>
                     </Link>
                   </Field>
                   <Field name='Nonce:'>
-                    <Text mono >{tx.txn.shell.caller.nonce}</Text>
+                    <Text mono >{tx.transaction.shell.caller.nonce}</Text>
                   </Field>
                   <Field name='Status:'>
-                    <Text>{getRawStatus(tx.txn.shell.status)}</Text>
+                    <Text>{getRawStatus(tx.transaction.shell.status)}</Text>
                   </Field>
                 </Entry>
               ))}

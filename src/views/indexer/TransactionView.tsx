@@ -32,10 +32,10 @@ const TransactionView = () => {
     const getData = async () => {
       // 0x523515b872fce8297919a3e40bfd48dec4d27d9700dd44dd81efc254ef8aa3e6
 
-      const result = await scry<{ txn: { [key: string]: Transaction } }>(`/json/txn/${txnHash}`)
+      const result = await scry<{ transaction: { [key: string]: Transaction } }>(`/json/txn/${txnHash}`)
 
       if (result) {
-        setTransaction(Object.values(result.txn)[0])
+        setTransaction(Object.values(result.transaction)[0])
       }
       setLoading(false)
     }
@@ -52,7 +52,7 @@ const TransactionView = () => {
       <Text>No transaction data</Text>
   }
 
-  const { location: loc, txn: { shell, calldata } } = transaction
+  const { location: loc, transaction: { shell, calldata } } = transaction
   console.log('LOCATION:', loc)
 
   return (

@@ -7,7 +7,7 @@ export interface HashTransaction {
 }
 
 export interface Transaction {
-  txn: Txn
+  transaction: Txn
   location: Location
   hash: string
   timestamp: number
