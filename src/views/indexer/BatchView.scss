@@ -11,7 +11,7 @@
     cursor: pointer;
   }
 
-  .transaction {
+  .state, .nonce, .transaction {
     margin: 8px 2px;
   }
 
@@ -20,8 +20,8 @@
   }
 
   .expanded-details {
-    overflow-y: scroll;
     display: block;
     max-height: 300px;
+    margin-left: 160px;
   }
 }

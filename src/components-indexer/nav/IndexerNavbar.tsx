@@ -32,7 +32,7 @@ const IndexerNavbar = () => {
             Home
           </Link>
           {addresses.length > 0 && (
-            <Dropdown value='My Accounts' open={open} toggleOpen={() => setOpen(!open)} className='nav-link dropdown' unstyled style={{ padding: '0 0 0 8px', fontSize: 16 }}>
+            <Dropdown value='My Accounts' open={open} toggleOpen={() => setOpen(!open)} className='nav-link dropdown' unstyled style={{ padding: '0 16px', fontSize: 16 }}>
               {addresses.map(a => (
                 <Link href={`/address/${a}`} className='account' key={a} style={{ margin: '2px 0' }}>
                   <HexNum num={a} displayNum={abbreviateHex(a, 5, 3)} />

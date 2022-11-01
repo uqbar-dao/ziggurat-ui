@@ -38,21 +38,21 @@ export const TransactionEntry = ({
           </Field>
           {isWalletAddress ? (
             <Field name='To:'>
-              <Link href={`/item/${addHexDots(tx.txn.shell.contract)}`}>
-                <HexNum mono style={{ margin: 2 }} num={addHexDots(tx.txn.shell.contract)} />
+              <Link href={`/item/${addHexDots(tx.transaction.shell.contract)}`}>
+                <HexNum mono style={{ margin: 2 }} num={addHexDots(tx.transaction.shell.contract)} />
               </Link>
-              <CopyIcon text={tx.txn.shell.contract} />
+              <CopyIcon text={tx.transaction.shell.contract} />
             </Field>
           ) : (
             <Field name='From:'>
-              <Link href={`/item/${addHexDots(tx.txn.shell.caller.id)}`}>
-                <HexNum mono style={{ margin: 2 }} num={addHexDots(tx.txn.shell.caller.id)} />
+              <Link href={`/item/${addHexDots(tx.transaction.shell.caller.id)}`}>
+                <HexNum mono style={{ margin: 2 }} num={addHexDots(tx.transaction.shell.caller.id)} />
               </Link>
-              <CopyIcon text={tx.txn.shell.caller.id} />
+              <CopyIcon text={tx.transaction.shell.caller.id} />
             </Field>
           )}
           <Field name='Status:'>
-            <Text mono oneLine>{getRawStatus(tx.txn.shell.status)}</Text>
+            <Text mono oneLine>{getRawStatus(tx.transaction.shell.status)}</Text>
           </Field>
         </Col>
       </Field>
