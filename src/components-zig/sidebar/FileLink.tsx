@@ -1,4 +1,4 @@
-import  { useCallback, useState } from 'react'
+import  { useCallback, useMemo, useState } from 'react'
 import { FaCodeBranch, FaFile, FaFileImage, FaKickstarterK, FaMoneyBill, FaPencilRuler,  FaShip, FaTrash } from 'react-icons/fa';
 import { useLocation } from 'react-router-dom';
 import useZigguratStore from '../../stores/zigguratStore'
@@ -20,8 +20,8 @@ export const FileLink = ({ project, file }: FileLinkProps) => {
   const { pathname } = useLocation()
   const { currentProject, openFiles, setCurrentProject, setOpenFiles, deleteFile, projects } = useZigguratStore()
   const [showButtons, setShowButtons] = useState(false)
-  const isTests = file === 'tests'
-  const fileName = isTests ? 'contract tests' : getFilename(file)
+  const isTests = useMemo(() => file === 'contract-tests', [file])
+  const fileName = useMemo(() => isTests ? 'contract tests' : getFilename(file), [file, isTests])
 
   const selectFile = useCallback(() => {
     if (!openFiles.find((of) => of.project === project && of.file === file)) {
@@ -40,13 +40,13 @@ export const FileLink = ({ project, file }: FileLinkProps) => {
   return (
     <Row style={{ paddingLeft: 8, position: 'relative' }} onMouseEnter={() => setShowButtons(true)} onMouseLeave={() => setShowButtons(false)}>
       {fileName.endsWith('.hoon') ? <FaCodeBranch style={{ transform: 'scale(1, -1)'}} />
-       : fileName.endsWith('tests') ? <FaPencilRuler />
+       : file.endsWith('contract-tests') ? <FaPencilRuler size={14} />
        : fileName.endsWith('.bill') ? <FaMoneyBill />
        : fileName.endsWith('.ship') ? <FaShip />
        : fileName.endsWith('.kelvin') ? <FaKickstarterK />
        : fileName.match(/\.((pn|jp(e)?)g|gif|tif(f)?|webp|bmp|ico)$/) ? <FaFileImage />
        : <FaFile />}
-      <Link onClick={selectFile} underline={pathname === href} href={href} style={{ padding: 2 }}>
+      <Link onClick={selectFile} underline={pathname === href} href={href} style={{ padding: 2, paddingLeft: 4 }}>
         {tar} {fileName}
       </Link>
       {showButtons && !isTests && file !== project && (

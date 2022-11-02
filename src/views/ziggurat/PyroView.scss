@@ -1,0 +1,34 @@
+@use '../../styles/colors.scss' as colors;
+
+.pyro-view {
+  height: 100%;
+  width: 100%;
+
+  .breadcrumbs {
+    background-color: colors.$uq-lightpink;
+    padding: 1px 4px;
+
+    .crumb {
+      padding: 4px 8px;
+    }
+  }
+
+  // .pyro-row {
+  //   background-color: colors.$blush;
+
+  //   .entry {
+  //     background-color: colors.$charcoal;
+  //     color: white;
+  //     padding: 4px 8px;
+
+  //     &:last-of-type {
+  //       border-top-right-radius: 4px;
+  //     }
+
+  //     &.selected {
+  //       background-color: white;
+  //       color: colors.$charcoal;
+  //     }
+  //   }
+  // }
+}

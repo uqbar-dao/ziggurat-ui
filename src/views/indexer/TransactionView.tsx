@@ -17,11 +17,11 @@ import PageHeader from '../../components/page/PageHeader'
 import Footer from '../../components-indexer/nav/Footer'
 import HexNum from '../../components/text/HexNum'
 import Loader from '../../components/popups/Loader'
-
-import './TransactionView.scss'
 import Json from '../../components/text/Json'
 import { displayPubKey } from '../../utils/account'
 import { Item } from '../../types/indexer/Item'
+
+import './TransactionView.scss'
 
 const TransactionView = () => {
   const { scry } = useIndexerStore()

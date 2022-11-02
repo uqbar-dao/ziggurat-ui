@@ -20,6 +20,7 @@ import Loader from '../../components/popups/Loader'
 import { TransactionArgs } from '../../types/wallet/Transaction'
 
 import './SendTransactionForm.scss'
+import { signWithHardwareWallet } from '../../utils/hardware-wallet'
 
 export interface SendFormValues { to: string; rate: string; bud: string; amount: string; contract: string; town: string; action: string; }
 export type SendFormField = 'to' | 'rate' | 'bud' | 'amount' | 'contract' | 'town' | 'action'
@@ -129,15 +130,21 @@ const SendTransactionForm = ({
       const fromAddress = unsignedTransactions[pendingHash].from
       let ethHash, sig, hardwareHash
   
-      const isHardwareWalletAddress = Boolean(importedAccounts.find(a => a.rawAddress === fromAddress))
-      if (isHardwareWalletAddress) {
+      const importedAccount = importedAccounts.find(a => a.rawAddress === fromAddress)
+      
+      if (importedAccount?.type) {
         hardwareHash = pendingHash
+
         setLoading('Please sign the transaction on your hardware wallet')
+
         const contract = removeDots(unsignedTransactions[pendingHash].contract.slice(2))
         const to = (unsignedTransactions[pendingHash] as any).action?.give?.to ||
           (unsignedTransactions[pendingHash] as any).action?.['give-nft']?.to ||
           `0x${contract}${contract}`
-        const sigResult = await signLedgerTransaction(removeDots(fromAddress), pendingHash, { ...unsignedTransactions[pendingHash], to })
+
+        const sigResult = await signWithHardwareWallet(
+          importedAccount.type, removeDots(fromAddress), pendingHash, { ...unsignedTransactions[pendingHash], to }
+        )
         setLoading(null)
         ethHash = sigResult.ethHash ? addHexDots(sigResult.ethHash) : undefined
         sig = sigResult.sig

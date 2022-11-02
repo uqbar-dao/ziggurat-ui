@@ -5,7 +5,7 @@
   // border-radius: 4px;
   min-height: 300px;
   margin-left: -1px;
-
+  position: relative;
   
   .section-header {
     justify-content: space-between;
@@ -17,9 +17,7 @@
       padding: 4px;
       font-weight: bold;
     }
-
   }
-
 
   .test-actions {
     background-color: colors.$uq-lightpink;
@@ -48,8 +46,30 @@
     }
   }
 
-
   .text-area {
     min-height: 120px;
+  }
+
+  .under-construction {
+    position: fixed;
+    top: 31px;
+    bottom: 0;
+    left: 20%;
+    right: 0;
+    background-color: rgba(0,0,0,0.7);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .header {
+      border: none;
+      font-size: 24px;
+
+      span {
+        margin-left: 8px;
+      }
+    }
   }
 }

@@ -103,10 +103,6 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       const projects = await get().getProjects()
       get().getAccounts()
 
-      if (!get().currentProject && Object.values(projects)[0]) {
-        set({ currentProject: Object.values(projects)[0].title || '' })
-      }
-
       // TODO: set up subscriptions for endpoints, should be
       const newEndpoints = await Promise.all(
         get().endpoints.map(async (e) => {

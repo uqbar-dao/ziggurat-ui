@@ -2,12 +2,12 @@ import { GetState, SetState } from "zustand";
 import { toast } from 'react-toastify';
 import { generateState, generateTests } from "../../utils/project";
 import { ZigguratStore } from "../zigguratStore";
-import { Project, ProjectUpdate } from "../../types/ziggurat/Project";
+import { ProjectUpdate } from "../../types/ziggurat/Project";
 import { mapFilesToFolders } from "../../utils/project";
 import { TestResultUpdate } from "../../types/ziggurat/TestData";
 
 export const handleGallUpdate = (get: GetState<ZigguratStore>, set: SetState<ZigguratStore>, project: string) => (update: ProjectUpdate) => {
-  console.log('GALL UPDATE FOR:', project, update)
+  console.log('UPDATE FOR:', project, update)
   const newProjects = { ...get().projects }
   newProjects[project] = {
     ...(newProjects[project] || {}),

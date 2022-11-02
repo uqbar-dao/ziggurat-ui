@@ -40,7 +40,12 @@
     .link {
       color: black;
       // font-weight: bold;
-    };
+    }
+
+    .contents {
+      overflow-y: scroll;
+      height: 100%;
+    }
   }
 
   .tools {
