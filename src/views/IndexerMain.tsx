@@ -29,6 +29,7 @@ function IndexerMain() {
         <Route path="/" element={<HomeView />} />
         <Route path="latest-batches/:numBlocks" element={<BatchesView />} />
         <Route path="batch/:batchId" element={<BatchView />} />
+        <Route path="batch/:batchId/:townId" element={<BatchView />} />
         <Route path="tx/:tx" element={<TransactionView />} />
         <Route path="address/:address" element={<AddressView />} />
         <Route path="item/:item" element={<ItemView />} />

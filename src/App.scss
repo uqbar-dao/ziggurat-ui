@@ -27,12 +27,40 @@
   margin-left: 1em;
 }
 
+.m1 {
+  margin: 1em;
+}
+
+.m0 {
+  margin: 0;
+}
+
 .h-screen {
   height: 100vh;
 }
 
+.pt1 {
+  padding-top: 1em;
+}
+
+.pr1 {
+  padding-right: 1em;
+}
+
+.pb1 {
+  padding-bottom: 1em;
+}
+
+.pl1 {
+  padding-left: 1em;
+}
+
 .p0 {
   padding: 0;
+}
+
+.p1 {
+  padding: 1em;
 }
 
 .code-error-underline {
