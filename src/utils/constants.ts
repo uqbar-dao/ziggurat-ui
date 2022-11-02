@@ -44,15 +44,15 @@ export const STATUS_CODES : { [key: number] : string } = {
 
 export const STATUS_CODES_RAW : { [key: number] : string } = {
   0: 'successfully performed',
-  1: 'submitted with raw id / no account info',
-  2: 'bad signature',
-  3: 'incorrect nonce',
-  4: 'lack zigs to fulfill budget',
-  5: 'couldn\'t find contract',
+  1: 'bad signature',
+  2: 'incorrect nonce',
+  3: 'lack zigs to fulfill budget',
+  4: 'couldn\'t find contract',
+  5: 'data was under contract ID',
   6: 'crash in contract execution',
-  7: 'validation of changed/issued/burned rice failed',
-  8: 'ran out of gas',
-  9: 'superceded by another txn in batch',
+  7: 'validation of diff failed',
+  8: 'ran out of gas while executing',
+  9: 'dedicated burn transaction failed',
 }
 
 export const UNSIGNED_STATUS = 100

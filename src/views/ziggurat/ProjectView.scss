@@ -1,0 +1,30 @@
+@use '../../styles/colors.scss' as colors;
+
+.project-view {
+  padding: 0 16px 16px;
+  height: calc(100vh - 32px);
+  width: 100%;
+  background: white;
+  position: relative;
+  overflow: hidden;
+  align-items: flex-start;
+  justify-content: flex-start;
+
+  margin-left: -1px;
+
+  .files {
+    width: calc(100% - 2px);
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+}
+
+.file-card {
+  margin-right: 16px;
+  margin-bottom: 16px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0,0,0,0.05);
+  }
+}

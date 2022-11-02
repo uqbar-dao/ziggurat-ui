@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { DragDropContext } from 'react-beautiful-dnd';
-import { FaPlay } from 'react-icons/fa';
+import { FaPlay, FaExclamationTriangle } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { isMobileCheck } from '../../utils/dimensions'
 import Col from '../../components/spacing/Col'
@@ -23,11 +23,11 @@ import { BLANK_TEST_FORM, TestFormField, TestFormValues } from '../../types/zigg
 import Field from '../../components/spacing/Field';
 import Entry from '../../components/spacing/Entry';
 
-import './TestView.scss'
+import './ContractTestView.scss'
 
-export interface TestViewProps {}
+export interface ContractTestViewProps {}
 
-export const TestView = () => {
+export const ContractTestView = () => {
   const { projects, currentProject, setLoading, addTest, updateTest, addItem, runTest, runTests, addTestExpectation } = useZigguratStore()
 
   const [showTestModal, setShowTestModal] = useState(false)
@@ -239,6 +239,13 @@ export const TestView = () => {
             </Row>
           </Entry>
         </Modal>
+        {/* <div className='under-construction'>
+          <Row className='header'>
+            <FaExclamationTriangle />
+            <Text>Under Construction</Text>
+          </Row>
+          <p>Contract tests are currently a work in progress.</p>
+        </div> */}
       </Row>
     </DragDropContext>
   )

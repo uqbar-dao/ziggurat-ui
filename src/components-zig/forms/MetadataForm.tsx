@@ -6,11 +6,14 @@ import { ListInput } from "../../components/form/ListInput"
 
 interface MetadataFormProps {
   metadata: RawMetadata
+  isNft?: boolean
   setMetadata: (m: RawMetadata) => void
   onSubmit: () => void
 }
 
-export const MetadataForm = ({ metadata, setMetadata, onSubmit }: MetadataFormProps) => {
+export const MetadataForm = ({ metadata, isNft = false, setMetadata, onSubmit }: MetadataFormProps) => {
+  const disabled = !(metadata.name && metadata.symbol && metadata.salt && (!isNft || metadata.properties?.length))
+
   return (
     <Form style={{ borderRadius: 4, alignItems: 'center' }}
       onSubmit={(e) => {
@@ -106,7 +109,7 @@ export const MetadataForm = ({ metadata, setMetadata, onSubmit }: MetadataFormPr
         label="Deployer"
         required
       /> */}
-      <Button variant='dark' type="submit" style={{ margin: '16px 0px 8px', width: '100%', justifyContent: 'center' }}>
+      <Button disabled={disabled} variant='dark' type="submit" style={{ margin: '16px 0px 8px', width: '100%', justifyContent: 'center' }}>
         Next
       </Button>
     </Form>

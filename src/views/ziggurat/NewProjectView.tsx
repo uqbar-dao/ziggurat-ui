@@ -24,6 +24,8 @@ import { RawMetadata } from '../../types/ziggurat/Metadata';
 import Form from '../../components/form/Form';
 import { Select } from '../../components/form/Select';
 import Divider from '../../components/spacing/Divider';
+import useLocalStorage from '../../hooks/useLocalStorage';
+import Modal from '../../components/popups/Modal';
 
 import './NewProjectView.scss'
 
@@ -68,7 +70,7 @@ export interface DownloadedFile {
 }
 
 const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
-  const { setLoading, userAddress, saveFileList, projects, createProject, populateTemplate, openFiles, setOpenFiles } = useZigguratStore()
+  const { loading, setLoading, userAddress, saveFileList, projects, createProject, populateTemplate } = useZigguratStore()
   const nav = useNavigate()
 
   const [step, setStep] = useState<CreationStep>('title')
@@ -80,6 +82,14 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
   const [githubToken, setGithubToken] = useState('')
   const [repoContents, setRepoContents] = useState<RepoContents>()
   const [zip, setZip] = useState<any>()
+  const [showInfoModal, setShowInfoModal] = useState(false)
+  const [disableInfoModal, setDisableInfoModal] = useLocalStorage<boolean>('disableInfoModal', false)
+
+  const hideInfoModal = useCallback(() => {
+    setShowInfoModal(false)
+    nav(`/${options.title || ''}`)
+    setOptions({})
+  }, [options, setShowInfoModal, nav, setOptions])
 
   const authWithGithub = async (token: string) => {
     setLoading('Fetching repositories...')
@@ -232,21 +242,18 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     if (metadata && options.token !== 'blank') {
       await populateTemplate(options.title!, options.token!, metadata)
     }
-    setOptions({})
     setMetadata(generateInitialMetadata([userAddress], userAddress, 'fungible'))
     setStep('title')
-    setTimeout(() => {
-      if (options?.project === 'contract') {
-        setOpenFiles(openFiles.concat([{ project: options.title!, file: options.title! }]))
-        // if (navOnFinish) nav(`/${options.title}/${options.title}`)
-        // TODO: where do we route or what do we show after creating a contract project?
-      } else if (options?.project === 'gall') {
-        // if (navOnFinish) nav(`/${options.title}/${encodeURIComponent(`/app/${options.title}/hoon`)}`)
-        // TODO: where do we route or what do we show after creating a gall project?
-      }
-      setLoading('')
-    }, 500)
-  }, [userAddress, nav, createProject, populateTemplate, openFiles, setOpenFiles])
+
+    const shouldShowInfoModal = !disableInfoModal && true
+    setShowInfoModal(shouldShowInfoModal)
+
+    if (!shouldShowInfoModal) {
+      hideInfoModal()
+    }
+
+    setLoading('')
+  }, [userAddress, disableInfoModal, createProject, setLoading, setShowInfoModal, populateTemplate, hideInfoModal])
 
   const onSelect = useCallback((option: string) => async () => {
     switch (step) {
@@ -297,15 +304,13 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
           setStep('metadata')
         } else {
           submitNewProject({ ...options, template: option as TemplateOption })
-          nav('/')
         }
         break
       default:
         submitNewProject(options, metadata)
-        nav('/')
         break
     }
-  }, [userAddress, step, setStep, options, setOptions, projects, submitNewProject, metadata, setMetadata, nav])
+  }, [userAddress, step, setStep, options, setOptions, projects, submitNewProject, metadata, setMetadata])
 
   const onBack = useCallback(() => {
     switch (step) {
@@ -575,7 +580,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
             {backButton}
             <h3>Token Info:</h3>
           </Row>
-          <MetadataForm metadata={metadata} setMetadata={setMetadata} onSubmit={onSelect('metadata')} />
+          <MetadataForm isNft={options.token === 'nft'} metadata={metadata} setMetadata={setMetadata} onSubmit={onSelect('metadata')} />
         </>
       )
     }
@@ -584,6 +589,29 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
   return (
     <Col style={{ position: 'absolute', visibility: hide ? 'hidden' : 'visible', width: '100%', maxWidth: 600, height: '100%', justifyContent: 'center', alignItems: 'center', alignSelf: 'center', justifySelf: 'center' }}>
       {renderContent()}
+      <LoadingOverlay loading={Boolean(loading)} text={loading} />
+      <Modal show={showInfoModal} hide={hideInfoModal}>
+        <Col style={{ maxWidth: 380 }}>
+          <p>
+            Your project is now in the lefthand sidebar!<br /><br />
+            Your app file is located in the 'app' directory and<br />
+            your contract files are located in the 'con' directory.
+          </p>
+          <Row onClick={() => setDisableInfoModal(!disableInfoModal)} style={{ cursor: 'pointer' }}>
+            <Input
+              type="checkbox"
+              value={disableInfoModal ? 'true' : undefined}
+              onChange={(e) => {
+                e.stopPropagation()
+                setDisableInfoModal(!disableInfoModal)
+              }}
+              style={{ marginLeft: 0, marginRight: 8 }}
+            />
+            <Text>Don't show this message again</Text>
+          </Row>
+          <Button variant='dark' onClick={hideInfoModal} style={{ width: 200, margin: '24px auto 0' }}>OK</Button>
+        </Col>
+      </Modal>
     </Col>
   )
 }

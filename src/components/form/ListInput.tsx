@@ -57,7 +57,7 @@ export const ListInput: React.FC<ListInputProps> = ({
             addValue()
           }
         }}  />
-        {!hideButton && <Button style={{ marginLeft: 8, padding: '5px 8px' }} variant={buttonVariant} onClick={addValue}>Add</Button>}
+        {!hideButton && <Button disabled={!value} style={{ marginLeft: 8, padding: '4px 8px' }} variant={buttonVariant} onClick={addValue}>Add</Button>}
       </Row>
     </Col>
   )

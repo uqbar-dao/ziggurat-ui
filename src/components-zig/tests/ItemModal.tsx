@@ -84,7 +84,7 @@ export const ItemModal = ({
         )}
         {Object.keys(itemFormValues).map((key) => (
           <Row key={key}>
-            { key === 'data' ? (
+            { key === 'noun' ? (
               <TextArea
                 onChange={(e) => updateItemFormValue(key, e.target.value)}
                 value={itemFormValues[key].value}

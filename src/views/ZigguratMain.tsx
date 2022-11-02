@@ -11,11 +11,13 @@ import LoadingOverlay from '../components/popups/LoadingOverlay';
 import EditorView from './ziggurat/EditorView';
 import NewProjectView from './ziggurat/NewProjectView';
 import AppView from './ziggurat/AppView';
-import { TestView } from './ziggurat/TestView';
+import { ContractTestView } from './ziggurat/ContractTestView';
 import { PUBLIC_URL } from '../utils/constants';
 import WelcomeView from './ziggurat/WelcomeView';
 import { ToastContainer } from 'react-toastify';
 import { EndpointView } from './ziggurat/EndpointView';
+import { PyroView } from './ziggurat/PyroView';
+import ProjectView from './ziggurat/ProjectView';
 
 function ZigguratMain() {
   const { loading, init, projects } = useZigguratStore()
@@ -49,10 +51,17 @@ function ZigguratMain() {
               <Route path="/" element={<WelcomeView />} />
               <Route path="/new" element={<NewProjectView />} />
               <Route path="/app" element={<AppView />} />
-              <Route path="/endpoints" element={<EndpointView />} />
+              <Route path="/pyro" element={<PyroView />} />
+
+              <Route path="/pyro/:ship" element={<EndpointView />} />
+              <Route path="/pyro/:ship/apps" element={<EndpointView />} />
+              <Route path="/pyro/:ship/apps/:app" element={<EndpointView />} />
+              <Route path="/pyro/:ship/endpoints" element={<EndpointView />} />
+              <Route path="/pyro/:ship/chain-state" element={<EndpointView />} />
+
               <Route path="/app/:app" element={<AppView />} />
-              <Route path="/:projectTitle" element={<EditorView />} />
-              <Route path="/:projectTitle/tests" element={<TestView />} />
+              <Route path="/:projectTitle" element={<ProjectView />} />
+              <Route path="/:projectTitle/contract-tests" element={<ContractTestView />} />
               <Route path="/:projectTitle/:file" element={<EditorView />} />
               <Route
                 path="*"
