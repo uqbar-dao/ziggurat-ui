@@ -1,4 +1,5 @@
 export interface Location {
-  'batch-root': number
+  'batch-id': number
   'town-id': string
+  'transaction-num': number
 }

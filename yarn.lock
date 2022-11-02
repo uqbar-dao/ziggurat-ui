@@ -10713,6 +10713,11 @@ pretty-format@^27.0.0, pretty-format@^27.0.2, pretty-format@^27.5.1:
     ansi-styles "^5.0.0"
     react-is "^17.0.1"
 
+pretty-print-json@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/pretty-print-json/-/pretty-print-json-1.3.1.tgz#d6ebe48e47b5c966fcd98b28b42d901b4d4477d4"
+  integrity sha512-bYSEF7uY8t3AP4LlCN78cloK6o8oIbplQrVDX/X9QzVnjoTsxM371JH7TPqOZd9FO0EvKO4/GE+TmlhvJY8+vQ==
+
 private-ip@^2.1.0, private-ip@^2.1.1, private-ip@^2.3.3:
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/private-ip/-/private-ip-2.3.4.tgz#e2944f2a7a0142ec6640efda323af4b96307524e"

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { prettyPrintJson } from 'pretty-print-json'
 import { useLocation } from 'react-router-dom'
 import Link from '../../components-indexer/nav/Link'
 import Card from '../../components-indexer/card/Card'
@@ -18,6 +19,9 @@ import HexNum from '../../components/text/HexNum'
 import Loader from '../../components/popups/Loader'
 
 import './TransactionView.scss'
+import Json from '../../components/text/Json'
+import { displayPubKey } from '../../utils/account'
+import { Item } from '../../types/indexer/Item'
 
 const TransactionView = () => {
   const { scry } = useIndexerStore()
@@ -32,11 +36,14 @@ const TransactionView = () => {
     const getData = async () => {
       // 0x523515b872fce8297919a3e40bfd48dec4d27d9700dd44dd81efc254ef8aa3e6
 
-      const result = await scry<{ transaction: { [key: string]: Transaction } }>(`/json/txn/${txnHash}`)
+      const result  = await scry<{ transaction: { [key: string]: Transaction } }>(`/json/transaction/${txnHash}`)
 
-      if (result) {
+      if (result && result.transaction && Object.values(result.transaction)[0]) {
         setTransaction(Object.values(result.transaction)[0])
+      } else {
+        alert('There was an error loading the transaction.')
       }
+      console.log(result)
       setLoading(false)
     }
 
@@ -52,11 +59,31 @@ const TransactionView = () => {
       <Text>No transaction data</Text>
   }
 
-  const { location: loc, transaction: { shell, calldata } } = transaction
-  console.log('LOCATION:', loc)
+  const { 
+    output: { modified, burned, events, errorcode, gas }, 
+    location: loc, 
+    transaction: { shell, calldata } 
+  } = transaction
+  // console.log('LOCATION:', loc)
+
+  const perItems = (items: [string, Item][]) => (
+    <Entry className='p0'>
+      {items.length ? 
+        items.map(([address, item], i) => (
+          <Entry className='p0 mb1' key={address}>
+            <Link href={`/address/${address}`}>
+              <HexNum num={address} copy />
+            </Link>
+            <Json json={item} />
+          </Entry>
+        ))
+      : <Text mb1>None</Text>}
+    </Entry>
+  )
 
   return (
     <Container className='transaction-view'>
+      <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/pretty-print-json@1.3/dist/pretty-print-json.css' />
       <PageHeader title='Transaction'>
         <HexNum mono copy style={{ fontSize: 18 }} num={addHexDots(txnHash)} />
       </PageHeader>
@@ -64,46 +91,58 @@ const TransactionView = () => {
         <Card title='Overview'>
           <Entry>
             <Field name='Batch:'>
-              <Link href={`/block/${loc['batch-root']}/${loc['town-id']}`} className='address'>
-                <Text mono oneLine>{loc['batch-root']}-{loc['town-id']}</Text>
+              <Link href={`/batch/${loc['batch-id']}`} className='address'>
+                <Text mono oneLine>{loc['batch-id']}-{loc['town-id']}-{loc['transaction-num']}</Text>
               </Link>
             </Field>
-          </Entry>
-          <Entry>
+
             <Field name='From:'>
               <Link href={`/address/${addHexDots(shell.caller.id)}`} className='address'>
                 <HexNum mono num={addHexDots(shell.caller.id)} />
               </Link>
               <CopyIcon iconOnly={true} text={addHexDots(shell.caller.id)} />
             </Field>
+
             <Field name='To:'>
               <Link href={`/address/${addHexDots(shell.contract)}`} className='address'>
                 <HexNum mono num={addHexDots(shell.contract)}/>
               </Link>
               <CopyIcon iconOnly={true} text={addHexDots(shell.contract)} />
             </Field>
-          </Entry>
-          <Entry>
+
             <Field name='Status:'>
               <Text mono>{getRawStatus(shell.status)}</Text>
             </Field>
-          </Entry>
-          <Entry>
+
+            <Field name='Gas:'>
+              <Text mono oneLine>{addDecimalDots(gas)}</Text>
+            </Field>
+
             <Field name='Budget:'>
               <Text mono oneLine>{addDecimalDots(shell.budget)}</Text>
             </Field>
-          </Entry>
-          <Entry>
+
             <Field name='Caller:'>
               <Link href={`/address/${addHexDots(shell.caller.id)}`} className='address'>
                 <HexNum mono num={addHexDots(shell.caller.id)} />
               </Link>
               <CopyIcon iconOnly={true} text={addHexDots(shell.caller.id)} />
             </Field>
-          </Entry>
-          <Entry>
+
             <Field name='Action:'>
-              <Text mono breakAll>{JSON.stringify(calldata)}</Text>
+              <Json json={calldata} />
+            </Field>
+
+            <Field name='Output:'>
+              <Entry className='p0'>
+                <Field name='Modified:'>
+                  {perItems(Object.entries(modified))}
+                </Field>
+                <Field name='Burned:'>
+                  {perItems(Object.entries(burned))}
+                </Field>
+                <Field name='Events:'><Json json={events} /></Field>
+              </Entry>
             </Field>
           </Entry>
         </Card>

@@ -14,7 +14,10 @@
   .content {
     flex-basis: 100%;
     word-break: break-all;
-    max-height: 300px;
+
+    &.mh300{
+      max-height: 300px;
+    }
 
     &::-webkit-scrollbar {
       width: 0px;

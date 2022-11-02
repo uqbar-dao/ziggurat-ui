@@ -11,4 +11,13 @@ export interface Transaction {
   location: Location
   hash: string
   timestamp: number
+  output: Output
+}
+
+export interface Output {
+  burned: any
+  errorcode: number
+  events: any[]
+  gas: number
+  modified: any
 }
