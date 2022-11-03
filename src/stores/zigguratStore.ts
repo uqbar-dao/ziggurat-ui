@@ -302,6 +302,16 @@ ${path}
     addFile: async (project: string, filename: string, fileContent?: string) => {
       set({ loading: 'Saving file...' })
       const file = filename[0] === '/' ? filename.replace(/\./g, '/') : `/${filename.replace(/\./g, '/')}`
+      
+      // if we lack a mar for this filetype, create one based on mar/txt
+      const fileType = file.match(/\w+$/)
+      const hasMar = await api.scry({ app: 'ziggurat', path: `/file-exists/zig/mar/${fileType}/hoon` })
+      if (!hasMar) {
+        const txtMar = await api.scry({ app: 'ziggurat', path: `/read-file/zig/mar/txt/hoon` })
+        // debugger
+        await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { "save-file": { file: `/mar/${fileType}/hoon`, text: txtMar } } } })
+      }
+
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { "save-file": { file, text: fileContent || '' } } } })
       await get().getProjects()
       set({ loading: undefined })
