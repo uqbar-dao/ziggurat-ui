@@ -29,7 +29,6 @@ const WelcomeView = ({ hide = false }: { hide?: boolean }) => {
   }, [nav, setCurrentProject])
 
   useEffect(() => {
-    console.log(1)
     setCurrentProject('')
   }, []) // eslint-disable-line
 
@@ -37,15 +36,17 @@ const WelcomeView = ({ hide = false }: { hide?: boolean }) => {
     <Col className='welcome-view'>
       <h3 style={{ marginTop: 0 }}>Welcome to Ziggurat!</h3>
       <Link href="/new">+ Create a new project</Link>
-      <h4 style={{ marginTop: 32 }}>Open an Existing Project:</h4>
-      <Row style={{ flexWrap: 'wrap', marginBottom: -16 }}>
-        {Object.keys(projects).map(project => (
-          <Card className='file-card' key={project} onClick={selectProject(project)}>
-            <Text>{project}</Text>
-          </Card>
-        ))}
-      </Row>
-      {openFiles?.length && openFiles.length > 0 && (
+      {Object.keys(projects).length > 0 && <>
+        <h4 style={{ marginTop: 32 }}>Open an Existing Project:</h4>
+        <Row style={{ flexWrap: 'wrap', marginBottom: -16 }}>
+          {Object.keys(projects).map(project => (
+            <Card className='file-card' key={project} onClick={selectProject(project)}>
+              <Text>{project}</Text>
+            </Card>
+          ))}
+        </Row>
+      </>}
+      {openFiles?.length > 0 && (
         <>
           <h4 style={{ marginTop: 32 }}>Recently Viewed Files:</h4>
           <Row style={{ flexWrap: 'wrap' }}>

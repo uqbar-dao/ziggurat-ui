@@ -33,6 +33,12 @@ export const OpenFileHeader = () => {
   return (
     <Row className='open-file-header'>
       {openFiles.map(({ project, file }) => {
+        const onRemoveFile = (e: React.MouseEvent) => {
+          e.preventDefault()
+          e.stopPropagation()
+          removeFile(project, file)
+        }
+
         const prependProject = openFiles.find(of => of.project !== project && of.file === file)
         const href = genHref(project, file)
         const fileName = file.split('/').slice(-2).join('.') // /file/txt -> file.txt
@@ -41,7 +47,16 @@ export const OpenFileHeader = () => {
           && projects[project].modifiedFiles.has(file) ? '* ' : ' '
 
         return (
-          <Link key={project + file} className={`tab ${pathname.includes(href) ? 'selected' : ''}`} href={href} onClick={() => setCurrentProject(project)}>
+          <Link key={project + file} 
+                className={`tab ${pathname.includes(href) ? 'selected' : ''}`} 
+                href={href} 
+                onAuxClick={(event) => {
+                  if (event.button === 0)
+                    setCurrentProject(project)
+                  else if (event.button === 1)
+                    onRemoveFile(event)
+                }}
+                                                   >
             <Row between style={{ width: '100%' }}> 
               <Text className='tabName'>
                 {tar}
@@ -49,11 +64,7 @@ export const OpenFileHeader = () => {
               </Text>
               <Button className='close'
                 variant='unstyled'
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  removeFile(project, file)
-                }}
+                onClick={(e) => onRemoveFile(e)}
               >
                 <FaPlus style={{ transform: 'rotate(45deg)'}} />
               </Button>
