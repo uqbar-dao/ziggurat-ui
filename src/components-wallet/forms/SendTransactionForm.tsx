@@ -92,6 +92,7 @@ const SendTransactionForm = ({
       alert('You must select a \'from\' account')
     } else {
       setMostRecentTransaction(undefined)
+      setLoading('Generating transaction...')
 
       if (selectedToken) {
         const payload = {
@@ -101,7 +102,6 @@ const SendTransactionForm = ({
           to: addHexDots(to),
           item: selectedToken.id,
         }
-        setLoading('Generating transaction...')
         
         if (isNft && selectedToken.data.id) {
           await sendNft(payload)
