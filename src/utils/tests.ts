@@ -3,7 +3,7 @@ import { TestItem, TestItemField, TestItemInput } from "../types/ziggurat/TestIt
 
 export const parseAction = (test: Test) => `Action: ${test.action_text.split(' ')[0].slice(1)}`
 
-export const itemToItemInput = (item: TestItem) : TestItemInput => ({ ...item, town: item.town_id, salt: Number(item.salt!) })
+export const itemToItemInput = (item: TestItem) : TestItemInput => ({ ...item, town: item.town, salt: Number(item.salt!) })
 
 export const getItemDiff = (expectation: TestItem, result: TestItem) : TestExpectationDiff =>
   Object.keys(expectation).reduce((acc, key) => {

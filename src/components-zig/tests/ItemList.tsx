@@ -1,9 +1,9 @@
 import { Droppable, } from 'react-beautiful-dnd'
 import Col from '../../components/spacing/Col'
 import { TestItem } from '../../types/ziggurat/TestItem';
+import { ItemValueDisplay } from './ItemValueDisplay';
 
 import './ItemList.scss'
-import { ItemValueDisplay } from './ItemValueDisplay';
 
 interface ItemListProps {
   editItem: (item: TestItem) => void

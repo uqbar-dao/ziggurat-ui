@@ -18,13 +18,11 @@ import TestResultDisplay from './TestResultDisplay';
 import classNames from 'classnames';
 import Checkbox from '../forms/Checkbox';
 
-
 import './TestEntry.scss'
 
 interface TestEntryProps extends TestListProps {
   test: Test
 }
-
 
 export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntryProps) => {
   const { currentProject, toggleTest, deleteTest, runTest } = useZigguratStore()

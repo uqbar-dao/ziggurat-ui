@@ -5,10 +5,10 @@ import { UqbarType } from "../types/ziggurat/UqbarType"
 import { formatType, removeDots } from "./format"
 
 export const GRAIN_FORM_VALUES_COMMON: { [key: string]: any } = {
-  // id: '%id', // id is calculated on backend
+  id: '%id', // id is calculated on backend
   source: '%id',
   holder: '%id',
-  town_id: '@ux',
+  town: '@ux',
   salt: '@',
   label: '@tas',
   noun: 'raw hoon',
@@ -18,7 +18,7 @@ export const TEST_FORM_VALUES_COMMON: { [key: string]: any } = {
   me: '%id',
   id: '%id',
   from: '(id, nonce)',
-  town_id: '%id',
+  town: '%id',
   'action-text': 'any',
 }
 
@@ -42,7 +42,7 @@ export const formatField: { [key: string]: (val: string) => string } = {
 
 export const formValuesFromItem = (item: TestItem) =>
   Object.keys(GRAIN_FORM_VALUES_COMMON).reduce((acc, key) => {
-    const value = item && (key === 'noun' ? item.noun_text : String(item[key as TestItemField] || '')) || ''
+    const value = item && ((key === 'noun' ? item.noun_text : String(item[key as TestItemField] || '')) || '')
     acc[key] = { type: GRAIN_FORM_VALUES_COMMON[key], value }
     return acc
   }, {} as FormValues)
@@ -103,13 +103,13 @@ export const copyFormValues = (values: FormValues) => Object.keys(values).reduce
 // })
 
 export const itemFromForm = (testItemValues: FormValues) => ({
-  id: formatType(testItemValues.id.type, testItemValues.id.value),
+  id: testItemValues.id.value === '' ? '' : formatType(testItemValues.id.type, testItemValues.id.value),
   source: formatType(testItemValues.source.type, testItemValues.source.value),
   holder: formatType(testItemValues.holder.type, testItemValues.holder.value),
-  town: formatType(testItemValues.town_id.type, testItemValues.town_id.value),
+  town: formatType(testItemValues.town.type, testItemValues.town.value),
   label: formatType(testItemValues.label.type, testItemValues.label.value),
   salt: Number(removeDots(testItemValues.salt.value)),
-  data: testItemValues.data.value.replace(/\n/g, ' '),
+  noun: testItemValues.noun.value.replace(/\n/g, ' '),
   // data: Object.keys(testItemValues).reduce((acc, key) => {
   //   if (!Object.keys(GRAIN_FORM_VALUES_COMMON).includes(key)) {
   //     acc[key] = { type: testItemValues[key].type, value: formatType(testItemValues[key].type, testItemValues[key].value) }
@@ -203,7 +203,7 @@ export const validateFormValues = (formValues: FormValues) =>
   Object.keys(formValues).reduce((acc, key) => {
     const { value, type } = formValues[key]
     if (key === 'id') {
-      console.log(value, type, validate(type)(removeDots(value)))
+      return ''
     }
     const isValid = Array.isArray(value) ||
       (typeof value === 'string' && validate(type)(removeDots(value))) ||

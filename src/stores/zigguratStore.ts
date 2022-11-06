@@ -58,8 +58,8 @@ export interface ZigguratStore {
   toggleTest: (project: string, testId: string) => void
   approveCorsDomain: (domain: string) => Promise<void>
 
-  addItem: (rice: TestItemInput) => Promise<void>
-  deleteItem: (riceId: string, testId?: string) => Promise<void>
+  addItem: (item: TestItemInput, isUpdate?: boolean) => Promise<void>
+  deleteItem: (itemId: string, testId?: string) => Promise<void>
   addTest: (name: string, action: string, expectedError: number) => Promise<void>
   addTestExpectation: (testId: string, expectations: TestItemInput) => Promise<void>
   deleteTest: (testId: string) => Promise<void>
@@ -330,21 +330,32 @@ ${path}
     approveCorsDomain: async (domain: string) => {
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project: '', action: { 'approve-cors-domain': { domain } } } })
     },
-    addItem: async (rice: TestItemInput) => {
+    addItem: async (item: TestItemInput, isUpdate = false) => {
       const project = get().currentProject
-      const json = { project, action: { "add-to-state": { ...rice, id: undefined } } }
-      console.log('SAVING GRAIN:', json)
+      const action = isUpdate ? { "update-item": item } : { "add-item": { ...item, id: undefined } } 
+      const json = { project, action }
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
+
+      get().getProjects()
     },
-    deleteItem: async (riceId: string, testId?: string) => {
+    deleteItem: async (itemId: string, testId?: string) => {
       const project = get().currentProject
+      const proj = get().projects[project]
+      const newProject = { ...proj }
+
       if (testId) {
-        const json = { project, action: { "delete-test-expectation": { id: testId, delete: riceId } } }
+        const json = { project, action: { "delete-test-expectation": { id: testId, delete: itemId } } }
         await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
+        delete newProject.tests[testId].expected[itemId]
       } else {
-        const json = { project, action: { "delete-from-state": { id: riceId } } }
+        const json = { project, action: { "delete-item": { id: itemId } } }
         await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
+        delete newProject.state[itemId]
       }
+
+      const newProjects = get().projects
+      newProjects[project] = newProject
+      set({ projects: newProjects })
     },
     addTest: async (name: string, action: string, expectedError: number) => {
       const project = get().currentProject

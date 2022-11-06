@@ -92,23 +92,14 @@ export const ContractTestView = () => {
     if (validationError)
       return window.alert(validationError)
       
-    // ids are now calculated on backend
-    const newItem = itemFromForm({...itemFormValues, id: { value: '0x7e57', type: '%id' }})
-
-    // ids are now calculated on backend
-    // const targetProject = projects[currentProject]
-    // if (targetProject && !testExpectation) {
-    //   if (targetProject?.state[newItem.id] && !edit) {
-    //     return window.alert('You already have a item with this ID, please change the ID.')
-    //   }
-    // }
+    const newItem = itemFromForm({ ...itemFormValues })
 
     setLoading('Saving item...')
     try {
       if (testExpectation) {
         await addTestExpectation(testExpectation, newItem)
       } else {
-        await addItem(newItem)
+        await addItem(newItem, Boolean(edit))
       }
       setShowItemModal(false)
       setItemFormValues(formValuesForItem())
@@ -117,7 +108,7 @@ export const ContractTestView = () => {
       toast.error('Error saving item')
     }
     setLoading(undefined)
-  }, [ itemFormValues, testExpectation, addTestExpectation, addItem, setLoading])
+  }, [edit, itemFormValues, testExpectation, addTestExpectation, addItem, setLoading])
 
   const handleDragAndDropItem = useCallback(({ source, destination }) => {
     if (!destination)
@@ -239,13 +230,13 @@ export const ContractTestView = () => {
             </Row>
           </Entry>
         </Modal>
-        {/* <div className='under-construction'>
+        <div className='under-construction'>
           <Row className='header'>
             <FaExclamationTriangle />
             <Text>Under Construction</Text>
           </Row>
           <p>Contract tests are currently a work in progress.</p>
-        </div> */}
+        </div>
       </Row>
     </DragDropContext>
   )
