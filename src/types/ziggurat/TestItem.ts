@@ -3,7 +3,7 @@ export type TestRiceValue = string | TestRiceValue[] | { [key: string]: string |
 export type TestItemField = 'id'
   | 'holder'
   | 'source'
-  | 'town_id'
+  | 'town'
   | 'label'
   | 'salt'
   | 'noun'
@@ -24,7 +24,7 @@ export interface ItemTemplate {
 }
 
 export interface TestItem extends ItemTemplate {
-  town_id: string
+  town: string
   salt?: string
   noun_text: string
 }

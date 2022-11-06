@@ -82,7 +82,7 @@ export const ItemModal = ({
             </Select>
           </>
         )}
-        {Object.keys(itemFormValues).map((key) => (
+        {Object.keys(itemFormValues).filter(key => !(key === 'id' && !isEdit)).map((key) => (
           <Row key={key}>
             { key === 'noun' ? (
               <TextArea
