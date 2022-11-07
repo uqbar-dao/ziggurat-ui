@@ -236,7 +236,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
             Array.from(project.modifiedFiles.values()).map(async (file) => {
               const text = getFileText(project.folder, file.split('/').slice(1), file)
               try {
-                await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { 'save-file': { file, text } } } })
+                await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project: projectTitle, action: { 'save-file': { file, text } } } })
                 get().getGallFile(projectTitle, file)
               } catch (err) {
                 toast.error(`Error saving ${file}`)
