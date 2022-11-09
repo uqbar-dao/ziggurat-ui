@@ -229,28 +229,32 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
     },
     saveFiles: async (projectTitle: string) => {
       const project = get().projects[projectTitle]
-      set({ loading: `Saving project...` })
       try {
         if (project && project.modifiedFiles.size) {
           await Promise.all(
             Array.from(project.modifiedFiles.values()).map(async (file) => {
               const text = getFileText(project.folder, file.split('/').slice(1), file)
+              
               try {
+                set ({ loading: 'Saving ' + file + '...' })
                 await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project: projectTitle, action: { 'save-file': { file, text } } } })
                 get().getGallFile(projectTitle, file)
               } catch (err) {
                 toast.error(`Error saving ${file}`)
               }
+
               return file
             })
           )
+
+
+          
           const newProjects = { ...get().projects }
           newProjects[projectTitle].modifiedFiles = new Set<string>()
           // newProjects[projectTitle].molds = generateMolds(newProjects[projectTitle])
-          set({ projects: newProjects })
+          set({ projects: newProjects, loading: '' })
         }
       } catch (err) {}
-      set({ loading: undefined })
     },
     saveFileList: async (downloadedFiles, project: string) => {
       let lastFile = ''
@@ -302,9 +306,15 @@ ${path}
     addFile: async (project: string, filename: string, fileContent?: string) => {
       set({ loading: 'Saving file...' })
       const file = filename[0] === '/' ? filename.replace(/\./g, '/') : `/${filename.replace(/\./g, '/')}`
-      await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { "save-file": { file, text: fileContent || '' } } } })
-      await get().getProjects()
-      set({ loading: undefined })
+      try {
+
+        await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { "save-file": { file, text: fileContent || '' } } } })
+        await get().getProjects()
+      } catch {
+        toast.error('Error saving file.')
+      } finally {
+        set({ loading: undefined })
+      }
     },
     deleteFile: async (project: string, file: string) => {
       const filename = getFilename(file)

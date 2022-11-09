@@ -172,6 +172,10 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
 
     const filesToDownload = result.data.tree
     .filter((branch: TreeFile) => branch.type === 'blob')
+    // import mar files first to avoid crashes when creating odd files
+    .sort((a: TreeFile, b: TreeFile) => a.path.match(/[/\\]?mar[/\\]/) ? -1 : 1)
+
+    console.log({ filesToDownload })
 
     let lastFile = ''
     let downloadedFiles: DownloadedFile[] = []
@@ -220,6 +224,10 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
       filesToImport.push({ path, content, type })
     }
 
+    // import mar files first to avoid crashes when creating odd files
+    filesToImport.sort((a, b) => a.path.match(/[/\\]?mar[/\\]/) ? -1 : 1)
+
+    console.log({ filesToImport })
     await saveFileList(filesToImport, options.title!)
     setLoading('')
   }
