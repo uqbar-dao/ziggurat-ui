@@ -14,6 +14,7 @@ import Entry from '../../components/spacing/Entry';
 import HexNum from '../../components/text/HexNum';
 
 import './TokenDisplay.scss'
+import { removeDots } from '../../utils/format';
 
 interface TokenDisplayProps extends React.HTMLAttributes<HTMLDivElement> {
   token: Token
@@ -28,6 +29,7 @@ const TokenDisplay: React.FC<TokenDisplayProps> = ({
   const { metadata } = useWalletStore()
   const tokenMetadata = metadata[token.data.metadata]
   const { contract, id, data } = token
+  const balance = +removeDots(data.balance!)
   const [open, setOpen] = useState(false)
   const isToken = token.token_type === 'token'
 
@@ -43,7 +45,7 @@ const TokenDisplay: React.FC<TokenDisplayProps> = ({
             {(isToken ? tokenMetadata?.data?.symbol : tokenMetadata?.data?.name) || <HexNum num={contract} />} -
           </Text>
           {isToken ? (
-            <Text>{displayTokenAmount(data.balance!, tokenMetadata?.data?.decimals || 1, open ? tokenMetadata?.data?.decimals || 8 : 8)}</Text>
+            <Text>{displayTokenAmount(balance, tokenMetadata?.data?.decimals || 1, open ? tokenMetadata?.data?.decimals || 8 : 8)}</Text>
             ) : (
             <Text># {data.id || ''}</Text>
           )}

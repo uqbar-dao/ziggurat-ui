@@ -20,7 +20,6 @@ const TransactionsView = () => {
   const [filteredTransactions, setFilteredTransactions] = useState(transactions)
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>()
   
-
   const filterByAddress = useCallback((address?: string) => {
     if (address) {
       setFilteredTransactions(
