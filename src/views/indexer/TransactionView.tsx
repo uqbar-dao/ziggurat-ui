@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { prettyPrintJson } from 'pretty-print-json'
 import { useLocation } from 'react-router-dom'
 import Link from '../../components-indexer/nav/Link'
 import Card from '../../components-indexer/card/Card'
@@ -18,10 +17,10 @@ import Footer from '../../components-indexer/nav/Footer'
 import HexNum from '../../components/text/HexNum'
 import Loader from '../../components/popups/Loader'
 import Json from '../../components/text/Json'
-import { displayPubKey } from '../../utils/account'
 import { Item } from '../../types/indexer/Item'
 
 import './TransactionView.scss'
+import Row from '../../components/spacing/Row'
 
 const TransactionView = () => {
   const { scry } = useIndexerStore()
@@ -71,9 +70,12 @@ const TransactionView = () => {
       {items.length ? 
         items.map(([address, item], i) => (
           <Entry className='p0 mb1' key={address}>
-            <Link href={`/address/${address}`}>
-              <HexNum num={address} copy />
-            </Link>
+            <Row>
+              <Link href={`/address/${address}`}>
+                <HexNum num={address} />
+              </Link>
+              <CopyIcon iconOnly text={address} />
+            </Row>
             <Json json={item} />
           </Entry>
         ))
@@ -83,7 +85,6 @@ const TransactionView = () => {
 
   return (
     <Container className='transaction-view'>
-      <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/pretty-print-json@1.3/dist/pretty-print-json.css' />
       <PageHeader title='Transaction'>
         <HexNum mono copy style={{ fontSize: 18 }} num={addHexDots(txnHash)} />
       </PageHeader>
@@ -100,14 +101,14 @@ const TransactionView = () => {
               <Link href={`/address/${addHexDots(shell.caller.id)}`} className='address'>
                 <HexNum mono num={addHexDots(shell.caller.id)} />
               </Link>
-              <CopyIcon iconOnly={true} text={addHexDots(shell.caller.id)} />
+              <CopyIcon iconOnly text={addHexDots(shell.caller.id)} />
             </Field>
 
             <Field name='To:'>
               <Link href={`/address/${addHexDots(shell.contract)}`} className='address'>
                 <HexNum mono num={addHexDots(shell.contract)}/>
               </Link>
-              <CopyIcon iconOnly={true} text={addHexDots(shell.contract)} />
+              <CopyIcon iconOnly text={addHexDots(shell.contract)} />
             </Field>
 
             <Field name='Status:'>
@@ -126,7 +127,7 @@ const TransactionView = () => {
               <Link href={`/address/${addHexDots(shell.caller.id)}`} className='address'>
                 <HexNum mono num={addHexDots(shell.caller.id)} />
               </Link>
-              <CopyIcon iconOnly={true} text={addHexDots(shell.caller.id)} />
+              <CopyIcon iconOnly text={addHexDots(shell.caller.id)} />
             </Field>
 
             <Field name='Action:'>

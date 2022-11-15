@@ -8,12 +8,13 @@ import Container from '../../components/spacing/Container'
 import Text from '../../components/text/Text'
 import CopyIcon from '../../components/text/CopyIcon'
 import useWalletStore from '../../stores/walletStore'
-import { getStatus } from '../../utils/constants'
+import { getRawStatus, getStatus } from '../../utils/constants'
 import { addHexDots } from '../../utils/format'
 import HexNum from '../../components/text/HexNum'
 import Row from '../../components/spacing/Row'
 
 import './TransactionView.scss'
+import Json from '../../components/text/Json'
 
 type ActionValue = { [key: string]: ActionValue } | string | number
 
@@ -46,8 +47,8 @@ const ActionDisplay = ({ action, indent = 0 }: ActionDisplayProps) => {
 
 const TransactionView = () => {
   const { hash } = useParams()
-  const { transactions } = useWalletStore()
-  const txn = transactions.find(t => t.hash === hash)
+  const { unsignedTransactions, transactions } = useWalletStore()
+  const txn = [...transactions, ...Object.values(unsignedTransactions)].find(t => t.hash === hash)
 
   if (!txn) {
     return (
@@ -79,39 +80,45 @@ const TransactionView = () => {
         </Entry>
         <Entry>
           <Field name='Status:'>
-            <Text mono>{getStatus(txn.status)}</Text>
-            {txn.created && txn.created instanceof Date && <Text mono style={{ marginLeft:'auto'}}>{txn.created?.toDateString()}</Text>}
+            <Text mono>
+              {getStatus(txn.status)}
+              {' '}
+              {txn.created ? 
+                `(${(typeof txn.created === 'string') ?
+                  txn.created
+                  : txn.created.toDateString()})` 
+                : ''}
+            </Text>
           </Field>
         </Entry>
         <Entry>
           <Field name='Town:'>
-            <HexNum mono copy num={ addHexDots(txn.town)} />
+            <HexNum mono copy num={addHexDots(txn.town)} />
             </Field>
         </Entry>
         <Entry>
         <Field name='Nonce:'>
-          <Text mono>
-            {txn.nonce.toString()}
-          </Text> 
+          <Text mono>{txn.nonce}</Text> 
           </Field>
         </Entry>
         <Entry>
           <Field name='Rate:'>
-            <Text>
-              { txn.rate.toString()}
-            </Text>
-            </Field>
+            <Text>{txn.rate}</Text>
+          </Field>
           <Field name='Budget:'>
-            <Text>
-              { txn.budget.toString()}
-            </Text>
-            </Field>
+            <Text>{txn.budget}</Text>
+          </Field>
+          {txn.output && <Field name='Gas:'>
+            <Text>{txn.output.gas}</Text>
+          </Field>}
+          {txn.output && <Field name='Error Code:'>
+            <Text>{txn.output.errorcode}</Text>
+          </Field>}
         </Entry>
         <Entry>
           <Field name='Action:'>
             <Row className='mb1'>
-              {/* <ActionDisplay action={txn.action} /> */}
-              <Text mono breakAll>{JSON.stringify(txn.action)}</Text>
+              <Json json={txn.action}/>
               <CopyIcon text={JSON.stringify(txn.action)} />
             </Row>
           </Field>

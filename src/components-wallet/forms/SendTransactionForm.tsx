@@ -86,7 +86,7 @@ const SendTransactionForm = ({
 
   const generateTransaction = async (e: FormEvent) => {
     e.preventDefault()
-    if (selectedToken?.data?.balance && Number(amount) * Math.pow(10, tokenMetadata?.data?.decimals || 1) > selectedToken?.data?.balance) {
+    if (selectedToken?.data?.balance && Number(amount) * Math.pow(10, tokenMetadata?.data?.decimals || 1) > +selectedToken?.data?.balance) {
       alert(`You do not have that many tokens. You have ${selectedToken.data?.balance} tokens.`)
     } else if (!selectedToken && !from) {
       alert('You must select a \'from\' account')
@@ -126,6 +126,7 @@ const SendTransactionForm = ({
 
   const submitSignedTransaction = useCallback(async (e: FormEvent) => {
     e.preventDefault()
+    setLoading('Signing transaction...')
     if (pendingHash && unsignedTransactions[pendingHash]) {
       const fromAddress = unsignedTransactions[pendingHash].from
       let ethHash, sig, hardwareHash
@@ -135,7 +136,7 @@ const SendTransactionForm = ({
       if (importedAccount?.type) {
         hardwareHash = pendingHash
 
-        setLoading('Please sign the transaction on your hardware wallet')
+        setLoading('Please sign the transaction on your hardware wallet...')
 
         const contract = removeDots(unsignedTransactions[pendingHash].contract.slice(2))
         const to = (unsignedTransactions[pendingHash] as any).action?.give?.to ||
@@ -160,6 +161,9 @@ const SendTransactionForm = ({
       } catch (err) {
         alert('There was an error signing the transaction with the hardware wallet')
       }
+      finally {
+        setLoading('')
+      }
     }
   }, [unsignedTransactions, rate, bud, importedAccounts, pendingHash, nav, clearForm, submitSignedHash, setLoading, setSubmitted])
 
@@ -173,7 +177,7 @@ const SendTransactionForm = ({
   ) : (
     <Col>
       <Text style={{ margin: '8px 12px 0px 0px', fontSize: 14 }}>Token - Balance: </Text>
-      <Text mono style={{ margin: '8px 0' }}>{tokenMetadata?.data?.symbol || displayPubKey(selectedToken?.contract || '')} - {displayTokenAmount(selectedToken?.data?.balance!, tokenMetadata?.data?.decimals || 1)}</Text>
+      <Text mono style={{ margin: '8px 0' }}>{tokenMetadata?.data?.symbol || displayPubKey(selectedToken?.contract || '')} - {displayTokenAmount(+selectedToken?.data?.balance!, tokenMetadata?.data?.decimals || 1)}</Text>
     </Col>
   )
 

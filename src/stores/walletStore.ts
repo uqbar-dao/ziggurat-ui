@@ -14,6 +14,7 @@ import { mockAccounts, mockAssets, mockMetadata, mockTransactions } from "../moc
 import { createSubscription } from "./subscriptions/createSubscription"
 import { Assets } from "../types/wallet/Assets"
 import { generateSendTokenPayload } from "./util"
+import { groupTransactions, processTransactions } from "../utils/transactions"
 
 const pokeWithAlert = async (json: any) => {
   try {
@@ -119,20 +120,14 @@ const useWalletStore = create<WalletStore>(
     },
     getTransactions: async () => {
       if (mockData) {
-        return set({ transactions: mockTransactions })
+        return // set({ transactions: mockTransactions }) // TODO
       }
-      const { accounts, importedAccounts } = get()
-      if (accounts.length) {
-        const rawTransactions = await Promise.all(
-          accounts
-            .map(({ rawAddress }) => rawAddress)
-            .concat(importedAccounts.map(({ rawAddress }) => rawAddress))
-            .map(address => api.scry<Transactions>({ app: 'wallet', path: `/transactions/${address}` }))
-        )
-        const allRawTransactions = rawTransactions.reduce((acc: Transactions, cur: Transactions) => ({ ...acc, ...cur }))
-        const transactions = Object.keys(allRawTransactions).map(hash => ({ ...allRawTransactions[hash], hash })).sort((a, b) => a.nonce - b.nonce)
-        set({ transactions })
-      }
+
+      const result = await api.scry<any>({ app: 'wallet', path: `/transactions` })
+      const rawTransactions = processTransactions(result)
+      const transactions = rawTransactions.sort((a, b) => a.nonce - b.nonce)
+      console.log({ transactions })
+      set({ transactions })
     },
     createAccount: async (password: string, nick: string) => {
       await api.poke({ app: 'wallet', mark: 'wallet-poke', json: { 'generate-hot-wallet': { password, nick } } })

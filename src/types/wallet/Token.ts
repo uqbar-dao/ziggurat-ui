@@ -1,7 +1,7 @@
 export interface TokenData {
   metadata: string
   // token
-  balance?: number
+  balance?: string
   // nft
   id?: number
   transferrable?: boolean

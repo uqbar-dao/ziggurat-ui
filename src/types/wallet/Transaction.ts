@@ -5,8 +5,13 @@ export interface TransactionArgs {
 }
 
 export interface Transaction {
+  output?: {
+    errorcode: number
+    gas: string
+  }
   hash: string
   town: string
+  address: string
   nonce: number
   rate: number
   budget: number
