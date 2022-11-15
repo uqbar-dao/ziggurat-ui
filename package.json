@@ -26,6 +26,7 @@
     "http-proxy-middleware": "^2.0.6",
     "ip-address": "^8.1.0",
     "ipfs-core": "^0.14.3",
+    "json-stringify-pretty-compact": "^4.0.0",
     "jszip": "^3.10.1",
     "moment": "^2.29.4",
     "octokit": "^2.0.9",

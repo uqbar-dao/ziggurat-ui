@@ -24,7 +24,7 @@ import { RawMetadata } from '../../types/ziggurat/Metadata';
 import Form from '../../components/form/Form';
 import { Select } from '../../components/form/Select';
 import Divider from '../../components/spacing/Divider';
-import useLocalStorage from '../../hooks/useLocalStorage';
+import useSessionStorage from '../../hooks/useSessionStorage';
 import Modal from '../../components/popups/Modal';
 
 import './NewProjectView.scss'
@@ -83,7 +83,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
   const [repoContents, setRepoContents] = useState<RepoContents>()
   const [zip, setZip] = useState<any>()
   const [showInfoModal, setShowInfoModal] = useState(false)
-  const [disableInfoModal, setDisableInfoModal] = useLocalStorage<boolean>('disableInfoModal', false)
+  const [disableInfoModal, setDisableInfoModal] = useSessionStorage<boolean>('disableInfoModal', false)
 
   const hideInfoModal = useCallback(() => {
     setShowInfoModal(false)

@@ -1,6 +1,6 @@
 const ls = {
   get: <T>(key: string) : T | null => {
-    const json = localStorage.getItem(key)
+    const json = sessionStorage.getItem(key)
     if (!json) {
       return null
     }
@@ -8,7 +8,7 @@ const ls = {
     return JSON.parse(json)
   },
   set: (key: string, data: any) => {
-    localStorage.setItem(key, JSON.stringify(data))
+    sessionStorage.setItem(key, JSON.stringify(data))
   }
 }
 
