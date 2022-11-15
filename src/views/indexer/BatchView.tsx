@@ -15,7 +15,6 @@ import { mockData } from '../../utils/constants'
 // import { mockBlock } from '../../mocks/indexer-mocks'
 import Field from '../../components/spacing/Field'
 import PageHeader from '../../components/page/PageHeader'
-import CopyIcon from '../../components/text/CopyIcon'
 import HexNum from '../../components/text/HexNum'
 import Loader from '../../components/popups/Loader'
 import { Transaction } from '../../types/indexer/Transaction'
@@ -118,7 +117,7 @@ const BatchView = () => {
               </Col>
             </Row>}
           </Entry>
-          <Entry divide={false} className="transactions">
+          <Entry>
             <Field name={`Transactions:`}>
               <Text>{transactions.length}</Text>
               {transactions.length > 0 ?

@@ -11,17 +11,12 @@
     cursor: pointer;
   }
 
-  .state, .nonce, .transaction {
-    margin: 8px 2px;
-  }
-
   .purple {
     color: colors.$uq-purple;
   }
 
   .expanded-details {
     display: block;
-    max-height: 300px;
     margin-left: 160px;
   }
 }

@@ -30,20 +30,20 @@ export const TestEntry = ({ test, editTest, showTestExpectationModal }: TestEntr
   const our: string = (window as any)?.api?.ship || ''
   const lsPrefix = `zs-${our}-${test.id}`
   // TODO: surely there is a better way to do this.
-  const [expandInput, _setExpandInput] = useState(localStorage.getItem(lsPrefix+'expandInput') === 'true')
-  const [expandOutput, _setExpandOutput] = useState(localStorage.getItem(lsPrefix+'expandOutput') === 'true')
-  const [expandExpectations, _setExpandExpectations] = useState(localStorage.getItem(lsPrefix+'expandExpectations') === 'true')
+  const [expandInput, _setExpandInput] = useState(sessionStorage.getItem(lsPrefix+'expandInput') === 'true')
+  const [expandOutput, _setExpandOutput] = useState(sessionStorage.getItem(lsPrefix+'expandOutput') === 'true')
+  const [expandExpectations, _setExpandExpectations] = useState(sessionStorage.getItem(lsPrefix+'expandExpectations') === 'true')
 
   const setExpandInput = (b:boolean) => {
-    localStorage.setItem(lsPrefix+'expandInput', `${b}`)
+    sessionStorage.setItem(lsPrefix+'expandInput', `${b}`)
     _setExpandInput(b)
   }
   const setExpandOutput = (b:boolean) => {
-    localStorage.setItem(lsPrefix+'expandOutput', `${b}`)
+    sessionStorage.setItem(lsPrefix+'expandOutput', `${b}`)
     _setExpandOutput(b)
   }
   const setExpandExpectations = (b:boolean) => {
-    localStorage.setItem(lsPrefix+'expandExpectations', `${b}`)
+    sessionStorage.setItem(lsPrefix+'expandExpectations', `${b}`)
     _setExpandExpectations(b)
   }
 

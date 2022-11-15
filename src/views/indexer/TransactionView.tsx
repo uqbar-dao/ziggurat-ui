@@ -116,11 +116,11 @@ const TransactionView = () => {
             </Field>
 
             <Field name='Gas:'>
-              <Text mono oneLine>{addDecimalDots(gas)}</Text>
+              <Text mono oneLine>{gas}</Text>
             </Field>
 
             <Field name='Budget:'>
-              <Text mono oneLine>{addDecimalDots(shell.budget)}</Text>
+              <Text mono oneLine>{shell.budget}</Text>
             </Field>
 
             <Field name='Caller:'>

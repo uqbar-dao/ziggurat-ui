@@ -22,6 +22,7 @@ import Field from '../../components/spacing/Field'
 import Link from '../../components-indexer/nav/Link'
 
 import './ItemView.scss'
+import Json from '../../components/text/Json'
 
 type Selection = 'details' | 'txns'
 
@@ -141,12 +142,12 @@ const ItemView = () => {
                           <CopyIcon text={String(item.salt)}></CopyIcon>
                         </Field>
                         <Field name='Noun:'>
-                          <Text mono>{JSON.stringify(item.noun)}</Text>
+                          <Json json={item.noun} />
                           <CopyIcon text={JSON.stringify(item.noun)}></CopyIcon>
                         </Field>
                       </> : <>
                         <Field name='Mold:'>
-                          <Text mono>{JSON.stringify(item.interface)}</Text>
+                          <Json json={item.interface} />
                           <CopyIcon text={JSON.stringify(item.interface)}></CopyIcon>
                         </Field>
                       </>}
