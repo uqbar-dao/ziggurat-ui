@@ -9,6 +9,7 @@ import { abbreviateHex } from '../../utils/format'
 
 import { FaArrowLeft } from 'react-icons/fa'
 import HexNum from '../../components/text/HexNum'
+import '../../components/nav/Navbar.scss'
 
 const IndexerNavbar = () => {
   const [open, setOpen] = useState(false)
@@ -16,8 +17,8 @@ const IndexerNavbar = () => {
   const addresses = accounts.map(({ address }) => address).concat(importedAccounts.map(({ address }) => address))
 
   return (
-    <Row className='navbar'>
-      <Row between style={{ width: '100%',  }}>
+    <Row className='navbar indexer-nav'>
+      <Row>
         <Row className='logo-text'>
           <Link external title='Home' href='/apps/ziggurat' className='nav-link logo'>
             <Row>
@@ -25,7 +26,7 @@ const IndexerNavbar = () => {
               <img src={logo} alt='Uqbar Logo' />
             </Row>
           </Link>
-          <Text bold mr1>EXPLORER</Text>
+          <Text mr1 className='site-title'>EXPLORER</Text>
         </Row>
         <Row>
           <Link className={`nav-link ${window.location.pathname === `${process.env.PUBLIC_URL}/` || window.location.pathname === process.env.PUBLIC_URL ? 'selected' : ''}`} href='/'>

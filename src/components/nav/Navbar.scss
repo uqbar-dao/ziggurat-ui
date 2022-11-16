@@ -1,35 +1,58 @@
 @use '../../styles/colors.scss' as colors;
 
 .navbar {
-  margin: 0.75em 0px;
+  margin: 0;
+  padding: 0;
   border-bottom: 2px solid colors.$uq-lightpink;
   justify-content: space-between;
   position: relative;
 
-  .nav-link {
-    padding: 8px 16px;
-    text-decoration: none;
-    margin-bottom: -2px;
-    font-weight: 600;
-    color: colors.$uq-purple;
-    border-bottom: 2px solid colors.$uq-lightpink;
+  &.wallet-nav {
+    background-color: colors.$uq-pink;
+  }
 
-    &.logo {
-      border-bottom: 2px solid transparent;
+  &.indexer-nav {
+    background-color: colors.$uq-purple;
+
+    .nav-link {
+      color: colors.$uq-vlightpink;
+
+      &.selected {
+        background-color: colors.$uq-pink;
+      }
     }
+  }
+
+  .site-title {
+    font-weight: bold;
+    font-size: 2em;
+    line-height: 0.5em;
+    color: white;
+  }
+
+  .nav-link {
+    padding: 16px;
+    text-decoration: none;
+    font-weight: 600;
+    color: colors.$uq-vlightpurple !important;
 
     @media only screen and (max-width: 520px) {
       padding: 8px 20px;
     }
 
     &.selected {
-      border-bottom-color: colors.$uq-purple;
+      color: white !important;
+      background-color: colors.$uq-purple;
     }
 
     &.logo {
+      border-bottom: 2px solid transparent;
       padding: 2px 8px 2px 12px;
       img {
-        height: 28px;
+        background-color: white;
+        border: 2px solid white;
+        border-radius: 999px;
+        height: 32px;
       }
     }
 

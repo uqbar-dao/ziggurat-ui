@@ -96,7 +96,7 @@ const HomeView = () => {
           </Row>
         </Card> */}
         <Row className='latest'>
-          <Card className='latest-blocks title'>
+          <Card className='latest-batches title'>
             <CardHeader title='Latest Batches'>
               <Row style={{marginLeft: 'auto'}}> {/* m-l:auto causes alignment to the right of flex container */}
                 {/* <Text large style={{marginRight: '1em'}}>Next:</Text>
@@ -122,7 +122,7 @@ const HomeView = () => {
           <Card className='latest-transactions' title='Latest Transactions'>
             <Col>
               {transactions.length < 1 && (
-                <Text className='mt1'>There are no transactions in these blocks.</Text>
+                <Text className='mt1'>There are no transactions in these batches.</Text>
               )}
               {transactions.map((tx, index) => (
                 <Entry key={tx.hash || index}>
