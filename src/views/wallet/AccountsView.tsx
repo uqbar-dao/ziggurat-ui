@@ -29,6 +29,7 @@ const AccountsView = () => {
   const [showImport, setShowImport] = useState(false)
   const [mnemonic, setMnemonic] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [seedData, setSeed] = useState<Seed | null>(null)
   const [addAddressType, setAddAddressType] = useState<DerivedAddressType | null>(null)
   const [nick, setNick] = useState('')
@@ -59,9 +60,10 @@ const AccountsView = () => {
     setNick('')
     setHdpath('')
     setPassword('')
+    setConfirmPassword('')
     setAddAddressType(null)
     unwatchTabClose()
-  }, [setNick, setHdpath, setPassword, setAddAddressType])
+  }, [setNick, setHdpath, setPassword, setConfirmPassword, setAddAddressType])
 
   const create = useCallback(async (e) => {
     e.preventDefault()
@@ -73,7 +75,12 @@ const AccountsView = () => {
           restoreAccount(mnemonic, password, nick)
         }
       } else {
-        createAccount(password, nick)
+        if (password !== confirmPassword) {
+          console.log({ password, confirmPassword })
+          return alert('Password fields must match')
+        } else {
+          createAccount(password, nick)
+        }
       }
       setShowAddWallet(undefined)
       setShowCreate(false)
@@ -219,14 +226,20 @@ const AccountsView = () => {
             style={{ width: '100%', height: 80 }}
           />)}
           <Input
-            onChange={(e: any) => setPassword(e.target.value)}
+            onKeyUp={(e: any) => setPassword(e.target.value)}
             placeholder='Enter password'
             style={{ width: '100%', marginBottom: 16 }}
             containerStyle={{ width: '100%' }}
             type='password'
             value={password}
-            minLength={5}
-            required
+          />
+          <Input
+            onKeyUp={(e: any) => setConfirmPassword(e.target.value)}
+            placeholder='Confirm password'
+            style={{ width: '100%', marginBottom: 16 }}
+            containerStyle={{ width: '100%' }}
+            type='password'
+            value={confirmPassword}
           />
           <Button fullWidth type='submit' dark>
             {showAddWallet === 'create' ? 'Create' : 'Restore'}
