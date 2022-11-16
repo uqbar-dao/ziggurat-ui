@@ -14,16 +14,16 @@ const WalletNavbar = () => {
   const { pathname } = useWalletStore()
 
   return (
-    <Row className='navbar'>
+    <Row className='navbar wallet-nav'>
       <Row>
-        <Row>
+        <Row className='logo-text'>
           <Link external title='Home' href='/apps/ziggurat' className='nav-link logo'>
             <Row>
               {/* <FaArrowLeft className='mr1' /> */}
               <img src={logo} alt='Uqbar Logo' />
             </ Row>
           </Link>
-          <Text bold mr1>WALLET</Text>
+          <Text mr1 className='site-title'>WALLET</Text>
         </Row>
         <Link className={`nav-link ${(pathname === '/' || pathname.match(/wallet\/?$/)) ? 'selected' : ''}`} href='/'>
           {isMobile ? <FaWallet  /> : 'Assets'}
