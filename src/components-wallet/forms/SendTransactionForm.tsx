@@ -177,7 +177,7 @@ const SendTransactionForm = ({
   ) : (
     <Col>
       <Text style={{ margin: '8px 12px 0px 0px', fontSize: 14 }}>Token - Balance: </Text>
-      <Text mono style={{ margin: '8px 0' }}>{tokenMetadata?.data?.symbol || displayPubKey(selectedToken?.contract || '')} - {displayTokenAmount(+selectedToken?.data?.balance!, tokenMetadata?.data?.decimals || 1)}</Text>
+      <Text mono style={{ margin: '8px 0' }}>{tokenMetadata?.data?.symbol || displayPubKey(selectedToken?.contract || '')} - {displayTokenAmount(+removeDots(selectedToken?.data?.balance!), tokenMetadata?.data?.decimals || 1)}</Text>
     </Col>
   )
 
