@@ -10,10 +10,10 @@ export const handleLatestBatch = (get: GetState<IndexerStore>, set: SetState<Ind
   const newBatches = (await Promise.all(
     batchOrder.map(async (batchId) => ({ id: batchId, result: await get().scry<Batches>(`/batch/${batchId}`) }))
   )).map(({ id, result }) => result?.batch ? { id, ...Object.values(result?.batch)[0] } : null)
-    .filter(b => b)
+  .filter(b => b)
 
   const newTransactions: Transaction[] = newBatches.reduce((acc: Transaction[], cur: Batch) => acc.concat(cur.batch.transactions), [])
-  set({ batches: [...newBatches, ...get().batches].slice(0, 5), transactions: newTransactions })
+  set({ batches: [...newBatches, ...get().batches].slice(0, 5), transactions: [...newTransactions, ...get().transactions] })
 }
 
 export const handleMetadataUpdate = (get: GetState<IndexerStore>, set: SetState<IndexerStore>) => (metadata: TokenMetadataStore) => {

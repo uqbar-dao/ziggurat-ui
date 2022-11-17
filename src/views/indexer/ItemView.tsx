@@ -23,6 +23,7 @@ import Link from '../../components-indexer/nav/Link'
 
 import './ItemView.scss'
 import Json from '../../components/text/Json'
+import HexNum from '../../components/text/HexNum'
 
 type Selection = 'details' | 'txns'
 
@@ -83,10 +84,7 @@ const ItemView = () => {
   return (
     <Container className='item-view'>
       <PageHeader title={'Item'}>
-        <Text mono oneLine style={{ fontSize: 18 }}>
-          {addHexDots(itemId)}
-        </Text>
-        <CopyIcon text={addHexDots(itemId)} />
+        <HexNum style={{ fontSize: 18 }} copy num={addHexDots(itemId)} />
       </PageHeader>
       <Entry>
         <Card>
@@ -120,13 +118,13 @@ const ItemView = () => {
                       )}
                       <Field name='Source:'>
                         <Link href={`/address/${addHexDots(item.source)}`}>
-                          <Text mono oneLine>{addHexDots(item.source)}</Text>
+                          <HexNum num={addHexDots(item.source)} />
                         </Link>
                         <CopyIcon text={addHexDots(item.source)}></CopyIcon>
                       </Field>
                       <Field name='Holder:'>
                         <Link href={`/address/${addHexDots(item.holder)}`}>
-                          <Text mono oneLine>{addHexDots(item.holder)}</Text>
+                          <HexNum num={addHexDots(item.holder)} />
                         </Link>
                         <CopyIcon text={addHexDots(item.holder)}></CopyIcon>
                       </Field>
@@ -152,7 +150,7 @@ const ItemView = () => {
                         </Field>
                       </>}
                       <Field name='Town:'>
-                        <Text mono oneLine>{item.town}</Text>
+                        <HexNum num={item.town} />
                       </Field>
                     </Entry>
                   )

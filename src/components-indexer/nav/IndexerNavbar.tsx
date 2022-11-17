@@ -10,6 +10,8 @@ import { abbreviateHex } from '../../utils/format'
 import { FaArrowLeft } from 'react-icons/fa'
 import HexNum from '../../components/text/HexNum'
 import '../../components/nav/Navbar.scss'
+import { PUBLIC_URL } from '../../utils/constants'
+import classNames from 'classnames'
 
 const IndexerNavbar = () => {
   const [open, setOpen] = useState(false)
@@ -29,7 +31,7 @@ const IndexerNavbar = () => {
           <Text mr1 className='site-title'>EXPLORER</Text>
         </Row>
         <Row>
-          <Link className={`nav-link ${window.location.pathname === `${process.env.PUBLIC_URL}/` || window.location.pathname === process.env.PUBLIC_URL ? 'selected' : ''}`} href='/'>
+          <Link className={classNames('nav-link', { selected: window.location.pathname.match(new RegExp(PUBLIC_URL+'/indexer$')) })} href='/'>
             Home
           </Link>
           {addresses.length > 0 && (
@@ -41,6 +43,9 @@ const IndexerNavbar = () => {
               ))}
             </Dropdown>
           )}
+          <Link external className='nav-link' href={PUBLIC_URL+`/wallet`}>
+            Wallet
+          </Link>
         </Row>
       </Row>
     </Row>

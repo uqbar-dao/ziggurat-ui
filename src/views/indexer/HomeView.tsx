@@ -21,6 +21,7 @@ import HexNum from '../../components/text/HexNum'
 
 import './HomeView.scss'
 import { formatIndexerTimestamp } from '../../utils/date'
+import Pill from '../../components/text/Pill'
 
 const HomeView = () => {
   const { batches, transactions } = useIndexerStore()
@@ -125,24 +126,20 @@ const HomeView = () => {
                 <Text className='mt1'>There are no transactions in these batches.</Text>
               )}
               {transactions.map((tx, index) => (
-                <Entry key={tx.hash || index}>
-                  <Field name='Hash:'>
+                <Row style={{ margin: '0.5em 0' }} key={tx.hash || index}>
+                  <Pill label='Nonce' value={''+tx.transaction.shell.caller.nonce} />
+                  <Pill label='Hash'>
                     <Link href={`/tx/${addHexDots(tx.hash)}`}>
-                      <Text mono >{abbreviateHex(tx.hash, 6, 4)}</Text>
+                      <HexNum num={tx.hash} displayNum={abbreviateHex(tx.hash, 4, 2)} />
                     </Link>
-                  </Field>
-                  <Field name='From:'>
+                  </Pill>
+                  <Pill label='From'>
                     <Link href={`/address/${addHexDots(tx.transaction.shell.caller.id)}`}>
-                      <Text mono >{abbreviateHex(tx.transaction.shell.caller.id, 6, 4)}</Text>
+                      <HexNum num={tx.transaction.shell.caller.id} displayNum={abbreviateHex(tx.transaction.shell.caller.id, 4, 2)} />
                     </Link>
-                  </Field>
-                  <Field name='Nonce:'>
-                    <Text mono >{tx.transaction.shell.caller.nonce}</Text>
-                  </Field>
-                  <Field name='Status:'>
-                    <Text>{getRawStatus(tx.transaction.shell.status)}</Text>
-                  </Field>
-                </Entry>
+                  </Pill>
+                  <Pill label='Status' value={getRawStatus(tx.transaction.shell.status)} />
+                </Row>
               ))}
             </Col>
           </Card>

@@ -227,14 +227,16 @@ const AccountsView = () => {
           />)}
           <Input
             onKeyUp={(e: any) => setPassword(e.target.value)}
+            onChange={(e: any) => setPassword(e.target.value)}
             placeholder='Enter password'
             style={{ width: '100%', marginBottom: 16 }}
             containerStyle={{ width: '100%' }}
             type='password'
             value={password}
-          />
+            />
           <Input
             onKeyUp={(e: any) => setConfirmPassword(e.target.value)}
+            onChange={(e: any) => setConfirmPassword(e.target.value)}
             placeholder='Confirm password'
             style={{ width: '100%', marginBottom: 16 }}
             containerStyle={{ width: '100%' }}

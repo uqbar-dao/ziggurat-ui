@@ -9,13 +9,21 @@
 
   &.wallet-nav {
     background-color: colors.$uq-pink;
+
+    .nav-link {
+      color: colors.$uq-vlightpink;
+
+      &.selected {
+        background-color: colors.$uq-purple;
+      }
+    }
   }
 
   &.indexer-nav {
     background-color: colors.$uq-purple;
 
     .nav-link {
-      color: colors.$uq-vlightpink;
+      color: colors.$uq-vlightpurple;
 
       &.selected {
         background-color: colors.$uq-pink;
@@ -34,15 +42,13 @@
     padding: 16px;
     text-decoration: none;
     font-weight: 600;
-    color: colors.$uq-vlightpurple !important;
 
     @media only screen and (max-width: 520px) {
       padding: 8px 20px;
     }
 
     &.selected {
-      color: white !important;
-      background-color: colors.$uq-purple;
+      color: white;
     }
 
     &.logo {
