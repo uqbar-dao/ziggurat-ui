@@ -285,8 +285,9 @@ const useWalletStore = create<WalletStore>(
     setMostRecentTransaction: (mostRecentTransaction?: Transaction) => set({ mostRecentTransaction })
   }),
   {
-    name: our+'-contractStore',
+    name: our+'-walletStore',
     version: WALLET_STORAGE_VERSION,
+    getStorage: () => sessionStorage,
   })
 )
 

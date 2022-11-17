@@ -514,6 +514,7 @@ ${path}
   {
     name: our+'-zigguratStore',
     version: ZIGGURAT_STORAGE_VERSION,
+    getStorage: () => sessionStorage,
   }
 ));
 

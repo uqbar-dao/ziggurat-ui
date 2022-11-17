@@ -152,6 +152,7 @@ const useIndexerStore = create<IndexerStore>(
   {
     name: our+'-indexerStore',
     version: INDEXER_STORAGE_VERSION,
+    getStorage: () => sessionStorage, 
   })
 )
 
