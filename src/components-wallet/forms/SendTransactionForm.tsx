@@ -196,7 +196,7 @@ const SendTransactionForm = ({
           <ActionDisplay action={pendingAction} />
         )}
         {showAmount && (
-          <Input label='Amount:' style={{ width: '100%' }} containerStyle={{ marginTop: 12, width: '100%' }} value={amount || displayTokenAmount(Number(giveAction.amount), tokenMetadata?.data.decimals || 1)} disabled />
+          <Input label='Amount:' style={{ width: '100%' }} containerStyle={{ marginTop: 12, width: '100%' }} value={amount || displayTokenAmount(+removeDots(''+giveAction.amount), tokenMetadata?.data.decimals || 1)} disabled />
         )}
         <Col>
           <Row style={{ marginTop: 16, fontWeight: 'bold' }}>Hash: <CopyIcon text={pendingHash}/></Row>

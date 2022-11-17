@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react'
+import Loader from '../../components/popups/Loader'
 import { TokenData } from '../../types/wallet/Token'
 import { ipfsConnection } from '../../utils/ipfs'
+import Text from '../../components/text/Text'
 import './NftImage.scss'
+import Row from '../../components/spacing/Row'
 
 interface NftImageProps extends React.HTMLAttributes<HTMLDivElement> {
   nftInfo?: TokenData
@@ -40,8 +43,8 @@ const NftImage: React.FC<NftImageProps> = ({ nftInfo, ...props }) => {
     return null
   }
 
-  return (
-    <img src={imageSource} className="nft-image" alt={String(nftInfo.id)} />
+  return (imageSource ? <img src={imageSource} className="nft-image" alt={String(nftInfo.id)} />
+    : <Row> <Loader dark /> <Text small>Loading image...</Text> </Row>
   )
 }
 

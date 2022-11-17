@@ -27,9 +27,6 @@ export const TransactionEntry = ({
     <Entry divide={displayIndex > 1}>
       <Field className='transaction' name={displayIndex + '.'}>
         <Col>
-          <Field name='Time:'>
-            <Text mono oneLine>{formatIndexerTimestamp(tx.timestamp)}</Text>
-          </Field>
           <Field name='Hash:'>
             <Link href={`/tx/${addHexDots(tx.hash || '')}`}>
               <HexNum mono style={{ margin: 2 }} num={addHexDots(tx.hash || '')} />
@@ -51,6 +48,9 @@ export const TransactionEntry = ({
               <CopyIcon text={tx.transaction.shell.caller.id} />
             </Field>
           )}
+          <Field name='Time:'>
+            <Text mono oneLine>{formatIndexerTimestamp(tx.timestamp)}</Text>
+          </Field>
           <Field name='Status:'>
             <Text mono oneLine>{getRawStatus(tx.transaction.shell.status)}</Text>
           </Field>

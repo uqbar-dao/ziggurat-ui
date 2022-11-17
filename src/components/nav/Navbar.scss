@@ -8,18 +8,6 @@
   position: relative;
 
   &.wallet-nav {
-    background-color: colors.$uq-pink;
-
-    .nav-link {
-      color: colors.$uq-vlightpink;
-
-      &.selected {
-        background-color: colors.$uq-purple;
-      }
-    }
-  }
-
-  &.indexer-nav {
     background-color: colors.$uq-purple;
 
     .nav-link {
@@ -27,6 +15,18 @@
 
       &.selected {
         background-color: colors.$uq-pink;
+      }
+    }
+  }
+
+  &.indexer-nav {
+    background-color: colors.$uq-pink;
+
+    .nav-link {
+      color: colors.$uq-vlightpink;
+
+      &.selected {
+        background-color: colors.$uq-purple;
       }
     }
   }
