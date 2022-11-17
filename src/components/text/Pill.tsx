@@ -5,16 +5,19 @@ import Text from '../text/Text'
 import './Pill.scss'
 
 interface PillProps extends React.HTMLAttributes<HTMLDivElement> {
-  value: string
+  value?: string
   label: string
   color?: string
 }
 
-const Pill: React.FC<PillProps> = ({ value, label, color, ...props }) => {
+const Pill: React.FC<PillProps> = ({ value = ' ', label, color, children, ...props }) => {
   return (
     <Row {...props} className={'pill'}>
       <Text className={'label ' +  (color || 'turq')} small>{label}</Text>
-      <Text className='value' small>{value}</Text>
+      <Text className='value' small>
+        {value}
+        {children}
+      </Text>
     </Row>
   )
 }

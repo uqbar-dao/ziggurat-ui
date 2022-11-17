@@ -73,4 +73,4 @@ export const capitalize = (word?: string) => !word ? word : word[0].toUpperCase(
 
 export const addHexPrefix = (str: string) => `0x${str.replace(/^0x/i, '')}`
 
-export const abbreviateHex = (hash: string, start: number = 4, end: number = 4) => `${removeDots(hash).slice(0, start)}...${removeDots(hash).slice(-end)}`
+export const abbreviateHex = (hash: string, start: number = 4, end: number = 4) => `${removeDots(hash).slice(0, start)}…${removeDots(hash).slice(-end)}`
