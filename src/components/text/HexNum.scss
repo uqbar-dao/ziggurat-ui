@@ -3,20 +3,17 @@
 
   &.colors {
     .color-dot {
-      border: 3px solid;
-      border-radius: 999px;
-
-      outline: 1px solid black;
-
+      margin-right: 0.5em;
+      
       height: 1em;
       min-height: 1em;
       width: 1em;
       min-width: 1em;
       
-      margin: 0 0.5em;
+      border: 3px solid;
+      border-radius: 999px;
 
-      align-self: flex-start;
+      outline: 1px solid black;
     }
   }
-
 }

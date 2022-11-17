@@ -14,7 +14,10 @@ const WalletNavbar = () => {
   const isMobile = isMobileCheck()
   const { pathname } = useWalletStore()
 
-  return (
+  return (<>
+    <style>{`html {
+      background-color: #d9dcfc;
+    }`}</style>
     <Row className='navbar wallet-nav'>
       <Row>
         <Row className='logo-text'>
@@ -24,7 +27,7 @@ const WalletNavbar = () => {
               <img src={logo} alt='Uqbar Logo' />
             </ Row>
           </Link>
-          <Text mr1 className='site-title'>WALLET</Text>
+          <Text mr1 className='site-title'>Wallet</Text>
         </Row>
         <Link className={`nav-link ${(pathname === '/' || pathname.match(/wallet\/?$/)) ? 'selected' : ''}`} href='/'>
           {isMobile ? <FaWallet  /> : 'Assets'}
@@ -40,7 +43,7 @@ const WalletNavbar = () => {
         </Link>
       </Row>
     </Row>
-  )
+  </>)
 }
 
 export default WalletNavbar

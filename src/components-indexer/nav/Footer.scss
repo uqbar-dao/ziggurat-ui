@@ -1,10 +1,11 @@
 .footer {
   &.splash {
-    margin-top: auto !important;
-    margin-bottom: -48px !important;
-    filter: hue-rotate(262deg) ;
-    padding-bottom: 2em !important;
+    filter: hue-rotate(262deg);
     background-position-y: bottom !important;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    z-index: -1;
   
     .circled {
       margin: 0 0.6em;
