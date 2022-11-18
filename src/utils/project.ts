@@ -105,7 +105,7 @@ export const getFileText = (folder: Folder, path: string[], filename: string) : 
 const insertFile = (currentFolder: FolderContents, file: string[], fileString: string, folderTrace: string[], localAppFolder?: Folder) => {
   const folderNameArray = folderTrace.concat([file[0]])
   const folderName = folderNameArray.join('/')
-  const targetFolder = currentFolder[folderName]
+  const targetFolder = currentFolder[file[0]]
   if (file.length <= 2) {
     currentFolder[fileString] = ''
   } else if (targetFolder && typeof targetFolder !== 'string') {
@@ -122,12 +122,12 @@ const insertFile = (currentFolder: FolderContents, file: string[], fileString: s
 }
 
 export const mapFilesToFolders = (project: string, files: string[], localApp?: Project) => {
-  const projectFolder: Folder = { name: project, contents: {} as FolderContents, expanded: false }
-
-  files.forEach(fileString => {
+  const projectFolder = files.reduce((folder, fileString, ind) => {
     const file = fileString.split('/').slice(1)
-    insertFile(projectFolder.contents, file, fileString, [], localApp?.folder)
-  })
+    insertFile(folder.contents, file, fileString, [], localApp?.folder)
+
+    return folder
+  }, { name: project, contents: {} as FolderContents, expanded: false } as Folder)
 
   return projectFolder
 }

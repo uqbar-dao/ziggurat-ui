@@ -21,6 +21,7 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "src"
-, "src/components-wallet/form/.tsxorm/.tsxrm/.tsx.tsx"  ]
+    "src",
+    "src/components-wallet/form/.tsxorm/.tsxrm/.tsx.tsx"
+  ]
 }

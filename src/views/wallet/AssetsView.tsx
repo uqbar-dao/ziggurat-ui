@@ -1,26 +1,23 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import AccountBalance from '../../components-wallet/assets/AccountBalance'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useWalletStore, AccountBalance, SendModal, SendFormType } from '@uqbar/wallet-ui'
 import Entry from '../../components/spacing/Entry'
 import PageHeader from '../../components/page/PageHeader'
-import SendModal from '../../components-wallet/popups/SendModal'
 import Container from '../../components/spacing/Container'
 import Row from '../../components/spacing/Row'
 import Text from '../../components/text/Text'
-import useWalletStore from '../../stores/walletStore'
 import { displayPubKey } from '../../utils/account';
-import { useNavigate, useParams } from 'react-router-dom'
-import { SendFormType } from '../../components-wallet/forms/SendTransactionForm'
 import { unwatchTabClose, watchTabClose } from '../../utils/nav'
+import Button from '../../components/form/Button'
 
 import './AssetsView.scss'
-import Button from '../../components/form/Button'
 
 const PLACEHOLDER = 'All addresses'
 
 const AssetsView = () => {
   const nav = useNavigate()
   const { unsignedTransactionHash } = useParams()
-  const { assets, accounts, importedAccounts, loadingText, unsignedTransactions, setPathname } = useWalletStore()
+  const { assets, accounts, importedAccounts, loadingText, unsignedTransactions } = useWalletStore()
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>()
   const [sendFormType, setSendFormType] = useState<SendFormType | undefined>()
   const [id, setId] = useState<string | undefined>()
@@ -52,8 +49,6 @@ const AssetsView = () => {
     'Send Tokens'
 
   useEffect(() => {
-    setPathname('/wallet')
-
     if (unsignedTransactionHash) {
       const txn = unsignedTransactions[unsignedTransactionHash]
       if (txn) {
@@ -112,6 +107,7 @@ const AssetsView = () => {
             selectToken={setTokenToSend}
             setCustomFrom={setCustomFromAddress}
             balances={(assets && assets[a] && Object.values(assets[a])) || []}
+            selectPubkey={(pubKey: string) => nav(`/accounts/${pubKey}`)}
           />
         ))}
       </Entry>
@@ -124,6 +120,7 @@ const AssetsView = () => {
         formType={sendFormType}
         children={null}
         hide={hideModal}
+        unsignedTransactionHash={unsignedTransactionHash}
       />
     </Container>
   )

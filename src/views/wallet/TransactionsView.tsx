@@ -1,24 +1,24 @@
 import React, { useCallback, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useWalletStore, TransactionShort, groupTransactions } from '@uqbar/wallet-ui'
 import Entry from '../../components/spacing/Entry'
 import PageHeader from '../../components/page/PageHeader'
 import Container from '../../components/spacing/Container'
 import Row from '../../components/spacing/Row'
 import Text from '../../components/text/Text'
-import TransactionShort from '../../components-wallet/transactions/TransactionShort'
-import useWalletStore from '../../stores/walletStore'
 import { displayPubKey } from '../../utils/account'
 import { addHexDots } from '../../utils/format'
-import { groupTransactions } from '../../utils/transactions'
 
 import './TransactionsView.scss'
-
 
 const PLACEHOLDER = 'All addresses'
 
 const TransactionsView = () => {
-  const { accounts, transactions, unsignedTransactions, setPathname } = useWalletStore()
+  const { accounts, transactions, unsignedTransactions } = useWalletStore()
   const [filteredTransactions, setFilteredTransactions] = useState(transactions)
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>()
+
+  const nav = useNavigate()
   
   const filterByAddress = useCallback((address?: string) => {
     if (address) {
@@ -35,8 +35,6 @@ const TransactionsView = () => {
   }
 
   useEffect(() => {
-    setPathname('/wallet/transactions')
-
     filterByAddress(selectedAddress)
   }, [selectedAddress, transactions, filterByAddress])
 
@@ -59,28 +57,28 @@ const TransactionsView = () => {
       </PageHeader>
       <Entry title='Unsigned'>
         {Object.keys(unsignedTransactions).length ? (
-          Object.values(unsignedTransactions).map(txn => <TransactionShort key={txn.hash} txn={txn} isUnsigned />)
+          Object.values(unsignedTransactions).map(txn => <TransactionShort selectHash={(hash: string) => nav(`/transactions/${txn.hash}`)} key={txn.hash} txn={txn} isUnsigned />)
         ) : (
           <Text>None</Text>
         )}
       </Entry>
       <Entry title='Pending'>
         {pending.length ? (
-          pending.map(txn => <TransactionShort key={txn.hash} txn={txn} />)
+          pending.map(txn => <TransactionShort selectHash={(hash: string) => nav(`/transactions/${txn.hash}`)} key={txn.hash} txn={txn} />)
         ) : (
           <Text>None</Text>
         )}
       </Entry>
       <Entry title='Rejected'>
         {rejected.length ? (
-          rejected.map(txn => <TransactionShort key={txn.hash} txn={txn} />)
+          rejected.map(txn => <TransactionShort selectHash={(hash: string) => nav(`/transactions/${txn.hash}`)} key={txn.hash} txn={txn} />)
         ) : (
           <Text>None</Text>
         )}
       </Entry>
       <Entry title='Completed'>
         {finished.length ? (
-          finished.map(txn => <TransactionShort key={txn.hash} txn={txn} />)
+          finished.map(txn => <TransactionShort selectHash={(hash: string) => nav(`/transactions/${txn.hash}`)} key={txn.hash} txn={txn} />)
         ) : (
           <Text>None</Text>
         )}

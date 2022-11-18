@@ -1,18 +1,20 @@
-import React, { useEffect } from 'react'
-import Row from '../../components/spacing/Row'
+import React from 'react'
+import { useLocation } from 'react-router-dom'
+import { useWalletStore } from '@uqbar/wallet-ui'
+import Row from '../components/spacing/Row'
 import Link from './Link'
 // import logoWithText from '../../assets/img/uqbar-logo-text.png'
 import logo from '../../assets/img/logo192.png'
-import { isMobileCheck } from '../../utils/dimensions'
+import { isMobileCheck } from '../utils/dimensions'
 import { FaWallet, FaKey, FaHistory, FaArrowLeft } from 'react-icons/fa'
-import useWalletStore from '../../stores/walletStore'
-import Text from '../../components/text/Text'
+import Text from '../components/text/Text'
+import { PUBLIC_URL } from '../utils/constants'
+
 import '../../components/nav/Navbar.scss'
-import { PUBLIC_URL } from '../../utils/constants'
 
 const WalletNavbar = () => {
   const isMobile = isMobileCheck()
-  const { pathname } = useWalletStore()
+  const { pathname } = useLocation()
 
   return (<>
     <style>{`html {
@@ -23,7 +25,6 @@ const WalletNavbar = () => {
         <Row className='logo-text'>
           <Link external title='Home' href='/apps/ziggurat' className='nav-link logo'>
             <Row>
-              {/* <FaArrowLeft className='mr1' /> */}
               <img src={logo} alt='Uqbar Logo' />
             </ Row>
           </Link>

@@ -1,11 +1,10 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import AccountDisplay from '../../components-wallet/accounts/AccountDisplay'
-import BackLink from '../../components-wallet/nav/BackLink'
+import { useWalletStore, AccountDisplay } from '@uqbar/wallet-ui'
+import BackLink from '../../components-wallet/BackLink'
 import PageHeader from '../../components/page/PageHeader'
 import Container from '../../components/spacing/Container'
 import Entry from '../../components/spacing/Entry'
-import useWalletStore from '../../stores/walletStore'
 
 const AccountView = () => {
   const { account } = useParams()

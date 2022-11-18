@@ -3,9 +3,9 @@ import { persist } from "zustand/middleware"
 import { toast } from "react-toastify";
 import pWaterfall from "p-waterfall";
 import pMap from "p-map";
+import { HardwareWallet, HardwareWalletType, HotWallet, processAccount, RawAccount } from "@uqbar/wallet-ui";
 
 import api from "../api";
-import { HardwareWallet, HardwareWalletType, HotWallet, processAccount, RawAccount } from "../types/wallet/Accounts";
 import { OpenFile } from "../types/ziggurat/OpenFile";
 import { RunTestPayload } from "../types/ziggurat/TestData";
 import { TestItemInput } from "../types/ziggurat/TestItem";
@@ -137,6 +137,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
     getProjects: async () => {
       const rawProjects = await api.scry({ app: 'ziggurat', path: '/all-projects' })
       const projects = generateProjects(rawProjects, get().projects)
+
       console.log('PROJECTS:', projects)
 
       const subscriptions = Object.keys(projects).reduce((subs, p) => {
