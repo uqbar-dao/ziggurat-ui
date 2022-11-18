@@ -9,12 +9,13 @@ import Container from '../../components/spacing/Container'
 import Text from '../../components/text/Text'
 import CopyIcon from '../../components/text/CopyIcon'
 import { getRawStatus, getStatus } from '../../utils/constants'
-import { addHexDots } from '../../utils/format'
+import { addHexDots, removeDots } from '../../utils/format'
 import HexNum from '../../components/text/HexNum'
 import Row from '../../components/spacing/Row'
 
 import './TransactionView.scss'
 import Json from '../../components/text/Json'
+import Link from '../../components-indexer/nav/Link'
 
 type ActionValue = { [key: string]: ActionValue } | string | number
 
@@ -65,9 +66,9 @@ const TransactionView = () => {
       <Col className='transaction'>
         <Entry>
           <Field name='Hash:'>
-            {/* <Link target='_blank' urlPrefix='/apps/ziggurat/indexer' href={`/tx/${removeDots(txn.hash)}`}> */}
+            <Link external newTab href={`/apps/ziggurat/indexer/tx/${removeDots(txn.hash)}`}>
               <HexNum mono copy num={addHexDots(txn.hash)} />
-            {/* </Link> */}
+            </Link>
           </Field>
         </Entry>
         <Entry>
