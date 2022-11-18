@@ -1,16 +1,15 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
-import { useWalletStore } from '@uqbar/wallet-ui'
 import Row from '../components/spacing/Row'
 import Link from './Link'
 // import logoWithText from '../../assets/img/uqbar-logo-text.png'
-import logo from '../../assets/img/logo192.png'
+import logo from '../assets/img/logo192.png'
 import { isMobileCheck } from '../utils/dimensions'
 import { FaWallet, FaKey, FaHistory, FaArrowLeft } from 'react-icons/fa'
 import Text from '../components/text/Text'
 import { PUBLIC_URL } from '../utils/constants'
 
-import '../../components/nav/Navbar.scss'
+import '../components/nav/Navbar.scss'
 
 const WalletNavbar = () => {
   const isMobile = isMobileCheck()
