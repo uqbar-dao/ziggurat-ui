@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import useWalletStore from '../stores/walletStore';
+import { useWalletStore } from '@uqbar/wallet-ui';
 import AccountsView from './wallet/AccountsView';
 import AccountView from './wallet/AccountView';
 import AssetsView from './wallet/AssetsView';
@@ -8,13 +8,13 @@ import TransactionsView from './wallet/TransactionsView';
 import TransactionView from './wallet/TransactionView';
 import { PUBLIC_URL } from '../utils/constants';
 import LoadingOverlay from '../components/popups/LoadingOverlay';
-import WalletNavbar from '../components-wallet/nav/WalletNavbar';
+import WalletNavbar from '../components-wallet/WalletNavbar';
 
 function WalletMain() {
-  const { init, loadingText } = useWalletStore()
+  const { initWallet, loadingText } = useWalletStore()
 
   useEffect(() => {
-    init()
+    initWallet({})
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (

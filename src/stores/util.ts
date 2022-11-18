@@ -1,4 +1,4 @@
-import { SendNftPayload, SendTokenPayload } from "../types/wallet/SendTransaction";
+import { SendNftPayload, SendTokenPayload } from "@uqbar/wallet-ui";
 
 export const generateSendTokenPayload = (payload: SendTokenPayload | SendNftPayload) => {
   const { from, contract, town, item, to } = payload

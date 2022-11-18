@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import Text from '../../components/text/Text'
+import Text from '../components/text/Text'
 
 import './BackLink.scss'
 

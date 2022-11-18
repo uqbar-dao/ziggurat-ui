@@ -1,11 +1,8 @@
+import { Assets, Token, TokenMetadataStore, Transaction } from "@uqbar/wallet-ui";
+import { WalletStore } from "@uqbar/wallet-ui";
 import { GetState, SetState } from "zustand";
-import { Assets } from "../../types/wallet/Assets";
-import { Transaction } from "../../types/wallet/Transaction";
-import { showNotification } from "../../utils/notification";
-import { WalletStore } from "../walletStore";
-import { TokenMetadataStore } from "../../types/wallet/TokenMetadata";
-import { Token } from "../../types/wallet/Token";
 import { SUCCESSFUL_STATUS, UNSIGNED_STATUS } from "../../utils/constants";
+import { showNotification } from "../../utils/notification";
 
 export const handleBookUpdate = (get: GetState<WalletStore>, set: SetState<WalletStore>) => (balanceData: Assets) => {
   console.log('ASSETS:', balanceData)

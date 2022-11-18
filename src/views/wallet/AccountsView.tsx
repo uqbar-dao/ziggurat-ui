@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { FaExclamationTriangle } from 'react-icons/fa'
-import AccountDisplay from '../../components-wallet/accounts/AccountDisplay'
+import { useWalletStore, AccountDisplay, DerivedAddressType, HardwareWalletType, Seed } from '@uqbar/wallet-ui'
 import { useLocation } from 'react-router-dom'
 import Button from '../../components/form/Button'
 import Entry from '../../components/spacing/Entry'
@@ -13,15 +13,13 @@ import Col from '../../components/spacing/Col'
 import Container from '../../components/spacing/Container'
 import Row from '../../components/spacing/Row'
 import Text from '../../components/text/Text'
-import useWalletStore from '../../stores/walletStore'
-import { DerivedAddressType, HardwareWalletType, Seed } from '../../types/wallet/Accounts'
 import { capitalize } from '../../utils/format'
 import { unwatchTabClose, watchTabClose } from '../../utils/nav'
 
 import './AccountsView.scss'
 
 const AccountsView = () => {
-  const { accounts, importedAccounts, createAccount, restoreAccount, importAccount, getSeed, deriveNewAddress, setPathname } = useWalletStore()
+  const { accounts, importedAccounts, createAccount, restoreAccount, importAccount, getSeed, deriveNewAddress } = useWalletStore()
   const { search } = useLocation()
   const createParam = new URLSearchParams(search).get('create')
   const [showCreate, setShowCreate] = useState(Boolean(createParam))
@@ -43,11 +41,10 @@ const AccountsView = () => {
   }, []) // eslint-disable-line
 
   useEffect(() => {
-    setPathname('/wallet/accounts')
     if (!showImport && !showAddWallet && !addAddressType) {
       setNick('')
     }
-  }, [showImport, showAddWallet, addAddressType, setPathname])
+  }, [showImport, showAddWallet, addAddressType])
 
   const showSeed = useCallback(async () => {
     if (window.confirm('Are you sure you want to display your seed phrase? Anyone viewing this will have access to your account.')) {

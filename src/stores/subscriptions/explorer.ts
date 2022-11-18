@@ -1,7 +1,7 @@
 import { GetState, SetState } from "zustand";
 import { Batch, Batches, NewBatch } from "../../types/indexer/Batch";
 import { Transaction } from "../../types/indexer/Transaction";
-import { TokenMetadataStore } from "../../types/wallet/TokenMetadata";
+import { TokenMetadataStore } from "@uqbar/wallet-ui";
 import { IndexerStore } from "../indexerStore";
 
 export const handleLatestBatch = (get: GetState<IndexerStore>, set: SetState<IndexerStore>) => async (b: NewBatch) => {
