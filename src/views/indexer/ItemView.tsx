@@ -109,7 +109,7 @@ const ItemView = () => {
                   <Loader dark style={{ marginTop: 16 }}/>
                 ) : (
                   item && (
-                    <Entry divide className='indexer-item' key={item.id}>
+                    <Entry className='indexer-item' key={item.id}>
                       {Boolean(tokenMetadata) && (
                         <Field name='Token:'>
                           <Text mono oneLine>{tokenMetadata?.data?.symbol}</Text>

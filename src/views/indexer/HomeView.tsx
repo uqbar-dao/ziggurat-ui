@@ -31,6 +31,7 @@ const HomeView = () => {
 
   console.log({ batches, transactions })
 
+  // TODO spin this & the navbar searchbar into their own single component
   const search = () => {
     const cleanValue = addHexPrefix(removeDots(searchValue))
     if (!searchValue) {
@@ -50,7 +51,7 @@ const HomeView = () => {
       console.log('ITEM')
       navigate(`/item/${cleanValue}`)
     } else {
-      setInputError('Must be in address, txn hash, or epoch/block/town format (with slashes)')
+      setInputError('Must be in address, txn hash, batch, or town format')
     }
   }
 
@@ -78,7 +79,7 @@ const HomeView = () => {
             value={searchValue}
             className='search-input'
             containerStyle={{ width: '80%' }}
-            placeholder='Address, Txn Hash, Epoch / Block / Town'
+            placeholder='Address, Txn Hash, Batch, Town'
             onChange={onChange}
             onKeyDown={onKeyDown}
           />
@@ -126,20 +127,20 @@ const HomeView = () => {
                 <Text className='mt1'>There are no transactions in these batches.</Text>
               )}
               {transactions.map((tx, index) => (
-                <Row style={{ margin: '0.5em 0' }} key={tx.hash || index}>
-                  <Pill label='Nonce' value={''+tx.transaction.shell.caller.nonce} />
-                  <Pill label='Hash'>
+                <Entry key={tx.hash || index}>
+                  <Row wrap>
                     <Link href={`/tx/${addHexDots(tx.hash)}`}>
                       <HexNum num={tx.hash} displayNum={abbreviateHex(tx.hash, 4, 2)} />
                     </Link>
-                  </Pill>
-                  <Pill label='From'>
-                    <Link href={`/address/${addHexDots(tx.transaction.shell.caller.id)}`}>
-                      <HexNum num={tx.transaction.shell.caller.id} displayNum={abbreviateHex(tx.transaction.shell.caller.id, 4, 2)} />
-                    </Link>
-                  </Pill>
-                  <Pill label='Status' value={getRawStatus(tx.transaction.shell.status)} />
-                </Row>
+                    <Pill label='Nonce' value={''+tx.transaction.shell.caller.nonce} />
+                    <Pill label='From'>
+                      <Link href={`/address/${addHexDots(tx.transaction.shell.caller.id)}`}>
+                        <HexNum num={tx.transaction.shell.caller.id} displayNum={abbreviateHex(tx.transaction.shell.caller.id, 4, 2)} />
+                      </Link>
+                    </Pill>
+                    <Pill label='Status' value={getRawStatus(tx.transaction.shell.status)} />
+                  </Row>
+                </Entry>
               ))}
             </Col>
           </Card>

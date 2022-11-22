@@ -10,10 +10,12 @@ import Text from '../components/text/Text'
 import { PUBLIC_URL } from '../utils/constants'
 
 import '../components/nav/Navbar.scss'
+import { useWalletStore } from '@uqbar/wallet-ui'
 
 const WalletNavbar = () => {
   const isMobile = isMobileCheck()
   const { pathname } = useLocation()
+  const { unsignedTransactions } = useWalletStore()
 
   return (<>
     <style>{`html {
@@ -37,6 +39,9 @@ const WalletNavbar = () => {
         </Link>
         <Link className={`nav-link ${pathname.includes('/transactions') ? 'selected' : ''}`} href='/transactions'>
           {isMobile ? <FaHistory  /> : 'History'}
+          {(Object.keys(unsignedTransactions).length > 0) && <div className='notif-number'>
+            {Object.keys(unsignedTransactions).length}
+          </div>}
         </Link>
         <Link external className={`nav-link`} href={PUBLIC_URL+`/indexer`}>
           {isMobile ? <FaHistory  /> : 'Explorer'}

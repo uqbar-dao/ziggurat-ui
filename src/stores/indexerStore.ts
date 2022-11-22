@@ -65,22 +65,22 @@ const useIndexerStore = create<IndexerStore>(
         api.subscribe(createSubscription('indexer', `/batch-order/${DEFAULT_TOWN_ID}`, handleLatestBatch(get, set)))
 
         get().getAccounts()
-        // const result = await get().scry<{ 'batch-order': string[] }>(`/batch-order/${DEFAULT_TOWN_ID}/0/5`)
-        // const batchOrder = (result && result['batch-order']) || []
-        // const batches = (await Promise.all(
-        //   batchOrder.map(async (batchId) => ({ id: batchId, result: await get().scry<Batches>(`/batch/${batchId}`) }))
-        // )).map(({ id, result }) => {
-        //   if (result?.batch) {
-        //     return ({ id, ...Object.values(result?.batch)[0] })
-        //   }
-        //   return null
-        // }).filter(b => b)
-        // console.log('BATCHES:', batches)
+        const last5result = await get().scry<{ 'batch-order': string[] }>(`/batch-order/${DEFAULT_TOWN_ID}/0/5`)
+        const last5order = (last5result && last5result['batch-order']) || []
+        const last5batches = (await Promise.all(
+          last5order.map(async (batchId) => ({ id: batchId, result: await get().scry<Batches>(`/batch/${batchId}`) }))
+        )).map(({ id, result }) => {
+          if (result?.batch) {
+            return ({ id, ...Object.values(result?.batch)[0] })
+          }
+          return null
+        }).filter(b => b)
+        console.log('LAST 5 BATCHES:', last5batches)
 
-        // const transactions = batches.reduce((acc: Transaction[], cur: Batch) => acc.concat(cur.batch.transactions), [])
-        // console.log('TRANSACTIONS:', transactions)
+        const transactions = last5batches.reduce((acc: Transaction[], cur: Batch) => acc.concat(cur.batch.transactions), [])
+        console.log('TRANSACTIONS:', transactions)
 
-        // set({ batches, transactions })
+        set({ batches: last5batches, transactions })
         // TODO: set the transactions
       } catch (err) {
         console.warn(err)
