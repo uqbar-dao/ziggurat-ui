@@ -57,7 +57,7 @@ const TransactionsView = () => {
       </PageHeader>
       <Entry title='Unsigned'>
         {Object.keys(unsignedTransactions).length ? (
-          Object.values(unsignedTransactions).map(txn => <TransactionShort selectHash={(hash: string) => nav(`/transactions/${txn.hash}`)} key={txn.hash} txn={txn} isUnsigned />)
+          Object.values(unsignedTransactions).map(txn => <TransactionShort selectHash={(hash: string) => {nav('/'); nav(`/${txn.hash}`)}} key={txn.hash} txn={txn} isUnsigned />)
         ) : (
           <Text>None</Text>
         )}
