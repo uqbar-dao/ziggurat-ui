@@ -67,17 +67,24 @@ const TransactionView = () => {
         <Entry>
           <Field name='Hash:'>
             <Link external newTab href={`/apps/ziggurat/indexer/tx/${removeDots(txn.hash)}`}>
-              <HexNum mono copy num={addHexDots(txn.hash)} />
+              <HexNum mono num={addHexDots(txn.hash)} />
             </Link>
+            <CopyIcon text={addHexDots(txn.hash)} />
           </Field>
         </Entry>
         <Entry>
           <Field name='From:'>
-            <HexNum mono copy num={ addHexDots(txn.from)} />
-            </Field>
+            <Link external newTab href={`/apps/ziggurat/indexer/address/${removeDots(txn.hash)}`}>
+              <HexNum mono num={ addHexDots(txn.from)} />
+            </Link>
+            <CopyIcon text={addHexDots(txn.from)} />
+          </Field>
           <Field name='To:'>
-            <HexNum mono copy num={ addHexDots(txn.contract)} />
-            </Field>
+            <Link external newTab href={`/apps/ziggurat/indexer/address/${removeDots(txn.hash)}`}>
+              <HexNum mono num={ addHexDots(txn.contract)} />
+            </Link>
+            <CopyIcon text={addHexDots(txn.contract)} />
+          </Field>
         </Entry>
         <Entry>
           <Field name='Status:'>
