@@ -33,8 +33,6 @@ const TransactionView = () => {
 
   useEffect(() => {
     const getData = async () => {
-      // 0x523515b872fce8297919a3e40bfd48dec4d27d9700dd44dd81efc254ef8aa3e6
-
       const result  = await scry<{ transaction: { [key: string]: Transaction } }>(`/json/transaction/${txnHash}`)
 
       if (result && result.transaction && Object.values(result.transaction)[0]) {
@@ -93,8 +91,9 @@ const TransactionView = () => {
           <Entry>
             <Field name='Batch:'>
               <Link href={`/batch/${loc['batch-id']}`} className='address'>
-                <Text mono oneLine>{loc['batch-id']}-{loc['town-id']}-{loc['transaction-num']}</Text>
+                <HexNum num={''+loc['batch-id']} />
               </Link>
+              <CopyIcon text={''+loc['batch-id']} />
             </Field>
 
             <Field name='From:'>

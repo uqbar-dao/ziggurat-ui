@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React from 'react'
 import Col from '../spacing/Col';
 import Divider from '../spacing/Divider';
@@ -9,12 +10,13 @@ interface EntryProps extends React.HTMLAttributes<HTMLDivElement> {
   divide? : boolean
   title? : string
   center?: boolean
+  wrap?: boolean
 }
 
-const Entry: React.FC<EntryProps> = ({ className = '', center, children, title, divide = false, ...rest }) => {
+const Entry: React.FC<EntryProps> = ({ className = '', wrap, center, children, title, divide = false, ...rest }) => {
   return (
     <>
-      <Col center={center} className={`entry ${divide ? 'divide' : ''} ${className}`} {...rest}>
+      <Col center={center} className={classNames('entry', className, { divide })} {...rest}>
         {title && <h3>{title}</h3>}
         {children}
       </Col>

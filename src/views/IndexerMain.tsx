@@ -10,6 +10,7 @@ import ItemView from './indexer/ItemView';
 import IndexerNavbar from '../components-indexer/nav/IndexerNavbar';
 import LoadingOverlay from '../components/popups/LoadingOverlay';
 import { PUBLIC_URL } from '../utils/constants';
+import { ToastContainer } from 'react-toastify';
 // import TransactionsView from './views/TransactionsView';
 // import PendingTransactionsView from './views/PendingTransactionsView';
 // import ItemsView from './views/ItemsView';
@@ -47,6 +48,14 @@ function IndexerMain() {
         />
       </Routes>
       <LoadingOverlay loading={Boolean(loadingText)} text={loadingText || ''} />
+      <ToastContainer
+       autoClose={false}
+       hideProgressBar
+       closeOnClick
+       rtl={false}
+       draggable
+       theme='colored'
+       style={{ fontSize: 14 }}/>
     </BrowserRouter>
   );
 }

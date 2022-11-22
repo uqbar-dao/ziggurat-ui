@@ -9,6 +9,7 @@ import TransactionView from './wallet/TransactionView';
 import { PUBLIC_URL } from '../utils/constants';
 import LoadingOverlay from '../components/popups/LoadingOverlay';
 import WalletNavbar from '../components-wallet/WalletNavbar';
+import { ToastContainer } from 'react-toastify'
 
 function WalletMain() {
   const { initWallet, loadingText } = useWalletStore()
@@ -37,6 +38,14 @@ function WalletMain() {
         />
       </Routes>
       <LoadingOverlay loading={Boolean(loadingText)} text={loadingText || ''} />
+      <ToastContainer
+       autoClose={false}
+       hideProgressBar
+       closeOnClick
+       rtl={false}
+       draggable
+       theme='colored'
+       style={{ fontSize: 14 }}/>
     </BrowserRouter>
   );
 }

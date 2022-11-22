@@ -25,7 +25,7 @@ export const ItemEntry = ({
 
   return (
     item.id !== item.source ? (
-      <Entry divide className='indexer-item' key={item.id}>
+      <Entry className='indexer-item' key={item.id}>
         {Boolean(item.label) && (
           <Field name='Label:'>{item.label}</Field>
         )}
