@@ -37,7 +37,7 @@ export const STATUS_CODES : { [key: number] : string } = {
   204: 'lack zigs to fulfill budget',
   205: 'couldn\'t find contract',
   206: 'crash in contract execution',
-  207: 'validation of changed/issued/burned rice failed',
+  207: 'validation of changed/issued/burned item failed',
   208: 'ran out of gas',
   209: 'superceded by another txn in batch',
 }
