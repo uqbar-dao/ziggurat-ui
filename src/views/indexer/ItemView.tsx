@@ -153,7 +153,7 @@ const ItemView = () => {
                         <HexNum num={item.town} />
                       </Field>
                     </Entry>
-                  )
+                  ) || <Text>No item found</Text>
                 )}
               </>
             )}

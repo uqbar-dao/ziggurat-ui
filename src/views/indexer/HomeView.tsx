@@ -9,7 +9,7 @@ import Container from '../../components/spacing/Container'
 import Card from '../../components-indexer/card/Card'
 import useIndexerStore from '../../stores/indexerStore'
 import Text from '../../components/text/Text'
-import { ADDRESS_REGEX, BLOCK_SEARCH_REGEX, TXN_HASH_REGEX, ITEM_REGEX, ETH_ADDRESS_REGEX } from '../../utils/regex'
+import { ADDRESS_REGEX, BATCH_HASH_REGEX, TXN_HASH_REGEX, ITEM_REGEX, ETH_ADDRESS_REGEX } from '../../utils/regex'
 import { abbreviateHex, addHexDots, addHexPrefix, removeDots } from '../../utils/format'
 import { getRawStatus } from '../../utils/constants'
 import Link from '../../components-indexer/nav/Link'
@@ -37,9 +37,9 @@ const HomeView = () => {
     if (!searchValue) {
       setInputError('Please enter a search')
     // check for block
-    } else if (BLOCK_SEARCH_REGEX.test(cleanValue)) {
-      console.log('BLOCK')
-      navigate(`/block/${cleanValue}`)
+    } else if (BATCH_HASH_REGEX.test(cleanValue)) {
+      console.log('batch')
+      navigate(`/batch/${cleanValue}`)
     } else if (ADDRESS_REGEX.test(cleanValue) || ETH_ADDRESS_REGEX.test(cleanValue)) {
       console.log('ADDRESS')
       navigate(`/address/${cleanValue}`)
