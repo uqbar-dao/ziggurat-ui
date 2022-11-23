@@ -36,6 +36,9 @@
     }
 
     .search {
+      margin-right: 1em;
+      justify-content: flex-end;
+
       .search-input {
         border-radius: 999px;
         border-top-right-radius: 0;

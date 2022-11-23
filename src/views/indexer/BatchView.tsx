@@ -73,6 +73,8 @@ const BatchView = () => {
     <Container className='batch-view'>
       <PageHeader title='Batch'>
         <HexNum style={{ fontSize: 18 }} num={batchData.id} copy />
+        <Text>/</Text>
+        <HexNum style={{ fontSize: 18 }} num={batchData.location['town-id']} copy />
       </PageHeader>
       <Entry>
         <Card title='Overview'>

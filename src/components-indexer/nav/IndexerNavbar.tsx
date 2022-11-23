@@ -13,35 +13,24 @@ import classNames from 'classnames'
 import Button from '../../components/form/Button'
 import { FaSearch } from 'react-icons/fa'
 import Input from '../../components/form/Input'
-import { ADDRESS_REGEX, BLOCK_SEARCH_REGEX, ETH_ADDRESS_REGEX, ITEM_REGEX, TXN_HASH_REGEX } from '../../utils/regex'
+import { ADDRESS_REGEX, BATCH_HASH_REGEX, ETH_ADDRESS_REGEX, ITEM_REGEX, TXN_HASH_REGEX } from '../../utils/regex'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 const IndexerNavbar = () => {
   const [open, setOpen] = useState(false)
   const [searchValue, setSearchValue] = useState('')
-  const [inputError, setInputError] = useState('')
   const navigate = useNavigate()
 
   // TODO spin this & the home searchbar into their own single component
   const search = () => {
     const cleanValue = addHexPrefix(removeDots(searchValue))
     if (!searchValue) {
-      setInputError('Please enter a search')
-    // check for block
-    } else if (BLOCK_SEARCH_REGEX.test(cleanValue)) {
-      console.log('BLOCK')
-      navigate(`/block/${cleanValue}`)
-    } else if (ADDRESS_REGEX.test(cleanValue) || ETH_ADDRESS_REGEX.test(cleanValue)) {
-      console.log('ADDRESS')
-      navigate(`/address/${cleanValue}`)
-    // check for txn hash
-    } else if (TXN_HASH_REGEX.test(cleanValue)) {
-      console.log('TRANSACTION')
-      navigate(`/tx/${cleanValue}`)
-    } else if (ITEM_REGEX.test(cleanValue)) {
-      console.log('ITEM')
-      navigate(`/item/${cleanValue}`)
+      toast.error('Please enter a search')
+    } else if (BATCH_HASH_REGEX.test(cleanValue)
+        || ADDRESS_REGEX.test(cleanValue) || ETH_ADDRESS_REGEX.test(cleanValue)
+        || TXN_HASH_REGEX.test(cleanValue) || ITEM_REGEX.test(cleanValue)) {
+      navigate(`/search/${cleanValue}`)
     } else {
       toast.error('Must be in address, txn hash, batch, or town format')
     }

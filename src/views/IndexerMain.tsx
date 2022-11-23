@@ -7,6 +7,7 @@ import BatchView from './indexer/BatchView';
 import TransactionView from './indexer/TransactionView';
 import AddressView from './indexer/AddressView';
 import ItemView from './indexer/ItemView';
+import SearchView from './indexer/SearchView';
 import IndexerNavbar from '../components-indexer/nav/IndexerNavbar';
 import LoadingOverlay from '../components/popups/LoadingOverlay';
 import { PUBLIC_URL } from '../utils/constants';
@@ -34,6 +35,7 @@ function IndexerMain() {
         <Route path="tx/:tx" element={<TransactionView />} />
         <Route path="address/:address" element={<AddressView />} />
         <Route path="item/:item" element={<ItemView />} />
+        <Route path="search/:query" element={<SearchView />} />
         {/* <Route path="blocks" element={<BlocksView />} />
         <Route path="txs" element={<TransactionsView />} />
         <Route path="pendingTxs" element={<PendingTransactionsView />} />

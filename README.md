@@ -46,10 +46,20 @@ You can learn more in the [Create React App documentation](https://facebook.gith
 To learn React, check out the [React documentation](https://reactjs.org/).
 
 ## Build the glob in a fakezod
-- `cd ~/work/urbit && rm -rf zod && cp -r ./dist-zod ./zod`
-- `cp -r ~/work/uqbar/ziggurat-ui/build ~/work/urbit/zod/landscape/`
-- `cd ~/work/urbit/zod/landscape/build/static/js && rm *.js.map*`
-- `cd ~/work/urbit/zod/landscape/build/static/css && rm *.css.map*`
-- `~/work/urbit/urbit ~/work/urbit/zod`
-- `|commit %landscape`
-- `-garden!make-glob %landscape /build`
+
+```bash
+#!/bin/sh
+cd ~/ziggurat-ui
+yarn build
+cd ~/urbit/pkg
+rm -rf zod
+cp -RL bakzod zod # where bakzod is a copy of a ship with %zig desk mounted
+cd ~/ziggurat-ui
+rm build/static/js/*.js.map*
+rm build/static/css/*.css.map*
+cp -RL build/ ~/urbit/pkg/zod/zig
+cp ~/urbit/pkg/zod/zig/mar/png.hoon ~/urbit/pkg/zod/zig/mar/jpg.hoon
+# urbit> |commit %zig
+# urbit> -garden!make-glob %zig /build
+# glob will be in ~/urbit/pkg/zod/.urb/put/0vsomethingsomething.glob
+```
