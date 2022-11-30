@@ -12,6 +12,7 @@ import IndexerNavbar from '../components-indexer/nav/IndexerNavbar';
 import LoadingOverlay from '../components/popups/LoadingOverlay';
 import { PUBLIC_URL } from '../utils/constants';
 import { ToastContainer } from 'react-toastify';
+import TownView from './indexer/TownView';
 // import TransactionsView from './views/TransactionsView';
 // import PendingTransactionsView from './views/PendingTransactionsView';
 // import ItemsView from './views/ItemsView';
@@ -36,6 +37,7 @@ function IndexerMain() {
         <Route path="address/:address" element={<AddressView />} />
         <Route path="item/:item" element={<ItemView />} />
         <Route path="search/:query" element={<SearchView />} />
+        <Route path="town/:townId" element={<TownView />} />
         {/* <Route path="blocks" element={<BlocksView />} />
         <Route path="txs" element={<TransactionsView />} />
         <Route path="pendingTxs" element={<PendingTransactionsView />} />

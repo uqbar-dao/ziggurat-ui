@@ -19,6 +19,7 @@ import HexNum from '../../components/text/HexNum'
 import Loader from '../../components/popups/Loader'
 import { Transaction } from '../../types/indexer/Transaction'
 import { formatIndexerTimestamp } from '../../utils/date'
+import BatchCard from '../../components-indexer/indexer/BatchCard'
 
 import './BatchView.scss'
 
@@ -27,10 +28,7 @@ const BatchView = () => {
   const location = useLocation()
   const { batchId, townId } = useParams()
   const [batchData, setBatchData] = useState<Batch | undefined>()
-  const [expandState, setExpandState] = useState(true)
-  const [expandNonces, setExpandNonces] = useState(true)
-  const [expandTransactions, setExpandTransactions] = useState(true)
-
+ 
   useEffect(() => {
     const getData = async () => {
       setLoading('Loading batch data...')
@@ -67,77 +65,15 @@ const BatchView = () => {
     return <Text>No batch data</Text>
   }
 
-  const { batch: { town: { chain: { state, nonces } }, transactions } } = batchData
-
   return (
     <Container className='batch-view'>
       <PageHeader title='Batch'>
         <HexNum style={{ fontSize: 18 }} num={batchData.id} copy />
-        <Text>/</Text>
-        <HexNum style={{ fontSize: 18 }} num={batchData.location['town-id']} copy />
+        <HexNum num={batchData.location['town-id']} 
+                displayNum={'Town: ' + batchData.location['town-id']} 
+                copy copyText={batchData.location['town-id']} />
       </PageHeader>
-      <Entry>
-        <Card title='Overview'>
-          <Entry>
-            <Field name='Timestamp:'>
-              <Text>{formatIndexerTimestamp(batchData.timestamp)}</Text>
-            </Field>
-          </Entry>
-          <Entry>
-            <Field name={`State:`}>
-              <Text mr1>
-                {Object.keys(state).length} items
-                <a className='ml1 purple pointer' onClick={() => setExpandState(!expandState)}>{expandState? 'hide' : 'show'}</a>
-              </Text>
-            </Field>
-            {expandState && <Row>
-                <Col className='expanded-details'>
-                  {Object.keys(state).map(itemId => (
-                    <Col className="state" key={itemId}>
-                      <Link href={`/item/${addHexDots(itemId || '')}`} key={itemId}>
-                        <HexNum num={itemId} />
-                      </Link>
-                    </Col>
-                  ))}
-                </Col>
-            </Row>}
-          </Entry>
-          <Entry>
-            <Field name={`Nonces:`}>
-              <Text>{Object.keys(nonces).length}</Text>
-              {Object.keys(nonces).length ?
-                <a className='ml1 purple pointer' onClick={() => setExpandNonces(!expandNonces)}>{expandNonces? 'hide' : 'show'}</a>
-              : <></>}
-            </Field>
-            {expandNonces && <Row>
-              <Col className='expanded-details'>
-                {Object.keys(nonces).map((userAddress) => (
-                  <Link href={`/address/${addHexDots(userAddress || '')}`} className="nonce" key={userAddress}>
-                    <HexNum num={userAddress} />
-                  </Link>
-                ))}
-              </Col>
-            </Row>}
-          </Entry>
-          <Entry>
-            <Field name={`Transactions:`}>
-              <Text>{transactions.length}</Text>
-              {transactions.length > 0 ?
-                <a className='ml1 purple pointer' onClick={() => setExpandTransactions(!expandTransactions)}>{expandTransactions? 'hide' : 'show'}</a>
-              : <></>}
-            </Field>
-            {expandTransactions && <Row>
-              <Col className='expanded-details'>
-                {transactions.map((tx: Transaction, i) => (
-                  <Link href={`/tx/${addHexDots(tx.hash || '')}`} className="transaction" key={tx.hash}>
-                    <HexNum displayNum={addHexDots(tx.hash || '')} num={tx.hash} />
-                  </Link>
-                ))}
-              </Col>
-            </Row>}
-          </Entry>
-        </Card>
-      </Entry>
+      <BatchCard batchData={batchData} />
     </Container>
   )
 }
