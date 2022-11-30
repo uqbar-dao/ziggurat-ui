@@ -4,11 +4,12 @@
   &.colors {
     .color-dot {
       margin: 0 0.5em;
-      
-      height: 1em;
-      min-height: 1em;
-      width: 1em;
-      min-width: 1em;
+      align-self: center;
+
+      height: 0.9em;
+      min-height: 0.9em;
+      width: 0.9em;
+      min-width: 0.9em;
       
       border: 3px solid;
       border-radius: 999px;

@@ -19,16 +19,21 @@ const SearchView = () => {
   const [msg, setMsg] = useState('')
   const { scry } = useIndexerStore()
 
-  const val = addHexPrefix(removeDots(query))
+  const val = addHexPrefix(removeDots(query.trim()))
+  console.log('VAL: ', val)
   if (!query) {
     setMsg('Please enter a search query.')
   } else if (ITEM_REGEX.test(val)) {
     if (ETH_ADDRESS_REGEX.test(val) || ADDRESS_REGEX.test(val)) {
       navigate(`/address/${val}`)
-    } else if (CONTRACT_REGEX.test(val) || !BATCH_HASH_REGEX.test(val)) {
+    } else if (CONTRACT_REGEX.test(val)) {
+      // same branch as for items, but don't do items here yet since the regex is so broad
       navigate(`/item/${val}`)
+    } else if (BATCH_HASH_REGEX.test(val) || TXN_HASH_REGEX.test(val)) {
+      // it's a batch or tx... do nothing here; proceed to scry
     } else {
-      // it's a batch or tx... proceed to scry
+      // it's an item
+      navigate(`/item/${val}`)
     }
   } else {
     setMsg('Must be in address, txn hash, batch, or town format')
@@ -40,8 +45,9 @@ const SearchView = () => {
       const bresult = await scry<Batches>(`/batch/${addHexDots(val)}`)
       console.log({ bresult })
       if (bresult?.batch) {
-        navigate(`/batch/${bresult.batch.id}`)
+        navigate(`/batch/${Object.keys(bresult.batch)[0]}`)
         results = [...results, bresult.batch]
+        return
       }
       
       // if we find a tx, go there
@@ -50,6 +56,7 @@ const SearchView = () => {
       if (tresult && tresult.transaction && Object.values(tresult.transaction)[0]) {
         navigate(`/tx/${addHexDots(Object.keys(tresult.transaction)[0])}`)
         results = [...results, tresult.transaction]
+        return
       }
     }
 

@@ -2,21 +2,5 @@
 @use '../../styles/border.scss' as border;
 
 .batch-view {
-  h3 {
-    font-weight: 500;
-    color: colors.$charcoal;
-  }
-
-  .pointer { 
-    cursor: pointer;
-  }
-
-  .purple {
-    color: colors.$uq-purple;
-  }
-
-  .expanded-details {
-    display: block;
-    margin-left: 160px;
-  }
+ 
 }

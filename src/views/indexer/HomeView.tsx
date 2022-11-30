@@ -18,6 +18,7 @@ import Entry from '../../components/spacing/Entry'
 import Field from '../../components/spacing/Field'
 import Footer from '../../components-indexer/nav/Footer'
 import HexNum from '../../components/text/HexNum'
+import {toast} from 'react-toastify'
 
 import './HomeView.scss'
 import { formatIndexerTimestamp } from '../../utils/date'
@@ -33,25 +34,15 @@ const HomeView = () => {
 
   // TODO spin this & the navbar searchbar into their own single component
   const search = () => {
-    const cleanValue = addHexPrefix(removeDots(searchValue))
+    const cleanValue = addHexPrefix(removeDots(searchValue.trim()))
     if (!searchValue) {
-      setInputError('Please enter a search')
-    // check for block
-    } else if (BATCH_HASH_REGEX.test(cleanValue)) {
-      console.log('batch')
-      navigate(`/batch/${cleanValue}`)
-    } else if (ADDRESS_REGEX.test(cleanValue) || ETH_ADDRESS_REGEX.test(cleanValue)) {
-      console.log('ADDRESS')
-      navigate(`/address/${cleanValue}`)
-    // check for txn hash
-    } else if (TXN_HASH_REGEX.test(cleanValue)) {
-      console.log('TRANSACTION')
-      navigate(`/tx/${cleanValue}`)
-    } else if (ITEM_REGEX.test(cleanValue)) {
-      console.log('ITEM')
-      navigate(`/item/${cleanValue}`)
+      toast.error('Please enter a search')
+    } else if (BATCH_HASH_REGEX.test(cleanValue)
+        || ADDRESS_REGEX.test(cleanValue) || ETH_ADDRESS_REGEX.test(cleanValue)
+        || TXN_HASH_REGEX.test(cleanValue) || ITEM_REGEX.test(cleanValue)) {
+      navigate(`/search/${cleanValue}`)
     } else {
-      setInputError('Must be in address, txn hash, batch, or town format')
+      toast.error('Must be in address, txn hash, batch, or town format')
     }
   }
 
