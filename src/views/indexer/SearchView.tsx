@@ -1,62 +1,71 @@
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import PageHeader from "../../components/page/PageHeader"
 import Container from "../../components/spacing/Container"
 import Entry from "../../components/spacing/Entry"
 import { addHexDots, addHexPrefix, removeDots } from "../../utils/format"
-import { ADDRESS_REGEX, BATCH_HASH_REGEX, CONTRACT_REGEX, ETH_ADDRESS_REGEX, ITEM_REGEX, TXN_HASH_REGEX } from "../../utils/regex"
+import { ITEM_REGEX, } from "../../utils/regex"
 import Text from '../../components/text/Text'
-import { Batches } from "../../types/indexer/Batch"
-import { Transaction } from "../../types/indexer/Transaction"
 import useIndexerStore from "../../stores/indexerStore"
-import Loader from "../../components/popups/Loader"
+import { HashData } from "../../types/indexer/HashData"
+import { Batch } from "../../types/indexer/Batch"
+import { Item } from "../../types/indexer/Item"
+import { Transaction } from "../../types/indexer/Transaction"
+import { Location } from "../../types/indexer/Location"
+import Link from "../../components-indexer/nav/Link"
+import Card from "../../components-indexer/card/Card"
+import HexNum from "../../components/text/HexNum"
+import CardHeader from "../../components-indexer/card/CardHeader"
+import { FaSearch } from "react-icons/fa"
+
+interface Results {
+  batches: Batch[]
+  transactions: any[]
+  items: any[]
+}
 
 const SearchView = () => {
   const location = useLocation()
-  const navigate = useNavigate()
+  const nav = useNavigate()
   const query = location.pathname.split('/')[2]
-  let results: any[] = []
+  const [results, setResults] = useState<Results>()
   const [msg, setMsg] = useState('')
   const { scry } = useIndexerStore()
 
-  const val = addHexPrefix(removeDots(query.trim()))
-  console.log('VAL: ', val)
-  if (!query) {
-    setMsg('Please enter a search query.')
-  } else if (ITEM_REGEX.test(val)) {
-    if (ETH_ADDRESS_REGEX.test(val) || ADDRESS_REGEX.test(val)) {
-      navigate(`/address/${val}`)
-    } else if (CONTRACT_REGEX.test(val)) {
-      // same branch as for items, but don't do items here yet since the regex is so broad
-      navigate(`/item/${val}`)
-    } else if (BATCH_HASH_REGEX.test(val) || TXN_HASH_REGEX.test(val)) {
-      // it's a batch or tx... do nothing here; proceed to scry
-    } else {
-      // it's an item
-      navigate(`/item/${val}`)
-    }
-  } else {
-    setMsg('Must be in address, txn hash, batch, or town format')
-  }
+  const val = addHexDots(removeDots(query.trim()))
 
   useEffect(() => {
+    console.log('QUERY: ', val)
+    if (!query) {
+      setMsg('Please enter a search query.')
+    } else if (ITEM_REGEX.test(val)) {
+      // do nothing here
+    } else {
+      setMsg('Query must be a hex number.')
+    }
+    
     const getData = async () => {
-      // if we find a batch, go there
-      const bresult = await scry<Batches>(`/batch/${addHexDots(val)}`)
-      console.log({ bresult })
-      if (bresult?.batch) {
-        navigate(`/batch/${Object.keys(bresult.batch)[0]}`)
-        results = [...results, bresult.batch]
-        return
-      }
+      const result: HashData | undefined = await scry(`/hash/${query}`)
       
-      // if we find a tx, go there
-      const tresult = await scry<{ transaction: { [key: string]: Transaction } }>(`/json/transaction/${addHexDots(val)}`)
-      console.log({ tresult })
-      if (tresult && tresult.transaction && Object.values(tresult.transaction)[0]) {
-        navigate(`/tx/${addHexDots(Object.keys(tresult.transaction)[0])}`)
-        results = [...results, tresult.transaction]
-        return
+      console.log ({ result })
+
+      if (!result) return
+
+      const { hash: { batches, items, transactions } } = result
+      const bs = Object.entries(batches).map(([hash, b]) => ({ ...b, id: hash }))
+      const is = Object.entries(items).map(([hash, i]) => ({ ...i, id: hash }))
+      const ts = Object.entries(transactions).map(([hash, t]) => ({ ...t, id: hash }))
+
+      if ([...bs, ...is, ...ts].length == 0) return
+
+      if (bs.length == 1 && !is.length && !ts.length) {
+        nav(`/batch/${bs[0].id}`)
+      } else if (is.length == 1 && !bs.length && !ts.length) {
+        nav(`/item/${is[0].id}`)
+      } else if (ts.length == 1 && !bs.length && !is.length) {
+        nav(`/tx/${ts[0].id}`)
+      } else {
+        setResults({ batches: bs, transactions: ts, items: is })
       }
     }
 
@@ -64,15 +73,29 @@ const SearchView = () => {
   }, [val])
 
   return (<Container>
-    <PageHeader title={`Search: ${query}`} />
-    {msg && <Entry>
-      {msg}
-    </Entry>}
-    {(results.length > 0) && <Entry>
-      {results.map(r => <Text>{r}</Text>)}
-    </Entry> || <Entry>
-      <Text large> No results. </Text>
-    </Entry>}
+    <PageHeader title='Search Results' />
+    <Entry>
+      <Card>
+      {results ? <>
+          <CardHeader> <FaSearch/> <HexNum num={query} /> </CardHeader>
+          {(results.batches.length > 0) && <Entry title="Batches">
+            {results.batches.map(r => <Link href={`/batch/${r.id}`}>
+              <HexNum num={r.id} />
+            </Link>)}
+          </Entry>}
+          {(results.items.length > 0) && <Entry title="Items">
+            {results.items.map(r => <Link href={`/item/${r.id}`}>
+              <HexNum num={r.id} />
+            </Link>)}
+          </Entry>}
+          {(results.transactions.length > 0) && <Entry title="Transactions">
+            {results.transactions.map(r => <Link href={`/tx/${r.id}`}>
+              <HexNum num={r.id} />
+            </Link>)}
+          </Entry>}
+        </> : <Text large> {msg || 'No results.'} </Text>}
+      </Card>
+    </Entry>
   </Container>)
 }
 

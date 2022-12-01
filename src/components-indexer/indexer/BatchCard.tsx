@@ -23,13 +23,14 @@ const BatchCard = ({ batchData, showHash } : BatchCardProps) => {
   const [expandState, setExpandState] = useState(true)
   const [expandNonces, setExpandNonces] = useState(true)
   const [expandTransactions, setExpandTransactions] = useState(true)
+  
   if (!batchData) return <></>
-  console.log({batchData})
+  
   const { batch: { town: { chain: { state, nonces } }, transactions } } = batchData
   
   return (<Entry className="batch-card">
     <Card title={showHash ? undefined : 'Overview'}>
-      {showHash && <CardHeader> <Text>Batch:</Text> <HexNum num={batchData.id} /> </CardHeader>}
+      {showHash && <CardHeader> <Text bold>Batch:</Text> <HexNum num={batchData.id} /> </CardHeader>}
       <Entry>
         <Field name='Timestamp:'>
           <Text>{formatIndexerTimestamp(batchData.timestamp)}</Text>

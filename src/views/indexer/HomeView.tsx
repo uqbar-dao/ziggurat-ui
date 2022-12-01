@@ -9,7 +9,7 @@ import Container from '../../components/spacing/Container'
 import Card from '../../components-indexer/card/Card'
 import useIndexerStore from '../../stores/indexerStore'
 import Text from '../../components/text/Text'
-import { ADDRESS_REGEX, BATCH_HASH_REGEX, TXN_HASH_REGEX, ITEM_REGEX, ETH_ADDRESS_REGEX } from '../../utils/regex'
+import { ITEM_REGEX,  } from '../../utils/regex'
 import { abbreviateHex, addHexDots, addHexPrefix, removeDots } from '../../utils/format'
 import { getRawStatus } from '../../utils/constants'
 import Link from '../../components-indexer/nav/Link'
@@ -34,12 +34,10 @@ const HomeView = () => {
 
   // TODO spin this & the navbar searchbar into their own single component
   const search = () => {
-    const cleanValue = addHexPrefix(removeDots(searchValue.trim()))
+    const cleanValue = addHexDots(removeDots(searchValue.trim()))
     if (!searchValue) {
       toast.error('Please enter a search')
-    } else if (BATCH_HASH_REGEX.test(cleanValue)
-        || ADDRESS_REGEX.test(cleanValue) || ETH_ADDRESS_REGEX.test(cleanValue)
-        || TXN_HASH_REGEX.test(cleanValue) || ITEM_REGEX.test(cleanValue)) {
+    } else if (ITEM_REGEX.test(addHexPrefix(removeDots(cleanValue)))) {
       navigate(`/search/${cleanValue}`)
     } else {
       toast.error('Must be in address, txn hash, batch, or town format')
