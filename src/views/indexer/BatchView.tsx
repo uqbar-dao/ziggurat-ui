@@ -69,7 +69,7 @@ const BatchView = () => {
     <Container className='batch-view'>
       <PageHeader title='Batch'>
         <HexNum style={{ fontSize: 18 }} num={batchData.id} copy />
-        <HexNum num={batchData.location['town-id']} 
+        <HexNum style={{ fontSize: 18 }} num={batchData.location['town-id']} 
                 displayNum={'Town: ' + batchData.location['town-id']} 
                 copy copyText={batchData.location['town-id']} />
       </PageHeader>

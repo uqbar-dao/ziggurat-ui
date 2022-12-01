@@ -1,3 +1,4 @@
+import { Batch } from "./Batch"
 import { Item } from "./Item"
 import { Location } from "./Location"
 import { Slot } from "./Slot"
@@ -16,7 +17,7 @@ export interface HashData {
       }[]
     }
     batches: {
-      [key: string]: Slot
+      [key: string]: Batch
     }
   }
 }
