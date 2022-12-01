@@ -34,7 +34,7 @@ const HomeView = () => {
 
   // TODO spin this & the navbar searchbar into their own single component
   const search = () => {
-    const cleanValue = addHexDots(removeDots(searchValue.trim()))
+    const cleanValue = addHexDots((searchValue.trim()))
     if (!searchValue) {
       toast.error('Please enter a search')
     } else if (ITEM_REGEX.test(addHexPrefix(removeDots(cleanValue)))) {

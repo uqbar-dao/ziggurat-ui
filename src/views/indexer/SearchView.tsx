@@ -32,20 +32,20 @@ const SearchView = () => {
   const [msg, setMsg] = useState('')
   const { scry } = useIndexerStore()
 
-  const val = addHexDots(removeDots(query.trim()))
+  const cleanQuery = addHexPrefix(addHexDots((query.trim())))
 
   useEffect(() => {
-    console.log('QUERY: ', val)
+    console.log('QUERY: ', cleanQuery)
     if (!query) {
       setMsg('Please enter a search query.')
-    } else if (ITEM_REGEX.test(val)) {
+    } else if (ITEM_REGEX.test(removeDots(cleanQuery))) {
       // do nothing here
     } else {
       setMsg('Query must be a hex number.')
     }
     
     const getData = async () => {
-      const result: HashData | undefined = await scry(`/hash/${query}`)
+      const result: HashData | undefined = await scry(`/hash/${cleanQuery}`)
       
       console.log ({ result })
 
@@ -70,14 +70,14 @@ const SearchView = () => {
     }
 
     getData()
-  }, [val])
+  }, [cleanQuery])
 
   return (<Container>
     <PageHeader title='Search Results' />
     <Entry>
       <Card>
       {results ? <>
-          <CardHeader> <FaSearch/> <HexNum num={query} /> </CardHeader>
+          <CardHeader> <FaSearch/> <HexNum num={cleanQuery} /> </CardHeader>
           {(results.batches.length > 0) && <Entry title="Batches">
             {results.batches.map(r => <Link href={`/batch/${r.id}`}>
               <HexNum num={r.id} />
