@@ -51,12 +51,12 @@ export const OpenFileHeader = () => {
                 className={`tab ${pathname.includes(href) ? 'selected' : ''}`} 
                 href={href} 
                 onAuxClick={(event) => {
-                  if (event.button === 0)
-                    setCurrentProject(project)
-                  else if (event.button === 1)
+                  if (event.button === 1)
                     onRemoveFile(event)
                 }}
-                                                   >
+                onClick={(event) => {
+                  setCurrentProject(project)
+                }}>
             <Row between style={{ width: '100%' }}> 
               <Text className='tabName'>
                 {tar}
