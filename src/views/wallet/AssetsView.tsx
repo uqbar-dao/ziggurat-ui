@@ -21,7 +21,7 @@ const AssetsView = () => {
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>()
   const [sendFormType, setSendFormType] = useState<SendFormType | undefined>()
   const [id, setId] = useState<string | undefined>()
-  const [nftId, setNftIndex] = useState<number | undefined>()
+  const [nftIndex, setNftIndex] = useState<number | undefined>()
   const [customFrom, setCustomFrom] = useState<string | undefined>()
 
   const accountsList = useMemo(() => {
@@ -115,7 +115,7 @@ const AssetsView = () => {
         title={modalTitle}
         show={Boolean(sendFormType)}
         id={id}
-        nftId={nftId}
+        nftIndex={nftIndex}
         from={customFrom}
         formType={sendFormType}
         children={null}
