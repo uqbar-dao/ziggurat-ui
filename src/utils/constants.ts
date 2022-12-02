@@ -26,10 +26,14 @@ export const BASENAME = '/apps/ziggurat'
 export const WEBTERM_PATH = '/apps/webterm'
 
 export const STATUS_CODES : { [key: number] : string } = {
-  100: 'transaction pending in wallet',
-  101: 'transaction submitted to sequencer',
-  102: 'transaction received by sequencer',
-  103: 'failure: transaction rejected by sequencer',
+  // 100: 'transaction pending in wallet',
+  // 101: 'transaction submitted to sequencer',
+  // 102: 'transaction received by sequencer',
+  // 103: 'failure: transaction rejected by sequencer',
+  100: 'pending in wallet',
+  101: 'submitted to sequencer',
+  102: 'received by sequencer',
+  103: 'failure: rejected by sequencer',
   200: 'successfully performed',
   201: 'submitted with raw id / no account info',
   202: 'bad signature',
@@ -66,3 +70,5 @@ export const mockData = process.env.NODE_ENV === 'development' && Boolean(proces
 
 export const ONE_SECOND = 1000
 export const THIRTY_SECONDS = 30 * ONE_SECOND
+
+export const ZIGS_CONTRACT_DEV = '0x74.6361.7274.6e6f.632d.7367.697a'
