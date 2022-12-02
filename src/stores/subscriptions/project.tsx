@@ -19,24 +19,27 @@ export const handleGallUpdate = (get: GetState<ZigguratStore>, set: SetState<Zig
   set({ projects: newProjects })
 
   const { toastMessages } = get()
-  if (update.error && !toastMessages.find(t => t.project === project && t.message === update.error)) {
-    set({ toastMessages: toastMessages.concat([{
+  if (update.errors.length) {
+    const errors = update.errors.map(e => ({
       project,
-      message: update.error,
+      message: e.error,
       id: toast.error(
         <>
-          <div>Error with project '{project}'</div>
-          {update.error.split('\n').map(line => (
-            <p key={line} style={{ margin: 0 }}>{line}</p>
+          <div style={{fontWeight:'bold', marginBottom: 4}}>Error in {project}: {e.path}</div>
+          {e.error.split('\n').map(line => (
+            <pre key={line} style={{ margin: 0, fontFamily: 'monospace', fontSize: 'small' }}>{line}</pre>
           ))}
         </>,
         {
-          
-          onClose: () => set({ toastMessages: get().toastMessages.filter(t => !(t.project === project && t.message === update.error)) })
+          onClose: () => set({ toastMessages })
         }
       )
-    }]) })
-  } else if (!update.error) {
+    }))
+
+    if (errors.find(e => toastMessages.every(t => t.message != e.message))) {
+      set({ toastMessages: (errors) })
+    }
+  } else {
     const successToast = {
       project,
       message: `Built '${project}' successfully.`,
