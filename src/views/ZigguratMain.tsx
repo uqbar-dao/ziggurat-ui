@@ -84,7 +84,8 @@ function ZigguratMain() {
         rtl={false}
         draggable
         theme='colored'
-        style={{ fontSize: 14 }}
+        icon={false}
+        style={{ fontSize: 12, width: 'max-content' }}
       />
     </Container>
   );

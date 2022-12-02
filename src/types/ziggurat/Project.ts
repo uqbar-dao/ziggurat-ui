@@ -13,7 +13,7 @@ export interface EditorTextState {
 
 export interface ProjectUpdate {
   compiled: boolean
-  error: string
+  errors: { error: string, path: string }[]
   state: ChainState
   tests: Tests
   dir: string[]

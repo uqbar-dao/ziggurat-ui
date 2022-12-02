@@ -38,7 +38,7 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
 
   useEffect(() => {
     if (project && file && projectTitle) {
-      if (!project.modifiedFiles.has(file)) {
+      if (project.modifiedFiles && typeof project.modifiedFiles.has === 'function' && !project.modifiedFiles.has(file)) {
         // don't reload the saved version of the file if we've modified it!
         getGallFile(projectTitle, decodeURIComponent(file))
       }
