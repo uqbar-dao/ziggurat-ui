@@ -221,6 +221,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       if (projects[project]) {
         const newProjects = { ...projects }
         const folder = getFolderForFile(newProjects[project].folder, file)
+        // console.log({ projects, project, newProjects, folder, file, text })
         if (folder) {
           folder.contents[file] = text
           newProjects[project].modifiedFiles.add(file)

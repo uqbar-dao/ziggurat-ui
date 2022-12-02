@@ -38,6 +38,7 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
 
   useEffect(() => {
     if (project && file && projectTitle) {
+      // console.log({ project, file, projectTitle })
       getGallFile(projectTitle, decodeURIComponent(file))
     }
   }, [project, projectTitle, file, getGallFile])
@@ -53,6 +54,7 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
 
   const setText = useCallback((inputText: string) => {
     if (file && (project?.title || project?.title)) {
+      // console.log('setProjectText')
       setProjectText(project?.title || project?.title, file, inputText)
     }
   }, [project, file, setProjectText])

@@ -1,6 +1,7 @@
 import React from 'react'
 import Iframe from 'react-iframe';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { OpenFileHeader } from '../../components-zig/nav/OpenFileHeader';
 import Col from '../../components/spacing/Col';
 import Container from '../../components/spacing/Container'
 import useZigguratStore from '../../stores/zigguratStore';
@@ -17,7 +18,8 @@ const AppView = ({ hide = false }: { hide?: boolean }) => {
     return null
   }
 
-  return (
+  return (<>
+    <OpenFileHeader />
     <Container className='docs-view' style={{ visibility: hide ? 'hidden' : 'visible', position: hide ? 'absolute' : 'relative', margin: '-1em 2em 1em -2em', height: '100%' }}>
       {openTools.map(app => (
         <Col key={app} style={{ position: 'absolute', visibility: app === currentTool ? 'visible' : 'hidden', width: '100%', height: '100%' }}>
@@ -25,7 +27,7 @@ const AppView = ({ hide = false }: { hide?: boolean }) => {
         </Col>
       ))}
     </Container>
-  )
+  </>)
 }
 
 export default AppView
