@@ -26,7 +26,7 @@ interface SubDirectoryProps {
 }
 
 const SubDirectory = ({ projectTitle, folder, indent }: SubDirectoryProps) => {
-  const { currentFolder, currentProject, toggleProjectFolder, setCurrentFolder } = useZigguratStore()
+  const { currentFolder, currentProject, toggleProjectFolder, setCurrentFolder, addUserfile } = useZigguratStore()
 
   const { name, expanded, contents } = folder
   const selected = currentFolder === name && currentProject === projectTitle
@@ -73,20 +73,9 @@ export const ProjectDirectory = ({ project }: ProjectDirectoryProps) => {
   return (
     <Col style={{ padding: '0px 4px', fontSize: 14 }} onClick={() => setCurrentProject(title)}>
       {project.user_files && <>
-        <Row between style={{ position: 'relative', padding: 2, marginBottom: 2, cursor: 'pointer',  }} onClick={() => setUserfilesExpanded(title, !userfilesExpanded)}>
-          <Row>
-            <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={userfilesExpanded ? <FaChevronDown size={12} /> : <FaChevronRight size={12} />} />
-            <Text style={{ marginLeft: 4, marginBottom: 2, fontSize: 16 }}>Starred</Text>
-          </Row>
-        </Row>
-        {userfilesExpanded && (
-          <Col className='ml1'>
-            {project.user_files['user-files'].map((uf, i) => <Row>
-              <FaStar onClick={() => deleteUserfile(title, uf)} />
-              <FileLink key={i} project={title} file={uf} />
-            </Row>)}
-          </Col>
-        )}
+        <Col className='ml1'>
+          {project?.user_files['user-files']?.map((uf, i) => <FileLink project={title} file={uf} key={i} starred />)}
+        </Col>
       </>}
       <Row between style={{ position: 'relative', padding: 2, marginBottom: 2, cursor: 'pointer',  }} onClick={() => setProjectExpanded(title, !expanded)}>
         <Row>
@@ -99,10 +88,7 @@ export const ProjectDirectory = ({ project }: ProjectDirectoryProps) => {
           {sortFolderContents(folder.contents)
           .map((item) => {
             if (typeof folder.contents[item] === 'string') {
-              return <Row>
-                <FaRegStar onClick={() => addUserfile(title, item)} />
-                <FileLink key={item} project={title} file={item} />
-              </Row>
+              return <FileLink key={item} project={title} file={item} />
             }
             return <SubDirectory key={item} projectTitle={title} folder={folder.contents[item] as Folder} indent={1} />
           })}

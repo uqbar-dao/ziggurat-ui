@@ -224,8 +224,6 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       if (!projects[project]) return
 
       const newProjects = { ...projects }
-      const ufs = newProjects[project].user_files['user-files']
-      newProjects[project].user_files['user-files'] = [...ufs, file]
       set({ projects: newProjects })
     },
     deleteUserfile: async (project: string, file: string) => {
