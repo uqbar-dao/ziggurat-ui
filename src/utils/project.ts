@@ -14,7 +14,7 @@ export const generateState = (p: Project | ProjectUpdate) =>
   }, {} as ChainState)
 
 export const generateTests = (p: Project | ProjectUpdate, oldP?: Project) =>
-  Object.keys(p.tests).reduce((acc, id) => {
+  Object.keys(p.tests || {}).reduce((acc, id) => {
     acc[id] = {
       ...p.tests[id],
       id,

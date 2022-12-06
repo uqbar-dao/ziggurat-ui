@@ -55,12 +55,12 @@ export const FileLink = ({ project, file, starred }: FileLinkProps) => {
       {showButtons && !isTests && file !== project && (<Row style={{ 
         position: 'absolute', top: 0, right: 4, background: 'white', borderRadius: 4, paddingRight: 5
       }}>
-        <Tooltip tip="delete">
-          <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={() => deleteFile(project, file)} />
-        </Tooltip>
         {!starred && <Tooltip tip="star">
           <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaRegStar size={14} />} onClick={() => addUserfile(project, file)} />
         </Tooltip>}
+        <Tooltip tip="delete">
+          <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={() => deleteFile(project, file)} />
+        </Tooltip>
       </Row>)}
     </Row>
   )
