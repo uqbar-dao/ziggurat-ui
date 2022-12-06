@@ -1,5 +1,5 @@
 import React from 'react'
-import { FaChevronDown, FaChevronRight } from 'react-icons/fa';
+import { FaChevronDown, FaChevronRight, FaRegStar, FaStar } from 'react-icons/fa';
 
 import useZigguratStore from '../../stores/zigguratStore'
 import Button from '../../components/form/Button';
@@ -26,7 +26,7 @@ interface SubDirectoryProps {
 }
 
 const SubDirectory = ({ projectTitle, folder, indent }: SubDirectoryProps) => {
-  const { currentFolder, currentProject, toggleProjectFolder, setCurrentFolder } = useZigguratStore()
+  const { currentFolder, currentProject, toggleProjectFolder, setCurrentFolder, addUserfile } = useZigguratStore()
 
   const { name, expanded, contents } = folder
   const selected = currentFolder === name && currentProject === projectTitle
@@ -66,12 +66,17 @@ interface ProjectDirectoryProps {
 }
 
 export const ProjectDirectory = ({ project }: ProjectDirectoryProps) => {
-  const { setProjectExpanded, setCurrentProject } = useZigguratStore()
+  const { setProjectExpanded, setCurrentProject, setUserfilesExpanded, deleteUserfile, addUserfile } = useZigguratStore()
 
-  const { title, folder, expanded } = project
+  const { title, folder, expanded, userfilesExpanded } = project
 
   return (
     <Col style={{ padding: '0px 4px', fontSize: 14 }} onClick={() => setCurrentProject(title)}>
+      {project.user_files && <>
+        <Col className='ml1'>
+          {project?.user_files['user-files']?.map((uf, i) => <FileLink project={title} file={uf} key={i} starred />)}
+        </Col>
+      </>}
       <Row between style={{ position: 'relative', padding: 2, marginBottom: 2, cursor: 'pointer',  }} onClick={() => setProjectExpanded(title, !expanded)}>
         <Row>
           <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={expanded ? <FaChevronDown size={12} /> : <FaChevronRight size={12} />} />

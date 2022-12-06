@@ -24,6 +24,7 @@ export interface Project extends ProjectUpdate {
   folder: Folder
   modifiedFiles: Set<string>
   expanded?: boolean
+  userfilesExpanded?: boolean
   molds: ContractMold
   user_files: {
     'user-files': string[]

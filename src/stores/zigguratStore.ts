@@ -46,7 +46,10 @@ export interface ZigguratStore {
   setCurrentFolder: (currentFolder: string) => void
   deleteProject: (project: string) => Promise<string | null>
   setProjectExpanded: (project: string, expanded: boolean) => void
+  setUserfilesExpanded: (project: string, expanded: boolean) => void
   toggleProjectFolder: (project: string, folder: string) => void
+  addUserfile: (project: string, file: string) => void
+  deleteUserfile: (project: string, file: string) => void
   setProjectText: (project: string, file: string, text: string) => void
   saveFiles: (projectTitle: string) => Promise<void>
   fileExists: (project: string, path: string) => Promise<boolean>
@@ -200,21 +203,52 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       return null
     },
     setProjectExpanded: (project: string, expanded: boolean) => {
-      const newProjects = { ...get().projects }
+      const projects = { ...get().projects }
 
-      if (newProjects[project]) {
-        newProjects[project].expanded = expanded
-        set({ projects: newProjects })
-      }
+      if (!projects[project]) return
+      
+      projects[project].expanded = expanded
+      set({ projects: projects })
+    },
+    setUserfilesExpanded: (project: string, expanded: boolean) => {
+      const projects = { ...get().projects }
+
+      if (!projects[project]) return
+
+      projects[project].userfilesExpanded = expanded
+      set({ projects: projects })
+    },
+    addUserfile: async (project: string, file: string) => {
+      await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { "add-user-file": { file } } } })
+      const { projects } = get()
+      if (!projects[project]) return
+
+      const newProjects = { ...projects }
+      set({ projects: newProjects })
+    },
+    deleteUserfile: async (project: string, file: string) => {
+      await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json: { project, action: { "delete-user-file": { file } } } })
+      const { projects } = get()
+      if (!projects[project]) return
+
+      const newProjects = { ...projects }
+      const ufs = newProjects[project].user_files['user-files']
+      const idx = ufs.indexOf(file)
+      if (idx < 0) return 
+      newProjects[project].user_files['user-files'] = [
+        ...ufs.slice(0, idx), 
+        ...ufs.slice(idx + 1)
+      ]
+      set({ projects: newProjects })
     },
     toggleProjectFolder: (project: string, folder: string) => {
-      const newProjects = { ...get().projects }
-      const targetApp = newProjects[project]
+      const projects = { ...get().projects }
+      const targetApp = projects[project]
       const targetFolder = getFolder(targetApp.folder, folder.split('/'))
       if (targetFolder)
         targetFolder.expanded = !targetFolder.expanded
 
-      set({ projects: newProjects })
+      set({ projects: projects })
     },
     setProjectText: (project: string, file: string, text: string) => {
       const { projects } = get()

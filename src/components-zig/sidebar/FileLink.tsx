@@ -1,5 +1,5 @@
 import  { useCallback, useMemo, useState } from 'react'
-import { FaCodeBranch, FaFile, FaFileImage, FaKickstarterK, FaMoneyBill, FaPencilRuler,  FaShip, FaTrash } from 'react-icons/fa';
+import { FaCodeBranch, FaFile, FaFileImage, FaKickstarterK, FaMoneyBill, FaPencilRuler,  FaRegStar,  FaShip, FaStar, FaTrash } from 'react-icons/fa';
 import { useLocation } from 'react-router-dom';
 import useZigguratStore from '../../stores/zigguratStore'
 import Button from '../../components/form/Button';
@@ -14,11 +14,12 @@ export const BUTTON_STYLE = { marginLeft: 6, padding: 2 }
 interface FileLinkProps {
   project: string
   file: string
+  starred?: boolean
 }
 
-export const FileLink = ({ project, file }: FileLinkProps) => {
+export const FileLink = ({ project, file, starred }: FileLinkProps) => {
   const { pathname } = useLocation()
-  const { currentProject, openFiles, setCurrentProject, setOpenFiles, deleteFile, projects } = useZigguratStore()
+  const { currentProject, openFiles, setCurrentProject, setOpenFiles, deleteFile, projects, addUserfile, deleteUserfile } = useZigguratStore()
   const [showButtons, setShowButtons] = useState(false)
   const isTests = useMemo(() => file === 'contract-tests', [file])
   const fileName = useMemo(() => isTests ? 'contract tests' : getFilename(file), [file, isTests])
@@ -39,6 +40,7 @@ export const FileLink = ({ project, file }: FileLinkProps) => {
 
   return (
     <Row style={{ paddingLeft: 8, position: 'relative' }} onMouseEnter={() => setShowButtons(true)} onMouseLeave={() => setShowButtons(false)}>
+      {starred && <Button variant='unstyled' style={{ margin: '0px 4px', padding: 0 }} iconOnly icon={<FaStar />} onClick={() => deleteUserfile(project, file)} />} 
       {fileName.endsWith('.hoon') ? <FaCodeBranch style={{ transform: 'scale(1, -1)'}} />
        : file.endsWith('contract-tests') ? <FaPencilRuler size={14} />
        : fileName.endsWith('.bill') ? <FaMoneyBill />
@@ -47,13 +49,19 @@ export const FileLink = ({ project, file }: FileLinkProps) => {
        : fileName.match(/\.((pn|jp(e)?)g|gif|tif(f)?|webp|bmp|ico)$/) ? <FaFileImage />
        : <FaFile />}
       <Link onClick={selectFile} underline={pathname === href} href={href} style={{ padding: 2, paddingLeft: 4 }}>
-        {tar} {fileName}
+        {tar} 
+        {fileName}
       </Link>
-      {showButtons && !isTests && file !== project && (
-        <Tooltip style={{ position: 'absolute', top: 0, right: 0 }} tip="delete">
+      {showButtons && !isTests && file !== project && (<Row style={{ 
+        position: 'absolute', top: 0, right: 4, background: 'white', borderRadius: 4, paddingRight: 5
+      }}>
+        <Tooltip tip="delete">
           <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={() => deleteFile(project, file)} />
         </Tooltip>
-      )}
+        {!starred && <Tooltip tip="star">
+          <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaRegStar size={14} />} onClick={() => addUserfile(project, file)} />
+        </Tooltip>}
+      </Row>)}
     </Row>
   )
 }
