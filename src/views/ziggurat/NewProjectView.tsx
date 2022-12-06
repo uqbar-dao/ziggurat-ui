@@ -70,7 +70,7 @@ export interface DownloadedFile {
 }
 
 const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
-  const { loading, setLoading, userAddress, saveFileList, projects, createProject, populateTemplate } = useZigguratStore()
+  const { loading, setLoading, userAddress, saveFileList, projects, createProject } = useZigguratStore()
   const nav = useNavigate()
 
   const [step, setStep] = useState<CreationStep>('title')
@@ -247,9 +247,9 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     }
 
     await createProject(options as { [key: string]: string })
-    if (metadata && options.token !== 'blank') {
-      await populateTemplate(options.title!, options.token!, metadata)
-    }
+    // if (metadata && options.token !== 'blank') {
+    //   await populateTemplate(options.title!, options.token!, metadata)
+    // }
     setMetadata(generateInitialMetadata([userAddress], userAddress, 'fungible'))
     setStep('title')
 
@@ -261,7 +261,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     }
 
     setLoading('')
-  }, [userAddress, disableInfoModal, createProject, setLoading, setShowInfoModal, populateTemplate, hideInfoModal])
+  }, [userAddress, disableInfoModal, createProject, setLoading, setShowInfoModal, hideInfoModal])
 
   const onSelect = useCallback((option: string) => async () => {
     switch (step) {
