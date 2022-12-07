@@ -163,7 +163,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
           const json = { project, action: { "new-project": { 'user-address': get().userAddress } } }
           await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
         } else if (options?.project === 'gall') {
-          const json = { project, action: { "new-project": { 'user-address': '0x0' } } }
+          const json = { project, action: { "new-project": null } }
           await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
         }
 
