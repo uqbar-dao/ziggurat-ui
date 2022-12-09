@@ -159,13 +159,8 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       const project = options.title
 
       try {
-        if (options?.project === 'contract') {
-          const json = { project, action: { "new-project": { 'user-address': get().userAddress } } }
-          await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
-        } else if (options?.project === 'gall') {
-          const json = { project, action: { "new-project": null } }
-          await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
-        }
+        const json = { project, action: { "new-project": null } }
+        await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
 
         setTimeout(async () => {
           await get().getProjects()
@@ -232,10 +227,10 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       if (!projects[project]) return
 
       const newProjects = { ...projects }
-      const ufs = newProjects[project].user_files['user-files']
+      const ufs = newProjects[project].user_files
       const idx = ufs.indexOf(file)
       if (idx < 0) return 
-      newProjects[project].user_files['user-files'] = [
+      newProjects[project].user_files = [
         ...ufs.slice(0, idx), 
         ...ufs.slice(idx + 1)
       ]

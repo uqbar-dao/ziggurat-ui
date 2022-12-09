@@ -8,7 +8,7 @@ import { Folder, FolderContents } from "../types/ziggurat/Folder"
 import { ACTION_CENCOL_REGEX, ACTION_NOUN_LIST_REGEX, MOLD_REGEX } from "./regex"
 
 export const generateState = (p: Project | ProjectUpdate) =>
-  Object.keys(p.state).reduce((acc, id) => {
+  Object.keys(p.state || {}).reduce((acc, id) => {
     acc[id] = { ...p.state[id], id }
     return acc
   }, {} as ChainState)
@@ -65,19 +65,19 @@ export const generateExpected = (expected: { [itemId: string]: TestItem }) =>
 //   }, { actions: [], rice: [] } as ContractMold)
 
 export const generateProjects = (rawProjects: { [key: string]: Project }, existingProjects: Projects) =>
-  Object.keys(rawProjects).reduce((acc, key) => {
-    acc[key] = {
-      ...(rawProjects[key] as Project),
-      title: key,
-      expanded: Boolean((existingProjects[key] as Project)?.expanded),
-      state: generateState(rawProjects[key] as Project),
-      tests: generateTests(rawProjects[key] as Project, existingProjects[key] as Project),
-      folder: mapFilesToFolders(key, (rawProjects[key] as Project).dir, existingProjects[key] as Project),
-      modifiedFiles: new Set<string>(),
-      // interfaces: generateMolds(rawProjects[key] as Project),
-    }
-    return acc
-  }, {} as Projects)
+Object.keys(rawProjects).reduce((acc, key) => {
+  acc[key] = {
+    ...(rawProjects[key] as Project),
+    title: key,
+    expanded: Boolean((existingProjects[key] as Project)?.expanded),
+    state: generateState(rawProjects[key] as Project),
+    tests: generateTests(rawProjects[key] as Project, existingProjects[key] as Project),
+    folder: mapFilesToFolders(key, (rawProjects[key] as Project).dir, existingProjects[key] as Project),
+    modifiedFiles: new Set<string>(),
+    // interfaces: generateMolds(rawProjects[key] as Project),
+  }
+  return acc
+}, {} as Projects)
 
 export const getFolder = (folder: Folder, path: string[]) : null | Folder => {
   if (path.length < 1) {

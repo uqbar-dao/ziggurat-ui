@@ -21,7 +21,7 @@ const ProjectView = () => {
   const project = useMemo(() => projects[projectTitle || ''], [projectTitle, projects])
 
   const recentlyOpen = openFiles.filter(({ project }) => project === projectTitle).map(({ file }) => file)
-  const primaryFiles = project?.user_files?.['user-files'] || []
+  const primaryFiles = project?.user_files || []
 
   useEffect(() => {
     if (projectTitle && projectTitle !== currentProject) {

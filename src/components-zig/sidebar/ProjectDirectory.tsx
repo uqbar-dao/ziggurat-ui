@@ -73,7 +73,7 @@ export const ProjectDirectory = ({ project }: ProjectDirectoryProps) => {
   return (
     <Col style={{ padding: '0px 4px', fontSize: 14 }} onClick={() => setCurrentProject(title)}>
       {project.user_files && <Col>
-        {project?.user_files['user-files']?.map((uf, i) => <FileLink project={title} file={uf} key={i} starred />)}
+        {project?.user_files?.map((uf, i) => <FileLink project={title} file={uf} key={i} starred />)}
       </Col>}
       <Row between style={{ position: 'relative', padding: 2, marginBottom: 2, cursor: 'pointer',  }} onClick={() => setProjectExpanded(title, !expanded)}>
         <Row>
