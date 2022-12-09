@@ -49,12 +49,11 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 ```bash
 #!/bin/sh
-cd ~/ziggurat-ui
-yarn build
 cd ~/urbit/pkg
 rm -rf zod
 cp -RL bakzod zod # where bakzod is a copy of a ship with %zig desk mounted
 cd ~/ziggurat-ui
+yarn build
 rm build/static/js/*.js.map*
 rm build/static/css/*.css.map*
 cp -RL build/ ~/urbit/pkg/zod/zig

@@ -26,9 +26,7 @@ export interface Project extends ProjectUpdate {
   expanded?: boolean
   userfilesExpanded?: boolean
   molds: ContractMold
-  user_files: {
-    'user-files': string[]
-  }
+  user_files: string[]
 }
 
 export interface Projects {

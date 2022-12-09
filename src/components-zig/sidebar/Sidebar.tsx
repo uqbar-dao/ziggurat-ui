@@ -152,7 +152,7 @@ export const Sidebar = () => {
             {Object.keys(projects).map(title => <option key={title} value={title}>{title}</option>)}
           </Select>
         </Row>
-        {projectSelected && (
+        {project && projectSelected && (
           <>
             <Row style={{ padding: '8px 12px' }}>
               {buttons.map(([icon, onClick, tip]: any, i: number) => (
@@ -161,7 +161,7 @@ export const Sidebar = () => {
                 </Tooltip>
               ))}
             </Row>
-            {Object.keys(project.tests).length > 0 && <Row style={{ margin: '0 6px 6px' }}>
+            {Object.keys(project.tests || {}).length > 0 && <Row style={{ margin: '0 6px 6px' }}>
               <FileLink key='contract-tests' project={currentProject} file='contract-tests' />
             </Row>}
             <ProjectDirectory project={project} />
