@@ -20,6 +20,7 @@ import { genRanHex } from "../utils/number";
 import { handleEndpointUpdate } from "./subscriptions/endpoint";
 import { DownloadedFile } from "../views/ziggurat/NewProjectView";
 import { Projects } from "../types/ziggurat/Project";
+import { Ship, View } from "../types/ziggurat/Repl";
 
 export interface ZigguratStore {
   loading?: string
@@ -36,6 +37,8 @@ export interface ZigguratStore {
   userAddress: string
   endpoints: Endpoint[]
   knownMars: string[]
+  views: View[]
+  ships: Ship[]
   setLoading: (loading?: string) => void
   init: () => Promise<Projects>
   getAccounts: () => Promise<void>
@@ -81,6 +84,9 @@ export interface ZigguratStore {
   addEndpoint: (endpoint: EndpointForm, id?: string) => Promise<void>
   testEndpoint: (endpoint: Endpoint) => Promise<void>
   removeEndpoint: (id: string) => void
+
+  setViews: (views: View[]) => void
+  setShips: (ships: Ship[]) => void
 }
 
 const our: string = (window as any)?.api?.ship || ''
@@ -101,6 +107,22 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
     userAddress: DEFAULT_USER_ADDRESS,
     endpoints: [],
     knownMars: [],
+    ships: [
+      { name: '~bus',
+        active: true,
+        data: { myapp: { herp: 'derp' } } },
+      { name: '~nec',
+        active: false,
+        data: { myapp: { herp: 'burp' } } },
+      { name: '~luc',
+        active: false,
+        data: { myapp: { herp: 'slurp' } } }],
+    views: [
+      { name: 'floopus', active: true },
+      { name: 'doopus', active: true },
+      { name: 'gloopus', active: true },
+      { name: 'a really long one for some reason', active: false },
+    ],
     setLoading: (loading?: string) => set({ loading }),
     init: async () => {
       const projects = await get().getProjects()
@@ -540,7 +562,9 @@ ${path}
         return e.id !== id
       })
       set({ endpoints: newEndpoints })
-    }
+    },
+    setViews: (newviews: View[]) => set({ views: newviews }),
+    setShips: (newships: Ship[]) => set({ ships: newships }),
   }),
   {
     name: our+'-zigguratStore',

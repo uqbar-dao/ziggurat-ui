@@ -18,6 +18,7 @@ import { ToastContainer } from 'react-toastify';
 import { EndpointView } from './ziggurat/EndpointView';
 import { PyroView } from './ziggurat/PyroView';
 import ProjectView from './ziggurat/ProjectView';
+import ReplView from './ziggurat/ReplView';
 
 function ZigguratMain() {
   const { loading, init, projects } = useZigguratStore()
@@ -62,7 +63,9 @@ function ZigguratMain() {
               <Route path="/app/:app" element={<AppView />} />
               <Route path="/:projectTitle" element={<ProjectView />} />
               <Route path="/:projectTitle/contract-tests" element={<ContractTestView />} />
+              <Route path="/:projectTitle/repl" element={<ReplView />} />
               <Route path="/:projectTitle/:file" element={<EditorView />} />
+
               <Route
                 path="*"
                 element={

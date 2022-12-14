@@ -62,6 +62,30 @@
   padding: 1em;
 }
 
+.between {
+  justify-content: space-between;
+}
+
+.evenly {
+  justify-content: space-evenly;
+}
+
+.reverse {
+  flex-direction: row-reverse;
+}
+
+.w100 {
+  width: 100%;
+}
+
+.wrap {
+  flex-wrap: wrap;
+}
+
+.grow1 {
+  flex-grow: 1;
+}
+
 .code-error-underline {
   border-bottom: 1px solid red;
 }

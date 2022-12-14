@@ -8,13 +8,14 @@ import './Checkbox.scss'
 interface CheckboxProps extends React.HTMLAttributes<HTMLDivElement> {
   label: string
   isSelected: boolean
+  flip?: boolean
   onCheckboxChange: () => void
 }
 
-const Checkbox: React.FC<CheckboxProps> = ({ label, isSelected, onCheckboxChange }) => (
+const Checkbox: React.FC<CheckboxProps> = ({ label, isSelected, onCheckboxChange, flip }) => (
   <Row className='checkbox'>
     <label className={isSelected ? 'checked' : 'unchecked'}>
-      <Row>
+      <Row reverse={flip}>
         {isSelected ? <FaCheckSquare className='icon checked' />
         : <FaRegSquare className='icon unchecked' />}
         <input

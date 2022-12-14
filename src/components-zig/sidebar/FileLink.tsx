@@ -1,5 +1,5 @@
 import  { useCallback, useMemo, useState } from 'react'
-import { FaCodeBranch, FaFile, FaFileImage, FaKickstarterK, FaMoneyBill, FaPencilRuler,  FaRegStar,  FaShip, FaStar, FaTrash } from 'react-icons/fa';
+import { FaCodeBranch, FaFile, FaFileImage, FaKickstarterK, FaMoneyBill, FaPencilRuler,  FaRegStar,  FaShip, FaStar, FaTerminal, FaTrash } from 'react-icons/fa';
 import { useLocation } from 'react-router-dom';
 import useZigguratStore from '../../stores/zigguratStore'
 import Button from '../../components/form/Button';
@@ -15,9 +15,10 @@ interface FileLinkProps {
   project: string
   file: string
   starred?: boolean
+  noHoverMenu?: boolean
 }
 
-export const FileLink = ({ project, file, starred }: FileLinkProps) => {
+export const FileLink = ({ project, file, starred, noHoverMenu }: FileLinkProps) => {
   const { pathname } = useLocation()
   const { currentProject, openFiles, setCurrentProject, setOpenFiles, deleteFile, projects, addUserfile, deleteUserfile } = useZigguratStore()
   const [showButtons, setShowButtons] = useState(false)
@@ -42,7 +43,8 @@ export const FileLink = ({ project, file, starred }: FileLinkProps) => {
     <Row style={{ paddingLeft: 8, position: 'relative' }} onMouseEnter={() => setShowButtons(true)} onMouseLeave={() => setShowButtons(false)}>
       {starred && <Button variant='unstyled' style={{ margin: '0px 4px', padding: 0 }} iconOnly icon={<FaStar />} onClick={() => deleteUserfile(project, file)} />} 
       {fileName.endsWith('.hoon') ? <FaCodeBranch style={{ transform: 'scale(1, -1)'}} />
-       : file.endsWith('contract-tests') ? <FaPencilRuler size={14} />
+       : file.match(/^contract-tests$/) ? <FaPencilRuler size={14} />
+       : file.match(/^repl$/) ? <FaTerminal size={14} />
        : fileName.endsWith('.bill') ? <FaMoneyBill />
        : fileName.endsWith('.ship') ? <FaShip />
        : fileName.endsWith('.kelvin') ? <FaKickstarterK />
@@ -52,13 +54,13 @@ export const FileLink = ({ project, file, starred }: FileLinkProps) => {
         {tar} 
         {fileName}
       </Link>
-      {showButtons && !isTests && file !== project && (<Row style={{ 
+      {!noHoverMenu && showButtons && !isTests && file !== project && (<Row style={{ 
         position: 'absolute', top: 0, right: 4, background: 'white', borderRadius: 4, paddingRight: 5
       }}>
-        {!starred && <Tooltip tip="star">
+        {!starred && <Tooltip right tip="star">
           <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaRegStar size={14} />} onClick={() => addUserfile(project, file)} />
         </Tooltip>}
-        <Tooltip tip="delete">
+        <Tooltip right tip="delete">
           <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={<FaTrash size={14} />} onClick={() => deleteFile(project, file)} />
         </Tooltip>
       </Row>)}

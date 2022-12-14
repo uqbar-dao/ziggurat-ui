@@ -1,5 +1,5 @@
 import React from 'react'
-import { FaChevronDown, FaChevronRight, FaRegStar, FaStar } from 'react-icons/fa';
+import { FaChevronDown, FaChevronRight,  } from 'react-icons/fa';
 
 import useZigguratStore from '../../stores/zigguratStore'
 import Button from '../../components/form/Button';
@@ -9,6 +9,7 @@ import Text from '../../components/text/Text'
 import { BUTTON_STYLE, FileLink } from './FileLink';
 import { Project } from '../../types/ziggurat/Project';
 import { Folder, FolderContents } from '../../types/ziggurat/Folder';
+import Divider from '../../components/spacing/Divider';
 
 const sortFolderContents = (contents: FolderContents) => Object.keys(contents).sort((a, b) => {
   const aIsFile = typeof contents[a] === 'string'
@@ -66,19 +67,23 @@ interface ProjectDirectoryProps {
 }
 
 export const ProjectDirectory = ({ project }: ProjectDirectoryProps) => {
-  const { setProjectExpanded, setCurrentProject, setUserfilesExpanded, deleteUserfile, addUserfile } = useZigguratStore()
+  const { setProjectExpanded, setCurrentProject,  } = useZigguratStore()
 
-  const { title, folder, expanded, userfilesExpanded } = project
+  const { title, folder, expanded,  } = project
 
   return (
     <Col style={{ padding: '0px 4px', fontSize: 14 }} onClick={() => setCurrentProject(title)}>
+      <Row style={{ marginLeft: 4 }}>
+        <FileLink project={title} key='repl' file='repl' noHoverMenu />
+      </Row>
       {project.user_files && <Col>
         {project?.user_files?.map((uf, i) => <FileLink project={title} file={uf} key={i} starred />)}
+        <Divider className='mt1' />
       </Col>}
-      <Row between style={{ position: 'relative', padding: 2, marginBottom: 2, cursor: 'pointer',  }} onClick={() => setProjectExpanded(title, !expanded)}>
+      <Row between style={{ position: 'relative', margin: '0.75em 0 0 0.4em', cursor: 'pointer',  }} onClick={() => setProjectExpanded(title, !expanded)}>
         <Row>
-          <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={expanded ? <FaChevronDown size={12} /> : <FaChevronRight size={12} />} />
-          <Text style={{ marginLeft: 4, marginBottom: 2, fontSize: 16 }}>Files</Text>
+          <Button style={BUTTON_STYLE} variant="unstyled" iconOnly icon={expanded ? <FaChevronDown /> : <FaChevronRight />} />
+          <Text style={{ fontSize: 16, margin: '0 5px' }}>Files</Text>
         </Row>
       </Row>
       {expanded && (

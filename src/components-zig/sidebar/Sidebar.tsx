@@ -1,7 +1,7 @@
 import Link from '../nav/Link'
 import logo from '../../assets/img/logo192.png'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { FaDownload, FaTrash, FaRegPlusSquare, FaSave, FaFileAlt, FaUpload, FaGithub } from 'react-icons/fa';
+import { FaDownload, FaTrash, FaRegPlusSquare, FaSave, FaFileAlt, FaUpload,  } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import useZigguratStore from '../../stores/zigguratStore'
 import Button from '../../components/form/Button';
@@ -32,7 +32,6 @@ export const Sidebar = () => {
   const [showToolModal, setShowToolModal] = useState(false)
   const [toolToAdd, setToolToAdd] = useState('')
   const [showAddFileModal, setShowAddFileModal] = useState(false)
-  const [showImportModal, setShowImportModal] = useState(false)
   const [showPublishModal, setShowPublishModal] = useState(false)
   const [showDeployModal, setShowDeployModal] = useState(false)
   const [newFile, setNewFile] = useState('')
@@ -153,7 +152,7 @@ export const Sidebar = () => {
           </Select>
         </Row>
         {project && projectSelected && (
-          <>
+          <Col>
             <Row style={{ padding: '8px 12px' }}>
               {buttons.map(([icon, onClick, tip]: any, i: number) => (
                 <Tooltip key={tip} tip={tip}>
@@ -162,10 +161,10 @@ export const Sidebar = () => {
               ))}
             </Row>
             {Object.keys(project.tests || {}).length > 0 && <Row style={{ margin: '0 6px 6px' }}>
-              <FileLink key='contract-tests' project={currentProject} file='contract-tests' />
+              <FileLink key='contract-tests' noHoverMenu project={currentProject} file='contract-tests' />
             </Row>}
             <ProjectDirectory project={project} />
-          </>
+          </Col>
         )}
       </Col>
       <Col className='tools' style={{ width: '100%', height: '20%', borderTop: '1px solid black', overflow: 'auto' }}>
