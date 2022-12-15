@@ -33,7 +33,7 @@
         
         padding: 0.5em 1em;
         margin: 0 0 -1px 0;
-        border: 1px solid colors.$uq-vlightpurple;
+        border: 1px solid colors.$medium-gray;
         border-radius: 5px 5px 0 0;
         background: colors.$uq-vlightpurple;
         cursor: pointer;
@@ -67,9 +67,10 @@
 
           input {
             border: none;
+            border-radius: 4px;
             background: colors.$uq-vlightpurple;
             padding: 0.5em;
-            margin-right: 1em;
+            margin-right: 0.5em;
           }
         }
 
@@ -85,19 +86,94 @@
   .pokes-scries {
     height: 100%;
     min-width: 256px;
+
+    .card {
+      overflow: visible;
+    }
     
     .poke, .scry {
       margin-top: 0.5em;
       padding: 0.25em 0.5em;
       box-shadow: 1px 1px 1px gray;
+
+      .expander {
+        margin-right: 4px;
+      }
+
+      .showable {
+        visibility: hidden;
+        height: 0px;
+
+        &.show {
+          visibility: visible;
+          height: auto;
+        }
+      }
+
+      .poker, .scrier {
+        margin-left: auto;
+        border-radius: 4px;
+        padding: 0.125em 0.25em;
+
+        &:hover {
+          background-color: colors.$uq-pink;
+        }
+
+        &:active {
+          color: white;
+          background-color: colors.$midnightpurp;
+          transform: scale(1);
+        }
+      }
+
+      .input-container {
+        align-self: stretch;
+
+        .pokeData, .scryData {
+          border: none;
+          border-radius: 4px;
+          height: 100%;
+        }
+      }
+
+      .dropdown {
+        border-radius: 4px;
+        margin-right: 0.25em;
+
+        .content-border {
+          width: 100%;
+        }
+
+        option {
+          cursor: pointer;
+          padding: 0.25em 0.5em;
+          border-radius: 4px;
+           
+          &:hover {
+            background-color: colors.$uq-lightpurple;
+          }
+        }
+      }
     }
 
     .poke {
       background: colors.$uq-lightpink;
+
+      .dropdown {
+        background-color: colors.$uq-vlightpink;
+      }
+
+      .input {
+        max-width: 136px;
+      }
     }
 
     .scry {
       background: colors.$uq-lightpurple;
+
+      .dropdown {
+        background-color: colors.$uq-vvlightpurple;
+      }
     }
   }
 }

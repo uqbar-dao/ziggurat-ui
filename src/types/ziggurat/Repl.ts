@@ -12,7 +12,23 @@ export interface View {
 export interface Ship {
   name: string
   active: boolean
-  data: {
+  apps: {
     [key: string]: any
   }
+}
+
+export interface Poke {
+  app: string
+  ship: string
+  expanded?: boolean
+  expandedShips?: boolean
+  expandedApps?: boolean
+  data: string
+}
+
+export interface Scry {
+  ship: string
+  data: string
+  expanded?: boolean
+  expandedShips?: boolean
 }

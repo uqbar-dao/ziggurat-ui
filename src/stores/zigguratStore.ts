@@ -20,7 +20,7 @@ import { genRanHex } from "../utils/number";
 import { handleEndpointUpdate } from "./subscriptions/endpoint";
 import { DownloadedFile } from "../views/ziggurat/NewProjectView";
 import { Projects } from "../types/ziggurat/Project";
-import { Ship, View } from "../types/ziggurat/Repl";
+import { Poke, Scry, Ship, View } from "../types/ziggurat/Repl";
 
 export interface ZigguratStore {
   loading?: string
@@ -39,6 +39,8 @@ export interface ZigguratStore {
   knownMars: string[]
   views: View[]
   ships: Ship[]
+  pokes: Poke[]
+  scries: Scry[]
   setLoading: (loading?: string) => void
   init: () => Promise<Projects>
   getAccounts: () => Promise<void>
@@ -87,6 +89,8 @@ export interface ZigguratStore {
 
   setViews: (views: View[]) => void
   setShips: (ships: Ship[]) => void
+  setPokes: (ships: Poke[]) => void
+  setScries: (ships: Scry[]) => void
 }
 
 const our: string = (window as any)?.api?.ship || ''
@@ -107,22 +111,10 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
     userAddress: DEFAULT_USER_ADDRESS,
     endpoints: [],
     knownMars: [],
-    ships: [
-      { name: '~bus',
-        active: true,
-        data: { myapp: { herp: 'derp' } } },
-      { name: '~nec',
-        active: false,
-        data: { myapp: { herp: 'burp' } } },
-      { name: '~luc',
-        active: false,
-        data: { myapp: { herp: 'slurp' } } }],
-    views: [
-      { name: 'floopus', active: true },
-      { name: 'doopus', active: true },
-      { name: 'gloopus', active: true },
-      { name: 'a really long one for some reason', active: false },
-    ],
+    ships: [],
+    views: [],
+    pokes: [],
+    scries: [],
     setLoading: (loading?: string) => set({ loading }),
     init: async () => {
       const projects = await get().getProjects()
@@ -565,6 +557,8 @@ ${path}
     },
     setViews: (newviews: View[]) => set({ views: newviews }),
     setShips: (newships: Ship[]) => set({ ships: newships }),
+    setPokes: (newships: Poke[]) => set({ pokes: newships }),
+    setScries: (newships: Scry[]) => set({ scries: newships }),
   }),
   {
     name: our+'-zigguratStore',
