@@ -52,32 +52,61 @@
     .tab-body {
       height: 100%;
 
-      .states-views {
-        flex-grow: 1;
+      &.state {
+
+        .states-views {
+          flex-grow: 1;
+          
+          .views {
+            align-self: flex-start;
+            max-width: 256px;
+          }
+        }
         
-        .views {
-          align-self: flex-start;
-          max-width: 256px;
+        .input {
+          .input-container {
+            flex-grow: 1;
+            
+            input {
+              border: none;
+              border-radius: 4px;
+              background: colors.$uq-vlightpurple;
+              padding: 0.5em;
+              margin-right: 0.5em;
+            }
+          }
+          
+          button {
+            border: none;
+            background-color: colors.$celeste;
+            font-weight: bold;
+          }
         }
       }
 
-      .input {
-        .input-container {
-          flex-grow: 1;
+      &.events {
+        .events-table {
+          .tr {
+            display: grid;
+            grid-template-columns: 1fr 1fr 8fr;
 
-          input {
-            border: none;
-            border-radius: 4px;
-            background: colors.$uq-vlightpurple;
-            padding: 0.5em;
-            margin-right: 0.5em;
+            :last-child {
+              border-right: 1px solid transparent;
+            }
           }
-        }
 
-        button {
-          border: none;
-          background-color: colors.$celeste;
-          font-weight: bold;
+          .td {
+            padding: 0.25em 0.5em;
+
+            &.mono {
+              font-size: smaller;
+            }
+          }
+
+          .th {
+            border-bottom: 1px solid;
+            border-right: 1px solid;
+          }
         }
       }
     }
@@ -110,10 +139,15 @@
         }
       }
 
-      .poker, .scrier {
+      .buttons {
         margin-left: auto;
+      }
+
+      .poker, .scrier {
         border-radius: 4px;
         padding: 0.125em 0.25em;
+        background-color: colors.$light-gray;
+        margin-left: 0.125em;
 
         &:hover {
           background-color: colors.$uq-pink;
@@ -128,6 +162,7 @@
 
       .input-container {
         align-self: stretch;
+        flex-grow: 1;
 
         .pokeData, .scryData {
           border: none;
@@ -159,6 +194,10 @@
     .poke {
       background: colors.$uq-lightpink;
 
+      &.new {
+        background-color: colors.$uq-vlightpink;
+      }
+
       .dropdown {
         background-color: colors.$uq-vlightpink;
       }
@@ -169,10 +208,14 @@
     }
 
     .scry {
-      background: colors.$uq-lightpurple;
+      background: colors.$celeste;
+
+      &.new {
+        background-color: colors.$apocyan;
+      }
 
       .dropdown {
-        background-color: colors.$uq-vvlightpurple;
+        background-color: colors.$lapocyan;
       }
     }
   }

@@ -1,7 +1,6 @@
 import create from "zustand"
 import { persist } from "zustand/middleware"
 import { toast } from "react-toastify";
-import pWaterfall from "p-waterfall";
 import pMap from "p-map";
 import { HardwareWallet, HardwareWalletType, HotWallet, processAccount, RawAccount } from "@uqbar/wallet-ui";
 
@@ -20,7 +19,7 @@ import { genRanHex } from "../utils/number";
 import { handleEndpointUpdate } from "./subscriptions/endpoint";
 import { DownloadedFile } from "../views/ziggurat/NewProjectView";
 import { Projects } from "../types/ziggurat/Project";
-import { Poke, Scry, Ship, View } from "../types/ziggurat/Repl";
+import { Poke, Scry, Ship, View, Event } from "../types/ziggurat/Repl";
 
 export interface ZigguratStore {
   loading?: string
@@ -41,6 +40,7 @@ export interface ZigguratStore {
   ships: Ship[]
   pokes: Poke[]
   scries: Scry[]
+  events: Event[]
   setLoading: (loading?: string) => void
   init: () => Promise<Projects>
   getAccounts: () => Promise<void>
@@ -89,8 +89,9 @@ export interface ZigguratStore {
 
   setViews: (views: View[]) => void
   setShips: (ships: Ship[]) => void
-  setPokes: (ships: Poke[]) => void
-  setScries: (ships: Scry[]) => void
+  setPokes: (pokes: Poke[]) => void
+  setScries: (scries: Scry[]) => void
+  setEvents: (events: Event[]) => void
 }
 
 const our: string = (window as any)?.api?.ship || ''
@@ -115,6 +116,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
     views: [],
     pokes: [],
     scries: [],
+    events: [],
     setLoading: (loading?: string) => set({ loading }),
     init: async () => {
       const projects = await get().getProjects()
@@ -555,10 +557,11 @@ ${path}
       })
       set({ endpoints: newEndpoints })
     },
-    setViews: (newviews: View[]) => set({ views: newviews }),
-    setShips: (newships: Ship[]) => set({ ships: newships }),
-    setPokes: (newships: Poke[]) => set({ pokes: newships }),
-    setScries: (newships: Scry[]) => set({ scries: newships }),
+    setViews: (views: View[]) => set({ views }),
+    setShips: (ships: Ship[]) => set({ ships }),
+    setPokes: (pokes: Poke[]) => set({ pokes }),
+    setScries: (scries: Scry[]) => set({ scries }),
+    setEvents: (events: Event[]) => set({ events }),
   }),
   {
     name: our+'-zigguratStore',

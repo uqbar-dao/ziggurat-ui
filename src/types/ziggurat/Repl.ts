@@ -32,3 +32,9 @@ export interface Scry {
   expanded?: boolean
   expandedShips?: boolean
 }
+
+export interface Event {
+  source: string
+  type: string
+  data: string
+}
