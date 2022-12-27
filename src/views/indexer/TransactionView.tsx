@@ -31,6 +31,7 @@ const TransactionView = () => {
 
   const splitPath = location.pathname.split('/')
   const txnHash = addHexDots(splitPath[splitPath.length - 1])
+  useDocumentTitle(`${indexerTitleBase} Transaction ${addHexDots(txnHash)}`)
 
   useEffect(() => {
     const getData = async () => {
@@ -82,7 +83,6 @@ const TransactionView = () => {
     </Entry>
   )
 
-  useDocumentTitle(`${indexerTitleBase} Transaction ${addHexDots(txnHash)}`)
   return (
     <Container className='transaction-view'>
       <PageHeader title='Transaction'>

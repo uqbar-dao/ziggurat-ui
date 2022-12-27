@@ -23,6 +23,7 @@ const ProjectView = () => {
 
   const recentlyOpen = openFiles.filter(({ project }) => project === projectTitle).map(({ file }) => file)
   const primaryFiles = project?.user_files || []
+  useDocumentTitle(`${zigguratTitleBase} ${projectTitle}`)
 
   useEffect(() => {
     if (projectTitle && projectTitle !== currentProject) {
@@ -45,7 +46,6 @@ const ProjectView = () => {
     );
   }
 
-  useDocumentTitle(`${zigguratTitleBase} ${projectTitle}`)
   return (
     <Col className='project-view'>
       <h3>{projectTitle}</h3>

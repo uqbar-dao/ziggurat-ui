@@ -15,6 +15,7 @@ export interface Ship {
   apps: {
     [key: string]: any
   }
+  expanded?: boolean
 }
 
 export interface Poke {

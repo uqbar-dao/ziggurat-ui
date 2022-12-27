@@ -2,12 +2,15 @@
 
 .repl-view {
   .ships {
+    height: 100%;
+    
     .ship {
       background: colors.$uq-vlightpurple;
       border-color: transparent;
       box-shadow: none;
       cursor: pointer;
       opacity: 0.8;
+      max-width: 16em;
 
       &:hover {
         opacity: 1;
@@ -17,6 +20,15 @@
         opacity: 1;
         background: white;
         border-color: black;
+      }
+    }
+
+    .input-container {
+      max-width: 90%;
+      .input {
+        border: none;
+        border-radius: 4px;
+        max-width: 90%;
       }
     }
   }
@@ -146,7 +158,7 @@
       .poker, .scrier {
         border-radius: 4px;
         padding: 0.125em 0.25em;
-        background-color: colors.$light-gray;
+        background-color: colors.$light-wight;
         margin-left: 0.125em;
 
         &:hover {

@@ -55,6 +55,7 @@ const BatchView = () => {
 
     getData()
   }, [batchId]) // eslint-disable-line react-hooks/exhaustive-deps
+  useDocumentTitle(`${indexerTitleBase} Batch ${batchId}`)
 
   if (loadingText) {
     return <Col center style={{ marginTop: 60, marginLeft: 60 }}>
@@ -66,7 +67,6 @@ const BatchView = () => {
     return <Text>No batch data</Text>
   }
 
-  useDocumentTitle(`${indexerTitleBase} Batch ${batchData.id}`)
   return (
     <Container className='batch-view'>
       <PageHeader title='Batch'>

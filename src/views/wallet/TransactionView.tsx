@@ -52,6 +52,7 @@ const TransactionView = () => {
   const { walletTitleBase, unsignedTransactions, transactions } = useWalletStore()
   const txn = [...transactions, ...Object.values(unsignedTransactions)].find(t => t.hash === hash)
 
+  useDocumentTitle(`${walletTitleBase} Tx ${addHexDots(txn?.hash || '')}`)
   if (!txn) {
     return (
       <Container className='transaction-view'>
@@ -61,7 +62,6 @@ const TransactionView = () => {
     )
   }
 
-  useDocumentTitle(`${walletTitleBase} Tx ${addHexDots(txn.hash)}`)
   return (
     <Container className='transaction-view'>
       <h2>Transaction</h2>

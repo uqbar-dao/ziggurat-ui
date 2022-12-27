@@ -13,13 +13,13 @@ const AppView = ({ hide = false }: { hide?: boolean }) => {
   const nav = useNavigate()
   const { pathname } = useLocation()
   const { openTools, currentTool, zigguratTitleBase } = useZigguratStore()
+  useDocumentTitle(`${zigguratTitleBase} ${currentTool}`)
 
   if (!currentTool && pathname === 'app') {
     nav('/')
     return null
   }
 
-  useDocumentTitle(`${zigguratTitleBase} ${currentTool}`)
   return (<>
     <OpenFileHeader />
     <Container className='docs-view' style={{ visibility: hide ? 'hidden' : 'visible', position: hide ? 'absolute' : 'relative', margin: '-1em 2em 1em -2em', height: '100%' }}>

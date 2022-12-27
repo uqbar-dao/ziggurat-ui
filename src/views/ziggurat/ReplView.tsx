@@ -16,7 +16,7 @@ import Json from '../../components/text/Json'
 import Text from '../../components/text/Text'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
 import useZigguratStore from '../../stores/zigguratStore'
-import { Tab, Poke as RPoke, Scry as RScry, Event as REvent } from '../../types/ziggurat/Repl'
+import { Tab, Poke as RPoke, Scry as RScry, Event as REvent, Ship as RShip } from '../../types/ziggurat/Repl'
 
 import './ReplView.scss'
 
@@ -33,16 +33,19 @@ const ReplView = () => {
   if (!ships.length) setShips([
     { name: '~bus',
       active: true,
+      expanded: true,
       apps: { myapp: { herp: 'derp' },
               bubba: { dubba: 'gubba', lubba: 'slubba' },
               beebo: { neebo: [7, 3, 3, 8, 0] } } },
-    { name: '~nec',
+    { name: '~dozzod-dozzod-dozzod-dozzod',
       active: false,
+      expanded: true,
       apps: { myapp: { herp: 'burp' },
               bubba: { dubba: 'gubba', lubba: 'slubba' },
               beebo: { neebo: [7, 3, 3, 8, 0] } } },
-    { name: '~luc',
+    { name: '~molten-martyr',
       active: false,
+      expanded: true,
       apps: { myapp: { herp: 'slurp' },
               bubba: { dubba: 'gubba', lubba: 'slubba' },
               beebo: { neebo: [7, 3, 3, 8, 0] } } }])
@@ -152,11 +155,13 @@ const ReplView = () => {
     { source: '~zod', type: 'poke', data: '[%derp-action [%add-derp "burp"]]' },
   ])
 
+  const blankShip = { name: '', apps: {}, expanded: true, active: false }
   const blankPoke = { ship: '', data: '' }
   const blankScry = { ship: '', data: '', app: '' }
   const [query, setQuery] = useState<string>('')
   const [newScry, setNewScry] = useState<RScry>(blankPoke)
   const [newPoke, setNewPoke] = useState<RPoke>(blankScry)
+  const [newShip, setNewShip] = useState<RShip>(blankShip)
 
   const togglePokeExpanded = (poke: RPoke, key: 'expanded' | 'expandedApps' | 'expandedShips') => {
     setPokes(pokes.map(p => ({ 
@@ -179,7 +184,6 @@ const ReplView = () => {
   }
 
   const activeShip = useMemo(() => ships.find(s => s.active), [ships])
-
   useDocumentTitle(`${zigguratTitleBase} REPL`)
   return (<>
     <OpenFileHeader />
@@ -188,10 +192,36 @@ const ReplView = () => {
         <Col className='ships'>
           {ships.map((ship, i) => <Card 
               onClick={() => setShips(ships.map(s => ({ ...s, active: ship.name === s.name })))}
-              className={classNames('mb1 ship', { active: ship.active })} key={i}>
-            <Text bold> {ship.name} </Text>
-            {Object.keys(ship.apps).map(k => <Text ml1 key={k}>{k}</Text>)}
+              className={classNames('p05 mb1 ship', { active: ship.active })} key={i}>
+            <Row>
+              <Button onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setShips(ships.map(s => ({ ...s, expanded: (ship.name === s.name) ? (!s.expanded) : s.expanded })))}
+                } style={{ alignSelf: 'flex-start' }} variant='unstyled' iconOnly 
+                icon={ship.expanded ? <FaChevronDown /> : <FaChevronRight />} />
+              <Text small bold> {ship.name} </Text>
+              {ship.expanded && <Button style={{ marginLeft: 'auto' }} variant='unstyled' iconOnly icon={<FaRegTrashAlt />} 
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  if (window.confirm('Are you sure you want to delete fakeship ' + ship.name + '?'))
+                    setShips(ships.filter(s => s.name !== ship.name))
+                }} />}
+            </Row>
+            {ship.expanded ? <Col>
+              <Text small> Agents: </Text>
+              {Object.keys(ship.apps).map(k => <Text small ml1 key={k}>%{k}</Text>)}
+            </Col> : <></>}
           </Card>)}
+          <Divider className='mb1'/>
+          <Card className='ship'><Row>
+            <Input className='new-ship' placeholder='~sampel-palnet' onChange={(e) => setNewShip({ ...newShip, name: e.currentTarget.value })} />
+            <Button variant='unstyled' icon={<FaPlus />} iconOnly style={{ marginLeft: 'auto' }} onClick={() => {
+              setShips([...ships, newShip])
+              setNewShip(blankShip)
+            }} />
+          </Row></Card>
         </Col>
 
         <Col className='mid'>
@@ -203,7 +233,7 @@ const ReplView = () => {
               {tab.name}
             </Card>)}
           </Row>
-          {tabs.find(t => t.name === 'state')?.active && activeShip && <Card className='tab-body state' title={`${activeShip.name} state`}>
+          {tabs.find(t => t.name === 'state')?.active && activeShip && <Card className='tab-body state' title={`state: ${activeShip.name}`}>
             <Row between className='states-views'>
               <Col className='states'>
                 <Json json={activeShip!.apps} />
@@ -222,7 +252,7 @@ const ReplView = () => {
               <Button onClick={() => addView(query)}>add view</Button>
             </Row>
           </Card>}
-          {tabs.find(t => t.name === 'events')?.active && activeShip && <Card className='tab-body events' title={`${activeShip.name} events`}>
+          {tabs.find(t => t.name === 'events')?.active && activeShip && <Card className='tab-body events' title={`events: ${activeShip.name}`}>
             <Col className='events-table mt1'>
               <Row className='tr'>
                 <Text bold className='td th'>from</Text>
@@ -260,7 +290,7 @@ const ReplView = () => {
                     })))} key={ship.name} value={ship.name}>{ship.name}</option>)}
                   </Dropdown>
                   <Dropdown open={poke.expandedApps || false} value={poke.app} toggleOpen={() => togglePokeExpanded(poke, 'expandedApps')}>
-                    {Object.keys(activeShip!.apps).map(app => <option onClick={() => setPokes(pokes.map(p => ({ 
+                    {activeShip && Object.keys(activeShip.apps).map(app => <option onClick={() => setPokes(pokes.map(p => ({ 
                       ...p,
                       app: samePoke(p, poke) ? app : p.app,
                       expandedApps: false
@@ -278,7 +308,7 @@ const ReplView = () => {
                   <Dropdown open={newPoke.expandedShips || false} value={newPoke.ship || ships[0].name} toggleOpen={() => setNewPoke({ ...newPoke, expandedShips: !newPoke.expandedShips })}>
                     {ships.map(ship => ship && <option onClick={() => setNewPoke({...newPoke, ship: ship.name })} key={ship.name} value={ship.name}>{ship.name}</option>)}
                   </Dropdown>
-                  <Dropdown open={newPoke.expandedApps || false} value={newPoke.app || Object.keys(activeShip!.apps)[0]} toggleOpen={() => setNewPoke({ ...newPoke, expandedApps: !newPoke.expandedApps })}>
+                  <Dropdown open={newPoke.expandedApps || false} value={newPoke.app || activeShip && Object.keys(activeShip.apps)[0]} toggleOpen={() => setNewPoke({ ...newPoke, expandedApps: !newPoke.expandedApps })}>
                     {activeShip && Object.keys(activeShip.apps).map(app => <option onClick={() => setNewPoke({...newPoke, app })} key={app} value={app}>{app}</option>)}
                   </Dropdown>
                   <Input onChange={(e) => setNewPoke({ ...newPoke, data: e.currentTarget.value})} 
