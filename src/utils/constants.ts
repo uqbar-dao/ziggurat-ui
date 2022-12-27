@@ -25,7 +25,7 @@ export const ORIGIN = window.location.origin
 export const BASENAME = '/apps/ziggurat'
 export const WEBTERM_PATH = '/apps/webterm'
 
-export const STATUS_CODES : { [key: number] : string } = {
+export const STATUS_CODES: { [key: number]: string } = {
   // 100: 'transaction pending in wallet',
   // 101: 'transaction submitted to sequencer',
   // 102: 'transaction received by sequencer',
@@ -35,18 +35,18 @@ export const STATUS_CODES : { [key: number] : string } = {
   102: 'received by sequencer',
   103: 'failure: rejected by sequencer',
   200: 'successfully performed',
-  201: 'submitted with raw id / no account info',
-  202: 'bad signature',
-  203: 'incorrect nonce',
-  204: 'lack zigs to fulfill budget',
-  205: 'couldn\'t find contract',
+  201: 'bad signature',
+  202: 'incorrect nonce',
+  203: 'lack zigs to fulfill budget',
+  204: 'couldn\'t find contract',
+  205: 'data was under contract ID',
   206: 'crash in contract execution',
-  207: 'validation of changed/issued/burned item failed',
-  208: 'ran out of gas',
-  209: 'superceded by another txn in batch',
+  207: 'validation of diff failed',
+  208: 'ran out of gas while executing',
+  209: 'dedicated burn transaction failed',
 }
 
-export const STATUS_CODES_RAW : { [key: number] : string } = {
+export const STATUS_CODES_RAW: { [key: number]: string } = {
   0: 'successfully performed',
   1: 'bad signature',
   2: 'incorrect nonce',
