@@ -23,6 +23,7 @@ import {toast} from 'react-toastify'
 import './HomeView.scss'
 import { formatIndexerTimestamp } from '../../utils/date'
 import Pill from '../../components/text/Pill'
+import useDocumentTitle from '../../hooks/useDocumentTitle'
 
 const HomeView = () => {
   const { batches, transactions } = useIndexerStore()
@@ -59,6 +60,7 @@ const HomeView = () => {
     }
   }
 
+  useDocumentTitle(`Explorer - Home`)
   return (
     <Container className='home'>
       <Col className='splash'>

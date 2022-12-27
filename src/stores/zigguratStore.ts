@@ -22,6 +22,7 @@ import { Projects } from "../types/ziggurat/Project";
 import { Poke, Scry, Ship, View, Event } from "../types/ziggurat/Repl";
 
 export interface ZigguratStore {
+  zigguratTitleBase: string
   loading?: string
   currentProject: string
   currentFolder: string
@@ -98,6 +99,7 @@ const our: string = (window as any)?.api?.ship || ''
 
 const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
   (set, get) => ({
+    zigguratTitleBase: 'Ziggurat:',
     loading: '',
     accounts: [],
     importedAccounts: [],

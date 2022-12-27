@@ -14,13 +14,14 @@ import { EndpointList } from '../../components-zig/tests/EndpointList';
 import { EndpointModal } from '../../components-zig/tests/EndpointModal';
 
 import './EndpointView.scss'
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 const genFormValues = (app: string) => ({ ...BLANK_ENDPOINT_FORM, app })
 
 export interface EndpointViewProps {}
 
 export const EndpointView = () => {
-  const { projects, currentProject, endpoints, setLoading, addEndpoint } = useZigguratStore()
+  const { zigguratTitleBase, projects, currentProject, endpoints, setLoading, addEndpoint } = useZigguratStore()
 
   const [showEndpointModal, setShowEndpointModal] = useState(false)
   const [endpointFormValues, setEndpointFormValues] = useState<EndpointForm>(genFormValues(currentProject))
@@ -92,6 +93,7 @@ export const EndpointView = () => {
 
   const isEdit = Boolean(edit)
 
+  useDocumentTitle(`${zigguratTitleBase} Endpoints`)
   return (
     <DragDropContext onDragEnd={handleDragAndDropItem}>
       <OpenFileHeader />

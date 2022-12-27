@@ -28,6 +28,7 @@ import useSessionStorage from '../../hooks/useSessionStorage';
 import Modal from '../../components/popups/Modal';
 
 import './NewProjectView.scss'
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 type CreationStep = 'title' | 'project' | 'token' | 'template' | 'metadata' | 'import' | 'github' | 'zip'
 type ProjectOption = 'contract' | 'gall' | 'contract-gall'
@@ -70,7 +71,7 @@ export interface DownloadedFile {
 }
 
 const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
-  const { loading, setLoading, userAddress, saveFileList, projects, createProject } = useZigguratStore()
+  const { zigguratTitleBase, loading, setLoading, userAddress, saveFileList, projects, createProject } = useZigguratStore()
   const nav = useNavigate()
 
   const [step, setStep] = useState<CreationStep>('title')
@@ -594,6 +595,7 @@ const NewProjectView = ({ hide = false }: { hide?: boolean }) => {
     }
   }
 
+  useDocumentTitle(`${zigguratTitleBase} New Project`)
   return (
     <Col style={{ position: 'absolute', visibility: hide ? 'hidden' : 'visible', width: '100%', maxWidth: 600, height: '100%', justifyContent: 'center', alignItems: 'center', alignSelf: 'center', justifySelf: 'center' }}>
       {renderContent()}

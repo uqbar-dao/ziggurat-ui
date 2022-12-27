@@ -9,9 +9,10 @@ import BatchCard from "../../components-indexer/indexer/BatchCard"
 import Container from "../../components/spacing/Container"
 import PageHeader from "../../components/page/PageHeader"
 import HexNum from "../../components/text/HexNum"
+import useDocumentTitle from "../../hooks/useDocumentTitle"
 
 const TownView = () => {
-  const { scry, setLoading, loadingText } = useIndexerStore()
+  const { scry, indexerTitleBase, } = useIndexerStore()
   const { townId } = useParams()
   const [batches, setBatches] = useState<Batch[]>([])
 
@@ -29,6 +30,7 @@ const TownView = () => {
   }, [townId])
 
 
+  useDocumentTitle(`${indexerTitleBase} Town ${townId}`)
   return (<Container>
     <PageHeader title='Town'> <HexNum num={townId!} /> </PageHeader>
     <Col>

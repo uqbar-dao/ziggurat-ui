@@ -24,11 +24,12 @@ import Link from '../../components-indexer/nav/Link'
 import './ItemView.scss'
 import Json from '../../components/text/Json'
 import HexNum from '../../components/text/HexNum'
+import useDocumentTitle from '../../hooks/useDocumentTitle'
 
 type Selection = 'details' | 'txns'
 
 const ItemView = () => {
-  const { metadata, scry } = useIndexerStore()
+  const { metadata, scry, indexerTitleBase } = useIndexerStore()
   const location = useLocation()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [item, setItem] = useState<Item | undefined>(undefined)
@@ -81,6 +82,7 @@ const ItemView = () => {
 
   console.log('ITEM:', item)
 
+  useDocumentTitle(`${indexerTitleBase} Item ${addHexDots(itemId)}`)
   return (
     <Container className='item-view'>
       <PageHeader title={'Item'}>

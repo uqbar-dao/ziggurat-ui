@@ -13,9 +13,10 @@ import { genHref } from '../../utils/nav'
 import Card from '../../components-indexer/card/Card'
 import Text from '../../components/text/Text'
 import Row from '../../components/spacing/Row'
+import useDocumentTitle from '../../hooks/useDocumentTitle'
 
 const WelcomeView = ({ hide = false }: { hide?: boolean }) => {
-  const { openFiles, projects, setCurrentProject } = useZigguratStore()
+  const { zigguratTitleBase, openFiles, projects, setCurrentProject } = useZigguratStore()
   const nav = useNavigate()
 
   const goToFile = useCallback(({ project, file }: OpenFile) => () => {
@@ -32,6 +33,7 @@ const WelcomeView = ({ hide = false }: { hide?: boolean }) => {
     setCurrentProject('')
   }, []) // eslint-disable-line
 
+  useDocumentTitle(`${zigguratTitleBase} Home`)
   return (
     <Col className='welcome-view'>
       <h3 style={{ marginTop: 0 }}>Welcome to Ziggurat!</h3>

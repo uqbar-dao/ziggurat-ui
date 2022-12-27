@@ -12,11 +12,12 @@ import { genHref } from '../../utils/nav'
 import Loader from '../../components/popups/Loader'
 
 import './ProjectView.scss'
+import useDocumentTitle from '../../hooks/useDocumentTitle'
 
 const ProjectView = () => {
   const { projectTitle } = useParams()
   const nav = useNavigate()
-  const { projects, openFiles, currentProject, setOpenFiles, setCurrentProject } = useZigguratStore()
+  const { zigguratTitleBase, projects, openFiles, currentProject, setOpenFiles, setCurrentProject } = useZigguratStore()
 
   const project = useMemo(() => projects[projectTitle || ''], [projectTitle, projects])
 
@@ -44,6 +45,7 @@ const ProjectView = () => {
     );
   }
 
+  useDocumentTitle(`${zigguratTitleBase} ${projectTitle}`)
   return (
     <Col className='project-view'>
       <h3>{projectTitle}</h3>

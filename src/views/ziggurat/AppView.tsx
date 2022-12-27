@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { OpenFileHeader } from '../../components-zig/nav/OpenFileHeader';
 import Col from '../../components/spacing/Col';
 import Container from '../../components/spacing/Container'
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 import useZigguratStore from '../../stores/zigguratStore';
 
 import './DocsView.scss'
@@ -11,13 +12,14 @@ import './DocsView.scss'
 const AppView = ({ hide = false }: { hide?: boolean }) => {
   const nav = useNavigate()
   const { pathname } = useLocation()
-  const { openTools, currentTool } = useZigguratStore()
+  const { openTools, currentTool, zigguratTitleBase } = useZigguratStore()
 
   if (!currentTool && pathname === 'app') {
     nav('/')
     return null
   }
 
+  useDocumentTitle(`${zigguratTitleBase} ${currentTool}`)
   return (<>
     <OpenFileHeader />
     <Container className='docs-view' style={{ visibility: hide ? 'hidden' : 'visible', position: hide ? 'absolute' : 'relative', margin: '-1em 2em 1em -2em', height: '100%' }}>

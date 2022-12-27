@@ -22,9 +22,10 @@ import { formatIndexerTimestamp } from '../../utils/date'
 import BatchCard from '../../components-indexer/indexer/BatchCard'
 
 import './BatchView.scss'
+import useDocumentTitle from '../../hooks/useDocumentTitle'
 
 const BatchView = () => {
-  const { scry, setLoading, loadingText } = useIndexerStore()
+  const { scry, setLoading, loadingText, indexerTitleBase } = useIndexerStore()
   const location = useLocation()
   const { batchId, townId } = useParams()
   const [batchData, setBatchData] = useState<Batch | undefined>()
@@ -65,6 +66,7 @@ const BatchView = () => {
     return <Text>No batch data</Text>
   }
 
+  useDocumentTitle(`${indexerTitleBase} Batch ${batchData.id}`)
   return (
     <Container className='batch-view'>
       <PageHeader title='Batch'>

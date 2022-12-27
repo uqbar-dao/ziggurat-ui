@@ -24,11 +24,12 @@ import Field from '../../components/spacing/Field';
 import Entry from '../../components/spacing/Entry';
 
 import './ContractTestView.scss'
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 export interface ContractTestViewProps {}
 
 export const ContractTestView = () => {
-  const { projects, currentProject, setLoading, addTest, updateTest, addItem, runTest, runTests, addTestExpectation } = useZigguratStore()
+  const { zigguratTitleBase, projects, currentProject, setLoading, addTest, updateTest, addItem, runTest, runTests, addTestExpectation } = useZigguratStore()
 
   const [showTestModal, setShowTestModal] = useState(false)
   const [testExpectation, setTestExpecation] = useState('')
@@ -181,6 +182,7 @@ export const ContractTestView = () => {
 
   const isEdit = Boolean(edit)
 
+  useDocumentTitle(`${zigguratTitleBase} Contract Tests`)
   return (
     <DragDropContext onDragEnd={handleDragAndDropItem}>
       <OpenFileHeader />

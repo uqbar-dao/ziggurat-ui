@@ -16,12 +16,13 @@ import { getFileText } from '../../utils/project'
 import { WEBTERM_PATH } from '../../utils/constants'
 
 import './EditorView.scss'
+import useDocumentTitle from '../../hooks/useDocumentTitle'
 
 const EditorView = ({ hide = false }: { hide?: boolean }) => {
   const editorRef = useRef<CodeMirrorShim>()
   const nav = useNavigate()
   const { projectTitle, file } = useParams()
-  const { projects, toastMessages, openFiles, currentProject, setProjectText, getGallFile, setOpenFiles, setCurrentProject } = useZigguratStore()
+  const { zigguratTitleBase, projects, toastMessages, openFiles, currentProject, setProjectText, getGallFile, setOpenFiles, setCurrentProject } = useZigguratStore()
 
   const project = useMemo(() => projects[projectTitle || ''], [projectTitle, projects])
 
@@ -80,6 +81,7 @@ const EditorView = ({ hide = false }: { hide?: boolean }) => {
 
   const isMobile = isMobileCheck()
 
+  useDocumentTitle(`${zigguratTitleBase} ${file}`)
   return (
     <>
       <OpenFileHeader />

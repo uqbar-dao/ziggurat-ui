@@ -25,6 +25,7 @@ export function createSubscription(app: string, path: string, e: (data: any) => 
 }
 
 export interface IndexerStore {
+  indexerTitleBase: string
   loadingText: string | null
   nextBlockTime: number | null
   batches: Batch[]
@@ -47,6 +48,7 @@ const our: string = (window as any)?.api?.ship || ''
 
 const useIndexerStore = create<IndexerStore>(
   persist<IndexerStore>((set, get) => ({
+    indexerTitleBase: 'Explorer:',
     loadingText: 'Loading...',
     nextBlockTime: null,
     batches: [],

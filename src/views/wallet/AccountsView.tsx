@@ -17,9 +17,10 @@ import { capitalize } from '../../utils/format'
 import { unwatchTabClose, watchTabClose } from '../../utils/nav'
 
 import './AccountsView.scss'
+import useDocumentTitle from '../../hooks/useDocumentTitle'
 
 const AccountsView = () => {
-  const { accounts, importedAccounts, createAccount, restoreAccount, importAccount, getSeed, deriveNewAddress } = useWalletStore()
+  const { walletTitleBase, accounts, importedAccounts, createAccount, restoreAccount, importAccount, getSeed, deriveNewAddress } = useWalletStore()
   const { search } = useLocation()
   const createParam = new URLSearchParams(search).get('create')
   const [showCreate, setShowCreate] = useState(Boolean(createParam))
@@ -130,6 +131,7 @@ const AccountsView = () => {
   const hardwareWalletTypes: HardwareWalletType[] =
     importedAccounts.reduce((acc, { type }) => !acc.includes(type) ? acc.concat([type]) : acc, [] as HardwareWalletType[])
 
+  useDocumentTitle(`${walletTitleBase} Accounts`)
   return (
     <Container className='accounts-view'>
       <PageHeader title='Accounts' />

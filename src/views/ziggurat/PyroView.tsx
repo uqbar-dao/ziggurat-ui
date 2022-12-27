@@ -11,14 +11,16 @@ import Text from '../../components/text/Text'
 
 import './PyroView.scss'
 import Link from '../../components-zig/nav/Link';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 export interface PyroViewProps {}
 
 export const PyroView = () => {
-  const { projects, currentProject, endpoints, setLoading } = useZigguratStore()
+  const { zigguratTitleBase, projects, currentProject, endpoints, setLoading } = useZigguratStore()
 
   const isMobile = isMobileCheck()
 
+  useDocumentTitle(`${zigguratTitleBase} Pyro`)
   return (
     <Col className='pyro-view'>
       <Row className='breadcrumbs'>

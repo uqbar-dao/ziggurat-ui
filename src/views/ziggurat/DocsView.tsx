@@ -1,12 +1,16 @@
 import React, { useEffect } from 'react'
 import Iframe from 'react-iframe';
 import Container from '../../components/spacing/Container'
+import useDocumentTitle from '../../hooks/useDocumentTitle';
+import useZigguratStore from '../../stores/zigguratStore';
 
 import './DocsView.scss'
 
 const docsUrl = '/~/scry/docs/usr/ziggurat/overview.html'
 
 const DocsView = () => {
+  const { zigguratTitleBase } = useZigguratStore()
+  
   useEffect(() => {
     const checkDocsInstalled = async () => {
       const result = await fetch(docsUrl)
@@ -20,6 +24,7 @@ You can run "|install ~pocwet %docs" in the webterm insert on the "Contract" pag
     checkDocsInstalled()
   }, [])
 
+  useDocumentTitle(`${zigguratTitleBase} %docs`)
   return (
     <Container className='docs-view'>
       <Iframe url={docsUrl} height='100%' width='100%' />

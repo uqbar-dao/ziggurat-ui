@@ -21,9 +21,10 @@ import { Item } from '../../types/indexer/Item'
 
 import './TransactionView.scss'
 import Row from '../../components/spacing/Row'
+import useDocumentTitle from '../../hooks/useDocumentTitle'
 
 const TransactionView = () => {
-  const { scry } = useIndexerStore()
+  const { scry, indexerTitleBase } = useIndexerStore()
   const location = useLocation()
   const [transaction, setTransaction] = useState<Transaction | undefined>()
   const [loading, setLoading] = useState(true)
@@ -81,6 +82,7 @@ const TransactionView = () => {
     </Entry>
   )
 
+  useDocumentTitle(`${indexerTitleBase} Transaction ${addHexDots(txnHash)}`)
   return (
     <Container className='transaction-view'>
       <PageHeader title='Transaction'>

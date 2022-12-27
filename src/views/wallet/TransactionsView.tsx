@@ -10,11 +10,12 @@ import { displayPubKey } from '../../utils/account'
 import { addHexDots } from '../../utils/format'
 
 import './TransactionsView.scss'
+import useDocumentTitle from '../../hooks/useDocumentTitle'
 
 const PLACEHOLDER = 'All addresses'
 
 const TransactionsView = () => {
-  const { accounts, transactions, unsignedTransactions } = useWalletStore()
+  const { walletTitleBase, accounts, transactions, unsignedTransactions } = useWalletStore()
   const [filteredTransactions, setFilteredTransactions] = useState(transactions)
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>()
 
@@ -40,6 +41,7 @@ const TransactionsView = () => {
 
   const { pending, rejected, finished } = groupTransactions(filteredTransactions)
 
+  useDocumentTitle(`${walletTitleBase} Transactions`)
   return (
     <Container className='transactions-view'>
       <PageHeader title='Transaction History' className='header'>

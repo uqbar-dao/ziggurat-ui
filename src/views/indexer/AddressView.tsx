@@ -24,11 +24,12 @@ import HexNum from '../../components/text/HexNum'
 import Loader from '../../components/popups/Loader'
 
 import './AddressView.scss'
+import useDocumentTitle from '../../hooks/useDocumentTitle'
 
 type Selection = 'txns' | 'items'
 
 const AddressView = () => {
-  const { scry } = useIndexerStore()
+  const { scry, indexerTitleBase } = useIndexerStore()
   const location = useLocation()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [items, setItems] = useState<Item[]>([])
@@ -91,6 +92,7 @@ const AddressView = () => {
   const displayTransactions = town === '' ? transactions : transactions.filter(tx => tx.location['town-id'] === town)
   const displayItems = town === '' ? items : items.filter(gr => gr.town === town)
 
+  useDocumentTitle(`${indexerTitleBase} ${isWalletAddress ? 'Address' : 'Contract'} ${addHexDots(address)}`)
   return (
     <Container className='address-view'>
       <PageHeader title={isWalletAddress ? 'Address' : 'Contract'}>

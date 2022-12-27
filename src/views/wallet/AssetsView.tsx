@@ -11,13 +11,14 @@ import { unwatchTabClose, watchTabClose } from '../../utils/nav'
 import Button from '../../components/form/Button'
 
 import './AssetsView.scss'
+import useDocumentTitle from '../../hooks/useDocumentTitle'
 
 const PLACEHOLDER = 'All addresses'
 
 const AssetsView = () => {
   const nav = useNavigate()
   const { unsignedTransactionHash } = useParams()
-  const { assets, accounts, importedAccounts, loadingText, unsignedTransactions } = useWalletStore()
+  const { walletTitleBase, assets, accounts, importedAccounts, loadingText, unsignedTransactions } = useWalletStore()
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>()
   const [sendFormType, setSendFormType] = useState<SendFormType | undefined>()
   const [id, setId] = useState<string | undefined>()
@@ -76,6 +77,7 @@ const AssetsView = () => {
     unwatchTabClose()
   }, [nav, setSendFormType, setId, setNftIndex, setCustomFrom])
 
+  useDocumentTitle(`${walletTitleBase} Assets`)
   return (
     <Container className='assets-view'>
       <PageHeader title='Assets' >

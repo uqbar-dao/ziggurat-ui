@@ -16,6 +16,7 @@ import Row from '../../components/spacing/Row'
 import './TransactionView.scss'
 import Json from '../../components/text/Json'
 import Link from '../../components-indexer/nav/Link'
+import useDocumentTitle from '../../hooks/useDocumentTitle'
 
 type ActionValue = { [key: string]: ActionValue } | string | number
 
@@ -48,7 +49,7 @@ const ActionDisplay = ({ action, indent = 0 }: ActionDisplayProps) => {
 
 const TransactionView = () => {
   const { hash } = useParams()
-  const { unsignedTransactions, transactions } = useWalletStore()
+  const { walletTitleBase, unsignedTransactions, transactions } = useWalletStore()
   const txn = [...transactions, ...Object.values(unsignedTransactions)].find(t => t.hash === hash)
 
   if (!txn) {
@@ -60,6 +61,7 @@ const TransactionView = () => {
     )
   }
 
+  useDocumentTitle(`${walletTitleBase} Tx ${addHexDots(txn.hash)}`)
   return (
     <Container className='transaction-view'>
       <h2>Transaction</h2>

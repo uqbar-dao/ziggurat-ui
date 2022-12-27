@@ -14,6 +14,7 @@ import Entry from '../../components/spacing/Entry'
 import Row from '../../components/spacing/Row'
 import Json from '../../components/text/Json'
 import Text from '../../components/text/Text'
+import useDocumentTitle from '../../hooks/useDocumentTitle'
 import useZigguratStore from '../../stores/zigguratStore'
 import { Tab, Poke as RPoke, Scry as RScry, Event as REvent } from '../../types/ziggurat/Repl'
 
@@ -21,7 +22,7 @@ import './ReplView.scss'
 
 
 const ReplView = () => {
-  const { ships, setShips, views, setViews, pokes, setPokes, scries, setScries, events, setEvents } = useZigguratStore()
+  const { zigguratTitleBase, ships, setShips, views, setViews, pokes, setPokes, scries, setScries, events, setEvents } = useZigguratStore()
 
   const [tabs, setTabs] = useState<Tab[]>([
     { name: 'state', active: true },
@@ -179,6 +180,7 @@ const ReplView = () => {
 
   const activeShip = useMemo(() => ships.find(s => s.active), [ships])
 
+  useDocumentTitle(`${zigguratTitleBase} REPL`)
   return (<>
     <OpenFileHeader />
     <Container className='repl-view'>

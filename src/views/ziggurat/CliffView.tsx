@@ -1,12 +1,16 @@
 import React, { useEffect } from 'react'
 import Iframe from 'react-iframe';
+import { OpenFileHeader } from '../../components-zig/nav/OpenFileHeader';
 import Container from '../../components/spacing/Container'
+import useDocumentTitle from '../../hooks/useDocumentTitle';
+import useZigguratStore from '../../stores/zigguratStore';
 
 import './CliffView.scss'
 
 const cliffUrl = '/cliff/view/our/ziggurat/now'
 
 const CliffView = () => {
+  const { zigguratTitleBase } = useZigguratStore()
   useEffect(() => {
     const checkCliffInstalled = async () => {
       const result = await fetch(cliffUrl)
@@ -20,10 +24,13 @@ You can run "|install ~paldev %cliff" in the webterm insert on the "Contract" pa
     checkCliffInstalled()
   }, [])
 
-  return (
+  useDocumentTitle(`${zigguratTitleBase} %cliff`)
+  return (<>
+    <OpenFileHeader />
     <Container className='cliff-view'>
       <Iframe url={cliffUrl} height='100%' width='100%' />
     </Container>
+  </>
   )
 }
 

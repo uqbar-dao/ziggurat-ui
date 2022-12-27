@@ -17,6 +17,7 @@ import Card from "../../components-indexer/card/Card"
 import HexNum from "../../components/text/HexNum"
 import CardHeader from "../../components-indexer/card/CardHeader"
 import { FaSearch } from "react-icons/fa"
+import useDocumentTitle from "../../hooks/useDocumentTitle"
 
 interface Results {
   batches: Batch[]
@@ -30,7 +31,7 @@ const SearchView = () => {
   const query = location.pathname.split('/')[2]
   const [results, setResults] = useState<Results>()
   const [msg, setMsg] = useState('')
-  const { scry } = useIndexerStore()
+  const { scry, indexerTitleBase } = useIndexerStore()
 
   const cleanQuery = addHexPrefix(addHexDots((query.trim())))
 
@@ -72,6 +73,7 @@ const SearchView = () => {
     getData()
   }, [cleanQuery])
 
+  useDocumentTitle(`${indexerTitleBase} Search "${cleanQuery}"`)
   return (<Container>
     <PageHeader title='Search Results' />
     <Entry>
