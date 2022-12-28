@@ -16,13 +16,13 @@ import Json from '../../components/text/Json'
 import Text from '../../components/text/Text'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
 import useZigguratStore from '../../stores/zigguratStore'
-import { Tab, Poke as RPoke, Scry as RScry, Event as REvent, Ship as RShip } from '../../types/ziggurat/Repl'
+import { Tab, Poke as RPoke, Scry as RScry, Test as RTest, Event as REvent, Ship as RShip } from '../../types/ziggurat/Repl'
 
 import './ReplView.scss'
 
 
 const ReplView = () => {
-  const { zigguratTitleBase, ships, setShips, views, setViews, pokes, setPokes, scries, setScries, events, setEvents } = useZigguratStore()
+  const { zigguratTitleBase, tests, setTests, ships, setShips, views, setViews, pokes, setPokes, scries, setScries, events, setEvents } = useZigguratStore()
 
   const [tabs, setTabs] = useState<Tab[]>([
     { name: 'state', active: true },
@@ -198,10 +198,10 @@ const ReplView = () => {
                   e.preventDefault()
                   e.stopPropagation()
                   setShips(ships.map(s => ({ ...s, expanded: (ship.name === s.name) ? (!s.expanded) : s.expanded })))}
-                } style={{ alignSelf: 'flex-start' }} variant='unstyled' iconOnly 
+                } style={{ alignSelf: 'flex-start', marginRight: '0.5em' }} variant='unstyled' iconOnly 
                 icon={ship.expanded ? <FaChevronDown /> : <FaChevronRight />} />
               <Text small bold> {ship.name} </Text>
-              {ship.expanded && <Button style={{ marginLeft: 'auto' }} variant='unstyled' iconOnly icon={<FaRegTrashAlt />} 
+              {ship.expanded && <Button style={{ marginLeft: 'auto', alignSelf: 'flex-start' }} variant='unstyled' iconOnly icon={<FaRegTrashAlt />} 
                 onClick={(e) => {
                   e.preventDefault()
                   e.stopPropagation()
@@ -269,6 +269,22 @@ const ReplView = () => {
         </Col>
 
         <Col className='pokes-scries'>
+          <Entry>
+            <Card title='Tests'>
+              {tests.map((test, i) => <Col key={i} className='test'>
+                <Row className='w100'>
+                  <Text>{test.name}</Text>
+                  <Row className='buttons'>
+
+                  </Row>
+                </Row>
+              </Col>)}
+              <Divider className='mt1' />
+              <Col className='test new'>
+                
+              </Col>
+            </Card>
+          </Entry>
           <Entry>
             <Card title='Pokes'>
               {pokes.map((poke,i) => <Col key={i} className='poke'>

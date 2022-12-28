@@ -39,3 +39,90 @@ export interface Event {
   type: string
   data: string
 }
+export interface TestScryStep {
+  payload: {
+    who: string
+    "mold-name": string
+    care: string
+    app: string
+    path: string
+  }
+  expected: string
+}
+
+export interface TestDbugStep {
+  payload: {
+    who: string
+    "mold-name": string
+    app: string
+  }
+  expected: string
+}
+
+export interface TestReadSubscriptionStep {
+  payload: {
+    who: string
+    to: string
+    app: string
+    path: string
+  }
+  expected: string
+}
+
+export interface TestWaitStep {
+  until: number
+}
+
+export interface TestCustomReadStep {
+  tag: string
+  payload: string
+  expected: string
+}
+
+export type TestReadStep = TestScryStep | TestDbugStep | TestReadSubscriptionStep | TestWaitStep | TestCustomReadStep
+
+export interface TestDojoStep {
+  payload: {
+    who: string
+    payload: string
+  }
+  expected: TestReadStep[]
+}
+
+export interface TestPokeStep {
+  payload: {
+    who: string
+    to: string
+    app: string
+    mark: string
+    payload: string
+  }
+  expected: TestReadStep[]
+}
+
+export interface TestSubscribeStep {
+  payload: {
+    who: string
+    to: string
+    app: string
+    path: string
+  }
+  expected: TestReadStep[]
+}
+
+export interface TestCustomWriteStep {
+  tag: string
+  payload: string
+  expected: TestReadStep[]
+}
+
+export type TestWriteStep = TestDojoStep | TestPokeStep | TestSubscribeStep | TestCustomWriteStep
+export type TestStep = TestReadStep | TestWriteStep
+
+export interface Test {
+  name?: string
+  filePath?: string
+  imports: string[]
+  steps: TestStep[]
+  expanded?: boolean
+}

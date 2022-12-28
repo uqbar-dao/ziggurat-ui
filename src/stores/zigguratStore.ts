@@ -19,7 +19,7 @@ import { genRanHex } from "../utils/number";
 import { handleEndpointUpdate } from "./subscriptions/endpoint";
 import { DownloadedFile } from "../views/ziggurat/NewProjectView";
 import { Projects } from "../types/ziggurat/Project";
-import { Poke, Scry, Ship, View, Event } from "../types/ziggurat/Repl";
+import { Poke, Scry, Ship, View, Event, Test } from "../types/ziggurat/Repl";
 
 export interface ZigguratStore {
   zigguratTitleBase: string
@@ -42,6 +42,7 @@ export interface ZigguratStore {
   pokes: Poke[]
   scries: Scry[]
   events: Event[]
+  tests: Test[]
   setLoading: (loading?: string) => void
   init: () => Promise<Projects>
   getAccounts: () => Promise<void>
@@ -91,6 +92,7 @@ export interface ZigguratStore {
   setViews: (views: View[]) => void
   setShips: (ships: Ship[]) => void
   setPokes: (pokes: Poke[]) => void
+  setTests: (tests: Test[]) => void
   setScries: (scries: Scry[]) => void
   setEvents: (events: Event[]) => void
 }
@@ -119,6 +121,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
     pokes: [],
     scries: [],
     events: [],
+    tests: [],
     setLoading: (loading?: string) => set({ loading }),
     init: async () => {
       const projects = await get().getProjects()
@@ -562,6 +565,7 @@ ${path}
     setViews: (views: View[]) => set({ views }),
     setShips: (ships: Ship[]) => set({ ships }),
     setPokes: (pokes: Poke[]) => set({ pokes }),
+    setTests: (tests: Test[]) => set({ tests }),
     setScries: (scries: Scry[]) => set({ scries }),
     setEvents: (events: Event[]) => set({ events }),
   }),

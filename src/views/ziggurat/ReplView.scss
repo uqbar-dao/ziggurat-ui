@@ -130,6 +130,13 @@
 
     .card {
       overflow: visible;
+
+      .header {
+        .text {
+          font-size: medium;
+          font-weight: 400;
+        }
+      }
     }
     
     .poke, .scry {
