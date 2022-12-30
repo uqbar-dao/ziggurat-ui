@@ -184,7 +184,7 @@ const ReplView = () => {
             expected: '6'
           }]
         },
-        {
+        { // TestWaitStep
           until: 30
         },
         { // TestScryStep
@@ -443,44 +443,45 @@ interface TestStepProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const determineTestStepType = (step: TestStep) => {
   if ('until' in step) {
-    return 'TestWaitStep'
+    return { isRead: true, type: 'TestWaitStep'}
   } 
 
   if (typeof step.payload === 'string') {
     if (Array.isArray(step.expected)) {
-      return 'TestCustomWriteStep'
+      return { isRead: false, type: 'TestCustomWriteStep'}
     } 
-    return 'TestCustomReadStep'
+    return { isRead: true, type: 'TestCustomReadStep'}
   }
   
   if ('care' in step.payload) {
-    return 'TestScryStep'
+    return { isRead: true, type: 'TestScryStep'}
   }
 
   if ('mold-name' in step.payload) {
-    return 'TestDbugStep'
+    return { isRead: true, type: 'TestDbugStep'}
   }
 
   if ('mark' in step.payload) {
-    return 'TestPokeStep'
+    return { isRead: false, type: 'TestPokeStep'}
   }
 
   if ('to' in step.payload) {
     if (Array.isArray(step.expected)) {
-      return 'TestSubscribeStep'
+      return { isRead: false, type: 'TestSubscribeStep'}
     }
-    return 'TestReadSubscriptionStep'
+    return { isRead: true, type: 'TestReadSubscriptionStep'}
   }
 
   if ('payload' in step.payload) {
-    return 'TestDojoStep'
+    return { isRead: false, type: 'TestDojoStep'}
   }
 
-  return null
+  return { isRead: null, type: null }
 }
 
 const TestStepRow: React.FC<TestStepProps> = ({ step, ...props }) => {
-  const stepType = determineTestStepType(step)
+  const { isRead, type: stepType } = determineTestStepType(step)
+  
   let inner = <Text>{stepType}</Text>
   switch (stepType) {
     case 'TestCustomReadStep':
