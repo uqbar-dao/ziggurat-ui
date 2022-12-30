@@ -139,7 +139,7 @@
       }
     }
     
-    .poke, .scry {
+    .poke, .scry, .test {
       margin-top: 0.5em;
       padding: 0.25em 0.5em;
       box-shadow: 1px 1px 1px gray;
@@ -160,24 +160,25 @@
 
       .buttons {
         margin-left: auto;
+        
+        button {
+          border-radius: 4px;
+          padding: 0.125em 0.25em;
+          background-color: colors.$light-wight;
+          margin-left: 0.125em;
+  
+          &:hover {
+            background-color: colors.$uq-pink;
+          }
+  
+          &:active {
+            color: white;
+            background-color: colors.$midnightpurp;
+            transform: scale(1);
+          }
+        }
       }
 
-      .poker, .scrier {
-        border-radius: 4px;
-        padding: 0.125em 0.25em;
-        background-color: colors.$light-wight;
-        margin-left: 0.125em;
-
-        &:hover {
-          background-color: colors.$uq-pink;
-        }
-
-        &:active {
-          color: white;
-          background-color: colors.$midnightpurp;
-          transform: scale(1);
-        }
-      }
 
       .input-container {
         align-self: stretch;
@@ -236,6 +237,10 @@
       .dropdown {
         background-color: colors.$lapocyan;
       }
+    }
+
+    .test {
+      background: colors.$laffron;
     }
   }
 }

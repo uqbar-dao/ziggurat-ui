@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import { useMemo, useState } from 'react'
-import { FaChevronDown, FaChevronRight, FaPlus, FaRegEye, FaRegHandPointer, FaRegTrashAlt } from 'react-icons/fa'
+import { FaChevronDown, FaChevronRight, FaPlay, FaPlus, FaRegEye, FaRegHandPointer, FaRegTrashAlt } from 'react-icons/fa'
 import Card from '../../components-indexer/card/Card'
 import Checkbox from '../../components-zig/forms/Checkbox'
 import { OpenFileHeader } from '../../components-zig/nav/OpenFileHeader'
@@ -11,12 +11,14 @@ import Col from '../../components/spacing/Col'
 import Container from '../../components/spacing/Container'
 import Divider from '../../components/spacing/Divider'
 import Entry from '../../components/spacing/Entry'
+import Field from '../../components/spacing/Field'
 import Row from '../../components/spacing/Row'
 import Json from '../../components/text/Json'
+import Pill from '../../components/text/Pill'
 import Text from '../../components/text/Text'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
 import useZigguratStore from '../../stores/zigguratStore'
-import { Tab, Poke as RPoke, Scry as RScry, Test as RTest, Event as REvent, Ship as RShip } from '../../types/ziggurat/Repl'
+import { Tab, Poke as RPoke, Scry as RScry, Test as RTest, Event as REvent, Ship as RShip, TestReadStep, TestWriteStep, TestStep, TestWaitStep, TestReadSubscriptionStep } from '../../types/ziggurat/Repl'
 
 import './ReplView.scss'
 
@@ -155,6 +157,50 @@ const ReplView = () => {
     { source: '~zod', type: 'poke', data: '[%derp-action [%add-derp "burp"]]' },
   ])
 
+  if (!tests.length) setTests([
+    {
+      name: 'me test',
+      imports: [
+        { face: 'moop', path: '/lib/moop/hoon' }, 
+        { face: 'doop', path: '/lib/doop/hoon'}
+      ],
+      steps: [
+        { // TestPokeStep
+          payload: {
+            who: '~bus',
+            to: '~molten-martyr',
+            app: 'my-app',
+            mark: 'my-app-update',
+            payload: '[%more-beeves %please]'
+          },
+          expected: [{ // TestScryStep
+            payload: { 
+              who: '~bus', 
+              'mold-name': '@ud', 
+              care: 'gx', 
+              app: 'my-app', 
+              path: 'beeves-count' 
+            },
+            expected: '6'
+          }]
+        },
+        {
+          until: 30
+        },
+        { // TestScryStep
+          payload: { 
+            who: '~bus', 
+            'mold-name': '@ud', 
+            care: 'gx', 
+            app: 'my-app', 
+            path: 'beeves-count' 
+          },
+          expected: '6'
+        },
+      ]
+    }
+  ])
+
   const blankShip = { name: '', apps: {}, expanded: true, active: false }
   const blankPoke = { ship: '', data: '' }
   const blankScry = { ship: '', data: '', app: '' }
@@ -272,16 +318,20 @@ const ReplView = () => {
           <Entry>
             <Card title='Tests'>
               {tests.map((test, i) => <Col key={i} className='test'>
-                <Row className='w100'>
-                  <Text>{test.name}</Text>
-                  <Row className='buttons'>
-
+                <Col className='w100'>
+                  <Row>
+                    <Text>{test.name}</Text>
+                    <Row className='buttons'>
+                      <Button icon={<FaRegTrashAlt />} iconOnly variant='unstyled' />
+                      <Button icon={<FaPlay />} iconOnly variant='unstyled' />
+                    </Row>
                   </Row>
-                </Row>
+                  {test.steps.map((step, j) => <TestStepRow step={step} key={i} />)}
+                </Col>
               </Col>)}
               <Divider className='mt1' />
               <Col className='test new'>
-                
+
               </Col>
             </Card>
           </Entry>
@@ -386,3 +436,77 @@ const ReplView = () => {
 }
 
 export default ReplView
+
+interface TestStepProps extends React.HTMLAttributes<HTMLDivElement> {
+  step: TestStep,
+}
+
+const determineTestStepType = (step: TestStep) => {
+  if ('until' in step) {
+    return 'TestWaitStep'
+  } 
+
+  if (typeof step.payload === 'string') {
+    if (Array.isArray(step.expected)) {
+      return 'TestCustomWriteStep'
+    } 
+    return 'TestCustomReadStep'
+  }
+  
+  if ('care' in step.payload) {
+    return 'TestScryStep'
+  }
+
+  if ('mold-name' in step.payload) {
+    return 'TestDbugStep'
+  }
+
+  if ('mark' in step.payload) {
+    return 'TestPokeStep'
+  }
+
+  if ('to' in step.payload) {
+    if (Array.isArray(step.expected)) {
+      return 'TestSubscribeStep'
+    }
+    return 'TestReadSubscriptionStep'
+  }
+
+  if ('payload' in step.payload) {
+    return 'TestDojoStep'
+  }
+
+  return null
+}
+
+const TestStepRow: React.FC<TestStepProps> = ({ step, ...props }) => {
+  const stepType = determineTestStepType(step)
+  let inner = <Text>{stepType}</Text>
+  switch (stepType) {
+    case 'TestCustomReadStep':
+      break
+    case 'TestCustomWriteStep':
+      break
+    case 'TestDbugStep':
+      break
+    case 'TestDojoStep':
+      break
+    case 'TestPokeStep':
+      break
+    case 'TestReadSubscriptionStep':
+      break
+    case 'TestScryStep':
+      break
+    case 'TestSubscribeStep':
+      break
+    case 'TestWaitStep':
+      break
+    case null:
+    default:
+      break
+  }
+
+  return (<Entry className='test-step' {...props}>
+    {inner}
+  </Entry>)
+}

@@ -122,7 +122,7 @@ export type TestStep = TestReadStep | TestWriteStep
 export interface Test {
   name?: string
   filePath?: string
-  imports: string[]
+  imports: { face: string, path: string }[]
   steps: TestStep[]
   expanded?: boolean
 }
