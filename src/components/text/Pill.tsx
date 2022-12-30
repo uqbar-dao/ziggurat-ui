@@ -13,8 +13,8 @@ interface PillProps extends React.HTMLAttributes<HTMLDivElement> {
 const Pill: React.FC<PillProps> = ({ value = ' ', label, color, children, ...props }) => {
   return (
     <Row {...props} className={'pill'}>
-      <Text className={'label ' +  (color || 'turq')} small>{label}</Text>
-      <Text className='value' small>
+      <Text className={'pill-label ' +  (color || 'turq')} small>{label}</Text>
+      <Text className='pill-value' small>
         {value}
         {children}
       </Text>

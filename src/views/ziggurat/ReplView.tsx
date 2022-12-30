@@ -14,22 +14,23 @@ import Entry from '../../components/spacing/Entry'
 import Field from '../../components/spacing/Field'
 import Row from '../../components/spacing/Row'
 import Json from '../../components/text/Json'
-import Pill from '../../components/text/Pill'
+import TestStepRow from '../../components-zig/tests/TestStepRow'
 import Text from '../../components/text/Text'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
 import useZigguratStore from '../../stores/zigguratStore'
-import { Tab, Poke as RPoke, Scry as RScry, Test as RTest, Event as REvent, Ship as RShip, TestReadStep, TestWriteStep, TestStep, TestWaitStep, TestReadSubscriptionStep } from '../../types/ziggurat/Repl'
+import { Tab, Poke as RPoke, Scry as RScry, Test as RTest, Event as REvent, Ship as RShip, TestReadStep, TestWriteStep, TestStep, TestWaitStep, TestReadSubscriptionStep, StringTestStep, TestDbugStep, TestScryStep, TestDojoStep, TestCustomReadStep, TestPokeStep, TestSubscribeStep, TestCustomWriteStep } from '../../types/ziggurat/Repl'
 
 import './ReplView.scss'
 
 
 const ReplView = () => {
-  const { zigguratTitleBase, tests, setTests, ships, setShips, views, setViews, pokes, setPokes, scries, setScries, events, setEvents } = useZigguratStore()
+  const { zigguratTitleBase, tests, setTests, ships, setShips, views, setViews, pokes, setPokes, scries, setScries, events, setEvents, projects, currentProject } = useZigguratStore()
 
   const [tabs, setTabs] = useState<Tab[]>([
     { name: 'state', active: true },
     { name: 'events', active: false },
     { name: 'dojo', active: false},
+    { name: 'tests', active: false},
   ])
 
   if (!ships.length) setShips([
@@ -208,6 +209,9 @@ const ReplView = () => {
   const [newScry, setNewScry] = useState<RScry>(blankPoke)
   const [newPoke, setNewPoke] = useState<RPoke>(blankScry)
   const [newShip, setNewShip] = useState<RShip>(blankShip)
+  const [newFace, setNewFace] = useState<string>('')
+  const [newPath, setNewPath] = useState<string>('')
+  const [newTest, setNewTest] = useState<string>('')
 
   const togglePokeExpanded = (poke: RPoke, key: 'expanded' | 'expandedApps' | 'expandedShips') => {
     setPokes(pokes.map(p => ({ 
@@ -230,6 +234,45 @@ const ReplView = () => {
   }
 
   const activeShip = useMemo(() => ships.find(s => s.active), [ships])
+  const addStepToTest = (test: RTest, step: StringTestStep) => {
+    let ourStep: TestStep | undefined = undefined
+
+    switch (step) {
+      case 'read':
+        ourStep = { tag: '', payload: '', expected: '' } as TestCustomReadStep
+        break
+      case 'rsub':
+        ourStep = { payload: { who: '', to: '', app: '', path: '' }, expected: '' } as TestReadSubscriptionStep
+        break
+      case 'scry':
+        ourStep = { payload: { who: '', "mold-name": '', care: '', app: '', path: '' }, expected: '' } as TestScryStep
+        break
+      case 'dbug':
+        ourStep = { payload: { who: '', "mold-name": '', app: '' }, expected: '' } as TestDbugStep
+        break
+      case 'wait':
+        ourStep = { until: 1 } as TestWaitStep
+        break
+      case 'dojo': 
+        ourStep = { payload: { who: '', payload: '' }, expected: [] } as TestDojoStep
+        break
+      case 'poke':
+        ourStep = { payload: { who: '', to: '', app: '', mark: '', payload: '' }, expected: [] } as TestPokeStep
+        break
+      case 'subs': 
+        ourStep = { payload: { who: '', to: '', app: '', path: '' }, expected: [] } as TestSubscribeStep
+        break
+      case 'writ':
+        ourStep = { tag: '', payload: '', expected: [] } as TestCustomWriteStep
+        break
+    }
+
+    ourStep !== undefined && setTests(tests.map(t => ({ ...t, 
+      newStepOpen: false, 
+      steps: t.name === test.name ? [...t.steps, ourStep as TestStep] : t.steps 
+    })))
+  }
+
   useDocumentTitle(`${zigguratTitleBase} REPL`)
   return (<>
     <OpenFileHeader />
@@ -312,29 +355,131 @@ const ReplView = () => {
               </Row>)}
             </Col>
           </Card>}
+          {tabs.find(t => t.name === 'tests')?.active && <Card className='tab-body tests' title='tests'>
+            {tests.map((test, i) => <Col key={i} className='test'>
+              <Row>
+                <Text large>{test.name}</Text>
+                <Row className='buttons'>
+                  <Button icon={<FaRegTrashAlt />} iconOnly variant='unstyled' />
+                  <Button icon={<FaPlay />} iconOnly variant='unstyled' />
+                </Row>
+              </Row>
+              <Field name='Name'>
+                <Input value={test.name} onChange={(e) => setTests(tests.map(t => ({ ...t,
+                  name: (t.name === test.name ? e.currentTarget.value : t.name)
+                })))} />
+              </Field>
+              <Field name='File' className='w100'>
+                <Text>Import steps from file:</Text>
+                <Dropdown value={test.filePath || 'No file selected'} open={Boolean(test.filePathDropOpen)}
+                  style={{ marginLeft: 'auto' }}
+                  toggleOpen={() => setTests(tests.map(t => ({ ...t, 
+                    filePathDropOpen: t.name === test.name ? !t.filePathDropOpen : false })))}>
+                  <option onClick={(e) => {
+                      console.log(e)
+                      setTests(tests.map(t => ({ ...t, 
+                        filePathDropOpen: false,
+                        filePath: t.name === test.name ? undefined : t.filePath 
+                    })))}}
+                    key={'null'}>None (use manual steps)</option>
+                  {projects[currentProject].dir.map(file => <option key={file}
+                    onClick={(e) => {
+                      setTests(tests.map(t => ({ ...t, 
+                        filePathDropOpen: false,
+                        filePath: t.name === test.name ? e.currentTarget.value : t.filePath 
+                    })))}} value={file}>{file}</option>)}
+                </Dropdown>
+              </Field>
+              {!Boolean(test.filePath) && <><Field name='Steps'>
+                <Col className='w100'>
+                  {Boolean(test.steps.length) 
+                    ? test.steps.map((step, j) => <TestStepRow index={j} test={test} step={step} key={j} />)
+                    : <Text>None</Text>}
+                </Col>
+              </Field>
+              <Field name='Add' className='ml1 mt1'>
+                <Dropdown value={'Select step type...'} open={Boolean(test.newStepOpen)} toggleOpen={() => setTests(tests.map(t => ({ ...t, newStepOpen: t.name === test.name ? !t.newStepOpen : false })))}>
+                  <Text bold>Read step</Text>
+                  <option onClick={() => { addStepToTest(test, 'scry') }}>Scry</option>
+                  <option onClick={() => { addStepToTest(test, 'rsub') }}>Read Subscription</option>
+                  <option onClick={() => { addStepToTest(test, 'wait') }}>Wait</option>
+                  <option onClick={() => { addStepToTest(test, 'dbug') }}>Dbug</option>
+                  <option onClick={() => { addStepToTest(test, 'read') }}>Custom Read</option>
+                  <Divider />
+                  <Text bold>Write</Text>
+                  <option onClick={() => { addStepToTest(test, 'poke') }}>Poke</option>
+                  <option onClick={() => { addStepToTest(test, 'subs') }}>Subscribe</option>
+                  <option onClick={() => { addStepToTest(test, 'dojo') }}>Dojo</option>
+                  <option onClick={() => { addStepToTest(test, 'writ') }}>Custom Write</option>
+                </Dropdown>
+                <Row className='buttons'>
+                  <Button variant='unstyled' iconOnly icon={<FaPlus />} disabled={false} 
+                    onClick={() => {}} />
+                </Row>
+              </Field></>}
+              <Field name='Imports' className='imports wrap'>
+                {test.imports.map((imp, j) => <Row className='import w100' key={j}>
+                  <Text mr1 ml1>Face</Text>
+                  <Input value={imp.face} onChange={(e) => setTests(tests.map(t => ({ 
+                    ...t, 
+                    imports: t.name === test.name 
+                    ? test.imports.map(im => im.face === imp.face 
+                      ? { ...im, face: e.currentTarget.value }
+                      : im)
+                      : t.imports 
+                  })))} />
+                  <Text mr1 ml1>Path</Text>
+                  <Dropdown open={Boolean(imp.dropOpen)} toggleOpen={() => setTests(tests.map(t => ({ 
+                    ...t, 
+                    imports: t.imports.map(im => ({ ...im, dropOpen: im.face === imp.face ? !im.dropOpen : false }))})))} 
+                  value={imp.path}>
+                    {projects[currentProject].dir.map(file => <option value={file} key={file} 
+                      onClick={(e) => setTests(tests.map(t => ({ 
+                      ...t, 
+                      imports: t.name === test.name 
+                        ? test.imports.map(im => ({ ...im, 
+                          dropOpen: false, 
+                          path: im.face === imp.face ? e.currentTarget.value : im.path }))
+                        : t.imports
+                    })))}>{file}</option>)}
+                  </Dropdown>
+                  <Row className='buttons'>
+                    <Button variant='unstyled' iconOnly icon={<FaRegTrashAlt />} onClick={() => setTests(tests.map(t => ({
+                      ...t, imports: t.name === test.name ? t.imports.filter(im => im.face !== imp.face) : t.imports
+                    })))} />
+                  </Row>
+                </Row>)}
+                <Field name='Add' className='ml1 mt1 w100 add-import'>
+                  <Input className='mr1' placeholder='face' value={newFace} onChange={(e) => setNewFace(e.currentTarget.value)} />
+                  <Input placeholder='path' value={newPath} onChange={(e) => setNewPath(e.currentTarget.value)} />
+                  <Button variant='unstyled' style={{ marginLeft: 'auto', border: '1px solid transparent' }}
+                    iconOnly icon={<FaPlus />} disabled={!Boolean(newFace) || !Boolean(newPath)}
+                    onClick={() => {
+                      setNewFace('')
+                      setNewPath('')
+                      setTests(tests.map(t => ({ ...t, imports: t.name === test.name 
+                      ? [...t.imports, { face: newFace, path: newPath }]
+                      : t.imports })))}} />
+                </Field>
+              </Field>
+            </Col>)}
+            <Divider />
+            <Row className='test new'>
+              <Input placeholder='name' value={newTest} onChange={(e) => setNewTest(e.currentTarget.value)} />
+              <Button disabled={!Boolean(newTest)} style={{ marginLeft: 'auto' }} variant='unstyled' onClick={(e) => {
+                  Boolean(newTest) && setTests([...tests, { name: newTest, filePath: undefined, imports: [], steps: [], expanded: true }])
+                  setNewTest('')
+                }}>
+                <Row>
+                <FaPlus className='mr1' />
+                <Text>Add new test</Text>
+                </Row>
+              </Button>
+            </Row>
+          </Card>}
         </Col>
 
         <Col className='pokes-scries'>
-          <Entry>
-            <Card title='Tests'>
-              {tests.map((test, i) => <Col key={i} className='test'>
-                <Col className='w100'>
-                  <Row>
-                    <Text>{test.name}</Text>
-                    <Row className='buttons'>
-                      <Button icon={<FaRegTrashAlt />} iconOnly variant='unstyled' />
-                      <Button icon={<FaPlay />} iconOnly variant='unstyled' />
-                    </Row>
-                  </Row>
-                  {test.steps.map((step, j) => <TestStepRow step={step} key={i} />)}
-                </Col>
-              </Col>)}
-              <Divider className='mt1' />
-              <Col className='test new'>
-
-              </Col>
-            </Card>
-          </Entry>
           <Entry>
             <Card title='Pokes'>
               {pokes.map((poke,i) => <Col key={i} className='poke'>
@@ -437,77 +582,3 @@ const ReplView = () => {
 
 export default ReplView
 
-interface TestStepProps extends React.HTMLAttributes<HTMLDivElement> {
-  step: TestStep,
-}
-
-const determineTestStepType = (step: TestStep) => {
-  if ('until' in step) {
-    return { isRead: true, type: 'TestWaitStep'}
-  } 
-
-  if (typeof step.payload === 'string') {
-    if (Array.isArray(step.expected)) {
-      return { isRead: false, type: 'TestCustomWriteStep'}
-    } 
-    return { isRead: true, type: 'TestCustomReadStep'}
-  }
-  
-  if ('care' in step.payload) {
-    return { isRead: true, type: 'TestScryStep'}
-  }
-
-  if ('mold-name' in step.payload) {
-    return { isRead: true, type: 'TestDbugStep'}
-  }
-
-  if ('mark' in step.payload) {
-    return { isRead: false, type: 'TestPokeStep'}
-  }
-
-  if ('to' in step.payload) {
-    if (Array.isArray(step.expected)) {
-      return { isRead: false, type: 'TestSubscribeStep'}
-    }
-    return { isRead: true, type: 'TestReadSubscriptionStep'}
-  }
-
-  if ('payload' in step.payload) {
-    return { isRead: false, type: 'TestDojoStep'}
-  }
-
-  return { isRead: null, type: null }
-}
-
-const TestStepRow: React.FC<TestStepProps> = ({ step, ...props }) => {
-  const { isRead, type: stepType } = determineTestStepType(step)
-  
-  let inner = <Text>{stepType}</Text>
-  switch (stepType) {
-    case 'TestCustomReadStep':
-      break
-    case 'TestCustomWriteStep':
-      break
-    case 'TestDbugStep':
-      break
-    case 'TestDojoStep':
-      break
-    case 'TestPokeStep':
-      break
-    case 'TestReadSubscriptionStep':
-      break
-    case 'TestScryStep':
-      break
-    case 'TestSubscribeStep':
-      break
-    case 'TestWaitStep':
-      break
-    case null:
-    default:
-      break
-  }
-
-  return (<Entry className='test-step' {...props}>
-    {inner}
-  </Entry>)
-}

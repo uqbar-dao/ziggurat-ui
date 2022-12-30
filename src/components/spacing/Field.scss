@@ -4,6 +4,14 @@
   &.center > .label {
     align-self: center;
   }
+
+  &.wrap {
+    flex-wrap: wrap;
+
+    .content {
+      flex-wrap: wrap;
+    }
+  }
   
   .label {
     min-width: 6rem;

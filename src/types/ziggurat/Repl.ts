@@ -122,7 +122,11 @@ export type TestStep = TestReadStep | TestWriteStep
 export interface Test {
   name?: string
   filePath?: string
-  imports: { face: string, path: string }[]
+  imports: { face: string, path: string, dropOpen?: boolean }[]
   steps: TestStep[]
   expanded?: boolean
+  filePathDropOpen?: boolean
+  newStepOpen?: boolean
 }
+
+export type StringTestStep = 'scry' | 'rsub' | 'wait' | 'read' | 'poke' | 'subs' | 'dbug' | 'dojo' | 'writ'

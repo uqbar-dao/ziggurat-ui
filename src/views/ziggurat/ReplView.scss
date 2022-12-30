@@ -121,6 +121,96 @@
           }
         }
       }
+
+      &.tests {
+        max-height: 90vh;
+
+        button {
+          border-radius: 4px;
+          padding: 0.125em 0.25em;
+          background-color: colors.$light-wight;
+          margin-left: 0.125em;
+  
+          &:hover {
+            background-color: colors.$uq-pink;
+          }
+  
+          &:active {
+            color: white;
+            background-color: colors.$midnightpurp;
+            transform: scale(1);
+          }
+        }
+
+        .test {
+          margin: 0.5em 0;
+          padding: 0.5em;
+          background-color: colors.$cornsilk;
+          box-shadow: 1px 1px 0px colors.$medium-gray;
+
+          option {
+            cursor: pointer;
+
+            &:hover {
+              background-color: colors.$laffron;
+            }
+          }
+
+          .test-step {
+            .grip {
+              cursor: row-resize;
+            }
+
+            // button {
+            //   visibility: hidden;
+            // }
+
+            // &:hover {
+            //   button {
+            //     visibility: visible;
+            //   }
+            // }
+          }
+
+          .imports {
+            .import {
+
+              // button { 
+              //   visibility: hidden;
+              // }
+              
+              // &:hover {
+              //   button {
+              //     visibility: visible;
+              //   }
+              // }
+            }
+          }
+          
+          .input-container {
+            max-width: 256px;
+            input {
+              border: none;
+              border-radius: 4px;
+              height: 100%;
+            }
+          }
+
+          .buttons {
+            margin-left: auto;
+          }
+
+          &.new button {
+            border: 1px solid transparent;
+          }
+
+          .add-import {
+            .input-container, input {
+              max-width: 200px;
+            }
+          }
+        }
+      }
     }
   }
 
@@ -139,10 +229,10 @@
       }
     }
     
-    .poke, .scry, .test {
+    .poke, .scry {
       margin-top: 0.5em;
       padding: 0.25em 0.5em;
-      box-shadow: 1px 1px 1px gray;
+      box-shadow: 1px 1px 1px colors.$medium-gray;
 
       .expander {
         margin-right: 4px;
