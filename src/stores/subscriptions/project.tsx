@@ -8,30 +8,41 @@ import { TestResultUpdate } from "../../types/ziggurat/TestData";
 
 export const handleProjectUpdate = (get: GetState<ZigguratStore>, set: SetState<ZigguratStore>, project: string) => (update: ProjectUpdate) => {
   console.log('UPDATE FOR:', {project, update})
+  
   /**
    * Need to handle ALL of these types of update: 
-   *  [%project-names update-info payload=(data ~) project-names=(set @t)]
-      [%projects update-info payload=(data ~) projects=shown-projects]
-      [%project update-info payload=(data ~) shown-project]
-      [%state update-info payload=(data ~) state=(map @ux chain:engine)]
-      [%new-project update-info payload=(data ~) ~]
-      [%add-test update-info payload=(data shown-test) test-id=@ux]
-      [%compile-contract update-info payload=(data ~) ~]
-      [%delete-test update-info payload=(data ~) test-id=@ux]
-      [%run-queue update-info payload=(data ~) ~]
-      [%add-custom-step update-info payload=(data ~) test-id=@ux tag=@tas]
-      [%delete-custom-step update-info payload=(data ~) test-id=@ux tag=@tas]
-      [%add-app-to-dashboard update-info payload=(data ~) app=@tas sur=path mold-name=@t mar=path]
-      [%delete-app-from-dashboard update-info payload=(data ~) app=@tas]
-      [%add-town-sequencer update-info payload=(data ~) town-id=@ux who=@p]
-      [%delete-town-sequencer update-info payload=(data ~) town-id=@ux]
-      [%add-user-file update-info payload=(data ~) file=path]
-      [%delete-user-file update-info payload=(data ~) file=path]
-      [%custom-step-compiled update-info payload=(data ~) test-id=@ux tag=@tas]
-      [%test-results update-info payload=(data shown-test-results) test-id=@ux thread-id=@t =test-steps]
-      [%dir update-info payload=(data (list path)) ~]
-      [%dashboard update-info payload=(data json) ~]
+   *  
+  [%projects update-info payload=(data ~) projects=shown-projects]
+  [%project update-info payload=(data ~) shown-project]
+  [%state update-info payload=(data ~) state=(map @ux chain:engine)]
+  [%dir update-info payload=(data (list path)) ~]
+  [%dashboard update-info payload=(data json) ~]
+  [%new-project update-info payload=(data ~) ~]
+  [%add-test update-info payload=(data shown-test) test-id=@ux]
+  [%compile-contract update-info payload=(data ~) ~]
+  [%delete-test update-info payload=(data ~) test-id=@ux]
+  [%run-queue update-info payload=(data ~) ~]
+  [%test-results update-info payload=(data shown-test-results) test-id=@ux thread-id=@t =test-steps]
+  [%project-names update-info payload=(data ~) project-names=(set @t)]
+  [%add-custom-step update-info payload=(data ~) test-id=@ux tag=@tas]
+  [%delete-custom-step update-info payload=(data ~) test-id=@ux tag=@tas]
+  [%add-town-sequencer update-info payload=(data ~) town-id=@ux who=@p]
+  [%delete-town-sequencer update-info payload=(data ~) town-id=@ux]
+  [%add-user-file update-info payload=(data ~) file=path]
+  [%delete-user-file update-info payload=(data ~) file=path]
+  [%custom-step-compiled update-info payload=(data ~) test-id=@ux tag=@tas]
+  [%add-app-to-dashboard update-info payload=(data ~) app=@tas sur=path mold-name=@t mar=path]
+  [%delete-app-from-dashboard update-info payload=(data ~) app=@tas]
    */
+
+  const updateTypes = [ 'projects', 'project', 'state', 'dir', 'dashboard', 'new-project', 'add-test', 'compile-contract', 'delete-test', 'run-queue', 'test-results', 'project-names', 'add-custom-step', 'delete-custom-step', 'add-town-sequencer', 'delete-town-sequencer', 'add-user-file', 'delete-user-file', 'custom-step-compiled', 'add-app-to-dashboard', 'delete-app-from-dashboard', ]
+
+  updateTypes.forEach(ut => {
+    if (ut in update) {
+      console.log(`UPDATE IS TYPE ${ut}`)
+    }
+  })
+
   const newProjects = { ...get().projects }
   const p = update.project.project
   newProjects[project] = {

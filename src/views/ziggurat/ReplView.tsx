@@ -24,140 +24,15 @@ import './ReplView.scss'
 
 
 const ReplView = () => {
-  const { zigguratTitleBase, tests, setTests, ships, setShips, views, setViews, pokes, setPokes, scries, setScries, events, setEvents, projects, currentProject } = useZigguratStore()
+  const { zigguratTitleBase, tests, setTests, ships, setShips, createShips, views, setViews, pokes, setPokes, scries, setScries, events, setEvents, projects, currentProject, setLoading } = useZigguratStore()
 
   const [tabs, setTabs] = useState<Tab[]>([
-    { name: 'state', active: true },
+    { name: 'tests', active: true },
+    { name: 'state', active: false },
     { name: 'events', active: false },
-    { name: 'dojo', active: false},
-    { name: 'tests', active: false},
+    { name: 'dojo', active: false },
   ])
-
-  if (!ships.length) setShips([
-    { name: '~bus',
-      active: true,
-      expanded: true,
-      apps: { myapp: { herp: 'derp' },
-              bubba: { dubba: 'gubba', lubba: 'slubba' },
-              beebo: { neebo: [7, 3, 3, 8, 0] } } },
-    { name: '~dozzod-dozzod-dozzod-dozzod',
-      active: false,
-      expanded: true,
-      apps: { myapp: { herp: 'burp' },
-              bubba: { dubba: 'gubba', lubba: 'slubba' },
-              beebo: { neebo: [7, 3, 3, 8, 0] } } },
-    { name: '~molten-martyr',
-      active: false,
-      expanded: true,
-      apps: { myapp: { herp: 'slurp' },
-              bubba: { dubba: 'gubba', lubba: 'slubba' },
-              beebo: { neebo: [7, 3, 3, 8, 0] } } }])
-
-  if (!views.length) setViews([
-    { name: 'floopus', active: true },
-    { name: 'doopus', active: true },
-    { name: 'gloopus', active: true },
-    { name: 'a really long one for some reason', active: false }])
-
-  if (!pokes.length) setPokes([
-    { app: 'myapp', ship: '~nec', data: "{ 'add-herp': 'burp' }" },
-    { app: 'myapp', ship: '~bus', data: "{ 'add-herp': 'derp' }" },
-    { app: 'myapp', ship: '~luc', data: "{ 'add-herp': 'gurp' }" },
-  ])
-
-  if (!scries.length) setScries([
-    { ship: '~nec', data: '%gx /beep/jeep/deep/sleep' },
-    { ship: '~luc', data: '%cx /gup/dup/lup/pup' },
-    { ship: '~bus', data: '%ax /oop/doop/sloop' },
-  ])
-
-  if (!events.length) setEvents([
-    { source: 'behn', type: 'timer', data: '/chocobo' },
-    { source: '~nec', type: 'poke', data: '[%derp-action [%add-derp "herp"]' },
-    { source: '~bus', type: 'poke', data: '[%derp-action [%mod-derp [[%id 5] [%derp "gurp nurp"]]]]' },
-    { source: 'behn', type: 'timer', data: '/kokomo' },
-    { source: '~luc', type: 'poke', data: '[%derp-action [%del-derp "slurp"]]' },
-    { source: 'behn', type: 'timer', data: '/bonobo' },
-    { source: '~zod', type: 'poke', data: '[%derp-action [%add-derp "burp"]]' },
-    { source: 'behn', type: 'timer', data: '/chocobo' },
-    { source: '~nec', type: 'poke', data: '[%derp-action [%add-derp "herp"]' },
-    { source: '~bus', type: 'poke', data: '[%derp-action [%mod-derp [[%id 5] [%derp "gurp nurp"]]]]' },
-    { source: 'behn', type: 'timer', data: '/kokomo' },
-    { source: '~luc', type: 'poke', data: '[%derp-action [%del-derp "slurp"]]' },
-    { source: 'behn', type: 'timer', data: '/bonobo' },
-    { source: '~zod', type: 'poke', data: '[%derp-action [%add-derp "burp"]]' },
-    { source: 'behn', type: 'timer', data: '/chocobo' },
-    { source: '~nec', type: 'poke', data: '[%derp-action [%add-derp "herp"]' },
-    { source: '~bus', type: 'poke', data: '[%derp-action [%mod-derp [[%id 5] [%derp "gurp nurp"]]]]' },
-    { source: 'behn', type: 'timer', data: '/kokomo' },
-    { source: '~luc', type: 'poke', data: '[%derp-action [%del-derp "slurp"]]' },
-    { source: 'behn', type: 'timer', data: '/bonobo' },
-    { source: '~zod', type: 'poke', data: '[%derp-action [%add-derp "burp"]]' },
-    { source: 'behn', type: 'timer', data: '/chocobo' },
-    { source: '~nec', type: 'poke', data: '[%derp-action [%add-derp "herp"]' },
-    { source: '~bus', type: 'poke', data: '[%derp-action [%mod-derp [[%id 5] [%derp "gurp nurp"]]]]' },
-    { source: 'behn', type: 'timer', data: '/kokomo' },
-    { source: '~luc', type: 'poke', data: '[%derp-action [%del-derp "slurp"]]' },
-    { source: 'behn', type: 'timer', data: '/bonobo' },
-    { source: '~zod', type: 'poke', data: '[%derp-action [%add-derp "burp"]]' },
-    { source: 'behn', type: 'timer', data: '/chocobo' },
-    { source: '~nec', type: 'poke', data: '[%derp-action [%add-derp "herp"]' },
-    { source: '~bus', type: 'poke', data: '[%derp-action [%mod-derp [[%id 5] [%derp "gurp nurp"]]]]' },
-    { source: 'behn', type: 'timer', data: '/kokomo' },
-    { source: '~luc', type: 'poke', data: '[%derp-action [%del-derp "slurp"]]' },
-    { source: 'behn', type: 'timer', data: '/bonobo' },
-    { source: '~zod', type: 'poke', data: '[%derp-action [%add-derp "burp"]]' },
-    { source: 'behn', type: 'timer', data: '/chocobo' },
-    { source: '~nec', type: 'poke', data: '[%derp-action [%add-derp "herp"]' },
-    { source: '~bus', type: 'poke', data: '[%derp-action [%mod-derp [[%id 5] [%derp "gurp nurp"]]]]' },
-    { source: 'behn', type: 'timer', data: '/kokomo' },
-    { source: '~luc', type: 'poke', data: '[%derp-action [%del-derp "slurp"]]' },
-    { source: 'behn', type: 'timer', data: '/bonobo' },
-    { source: '~zod', type: 'poke', data: '[%derp-action [%add-derp "burp"]]' },
-    { source: 'behn', type: 'timer', data: '/chocobo' },
-    { source: '~nec', type: 'poke', data: '[%derp-action [%add-derp "herp"]' },
-    { source: '~bus', type: 'poke', data: '[%derp-action [%mod-derp [[%id 5] [%derp "gurp nurp"]]]]' },
-    { source: 'behn', type: 'timer', data: '/kokomo' },
-    { source: '~luc', type: 'poke', data: '[%derp-action [%del-derp "slurp"]]' },
-    { source: 'behn', type: 'timer', data: '/bonobo' },
-    { source: '~zod', type: 'poke', data: '[%derp-action [%add-derp "burp"]]' },
-    { source: 'behn', type: 'timer', data: '/chocobo' },
-    { source: '~nec', type: 'poke', data: '[%derp-action [%add-derp "herp"]' },
-    { source: '~bus', type: 'poke', data: '[%derp-action [%mod-derp [[%id 5] [%derp "gurp nurp"]]]]' },
-    { source: 'behn', type: 'timer', data: '/kokomo' },
-    { source: '~luc', type: 'poke', data: '[%derp-action [%del-derp "slurp"]]' },
-    { source: 'behn', type: 'timer', data: '/bonobo' },
-    { source: '~zod', type: 'poke', data: '[%derp-action [%add-derp "burp"]]' },
-    { source: 'behn', type: 'timer', data: '/chocobo' },
-    { source: '~nec', type: 'poke', data: '[%derp-action [%add-derp "herp"]' },
-    { source: '~bus', type: 'poke', data: '[%derp-action [%mod-derp [[%id 5] [%derp "gurp nurp"]]]]' },
-    { source: 'behn', type: 'timer', data: '/kokomo' },
-    { source: '~luc', type: 'poke', data: '[%derp-action [%del-derp "slurp"]]' },
-    { source: 'behn', type: 'timer', data: '/bonobo' },
-    { source: '~zod', type: 'poke', data: '[%derp-action [%add-derp "burp"]]' },
-    { source: 'behn', type: 'timer', data: '/chocobo' },
-    { source: '~nec', type: 'poke', data: '[%derp-action [%add-derp "herp"]' },
-    { source: '~bus', type: 'poke', data: '[%derp-action [%mod-derp [[%id 5] [%derp "gurp nurp"]]]]' },
-    { source: 'behn', type: 'timer', data: '/kokomo' },
-    { source: '~luc', type: 'poke', data: '[%derp-action [%del-derp "slurp"]]' },
-    { source: 'behn', type: 'timer', data: '/bonobo' },
-    { source: '~zod', type: 'poke', data: '[%derp-action [%add-derp "burp"]]' },
-    { source: 'behn', type: 'timer', data: '/chocobo' },
-    { source: '~nec', type: 'poke', data: '[%derp-action [%add-derp "herp"]' },
-    { source: '~bus', type: 'poke', data: '[%derp-action [%mod-derp [[%id 5] [%derp "gurp nurp"]]]]' },
-    { source: 'behn', type: 'timer', data: '/kokomo' },
-    { source: '~luc', type: 'poke', data: '[%derp-action [%del-derp "slurp"]]' },
-    { source: 'behn', type: 'timer', data: '/bonobo' },
-    { source: '~zod', type: 'poke', data: '[%derp-action [%add-derp "burp"]]' },
-    { source: 'behn', type: 'timer', data: '/chocobo' },
-    { source: '~nec', type: 'poke', data: '[%derp-action [%add-derp "herp"]' },
-    { source: '~bus', type: 'poke', data: '[%derp-action [%mod-derp [[%id 5] [%derp "gurp nurp"]]]]' },
-    { source: 'behn', type: 'timer', data: '/kokomo' },
-    { source: '~luc', type: 'poke', data: '[%derp-action [%del-derp "slurp"]]' },
-    { source: 'behn', type: 'timer', data: '/bonobo' },
-    { source: '~zod', type: 'poke', data: '[%derp-action [%add-derp "burp"]]' },
-  ])
-
+  
   if (!tests.length) setTests([
     {
       name: 'me test',
@@ -205,6 +80,7 @@ const ReplView = () => {
   const blankShip = { name: '', apps: {}, expanded: true, active: false }
   const blankPoke = { ship: '', data: '' }
   const blankScry = { ship: '', data: '', app: '' }
+
   const [query, setQuery] = useState<string>('')
   const [newScry, setNewScry] = useState<RScry>(blankPoke)
   const [newPoke, setNewPoke] = useState<RPoke>(blankScry)
@@ -278,10 +154,11 @@ const ReplView = () => {
     <OpenFileHeader />
     <Container className='repl-view'>
       <Row>
-        <Col className='ships'>
+        <Card className='ships' title='Virtual Ships'>
+          {!Boolean(ships.length) && <Text>No virtualships yet.</Text> }
           {ships.map((ship, i) => <Card 
               onClick={() => setShips(ships.map(s => ({ ...s, active: ship.name === s.name })))}
-              className={classNames('p05 mb1 ship', { active: ship.active })} key={i}>
+              className={classNames('ship', { active: ship.active })} key={i}>
             <Row>
               <Button onClick={(e) => {
                   e.preventDefault()
@@ -303,15 +180,24 @@ const ReplView = () => {
               {Object.keys(ship.apps).map(k => <Text small ml1 key={k}>%{k}</Text>)}
             </Col> : <></>}
           </Card>)}
-          <Divider className='mb1'/>
-          <Card className='ship'><Row>
+          {Boolean(ships.length) && <Divider/>}
+          <Card className='ship mt1'><Row>
             <Input className='new-ship' placeholder='~sampel-palnet' onChange={(e) => setNewShip({ ...newShip, name: e.currentTarget.value })} />
-            <Button variant='unstyled' icon={<FaPlus />} iconOnly style={{ marginLeft: 'auto' }} onClick={() => {
-              setShips([...ships, newShip])
-              setNewShip(blankShip)
+            <Button variant='unstyled' icon={<FaPlus />} iconOnly style={{ marginLeft: 'auto' }} disabled={!Boolean(newShip.name)} 
+            onClick={async () => {
+              try {
+                setLoading(`Creating ${newShip.name}...`)
+                const result = await createShips(currentProject, [newShip.name])
+              } catch {
+                alert('error creating ships.')
+                debugger
+              } finally {
+                setNewShip(blankShip)
+                setLoading(undefined)
+              }
             }} />
           </Row></Card>
-        </Col>
+        </Card>
 
         <Col className='mid'>
           <Row className='tabs'>
@@ -482,6 +368,7 @@ const ReplView = () => {
         <Col className='pokes-scries'>
           <Entry style={{paddingTop: 0}}>
             <Card title='Pokes'>
+              {!Boolean(pokes.length) && <Text>No saved pokes yet.</Text> }
               {pokes.map((poke,i) => <Col key={i} className='poke'>
                 <Row className='w100'>
                   <Button className='expander' variant='unstyled' iconOnly icon={poke.expanded ? <FaChevronDown /> : <FaChevronRight />}
@@ -516,7 +403,7 @@ const ReplView = () => {
               <Divider className='mt1' />
               <Col className='poke new'>
                 <Row className='wrap'>
-                  <Dropdown open={newPoke.expandedShips || false} value={newPoke.ship || ships[0].name} toggleOpen={() => setNewPoke({ ...newPoke, expandedShips: !newPoke.expandedShips })}>
+                  <Dropdown open={newPoke.expandedShips || false} value={newPoke.ship || ships[0]?.name} toggleOpen={() => setNewPoke({ ...newPoke, expandedShips: !newPoke.expandedShips })}>
                     {ships.map(ship => ship && <option onClick={() => setNewPoke({...newPoke, ship: ship.name })} key={ship.name} value={ship.name}>{ship.name}</option>)}
                   </Dropdown>
                   <Dropdown open={newPoke.expandedApps || false} value={newPoke.app || activeShip && Object.keys(activeShip.apps)[0]} toggleOpen={() => setNewPoke({ ...newPoke, expandedApps: !newPoke.expandedApps })}>
@@ -534,6 +421,7 @@ const ReplView = () => {
           </Entry>
           <Entry>
             <Card title='Scries'>
+              {!Boolean(scries.length) && <Text>No saved scries yet.</Text> }
               {scries.map((scry,i) => <Col key={i} className='scry'>
                 <Row className='w100'>
                   <Button className='expander' variant='unstyled' iconOnly icon={scry.expanded ? <FaChevronDown /> : <FaChevronRight />}
@@ -561,7 +449,7 @@ const ReplView = () => {
               <Divider className='mt1' />
               <Col className='scry new'>
                 <Row className='wrap'>
-                  <Dropdown open={newScry.expandedShips || false} value={newScry.ship || ships[0].name} toggleOpen={() => setNewScry({ ...newScry, expandedShips: !newScry.expandedShips })}>
+                  <Dropdown open={newScry.expandedShips || false} value={newScry.ship || ships[0]?.name} toggleOpen={() => setNewScry({ ...newScry, expandedShips: !newScry.expandedShips })}>
                     {ships.map(ship => <option onClick={() => setNewScry({...newScry, ship: ship.name })} key={ship.name} value={ship.name}>{ship.name}</option>)}
                   </Dropdown>
                   <Input onChange={(e) => setNewScry({ ...newScry, data: e.currentTarget.value})} 

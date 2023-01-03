@@ -121,4 +121,4 @@ export const downloadProjectZip = async (project: Project) => {
   const zipBlob = await zip.generateAsync({ type: 'blob' })
   saveAs(zipBlob, `${project.title}.zip`)
 }
-  
+

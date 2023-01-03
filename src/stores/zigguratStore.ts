@@ -91,10 +91,13 @@ export interface ZigguratStore {
 
   setViews: (views: View[]) => void
   setShips: (ships: Ship[]) => void
+  getShips: () => Promise<{ ships: string[] }>
+  createShips: (project: string, ships: string[]) => Promise<any>
   setPokes: (pokes: Poke[]) => void
   setTests: (tests: Test[]) => void
   setScries: (scries: Scry[]) => void
   setEvents: (events: Event[]) => void
+
 }
 
 const our: string = (window as any)?.api?.ship || ''
@@ -138,7 +141,9 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
         })
       )
 
-      set({ loading: undefined, endpoints: newEndpoints })
+      const { ships } = await get().getShips()
+
+      set({ loading: undefined, endpoints: newEndpoints, ships: ships.map(ship => ({ name: ship, active: false, apps: [] })), })
 
       return projects
     },
@@ -562,7 +567,12 @@ ${path}
       set({ endpoints: newEndpoints })
     },
     setViews: (views: View[]) => set({ views }),
+    getShips: async () => await api.scry({ app: 'pyro', path: '/ships' }),
     setShips: (ships: Ship[]) => set({ ships }),
+    createShips: async (project: string, ships: string[]) => await api.poke({
+      app: 'ziggurat', mark: 'ziggurat-action', json: { 
+        project, 'request-id': '6', action: { 
+          'start-pyro-ships': { ships } } } }),
     setPokes: (pokes: Poke[]) => set({ pokes }),
     setTests: (tests: Test[]) => set({ tests }),
     setScries: (scries: Scry[]) => set({ scries }),
