@@ -472,7 +472,7 @@ const ReplView = () => {
                 }}>
                 <Row>
                 <FaPlus className='mr1' />
-                <Text>Add new test</Text>
+                <Text>Add test</Text>
                 </Row>
               </Button>
             </Row>
@@ -480,7 +480,7 @@ const ReplView = () => {
         </Col>
 
         <Col className='pokes-scries'>
-          <Entry>
+          <Entry style={{paddingTop: 0}}>
             <Card title='Pokes'>
               {pokes.map((poke,i) => <Col key={i} className='poke'>
                 <Row className='w100'>
@@ -493,7 +493,7 @@ const ReplView = () => {
                     <Button className='poker' variant='unstyled' iconOnly icon={<FaRegHandPointer />} />
                   </Row>
                 </Row>
-                <Row className={classNames('showable', { show: poke.expanded })}>
+                <Row className={classNames('showable wrap', { show: poke.expanded })}>
                   <Dropdown open={poke.expandedShips || false} value={poke.ship} toggleOpen={() => togglePokeExpanded(poke, 'expandedShips')}>
                     {ships.map(ship => <option onClick={() => setPokes(pokes.map(p => ({ ...p, 
                       ship: samePoke(p, poke) ? ship.name : p.ship,
@@ -515,7 +515,7 @@ const ReplView = () => {
               </Col>)}
               <Divider className='mt1' />
               <Col className='poke new'>
-                <Row>
+                <Row className='wrap'>
                   <Dropdown open={newPoke.expandedShips || false} value={newPoke.ship || ships[0].name} toggleOpen={() => setNewPoke({ ...newPoke, expandedShips: !newPoke.expandedShips })}>
                     {ships.map(ship => ship && <option onClick={() => setNewPoke({...newPoke, ship: ship.name })} key={ship.name} value={ship.name}>{ship.name}</option>)}
                   </Dropdown>
@@ -545,7 +545,7 @@ const ReplView = () => {
                     <Button className='scrier' variant='unstyled' iconOnly icon={<FaRegEye />} />
                   </Row>
                 </Row>
-                <Row className={classNames('showable', { show: scry.expanded })}>
+                <Row className={classNames('showable wrap', { show: scry.expanded })}>
                   <Dropdown open={scry.expandedShips || false} value={scry.ship} toggleOpen={() => toggleScryExpanded(scry, 'expandedShips')}>
                     {ships.map(ship => <option onClick={() => setScries(scries.map(s => ({ ...s, 
                       ship: sameScry(s, scry) ? ship.name : s.ship,
@@ -560,7 +560,7 @@ const ReplView = () => {
               </Col>)}
               <Divider className='mt1' />
               <Col className='scry new'>
-                <Row>
+                <Row className='wrap'>
                   <Dropdown open={newScry.expandedShips || false} value={newScry.ship || ships[0].name} toggleOpen={() => setNewScry({ ...newScry, expandedShips: !newScry.expandedShips })}>
                     {ships.map(ship => <option onClick={() => setNewScry({...newScry, ship: ship.name })} key={ship.name} value={ship.name}>{ship.name}</option>)}
                   </Dropdown>
