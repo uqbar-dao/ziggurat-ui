@@ -6,21 +6,46 @@ import { ProjectUpdate } from "../../types/ziggurat/Project";
 import { mapFilesToFolders } from "../../utils/project";
 import { TestResultUpdate } from "../../types/ziggurat/TestData";
 
-export const handleGallUpdate = (get: GetState<ZigguratStore>, set: SetState<ZigguratStore>, project: string) => (update: ProjectUpdate) => {
-  console.log('UPDATE FOR:', project, update)
+export const handleProjectUpdate = (get: GetState<ZigguratStore>, set: SetState<ZigguratStore>, project: string) => (update: ProjectUpdate) => {
+  console.log('UPDATE FOR:', {project, update})
+  /**
+   * Need to handle ALL of these types of update: 
+   *  [%project-names update-info payload=(data ~) project-names=(set @t)]
+      [%projects update-info payload=(data ~) projects=shown-projects]
+      [%project update-info payload=(data ~) shown-project]
+      [%state update-info payload=(data ~) state=(map @ux chain:engine)]
+      [%new-project update-info payload=(data ~) ~]
+      [%add-test update-info payload=(data shown-test) test-id=@ux]
+      [%compile-contract update-info payload=(data ~) ~]
+      [%delete-test update-info payload=(data ~) test-id=@ux]
+      [%run-queue update-info payload=(data ~) ~]
+      [%add-custom-step update-info payload=(data ~) test-id=@ux tag=@tas]
+      [%delete-custom-step update-info payload=(data ~) test-id=@ux tag=@tas]
+      [%add-app-to-dashboard update-info payload=(data ~) app=@tas sur=path mold-name=@t mar=path]
+      [%delete-app-from-dashboard update-info payload=(data ~) app=@tas]
+      [%add-town-sequencer update-info payload=(data ~) town-id=@ux who=@p]
+      [%delete-town-sequencer update-info payload=(data ~) town-id=@ux]
+      [%add-user-file update-info payload=(data ~) file=path]
+      [%delete-user-file update-info payload=(data ~) file=path]
+      [%custom-step-compiled update-info payload=(data ~) test-id=@ux tag=@tas]
+      [%test-results update-info payload=(data shown-test-results) test-id=@ux thread-id=@t =test-steps]
+      [%dir update-info payload=(data (list path)) ~]
+      [%dashboard update-info payload=(data json) ~]
+   */
   const newProjects = { ...get().projects }
+  const p = update.project.project
   newProjects[project] = {
     ...(newProjects[project] || {}),
-    ...update,
-    folder: mapFilesToFolders(project, update.dir, get().projects[project]),
-    state: generateState(update),
-    tests: generateTests(update, newProjects[project]),
+    ...p,
+    folder: mapFilesToFolders(project, p.dir, get().projects[project]),
+    state: p.state ? generateState(p) : {},
+    tests: generateTests(p, newProjects[project]),
   }
   set({ projects: newProjects })
 
   const { toastMessages } = get()
-  if (update.errors.length) {
-    const errors = update.errors.map(e => ({
+  if (p.errors?.length) {
+    const errors = p.errors.map(e => ({
       project,
       message: e.error,
       id: toast.error(
@@ -42,8 +67,8 @@ export const handleGallUpdate = (get: GetState<ZigguratStore>, set: SetState<Zig
   } else {
     const successToast = {
       project,
-      message: `Built '${project}' successfully.`,
-      id: toast.success(`Built '${project}' successfully.`, { autoClose: 1000 }),
+      message: `Built '${project}'.`,
+      id: toast.success(`Built '${project}'.`, { autoClose: 1500 }),
     }
     toastMessages.forEach(t => {
       if (t.project === project || t.message === successToast.message)
@@ -54,18 +79,4 @@ export const handleGallUpdate = (get: GetState<ZigguratStore>, set: SetState<Zig
       .concat([successToast])
     })
   }
-}
-
-export const handleTestUpdate = (get: GetState<ZigguratStore>, set: SetState<ZigguratStore>, project: string) => (update: TestResultUpdate) => {
-  console.log('TEST UPDATE FOR:', project, update)
-  // const newProjects = { ...get().projects }
-  // newProjects[project] = {
-  //   ...(newProjects[project] || {}),
-  //   ...update,
-  //   tests: {
-  //     ...newProjects[project].tests,
-
-  //   }
-  // }
-  // set({ projects: newProjects })
 }

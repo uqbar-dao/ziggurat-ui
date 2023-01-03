@@ -10,7 +10,7 @@ import { RunTestPayload } from "../types/ziggurat/TestData";
 import { TestItemInput } from "../types/ziggurat/TestItem";
 import { DEFAULT_USER_ADDRESS, ZIGGURAT_STORAGE_VERSION } from "../utils/constants";
 import { generateProjects } from "../utils/project";
-import { handleGallUpdate, handleTestUpdate } from "./subscriptions/project";
+import { handleProjectUpdate } from "./subscriptions/project";
 import { createSubscription, Subscriptions } from "./subscriptions/createSubscription";
 import { getFilename, getFileText, getFolder, getFolderForFile, mapFilesToFolders } from "../utils/project";
 import { Endpoint } from '../types/ziggurat/Endpoint';
@@ -159,15 +159,14 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       set({ accounts, importedAccounts })
     },
     getProjects: async () => {
-      const rawProjects = await api.scry({ app: 'ziggurat', path: '/all-projects' })
+      const rawProjects = await api.scry({ app: 'ziggurat', path: '/projects' })
       const projects = generateProjects(rawProjects, get().projects)
 
       console.log('PROJECTS:', projects)
 
       const subscriptions = Object.keys(projects).reduce((subs, p) => {
         subs[p] = [
-          api.subscribe(createSubscription('ziggurat', `/project/${p}`, handleGallUpdate(get, set, p))),
-          api.subscribe(createSubscription('ziggurat', `/test-updates/${p}`, handleTestUpdate(get, set, p))),
+          api.subscribe(createSubscription('ziggurat', `/project/${p}`, handleProjectUpdate(get, set, p))),
         ]
         return subs
       }, {} as Subscriptions)

@@ -12,14 +12,16 @@ export interface EditorTextState {
 }
 
 export interface ProjectUpdate {
-  compiled: boolean
-  errors: { error: string, path: string }[]
-  state: ChainState
-  tests: Tests
-  dir: string[]
+  project: {
+    data: null
+    project_name: string
+    request_id: string
+    source: string
+    project: Project
+  }
 }
 
-export interface Project extends ProjectUpdate {
+export interface Project {
   title: string
   folder: Folder
   modifiedFiles: Set<string>
@@ -27,6 +29,11 @@ export interface Project extends ProjectUpdate {
   userfilesExpanded?: boolean
   molds: ContractMold
   user_files: string[]
+  compiled: boolean
+  errors?: { error: string, path: string }[]
+  state: ChainState
+  tests: Tests
+  dir: string[]
 }
 
 export interface Projects {
