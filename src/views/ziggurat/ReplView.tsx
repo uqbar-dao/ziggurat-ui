@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import { useMemo, useState } from 'react'
-import { FaChevronDown, FaChevronRight, FaPlay, FaPlus, FaRegEye, FaRegHandPointer, FaRegTrashAlt } from 'react-icons/fa'
+import { FaChevronDown, FaChevronRight, FaPlay, FaPlus, FaRegEye, FaRegHandPointer, FaRegTrashAlt, FaTimes } from 'react-icons/fa'
 import Card from '../../components-indexer/card/Card'
 import Checkbox from '../../components-zig/forms/Checkbox'
 import { OpenFileHeader } from '../../components-zig/nav/OpenFileHeader'
@@ -21,10 +21,11 @@ import useZigguratStore from '../../stores/zigguratStore'
 import { Tab, Poke as RPoke, Scry as RScry, Test as RTest, Event as REvent, Ship as RShip, TestReadStep, TestWriteStep, TestStep, TestWaitStep, TestReadSubscriptionStep, StringTestStep, TestDbugStep, TestScryStep, TestDojoStep, TestCustomReadStep, TestPokeStep, TestSubscribeStep, TestCustomWriteStep } from '../../types/ziggurat/Repl'
 
 import './ReplView.scss'
+import Form from '../../components/form/Form'
 
 
 const ReplView = () => {
-  const { zigguratTitleBase, tests, setTests, ships, setShips, createShips, views, setViews, pokes, setPokes, scries, setScries, events, setEvents, projects, currentProject, setLoading } = useZigguratStore()
+  const { zigguratTitleBase, tests, setTests, ships, getShips, setShips, startShips, stopShips, views, setViews, pokes, setPokes, scries, setScries, events, setEvents, projects, currentProject, setLoading } = useZigguratStore()
 
   const [tabs, setTabs] = useState<Tab[]>([
     { name: 'tests', active: true },
@@ -84,10 +85,11 @@ const ReplView = () => {
   const [query, setQuery] = useState<string>('')
   const [newScry, setNewScry] = useState<RScry>(blankPoke)
   const [newPoke, setNewPoke] = useState<RPoke>(blankScry)
-  const [newShip, setNewShip] = useState<RShip>(blankShip)
+  const [newShip, setNewShip] = useState<string>('')
   const [newFace, setNewFace] = useState<string>('')
   const [newPath, setNewPath] = useState<string>('')
   const [newTest, setNewTest] = useState<string>('')
+  const [newShips, setNewShips] = useState<string[]>([])
 
   const togglePokeExpanded = (poke: RPoke, key: 'expanded' | 'expandedApps' | 'expandedShips') => {
     setPokes(pokes.map(p => ({ 
@@ -156,9 +158,9 @@ const ReplView = () => {
       <Row>
         <Card className='ships' title='Virtual Ships'>
           {!Boolean(ships.length) && <Text>No virtualships yet.</Text> }
-          {ships.map((ship, i) => <Card 
+          {ships.map((ship, i) => <Card
               onClick={() => setShips(ships.map(s => ({ ...s, active: ship.name === s.name })))}
-              className={classNames('ship', { active: ship.active })} key={i}>
+              className={classNames('ship', { mt1: !i, active: ship.active })} key={i}>
             <Row>
               <Button onClick={(e) => {
                   e.preventDefault()
@@ -167,13 +169,13 @@ const ReplView = () => {
                 } style={{ alignSelf: 'flex-start', marginRight: '0.5em' }} variant='unstyled' iconOnly 
                 icon={ship.expanded ? <FaChevronDown /> : <FaChevronRight />} />
               <Text small bold> {ship.name} </Text>
-              {ship.expanded && <Button style={{ marginLeft: 'auto', alignSelf: 'flex-start' }} variant='unstyled' iconOnly icon={<FaRegTrashAlt />} 
+              {/* {ship.expanded && <Button style={{ marginLeft: 'auto', alignSelf: 'flex-start' }} variant='unstyled' iconOnly icon={<FaRegTrashAlt />} 
                 onClick={(e) => {
                   e.preventDefault()
                   e.stopPropagation()
                   if (window.confirm('Are you sure you want to delete fakeship ' + ship.name + '?'))
                     setShips(ships.filter(s => s.name !== ship.name))
-                }} />}
+                }} />} */}
             </Row>
             {ship.expanded ? <Col>
               <Text small> Agents: </Text>
@@ -181,22 +183,53 @@ const ReplView = () => {
             </Col> : <></>}
           </Card>)}
           {Boolean(ships.length) && <Divider/>}
-          <Card className='ship mt1'><Row>
-            <Input className='new-ship' placeholder='~sampel-palnet' onChange={(e) => setNewShip({ ...newShip, name: e.currentTarget.value })} />
-            <Button variant='unstyled' icon={<FaPlus />} iconOnly style={{ marginLeft: 'auto' }} disabled={!Boolean(newShip.name)} 
-            onClick={async () => {
+          <Card className='ship mt1' title='Start ships'>
+            {newShips.map((ship, i) => <Row between key={i}>
+              <Text className='new-ship'>{ship}</Text>
+              <Button icon={<FaTimes/>} iconOnly variant='slim'
+                onClick={() => setNewShips(newShips.filter(s => s !== ship))} />
+            </Row>)}
+            <Input placeholder='~dev' value={newShip}
+              onChange={(e) => setNewShip(e.currentTarget.value)}
+              onKeyUp={(e) => {
+                if (e.key !== 'Enter') return
+                setNewShips([...newShips, newShip])
+                setNewShip('')
+              }} />
+            <Button disabled={!Boolean(newShips.length)} variant='slim' fullWidth
+              style={{marginTop: '0.5em'}} onClick={async () => {
+                const sigNames = newShips.map(s => s[0] == '~' ? s : '~' + s)
+                try {
+                  setLoading(`Starting ${sigNames.join (', ')} (this may take a while)...`)
+                  const result = await startShips(currentProject, sigNames)
+                } catch (e) {
+                  alert(`Error starting ${sigNames.join(', ')}. Please check ship names for typos.`)
+                  debugger
+                } finally {
+                  setNewShips([])
+                  setLoading(undefined)
+                  setShips((await getShips()).ships.map((ship, j) => ({ 
+                    name: ship, active: (ships[j])?.active, apps: [] 
+                  })))
+                }
+            }}> Start {newShips.length} ship(s) </Button>
+            {Boolean(ships.length > 0) && <Button variant='slim' onClick={async () => {
+              if (!window.confirm(`Are you sure you want to stop ${ships.length} ships?
+                You can start them again later.`)) 
+                return
+
               try {
-                setLoading(`Creating ${newShip.name}...`)
-                const result = await createShips(currentProject, [newShip.name])
-              } catch {
-                alert('error creating ships.')
+                setLoading(`Stopping ships...`)
+                await stopShips(currentProject)
+                setShips([])
+              } catch (e) {
+                alert('Error stopping ships.')
                 debugger
               } finally {
-                setNewShip(blankShip)
-                setLoading(undefined)
+                setLoading()
               }
-            }} />
-          </Row></Card>
+            }} fullWidth style={{marginTop: '0.5em'}}> Stop all ships </Button>}
+          </Card>
         </Card>
 
         <Col className='mid'>
@@ -208,7 +241,8 @@ const ReplView = () => {
               {tab.name}
             </Card>)}
           </Row>
-          {tabs.find(t => t.name === 'state')?.active && activeShip && <Card className='tab-body state' title={`state: ${activeShip.name}`}>
+          {tabs.find(t => t.name === 'state')?.active ? activeShip
+          ? <Card className='tab-body state' title={`state: ${activeShip.name}`}>
             <Row between className='states-views'>
               <Col className='states'>
                 <Json json={activeShip!.apps} />
@@ -226,8 +260,11 @@ const ReplView = () => {
                 onChange={(e)=> setQuery(e.currentTarget.value)} />
               <Button onClick={() => addView(query)}>add view</Button>
             </Row>
-          </Card>}
-          {tabs.find(t => t.name === 'events')?.active && activeShip && <Card className='tab-body events' title={`events: ${activeShip.name}`}>
+          </Card>
+          : <Text className='mt1'>Select a virtualship on the left to view state information.</Text>
+          : <></> }
+          {tabs.find(t => t.name === 'events')?.active ? activeShip 
+          ? <Card className='tab-body events' title={`events: ${activeShip.name}`}>
             <Col className='events-table mt1'>
               <Row className='tr'>
                 <Text bold className='td th'>from</Text>
@@ -240,7 +277,9 @@ const ReplView = () => {
                 <Text mono className='td'>{revent.data}</Text>
               </Row>)}
             </Col>
-          </Card>}
+          </Card>
+          : <Text className='mt1'>Select a virtualship on the left to view events information.</Text>
+          : <></> }
           {tabs.find(t => t.name === 'tests')?.active && <Card className='tab-body tests' title='tests'>
             {tests.map((test, i) => <Col key={i} className='test'>
               <Row>
@@ -363,12 +402,18 @@ const ReplView = () => {
               </Button>
             </Row>
           </Card>}
+          {tabs.find(tab => tab.name === 'dojo')?.active ? activeShip ?
+          <Card className='tab-body dojo' title={`dojo: ${activeShip.name}`}>
+            <Text className='mt1'>WIP</Text>
+          </Card>
+          : <Text className='mt1'>Select a virtualship on the left to view the dojo.</Text>
+          : <></>}
         </Col>
 
         <Col className='pokes-scries'>
           <Entry style={{paddingTop: 0}}>
             <Card title='Pokes'>
-              {!Boolean(pokes.length) && <Text>No saved pokes yet.</Text> }
+              {!Boolean(pokes.length) && <Text className='mt1'>No saved pokes yet.</Text> }
               {pokes.map((poke,i) => <Col key={i} className='poke'>
                 <Row className='w100'>
                   <Button className='expander' variant='unstyled' iconOnly icon={poke.expanded ? <FaChevronDown /> : <FaChevronRight />}
@@ -421,7 +466,7 @@ const ReplView = () => {
           </Entry>
           <Entry>
             <Card title='Scries'>
-              {!Boolean(scries.length) && <Text>No saved scries yet.</Text> }
+              {!Boolean(scries.length) && <Text className='mt1'>No saved scries yet.</Text> }
               {scries.map((scry,i) => <Col key={i} className='scry'>
                 <Row className='w100'>
                   <Button className='expander' variant='unstyled' iconOnly icon={scry.expanded ? <FaChevronDown /> : <FaChevronRight />}

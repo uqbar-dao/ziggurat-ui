@@ -2,7 +2,7 @@
 
 .repl-view {
   .ships {
-    height: 100%;
+    flex-basis: 20%;
     align-self: flex-start;
 
     .header {
@@ -34,16 +34,14 @@
     }
 
     .input-container {
-      max-width: 90%;
       .input {
         border: none;
         border-radius: 4px;
-        max-width: 90%;
       }
     }
   }
   .mid {
-    flex-grow: 1;
+    flex-basis: 60%;
     margin: 0 1em;
     height: 100%;
     align-self: flex-start;
@@ -221,7 +219,7 @@
 
   .pokes-scries {
     height: 100%;
-    min-width: 256px;
+    flex-basis: 20%;
     align-self: flex-start;
 
     .card {
@@ -284,6 +282,7 @@
           border: none;
           border-radius: 4px;
           height: 100%;
+          max-width: 128px;
         }
       }
 
@@ -316,10 +315,6 @@
 
       .dropdown {
         background-color: colors.$uq-vlightpink;
-      }
-
-      .input {
-        max-width: 136px;
       }
     }
 

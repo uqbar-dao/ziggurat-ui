@@ -31,6 +31,24 @@ button.button {
     }
   }
 
+  &.slim { 
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 0.125em 0.25em;
+    background-color: colors.$light-wight;
+    margin-left: 0.125em;
+
+    &:hover {
+      background-color: colors.$uq-pink;
+    }
+
+    &:active {
+      color: white;
+      background-color: colors.$midnightpurp;
+      transform: scale(1);
+    }
+  }
+
   &.small {
     padding: 4px 8px;
     font-size: 14px;

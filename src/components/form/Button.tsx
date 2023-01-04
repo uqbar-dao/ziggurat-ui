@@ -3,7 +3,7 @@ import React from 'react'
 import './Button.scss'
 import classNames from 'classnames'
 
-export type ButtonVariant = 'dark' | 'unstyled' | undefined
+export type ButtonVariant = 'dark' | 'unstyled' | 'slim' | undefined
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant 
@@ -11,6 +11,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   iconOnly?: boolean
   dark?: boolean
   small?: boolean
+  slim?: boolean
   wide?: boolean
   xwide?: boolean
   fullWidth?: boolean
@@ -27,6 +28,7 @@ const Button: React.FC<ButtonProps> = ({
   type,
   dark,
   small,
+  slim,
   wide,
   xwide,
   fullWidth,
@@ -41,7 +43,7 @@ const Button: React.FC<ButtonProps> = ({
     <button
       {...props}
       className={`button ${variant || ''} ${classNames( {
-        dark, small, wide, xwide, fullWidth, mr1, mt1, mb1, expander, iconOnly
+        dark, small, wide, xwide, fullWidth, slim, mr1, mt1, mb1, expander, iconOnly
       })} ${props.className || ''}`}
       type={type || "button"}
       style={{ ...style, justifyContent: 'space-evenly' }}
