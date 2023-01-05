@@ -1,6 +1,8 @@
 @use '../../styles/colors.scss' as colors;
 
 .field {
+  align-items: baseline;
+  
   &.center > .label {
     align-self: center;
   }

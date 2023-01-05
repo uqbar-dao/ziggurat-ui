@@ -52,7 +52,7 @@ export const ContractTestView = () => {
   }, [setEdit, setItemFormValues, setShowItemModal])
 
   const editTest = useCallback((test: Test) => {
-    setTestFormValues({ name: test.name || '', action: test.action_text, expectedError: String(test.expected_error || 0) })
+    // setTestFormValues({ name: test.name || '', action: test.action_text, expectedError: String(test.expected_error || 0) })
     setEdit(test)
     setShowTestModal(true)
   }, [setTestFormValues, setShowTestModal])
@@ -74,7 +74,7 @@ export const ContractTestView = () => {
 
     try {
       if (!edit) {
-        await addTest(testFormValues.name, testFormValues.action.replace(/\n/g, ' '), Number(testFormValues.expectedError))
+        // await addTest(testFormValues.name, testFormValues.action.replace(/\n/g, ' '), Number(testFormValues.expectedError))
       } else {
         await updateTest(edit.id, testFormValues.name, testFormValues.action.replace(/\n/g, ' '), Number(testFormValues.expectedError))
       }
@@ -158,7 +158,6 @@ export const ContractTestView = () => {
 
   const runAllTests = useCallback((runSequentially: boolean) => () => {
     const testsToRun = (Object.values(project.tests) || [])
-      .filter(({ selected }) => selected)
       .map(({ id }) => id)
     setShowRunModal(false)
     
@@ -186,7 +185,7 @@ export const ContractTestView = () => {
   return (
     <DragDropContext onDragEnd={handleDragAndDropItem}>
       <OpenFileHeader />
-      <Row className='tests' style={{ flexDirection: isMobile ? 'column' : 'row' }}>
+      <Row className='contract-tests' style={{ flexDirection: isMobile ? 'column' : 'row' }}>
         <Col className='test-actions' style={{ height: isMobile ? 600 : '100%', width: isMobile ? '100%' : '50%' }}>
           <Row className='section-header'>
             <Row>

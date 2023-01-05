@@ -19,7 +19,7 @@ import { genRanHex } from "../utils/number";
 import { handleEndpointUpdate } from "./subscriptions/endpoint";
 import { DownloadedFile } from "../views/ziggurat/NewProjectView";
 import { Projects } from "../types/ziggurat/Project";
-import { Poke, Scry, Ship, View, Event, Test } from "../types/ziggurat/Repl";
+import { Poke, Scry, Ship, View, Event, Test, testSteps } from "../types/ziggurat/Repl";
 
 export interface ZigguratStore {
   zigguratTitleBase: string
@@ -70,7 +70,7 @@ export interface ZigguratStore {
 
   addItem: (item: TestItemInput, isUpdate?: boolean) => Promise<void>
   deleteItem: (itemId: string, testId?: string) => Promise<void>
-  addTest: (name: string, action: string, expectedError: number) => Promise<void>
+  addTest: (name: string, imports: { [key: string]: string }, steps: any[]) => Promise<void>
   addTestExpectation: (testId: string, expectations: TestItemInput) => Promise<void>
   deleteTest: (testId: string) => Promise<void>
   updateTest: (testId: string, name: string, action: string, expectedError: number) => Promise<void>
@@ -142,7 +142,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
         })
       )
 
-      const { ships } = await get().getShips()
+      const ships = (await get().getShips())?.ships || []
 
       set({ loading: undefined, endpoints: newEndpoints, ships: ships.map(ship => ({ name: ship, active: false, apps: [] })), })
 
@@ -185,9 +185,8 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       const project = options.title
 
       try {
-        const json = { project, action: { "new-project": null } }
+        const json = { project, 'request-id': 9, action: { "new-project": null } }
         await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
-
         setTimeout(async () => {
           await get().getProjects()
           set({ loading: undefined, currentProject: options.title })
@@ -413,7 +412,6 @@ ${path}
       if (testId) {
         const json = { project, action: { "delete-test-expectation": { id: testId, delete: itemId } } }
         await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
-        delete newProject.tests[testId].expected[itemId]
       } else {
         const json = { project, action: { "delete-item": { id: itemId } } }
         await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
@@ -424,16 +422,14 @@ ${path}
       newProjects[project] = newProject
       set({ projects: newProjects })
     },
-    addTest: async (name: string, action: string, expectedError: number) => {
+    addTest: async (name: string, imports: { [key: string]: string }, steps: any[]) => {
       const project = get().currentProject
-      const json = {project, action: { "add-test": { name, action, 'expected-error': expectedError } } }
+      const json = {project, action: { "add-test": { name, 'test-imports': imports, 'test-steps': steps } }, 'request-id': 12 }
       console.log('ADDING TEST:', json)
       try {
         await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
-      } catch {
-        const msg = 'Error saving test. Please ensure your hoon data is valid, and that you do not use any interfaces.'
-        alert(msg)
-        throw msg
+      } catch (e) {
+        alert('Error saving test.')
       }
     },
     addTestExpectation: async (testId: string, expected: TestItemInput) => {
@@ -505,7 +501,6 @@ ${path}
     },
     toggleTest: (project: string, testId: string) => {
       const newProjects = { ...get().projects }
-      newProjects[project].tests[testId].selected = !newProjects[project].tests[testId].selected
       set({ projects: newProjects })
     },
     addToastMessage: (project: string, message: string, id: number | string) => set({ toastMessages: get().toastMessages.concat([{ project, message, id }]) }),

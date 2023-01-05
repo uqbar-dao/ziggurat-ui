@@ -133,23 +133,8 @@
 
       &.tests {
         max-height: 90vh;
+        padding-bottom: 1em;
 
-        button {
-          border-radius: 4px;
-          padding: 0.125em 0.25em;
-          background-color: colors.$light-wight;
-          margin-left: 0.125em;
-  
-          &:hover {
-            background-color: colors.$uq-pink;
-          }
-  
-          &:active {
-            color: white;
-            background-color: colors.$midnightpurp;
-            transform: scale(1);
-          }
-        }
 
         .test {
           margin: 0.5em 0;
@@ -197,7 +182,7 @@
           }
           
           .input-container {
-            max-width: 128px;
+            // max-width: 128px;
             input {
               border: none;
               border-radius: 4px;
@@ -255,22 +240,7 @@
       .buttons {
         margin-left: auto;
         
-        button {
-          border-radius: 4px;
-          padding: 0.125em 0.25em;
-          background-color: colors.$light-wight;
-          margin-left: 0.125em;
-  
-          &:hover {
-            background-color: colors.$uq-pink;
-          }
-  
-          &:active {
-            color: white;
-            background-color: colors.$midnightpurp;
-            transform: scale(1);
-          }
-        }
+      
       }
 
 

@@ -16,22 +16,11 @@ export const generateTests = (p: Project, oldP?: Project) =>
     acc[id] = {
       ...p.tests[id],
       id,
-      selected: oldP?.tests[id]?.selected === undefined ? true : oldP?.tests[id]?.selected,
-      expected: generateExpected(p.tests[id].expected),
-      expected_error: p.tests[id]?.expected_error || 0
     }
     return acc
   },
   {} as Tests)
 
-export const generateExpected = (expected: { [itemId: string]: TestItem }) =>
-  Object.keys(expected).reduce((acc, id) => {
-    acc[id] = {
-      ...expected[id],
-      id
-    }
-    return acc
-  }, {} as { [itemId: string]: TestItem })
 
 export const generateProjects = (rawProjects: { projects: { projects: { [key: string]: Project } } }, existingProjects: Projects) => {
   const raws = rawProjects.projects.projects

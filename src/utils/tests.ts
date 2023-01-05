@@ -1,7 +1,7 @@
 import { Test, TestExpectationDiff } from "../types/ziggurat/TestData";
 import { TestItem, TestItemField, TestItemInput } from "../types/ziggurat/TestItem";
 
-export const parseAction = (test: Test) => `Action: ${test.action_text.split(' ')[0].slice(1)}`
+// export const parseAction = (test: Test) => `Action: ${test.action_text.split(' ')[0].slice(1)}`
 
 export const itemToItemInput = (item: TestItem) : TestItemInput => ({ ...item, town: item.town, salt: Number(item.salt!) })
 

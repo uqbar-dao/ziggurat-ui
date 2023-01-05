@@ -24,7 +24,7 @@ export const TestList = ({ editTest, showTestExpectationModal }: TestListProps) 
 
   return (
     <Col className='test-list'>
-      {Object.keys(project.tests).map(id => <TestEntry key={id} {...{test: { ...project.tests[id], id }, editTest, showTestExpectationModal}} />)}
+      {/* {Object.keys(project.tests).map(id => <TestEntry key={id} {...{test: { ...project.tests[id], id }, editTest, showTestExpectationModal}} />)} */}
     </Col>
   )
 }

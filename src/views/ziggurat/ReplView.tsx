@@ -18,14 +18,14 @@ import TestStepRow from '../../components-zig/tests/TestStepRow'
 import Text from '../../components/text/Text'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
 import useZigguratStore from '../../stores/zigguratStore'
-import { Tab, Poke as RPoke, Scry as RScry, Test as RTest, Event as REvent, Ship as RShip, TestReadStep, TestWriteStep, TestStep, TestWaitStep, TestReadSubscriptionStep, StringTestStep, TestDbugStep, TestScryStep, TestDojoStep, TestCustomReadStep, TestPokeStep, TestSubscribeStep, TestCustomWriteStep } from '../../types/ziggurat/Repl'
+import { Tab, Poke as RPoke, Scry as RScry, Test as RTest, Event as REvent, Ship as RShip, TestReadStep, TestWriteStep, TestStep, TestWaitStep, TestReadSubscriptionStep, StringTestStep, TestDbugStep, TestScryStep, TestDojoStep, TestCustomReadStep, TestPokeStep, TestSubscribeStep, TestCustomWriteStep, readSteps, longSteps, writeSteps, SmallTestStep } from '../../types/ziggurat/Repl'
 
 import './ReplView.scss'
 import Form from '../../components/form/Form'
 
 
 const ReplView = () => {
-  const { zigguratTitleBase, tests, setTests, ships, getShips, setShips, startShips, stopShips, views, setViews, pokes, setPokes, scries, setScries, events, setEvents, projects, currentProject, setLoading } = useZigguratStore()
+  const { zigguratTitleBase, tests, addTest, setTests, ships, getShips, setShips, startShips, stopShips, views, setViews, pokes, setPokes, scries, setScries, events, setEvents, projects, currentProject, setLoading } = useZigguratStore()
 
   const [tabs, setTabs] = useState<Tab[]>([
     { name: 'tests', active: true },
@@ -34,50 +34,6 @@ const ReplView = () => {
     { name: 'dojo', active: false },
   ])
   
-  if (!tests.length) setTests([
-    {
-      name: 'me test',
-      imports: [
-        { face: 'moop', path: '/lib/moop/hoon' }, 
-        { face: 'doop', path: '/lib/doop/hoon'}
-      ],
-      steps: [
-        { // TestPokeStep
-          payload: {
-            who: '~bus',
-            to: '~molten-martyr',
-            app: 'my-app',
-            mark: 'my-app-update',
-            payload: '[%more-beeves %please]'
-          },
-          expected: [{ // TestScryStep
-            payload: { 
-              who: '~bus', 
-              'mold-name': '@ud', 
-              care: 'gx', 
-              app: 'my-app', 
-              path: 'beeves-count' 
-            },
-            expected: '6'
-          }]
-        },
-        { // TestWaitStep
-          until: 30
-        },
-        { // TestScryStep
-          payload: { 
-            who: '~bus', 
-            'mold-name': '@ud', 
-            care: 'gx', 
-            app: 'my-app', 
-            path: 'beeves-count' 
-          },
-          expected: '6'
-        },
-      ]
-    }
-  ])
-
   const blankShip = { name: '', apps: {}, expanded: true, active: false }
   const blankPoke = { ship: '', data: '' }
   const blankScry = { ship: '', data: '', app: '' }
@@ -113,41 +69,9 @@ const ReplView = () => {
 
   const activeShip = useMemo(() => ships.find(s => s.active), [ships])
   const addStepToTest = (test: RTest, step: StringTestStep) => {
-    let ourStep: TestStep | undefined = undefined
-
-    switch (step) {
-      case 'read':
-        ourStep = { tag: '', payload: '', expected: '' } as TestCustomReadStep
-        break
-      case 'rsub':
-        ourStep = { payload: { who: '', to: '', app: '', path: '' }, expected: '' } as TestReadSubscriptionStep
-        break
-      case 'scry':
-        ourStep = { payload: { who: '', "mold-name": '', care: '', app: '', path: '' }, expected: '' } as TestScryStep
-        break
-      case 'dbug':
-        ourStep = { payload: { who: '', "mold-name": '', app: '' }, expected: '' } as TestDbugStep
-        break
-      case 'wait':
-        ourStep = { until: 1 } as TestWaitStep
-        break
-      case 'dojo': 
-        ourStep = { payload: { who: '', payload: '' }, expected: [] } as TestDojoStep
-        break
-      case 'poke':
-        ourStep = { payload: { who: '', to: '', app: '', mark: '', payload: '' }, expected: [] } as TestPokeStep
-        break
-      case 'subs': 
-        ourStep = { payload: { who: '', to: '', app: '', path: '' }, expected: [] } as TestSubscribeStep
-        break
-      case 'writ':
-        ourStep = { tag: '', payload: '', expected: [] } as TestCustomWriteStep
-        break
-    }
-
-    ourStep !== undefined && setTests(tests.map(t => ({ ...t, 
+    setTests(tests.map(t => ({ ...t, 
       newStepOpen: false, 
-      steps: t.name === test.name ? [...t.steps, ourStep as TestStep] : t.steps 
+      steps: t.name === test.name ? [...t.steps, { type: step, text: '' }] : t.steps 
     })))
   }
 
@@ -157,7 +81,7 @@ const ReplView = () => {
     <Container className='repl-view'>
       <Row>
         <Card className='ships' title='Virtual Ships'>
-          {!Boolean(ships.length) && <Text>No virtualships yet.</Text> }
+          {!Boolean(ships.length) && <Text className='mt1'>No virtualships yet.</Text> }
           {ships.map((ship, i) => <Card
               onClick={() => setShips(ships.map(s => ({ ...s, active: ship.name === s.name })))}
               className={classNames('ship', { mt1: !i, active: ship.active })} key={i}>
@@ -183,7 +107,7 @@ const ReplView = () => {
             </Col> : <></>}
           </Card>)}
           {Boolean(ships.length) && <Divider/>}
-          <Card className='ship mt1' title='Start ships'>
+          <Card className='ship mt1' style={{ overflow: 'hidden' }} title='Start ships'>
             {newShips.map((ship, i) => <Row between key={i}>
               <Text className='new-ship'>{ship}</Text>
               <Button icon={<FaTimes/>} iconOnly variant='slim'
@@ -282,13 +206,6 @@ const ReplView = () => {
           : <></> }
           {tabs.find(t => t.name === 'tests')?.active && <Card className='tab-body tests' title='tests'>
             {tests.map((test, i) => <Col key={i} className='test'>
-              <Row>
-                <Text large>{test.name}</Text>
-                <Row className='buttons'>
-                  <Button icon={<FaRegTrashAlt />} iconOnly variant='unstyled' />
-                  <Button icon={<FaPlay />} iconOnly variant='unstyled' />
-                </Row>
-              </Row>
               <Field name='Name'>
                 <Input value={test.name} onChange={(e) => setTests(tests.map(t => ({ ...t,
                   name: (t.name === test.name ? e.currentTarget.value : t.name)
@@ -296,7 +213,7 @@ const ReplView = () => {
               </Field>
               <Field name='File' className='w100'>
                 <Text>Import steps from file:</Text>
-                <Dropdown value={test.filePath || 'No file selected'} open={Boolean(test.filePathDropOpen)}
+                <Dropdown value={test.test_steps_file === '/' ? 'None (use manual steps)' : test.test_steps_file} open={Boolean(test.filePathDropOpen)}
                   style={{ marginLeft: 'auto' }}
                   toggleOpen={() => setTests(tests.map(t => ({ ...t, 
                     filePathDropOpen: t.name === test.name ? !t.filePathDropOpen : false })))}>
@@ -304,44 +221,17 @@ const ReplView = () => {
                       console.log(e)
                       setTests(tests.map(t => ({ ...t, 
                         filePathDropOpen: false,
-                        filePath: t.name === test.name ? undefined : t.filePath 
+                        filePath: t.name === test.name ? undefined : t.test_steps_file 
                     })))}}
                     key={'null'}>None (use manual steps)</option>
                   {projects[currentProject].dir.map(file => <option key={file}
                     onClick={(e) => {
                       setTests(tests.map(t => ({ ...t, 
                         filePathDropOpen: false,
-                        filePath: t.name === test.name ? e.currentTarget.value : t.filePath 
+                        filePath: t.name === test.name ? e.currentTarget.value : t.test_steps_file 
                     })))}} value={file}>{file}</option>)}
                 </Dropdown>
               </Field>
-              {!Boolean(test.filePath) && <><Field name='Steps'>
-                <Col className='w100'>
-                  {Boolean(test.steps.length) 
-                    ? test.steps.map((step, j) => <TestStepRow index={j} test={test} step={step} key={j} />)
-                    : <Text>None</Text>}
-                </Col>
-              </Field>
-              <Field name='Add' className='ml1 mt1'>
-                <Dropdown value={'Select step type...'} open={Boolean(test.newStepOpen)} toggleOpen={() => setTests(tests.map(t => ({ ...t, newStepOpen: t.name === test.name ? !t.newStepOpen : false })))}>
-                  <Text bold>Read step</Text>
-                  <option onClick={() => { addStepToTest(test, 'scry') }}>Scry</option>
-                  <option onClick={() => { addStepToTest(test, 'rsub') }}>Read Subscription</option>
-                  <option onClick={() => { addStepToTest(test, 'wait') }}>Wait</option>
-                  <option onClick={() => { addStepToTest(test, 'dbug') }}>Dbug</option>
-                  <option onClick={() => { addStepToTest(test, 'read') }}>Custom Read</option>
-                  <Divider />
-                  <Text bold>Write</Text>
-                  <option onClick={() => { addStepToTest(test, 'poke') }}>Poke</option>
-                  <option onClick={() => { addStepToTest(test, 'subs') }}>Subscribe</option>
-                  <option onClick={() => { addStepToTest(test, 'dojo') }}>Dojo</option>
-                  <option onClick={() => { addStepToTest(test, 'writ') }}>Custom Write</option>
-                </Dropdown>
-                <Row className='buttons'>
-                  <Button variant='unstyled' iconOnly icon={<FaPlus />} disabled={false} 
-                    onClick={() => {}} />
-                </Row>
-              </Field></>}
               <Field name='Imports' className='imports wrap'>
                 {test.imports.map((imp, j) => <Row className='import w100' key={j}>
                   <Text mr1 ml1>Face</Text>
@@ -369,7 +259,7 @@ const ReplView = () => {
                     })))}>{file}</option>)}
                   </Dropdown>
                   <Row className='buttons'>
-                    <Button variant='unstyled' iconOnly icon={<FaRegTrashAlt />} onClick={() => setTests(tests.map(t => ({
+                    <Button variant='slim' iconOnly icon={<FaRegTrashAlt />} onClick={() => setTests(tests.map(t => ({
                       ...t, imports: t.name === test.name ? t.imports.filter(im => im.face !== imp.face) : t.imports
                     })))} />
                   </Row>
@@ -377,7 +267,7 @@ const ReplView = () => {
                 <Field name='Add' className='ml1 mt1 w100 add-import'>
                   <Input className='mr1' placeholder='face' value={newFace} onChange={(e) => setNewFace(e.currentTarget.value)} />
                   <Input placeholder='path' value={newPath} onChange={(e) => setNewPath(e.currentTarget.value)} />
-                  <Button variant='unstyled' style={{ marginLeft: 'auto', border: '1px solid transparent' }}
+                  <Button variant='slim' style={{ marginLeft: 'auto', border: '1px solid transparent' }}
                     iconOnly icon={<FaPlus />} disabled={!Boolean(newFace) || !Boolean(newPath)}
                     onClick={() => {
                       setNewFace('')
@@ -387,18 +277,33 @@ const ReplView = () => {
                       : t.imports })))}} />
                 </Field>
               </Field>
+              {(test.test_steps_file === '/') && <><Field name='Steps' className='mt1'>
+                <Col className='w100'>
+                  {Boolean(test.steps.length) 
+                    ? test.steps.map((step, j) => <TestStepRow index={j} test={test} step={step} key={j} />)
+                    : <Text>None</Text>}
+                </Col>
+              </Field>
+              <Field name='Add' className='ml1 mt1'>
+                <Dropdown value={'Select step type...'} open={Boolean(test.newStepOpen)} toggleOpen={() => setTests(tests.map(t => ({ ...t, newStepOpen: t.name === test.name ? !t.newStepOpen : false })))}>
+                  <Text bold>Read step</Text>
+                  {readSteps.map(s => <option key={s} onClick={() => { addStepToTest(test, s) }}>{longSteps[s].name}</option>)}
+                  <Divider />
+                  <Text bold>Write</Text>
+                  {writeSteps.map(s => <option key={s} onClick={() => { addStepToTest(test, s) }}>{longSteps[s].name}</option>)}
+                </Dropdown>
+              </Field></>}
             </Col>)}
             <Divider />
             <Row className='test new'>
               <Input placeholder='name' value={newTest} onChange={(e) => setNewTest(e.currentTarget.value)} />
-              <Button disabled={!Boolean(newTest)} style={{ marginLeft: 'auto' }} variant='unstyled' onClick={(e) => {
-                  Boolean(newTest) && setTests([...tests, { name: newTest, filePath: undefined, imports: [], steps: [], expanded: true }])
+              <Button disabled={!Boolean(newTest)} style={{ marginLeft: 'auto' }} variant='slim' onClick={async (e) => {
+                  if (!Boolean(newTest)) return
+                  const result = await addTest(newTest, {}, [])
+                  debugger
                   setNewTest('')
                 }}>
-                <Row>
-                <FaPlus className='mr1' />
-                <Text>Add test</Text>
-                </Row>
+                Add test
               </Button>
             </Row>
           </Card>}
@@ -456,7 +361,7 @@ const ReplView = () => {
                   </Dropdown>
                   <Input onChange={(e) => setNewPoke({ ...newPoke, data: e.currentTarget.value})} 
                   className='pokeData' name='poke-data' placeholder='[=mark =vase]' value={newPoke.data} />
-                  <Button className='scrier' variant='unstyled' iconOnly icon={<FaPlus />} onClick={() => {
+                  <Button className='scrier' variant='slim' iconOnly icon={<FaPlus />} onClick={() => {
                     setScries([...scries, {...newPoke}])
                     setNewPoke(blankScry)
                   }} />
@@ -469,13 +374,13 @@ const ReplView = () => {
               {!Boolean(scries.length) && <Text className='mt1'>No saved scries yet.</Text> }
               {scries.map((scry,i) => <Col key={i} className='scry'>
                 <Row className='w100'>
-                  <Button className='expander' variant='unstyled' iconOnly icon={scry.expanded ? <FaChevronDown /> : <FaChevronRight />}
+                  <Button className='expander' variant='slim' iconOnly icon={scry.expanded ? <FaChevronDown /> : <FaChevronRight />}
                   onClick={() => toggleScryExpanded(scry, 'expanded')} />
                   <Text>{scry.ship} - {scry.data.split(' ')[0]}</Text>
                   <Row className='buttons'>
-                    {scry.expanded && <Button className='poker' variant='unstyled' iconOnly icon={<FaRegTrashAlt />} 
+                    {scry.expanded && <Button className='poker' variant='slim' iconOnly icon={<FaRegTrashAlt />} 
                     onClick={()=>window.confirm('Are you sure you want to delete this scry?') && setScries(scries.filter(s => !sameScry(s, scry))) }/>}
-                    <Button className='scrier' variant='unstyled' iconOnly icon={<FaRegEye />} />
+                    <Button className='scrier' variant='slim' iconOnly icon={<FaRegEye />} />
                   </Row>
                 </Row>
                 <Row className={classNames('showable wrap', { show: scry.expanded })}>
@@ -499,12 +404,18 @@ const ReplView = () => {
                   </Dropdown>
                   <Input onChange={(e) => setNewScry({ ...newScry, data: e.currentTarget.value})} 
                   className='scryData' name='scry-data' placeholder='%gx /ship/...' value={newScry.data} />
-                  <Button className='scrier' variant='unstyled' iconOnly icon={<FaPlus />} onClick={() => {
+                  <Button className='scrier' variant='slim' iconOnly icon={<FaPlus />} onClick={() => {
                     setScries([...scries, {...newScry}])
                     setNewScry(blankScry)
                   }} />
                 </Row>
               </Col>
+            </Card>
+          </Entry>
+          <Entry>
+            <Card title='Tests'>
+              {tests.map((test, i) => <Card key={i}>{test.name}</Card>)}
+              {!Boolean(tests.length) && <Text>No tests yet.</Text>}
             </Card>
           </Entry>
         </Col>

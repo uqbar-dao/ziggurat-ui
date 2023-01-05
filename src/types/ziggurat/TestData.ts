@@ -30,19 +30,18 @@ export interface TestResultUpdate {
 }
 
 export interface Test {
-  id: string
-  name?: string
-  action: string
-  action_text: string
-  expected_error: number
-  expected: {
-    [itemId: string]: TestItem
+  custom_step_definitions: {
+    [key: string]: any
   }
-  result: TestResult
-  events: any
-  success: boolean
-  running?: boolean
-  selected?: boolean
+  name?: string
+  id: string
+  subject: string
+  test_imports: {
+    [key: string]: string
+  }
+  test_results: any[]
+  test_steps_file: string
+  test_steps: []
 }
 
 export interface TestExpectationDiff {

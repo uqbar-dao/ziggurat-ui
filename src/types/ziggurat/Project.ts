@@ -1,6 +1,6 @@
 import { ContractMold } from "./ContractMold"
 import { Folder } from "./Folder"
-import { Tests } from "./TestData"
+import { Tests, Test } from "./TestData"
 import { TestItem } from "./TestItem"
 
 export interface ChainState {
@@ -18,6 +18,15 @@ export interface ProjectUpdate {
     request_id: string
     source: string
     project: Project
+  }
+  'add-test': {
+    project_name: string
+    request_id?: number
+    source: string
+    test_id: string
+    data: {
+      test: Test
+    }
   }
 }
 

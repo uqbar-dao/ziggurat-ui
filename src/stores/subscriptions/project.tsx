@@ -1,6 +1,6 @@
 import { GetState, SetState } from "zustand";
 import { toast } from 'react-toastify';
-import { generateState, generateTests } from "../../utils/project";
+import { generateState, } from "../../utils/project";
 import { ZigguratStore } from "../zigguratStore";
 import { ProjectUpdate } from "../../types/ziggurat/Project";
 import { mapFilesToFolders } from "../../utils/project";
@@ -44,19 +44,43 @@ export const handleProjectUpdate = (get: GetState<ZigguratStore>, set: SetState<
   })
 
   const newProjects = { ...get().projects }
-  const p = update.project.project
-  newProjects[project] = {
-    ...(newProjects[project] || {}),
-    ...p,
-    folder: mapFilesToFolders(project, p.dir, get().projects[project]),
-    state: p.state ? generateState(p) : {},
-    tests: generateTests(p, newProjects[project]),
+  const toastErrors = []
+
+  if ('project' in update) {
+    const p = update.project.project
+    newProjects[project] = {
+      ...(newProjects[project] || {}),
+      ...p,
+      folder: mapFilesToFolders(project, p.dir, get().projects[project]),
+      state: p.state ? generateState(p) : {},
+    }
+
+    if (p.errors?.length) {toastErrors.push(...p.errors)}
   }
-  set({ projects: newProjects })
+
+  if ('add-test' in update) {
+    newProjects[project] = {
+      ...(newProjects[project] || {}),
+      tests: {
+        ...newProjects[project].tests,
+        [update["add-test"].test_id]: {
+          ...update["add-test"].data.test,
+          id: update["add-test"].test_id
+        }
+      }
+    }
+  }
+
+  const tests = Object.entries(newProjects[project].tests).map(([id, test]) => ({ 
+    ...test, id,
+    imports: Object.entries(test.test_imports).map(([f, p]) => ({ face: f, path: p })) ,
+    steps: []
+  }))
+  set({ projects: newProjects, tests })
 
   const { toastMessages } = get()
-  if (p.errors?.length) {
-    const errors = p.errors.map(e => ({
+  if (toastErrors.length) {
+    const errors = toastErrors.map(e => ({
       project,
       message: e.error,
       id: toast.error(
