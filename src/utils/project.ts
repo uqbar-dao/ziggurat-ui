@@ -11,7 +11,7 @@ export const generateState = (p: Project) =>
     return acc
   }, {} as ChainState)
 
-export const generateTests = (p: Project, oldP?: Project) =>
+export const generateTests = (p: Project) =>
   Object.keys(p.tests || {}).reduce((acc, id) => {
     acc[id] = {
       ...p.tests[id],
@@ -31,11 +31,12 @@ export const generateProjects = (rawProjects: { projects: { projects: { [key: st
       title: key,
       expanded: Boolean((existingProjects[key] as Project)?.expanded),
       state: generateState(p as Project),
-      tests: generateTests(p as Project, existingProjects[key] as Project),
+      tests: generateTests(p as Project),
       folder: mapFilesToFolders(key, (p as Project).dir, existingProjects[key] as Project),
       modifiedFiles: new Set<string>(),
       // interfaces: generateMolds(p as Project),
     }
+    debugger
     return acc
   }, {} as Projects)
 }

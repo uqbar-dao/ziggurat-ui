@@ -65,32 +65,32 @@ const TestStepRow: React.FC<TestStepProps> = ({ test, step, index, ...props }) =
           {testSteps.map(stepKey => <option key={stepKey} value={stepKey} onClick={() =>{
             setIsOpen(!isOpen)
             setTests(tests.map(t => ({ ...t, steps: t.name === test.name ?
-              test.steps.map((innerStep, i) => (i === index) ?
+              test.test_steps.map((innerStep, i) => (i === index) ?
                 { type: stepKey, text: '' }
                 : innerStep)
-              : t.steps })))
+              : t.test_steps })))
           }}>{longSteps[stepKey].name}</option>)}
         </Dropdown>}
         <Row className='buttons'>
           <Button onClick={() => {
-            [test.steps[index-1], test.steps[index]] = [test.steps[index], test.steps[index-1]]
+            [test.test_steps[index-1], test.test_steps[index]] = [test.test_steps[index], test.test_steps[index-1]]
             setTests(tests)
           }} variant='slim' iconOnly icon={<FaArrowUp />} 
           style={{ visibility: (index > 0) ? 'visible' : 'hidden' }} />
           <Button onClick={() => {
-            [test.steps[index+1], test.steps[index]] = [test.steps[index], test.steps[index+1]]
+            [test.test_steps[index+1], test.test_steps[index]] = [test.test_steps[index], test.test_steps[index+1]]
             setTests(tests)
           }} variant='slim' iconOnly icon={<FaArrowDown />} 
-          style={{ visibility: (index < test.steps.length - 1) ? 'visible' : 'hidden' }}  />
+          style={{ visibility: (index < test.test_steps.length - 1) ? 'visible' : 'hidden' }}  />
           <Button variant='slim' iconOnly icon={<FaRegTrashAlt />} onClick={() => setTests(tests.map(t => ({
-            ...t, steps: t.name === test.name ? t.steps.filter(s => s.text !== step.text) : t.steps
+            ...t, steps: t.name === test.name ? t.test_steps.filter(s => s.text !== step.text) : t.test_steps
           })))} />
         </Row>
       </Row>
 
       <TextArea value={text} containerStyle={{ margin: '0.5em' }} 
       placeholder={longSteps[stepType].spec} onChange={(e) => {
-        test.steps[index].text = e.currentTarget.value
+        test.test_steps[index].text = e.currentTarget.value
         setTests(tests)
       }}/>
   </Col>)

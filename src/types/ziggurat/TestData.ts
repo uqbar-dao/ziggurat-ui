@@ -29,16 +29,16 @@ export interface TestResultUpdate {
   result: { [item: string]: TestItem }
 }
 
+
+export interface Imports { [key:string]: string | undefined }
 export interface Test {
   custom_step_definitions: {
     [key: string]: any
   }
-  name?: string
   id: string
+  name?: string
   subject: string
-  test_imports: {
-    [key: string]: string
-  }
+  test_imports: Imports
   test_results: any[]
   test_steps_file: string
   test_steps: []

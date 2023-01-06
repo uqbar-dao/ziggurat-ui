@@ -22,10 +22,12 @@ import { Tab, Poke as RPoke, Scry as RScry, Test as RTest, Event as REvent, Ship
 
 import './ReplView.scss'
 import Form from '../../components/form/Form'
+import { TestImport } from '../../components-zig/tests/TestImport'
+import { TestImports } from '../../components-zig/tests/TestImports'
 
 
 const ReplView = () => {
-  const { zigguratTitleBase, tests, addTest, setTests, ships, getShips, setShips, startShips, stopShips, views, setViews, pokes, setPokes, scries, setScries, events, setEvents, projects, currentProject, setLoading } = useZigguratStore()
+  const { zigguratTitleBase, tests, addTest, setTests, updateTest, ships, getShips, setShips, startShips, stopShips, views, setViews, pokes, setPokes, scries, setScries, events, setEvents, projects, currentProject, setLoading } = useZigguratStore()
 
   const [tabs, setTabs] = useState<Tab[]>([
     { name: 'tests', active: true },
@@ -42,8 +44,6 @@ const ReplView = () => {
   const [newScry, setNewScry] = useState<RScry>(blankPoke)
   const [newPoke, setNewPoke] = useState<RPoke>(blankScry)
   const [newShip, setNewShip] = useState<string>('')
-  const [newFace, setNewFace] = useState<string>('')
-  const [newPath, setNewPath] = useState<string>('')
   const [newTest, setNewTest] = useState<string>('')
   const [newShips, setNewShips] = useState<string[]>([])
 
@@ -71,8 +71,40 @@ const ReplView = () => {
   const addStepToTest = (test: RTest, step: StringTestStep) => {
     setTests(tests.map(t => ({ ...t, 
       newStepOpen: false, 
-      steps: t.name === test.name ? [...t.steps, { type: step, text: '' }] : t.steps 
+      steps: t.name === test.name ? [...t.test_steps, { type: step, text: '' }] : t.test_steps 
     })))
+  }
+
+  const onAddImport = async (test: RTest, face: string, path: string) => {
+    if (Object.keys(test.test_imports).indexOf(face) > -1) { 
+      alert('Cannot import the same face twice.')
+      return
+    }
+
+    try {
+      setLoading(`Adding import '${face}: ${path}'...`)
+      await updateTest(test.id, test.name, { ...test.test_imports, [face]: path }, test.test_steps)
+    } catch (e) {
+      const msg = 'Error adding import. Please ensure the file path is correct.'
+      alert(msg)
+      throw msg
+    } finally {
+      setLoading()
+    }
+  }
+
+  const onAddTest = async () => {
+    if (!Boolean(newTest)) return
+    try {
+      setLoading(`Creating test '${newTest}'...`)
+      const result = await addTest(newTest, {}, [])
+    } catch (e) {
+      debugger
+      alert('Error creating new test.')
+    } finally {
+      setLoading()
+      setNewTest('')
+    }
   }
 
   useDocumentTitle(`${zigguratTitleBase} REPL`)
@@ -224,7 +256,7 @@ const ReplView = () => {
                         filePath: t.name === test.name ? undefined : t.test_steps_file 
                     })))}}
                     key={'null'}>None (use manual steps)</option>
-                  {projects[currentProject].dir.map(file => <option key={file}
+                  {projects[currentProject]?.dir.map(file => <option key={file}
                     onClick={(e) => {
                       setTests(tests.map(t => ({ ...t, 
                         filePathDropOpen: false,
@@ -232,77 +264,28 @@ const ReplView = () => {
                     })))}} value={file}>{file}</option>)}
                 </Dropdown>
               </Field>
-              <Field name='Imports' className='imports wrap'>
-                {test.imports.map((imp, j) => <Row className='import w100' key={j}>
-                  <Text mr1 ml1>Face</Text>
-                  <Input value={imp.face} onChange={(e) => setTests(tests.map(t => ({ 
-                    ...t, 
-                    imports: t.name === test.name 
-                    ? test.imports.map(im => im.face === imp.face 
-                      ? { ...im, face: e.currentTarget.value }
-                      : im)
-                      : t.imports 
-                  })))} />
-                  <Text mr1 ml1>Path</Text>
-                  <Dropdown open={Boolean(imp.dropOpen)} toggleOpen={() => setTests(tests.map(t => ({ 
-                    ...t, 
-                    imports: t.imports.map(im => ({ ...im, dropOpen: im.face === imp.face ? !im.dropOpen : false }))})))} 
-                  value={imp.path}>
-                    {projects[currentProject].dir.map(file => <option value={file} key={file} 
-                      onClick={(e) => setTests(tests.map(t => ({ 
-                      ...t, 
-                      imports: t.name === test.name 
-                        ? test.imports.map(im => ({ ...im, 
-                          dropOpen: false, 
-                          path: im.face === imp.face ? e.currentTarget.value : im.path }))
-                        : t.imports
-                    })))}>{file}</option>)}
-                  </Dropdown>
-                  <Row className='buttons'>
-                    <Button variant='slim' iconOnly icon={<FaRegTrashAlt />} onClick={() => setTests(tests.map(t => ({
-                      ...t, imports: t.name === test.name ? t.imports.filter(im => im.face !== imp.face) : t.imports
-                    })))} />
-                  </Row>
-                </Row>)}
-                <Field name='Add' className='ml1 mt1 w100 add-import'>
-                  <Input className='mr1' placeholder='face' value={newFace} onChange={(e) => setNewFace(e.currentTarget.value)} />
-                  <Input placeholder='path' value={newPath} onChange={(e) => setNewPath(e.currentTarget.value)} />
-                  <Button variant='slim' style={{ marginLeft: 'auto', border: '1px solid transparent' }}
-                    iconOnly icon={<FaPlus />} disabled={!Boolean(newFace) || !Boolean(newPath)}
-                    onClick={() => {
-                      setNewFace('')
-                      setNewPath('')
-                      setTests(tests.map(t => ({ ...t, imports: t.name === test.name 
-                      ? [...t.imports, { face: newFace, path: newPath }]
-                      : t.imports })))}} />
-                </Field>
-              </Field>
-              {(test.test_steps_file === '/') && <><Field name='Steps' className='mt1'>
+              <TestImports onAddImport={onAddImport} test={test} />
+              {(test.test_steps_file === '/') && <Field name='Steps' className='mt1'>
                 <Col className='w100'>
-                  {Boolean(test.steps.length) 
-                    ? test.steps.map((step, j) => <TestStepRow index={j} test={test} step={step} key={j} />)
+                  {Boolean(test.test_steps.length) 
+                    ? test.test_steps.map((step, j) => <TestStepRow index={j} test={test} step={step} key={j} />)
                     : <Text>None</Text>}
                 </Col>
-              </Field>
-              <Field name='Add' className='ml1 mt1'>
-                <Dropdown value={'Select step type...'} open={Boolean(test.newStepOpen)} toggleOpen={() => setTests(tests.map(t => ({ ...t, newStepOpen: t.name === test.name ? !t.newStepOpen : false })))}>
-                  <Text bold>Read step</Text>
-                  {readSteps.map(s => <option key={s} onClick={() => { addStepToTest(test, s) }}>{longSteps[s].name}</option>)}
-                  <Divider />
-                  <Text bold>Write</Text>
-                  {writeSteps.map(s => <option key={s} onClick={() => { addStepToTest(test, s) }}>{longSteps[s].name}</option>)}
-                </Dropdown>
-              </Field></>}
+                <Field name='Add Step' className='ml1 mt1'>
+                  <Dropdown value={'Select step type...'} open={Boolean(test.newStepOpen)} toggleOpen={() => setTests(tests.map(t => ({ ...t, newStepOpen: t.name === test.name ? !t.newStepOpen : false })))}>
+                    <Text bold>Read step</Text>
+                    {readSteps.map(s => <option key={s} onClick={() => { addStepToTest(test, s) }}>{longSteps[s].name}</option>)}
+                    <Divider />
+                    <Text bold>Write</Text>
+                    {writeSteps.map(s => <option key={s} onClick={() => { addStepToTest(test, s) }}>{longSteps[s].name}</option>)}
+                  </Dropdown>
+                </Field>
+              </Field>}
             </Col>)}
             <Divider />
             <Row className='test new'>
               <Input placeholder='name' value={newTest} onChange={(e) => setNewTest(e.currentTarget.value)} />
-              <Button disabled={!Boolean(newTest)} style={{ marginLeft: 'auto' }} variant='slim' onClick={async (e) => {
-                  if (!Boolean(newTest)) return
-                  const result = await addTest(newTest, {}, [])
-                  debugger
-                  setNewTest('')
-                }}>
+              <Button disabled={!Boolean(newTest)} style={{ marginLeft: 'auto' }} variant='slim' onClick={onAddTest}>
                 Add test
               </Button>
             </Row>

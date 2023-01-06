@@ -6,7 +6,7 @@ import { HardwareWallet, HardwareWalletType, HotWallet, processAccount, RawAccou
 
 import api from "../api";
 import { OpenFile } from "../types/ziggurat/OpenFile";
-import { RunTestPayload } from "../types/ziggurat/TestData";
+import { Imports, RunTestPayload } from "../types/ziggurat/TestData";
 import { TestItemInput } from "../types/ziggurat/TestItem";
 import { DEFAULT_USER_ADDRESS, ZIGGURAT_STORAGE_VERSION } from "../utils/constants";
 import { generateProjects } from "../utils/project";
@@ -73,7 +73,7 @@ export interface ZigguratStore {
   addTest: (name: string, imports: { [key: string]: string }, steps: any[]) => Promise<void>
   addTestExpectation: (testId: string, expectations: TestItemInput) => Promise<void>
   deleteTest: (testId: string) => Promise<void>
-  updateTest: (testId: string, name: string, action: string, expectedError: number) => Promise<void>
+  updateTest: (testId: string, name: string | undefined, imports: Imports, steps: any[]) => Promise<void>
   runTest: (payload: RunTestPayload) => Promise<void>
   runTests: (payload: RunTestPayload[]) => Promise<void>
   deployContract: (project: string, address: string, location: string, town: string, rate: number, bud: number, upgradable: boolean) => Promise<void>
@@ -168,7 +168,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
       const rawProjects = await api.scry({ app: 'ziggurat', path: '/projects' })
       const projects = generateProjects(rawProjects, get().projects)
 
-      console.log('PROJECTS:', projects)
+      console.log('GOT PROJECTS:', projects)
 
       const subscriptions = Object.keys(projects).reduce((subs, p) => {
         subs[p] = [
@@ -444,16 +444,14 @@ ${path}
       const json = { project, action: { "delete-test": { id: testId } } }
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
     },
-    updateTest: async (testId: string, name: string, action: string, expectedError: number) => {
+    updateTest: async (testId: string, name: string | undefined, imports: Imports, steps: any[]) => {
       const project = get().currentProject
-      const json = { project, action: { "edit-test": { id: testId, name, action, 'expected-error': expectedError } } }
+      const json = { project, 'request-id': 1212, action: { "edit-test": { id: testId, name, 'test-imports': imports, 'test-steps': steps } } }
       console.log('UPDATING TEST:', json)
       try {
         await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
-      } catch {
-        const msg = 'Error saving test. Please ensure your hoon data is valid, and that you do not use any interfaces.'
-        alert(msg)
-        throw msg
+      } catch (e) {
+        throw 'Error saving tests.'
       }
     },
     runTest: async (payload: RunTestPayload) => {

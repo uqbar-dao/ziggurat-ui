@@ -76,7 +76,7 @@ export const ContractTestView = () => {
       if (!edit) {
         // await addTest(testFormValues.name, testFormValues.action.replace(/\n/g, ' '), Number(testFormValues.expectedError))
       } else {
-        await updateTest(edit.id, testFormValues.name, testFormValues.action.replace(/\n/g, ' '), Number(testFormValues.expectedError))
+        // await updateTest(edit.id, testFormValues.name, testFormValues.action.replace(/\n/g, ' '), Number(testFormValues.expectedError))
       }
       setShowTestModal(false)
       setTestFormValues(BLANK_TEST_FORM)
@@ -163,17 +163,17 @@ export const ContractTestView = () => {
     
     if (testsToRun.length) {
       setLoading('Running tests...')
-      if (runSequentially) {
-        runTests(testsToRun.map(id => ({ id, rate: DEFAULT_RATE, bud: DEFAULT_BUDGET })))
-        .finally(() => {
-          setLoading(undefined)
-        })
-      } else {
-        Promise.all(testsToRun.map(id => runTest({ id, rate: DEFAULT_RATE, bud: DEFAULT_BUDGET })))
-        .finally(() => {
-          setLoading(undefined)
-        })
-      }
+      // if (runSequentially) {
+      //   runTests(testsToRun.map(id => ({ id, rate: DEFAULT_RATE, bud: DEFAULT_BUDGET })))
+      //   .finally(() => {
+      //     setLoading(undefined)
+      //   })
+      // } else {
+      //   Promise.all(testsToRun.map(id => runTest({ id, rate: DEFAULT_RATE, bud: DEFAULT_BUDGET })))
+      //   .finally(() => {
+      //     setLoading(undefined)
+      //   })
+      // }
     } else {
       window.alert('Please select some tests to run.')
     }

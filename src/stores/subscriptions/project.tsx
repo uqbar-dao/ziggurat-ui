@@ -2,7 +2,7 @@ import { GetState, SetState } from "zustand";
 import { toast } from 'react-toastify';
 import { generateState, } from "../../utils/project";
 import { ZigguratStore } from "../zigguratStore";
-import { ProjectUpdate } from "../../types/ziggurat/Project";
+import { ProjectUpdate, ProjectUpdateMessage } from "../../types/ziggurat/Project";
 import { mapFilesToFolders } from "../../utils/project";
 import { TestResultUpdate } from "../../types/ziggurat/TestData";
 
@@ -19,6 +19,7 @@ export const handleProjectUpdate = (get: GetState<ZigguratStore>, set: SetState<
   [%dashboard update-info payload=(data json) ~]
   [%new-project update-info payload=(data ~) ~]
   [%add-test update-info payload=(data shown-test) test-id=@ux]
+  [%edit-test update-info payload=(data shown-test) test-id=@ux]
   [%compile-contract update-info payload=(data ~) ~]
   [%delete-test update-info payload=(data ~) test-id=@ux]
   [%run-queue update-info payload=(data ~) ~]
@@ -35,16 +36,24 @@ export const handleProjectUpdate = (get: GetState<ZigguratStore>, set: SetState<
   [%delete-app-from-dashboard update-info payload=(data ~) app=@tas]
    */
 
-  const updateTypes = [ 'projects', 'project', 'state', 'dir', 'dashboard', 'new-project', 'add-test', 'compile-contract', 'delete-test', 'run-queue', 'test-results', 'project-names', 'add-custom-step', 'delete-custom-step', 'add-town-sequencer', 'delete-town-sequencer', 'add-user-file', 'delete-user-file', 'custom-step-compiled', 'add-app-to-dashboard', 'delete-app-from-dashboard', ]
+  const updateTypes = [ 'projects', 'project', 'state', 'dir', 'dashboard', 'new-project', 'add-test', 'edit-test', 'compile-contract', 'delete-test', 'run-queue', 'test-results', 'project-names', 'add-custom-step', 'delete-custom-step', 'add-town-sequencer', 'delete-town-sequencer', 'add-user-file', 'delete-user-file', 'custom-step-compiled', 'add-app-to-dashboard', 'delete-app-from-dashboard', ]
 
   updateTypes.forEach(ut => {
     if (ut in update) {
       console.log(`UPDATE IS TYPE ${ut}`)
-    }
+    } 
   })
 
   const newProjects = { ...get().projects }
-  const toastErrors = []
+  const toastErrors: { path: string, error: string }[] = []
+
+  const keys = Object.keys(update)
+  keys.forEach(key => {
+    if ((update[key] as ProjectUpdateMessage)?.level === 'error') {
+      const m = {error: (update[key] as ProjectUpdateMessage)?.message, path: '/'}
+      m && toastErrors.push(m)
+    }
+  })
 
   if ('project' in update) {
     const p = update.project.project
@@ -66,6 +75,19 @@ export const handleProjectUpdate = (get: GetState<ZigguratStore>, set: SetState<
         [update["add-test"].test_id]: {
           ...update["add-test"].data.test,
           id: update["add-test"].test_id
+        }
+      }
+    }
+  }
+
+  if ('edit-test' in update) {
+    newProjects[project] = {
+      ...(newProjects[project] || {}),
+      tests: {
+        ...newProjects[project].tests,
+        [update["edit-test"].test_id]: {
+          ...update["edit-test"].data.test,
+          id: update["edit-test"].test_id
         }
       }
     }

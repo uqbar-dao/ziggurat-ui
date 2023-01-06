@@ -120,14 +120,14 @@ export type TestWriteStep = TestDojoStep | TestPokeStep | TestSubscribeStep | Te
 export type TestStep = TestReadStep | TestWriteStep
 
 export interface Test {
+  id: string
   name?: string
   test_steps_file?: string
-  imports: { face: string, path: string, dropOpen?: boolean }[]
-  steps: SmallTestStep[]
+  test_imports: { [key: string]: string | undefined }
+  test_steps: SmallTestStep[]
   expanded?: boolean
   filePathDropOpen?: boolean
   newStepOpen?: boolean
-  [key:string]: any
 }
 
 
