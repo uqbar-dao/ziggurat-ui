@@ -54,7 +54,9 @@ const determineTestStepType = (step: TestStep) => {
 }
 
 const TestStepRow: React.FC<TestStepProps> = ({ test, step, index, ...props }) => {
-  const { type: stepType, text } = step
+  const stepType = Object.keys(step)[0] as StringTestStep
+  const text = JSON.stringify((step as any)[stepType])
+
   const { tests, setTests } = useZigguratStore()
   const [isOpen, setIsOpen] = useState(false)
 

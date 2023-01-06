@@ -1,3 +1,4 @@
+import { SmallTestStep } from "./Repl"
 import { TestItem } from "./TestItem"
 
 export interface RunTestPayload {
@@ -41,7 +42,7 @@ export interface Test {
   test_imports: Imports
   test_results: any[]
   test_steps_file: string
-  test_steps: []
+  test_steps: SmallTestStep[]
 }
 
 export interface TestExpectationDiff {

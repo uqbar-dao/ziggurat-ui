@@ -24,6 +24,7 @@ import './ReplView.scss'
 import Form from '../../components/form/Form'
 import { TestImport } from '../../components-zig/tests/TestImport'
 import { TestImports } from '../../components-zig/tests/TestImports'
+import { TestSteps } from '../../components-zig/tests/TestSteps'
 
 
 const ReplView = () => {
@@ -68,13 +69,7 @@ const ReplView = () => {
   }
 
   const activeShip = useMemo(() => ships.find(s => s.active), [ships])
-  const addStepToTest = (test: RTest, step: StringTestStep) => {
-    setTests(tests.map(t => ({ ...t, 
-      newStepOpen: false, 
-      steps: t.name === test.name ? [...t.test_steps, { type: step, text: '' }] : t.test_steps 
-    })))
-  }
-
+  
   const onAddImport = async (test: RTest, face: string, path: string) => {
     if (Object.keys(test.test_imports).indexOf(face) > -1) { 
       alert('Cannot import the same face twice.')
@@ -265,22 +260,7 @@ const ReplView = () => {
                 </Dropdown>
               </Field>
               <TestImports onAddImport={onAddImport} test={test} />
-              {(test.test_steps_file === '/') && <Field name='Steps' className='mt1'>
-                <Col className='w100'>
-                  {Boolean(test.test_steps.length) 
-                    ? test.test_steps.map((step, j) => <TestStepRow index={j} test={test} step={step} key={j} />)
-                    : <Text>None</Text>}
-                </Col>
-                <Field name='Add Step' className='ml1 mt1'>
-                  <Dropdown value={'Select step type...'} open={Boolean(test.newStepOpen)} toggleOpen={() => setTests(tests.map(t => ({ ...t, newStepOpen: t.name === test.name ? !t.newStepOpen : false })))}>
-                    <Text bold>Read step</Text>
-                    {readSteps.map(s => <option key={s} onClick={() => { addStepToTest(test, s) }}>{longSteps[s].name}</option>)}
-                    <Divider />
-                    <Text bold>Write</Text>
-                    {writeSteps.map(s => <option key={s} onClick={() => { addStepToTest(test, s) }}>{longSteps[s].name}</option>)}
-                  </Dropdown>
-                </Field>
-              </Field>}
+              {(test.test_steps_file === '/') && <TestSteps test={test} />}
             </Col>)}
             <Divider />
             <Row className='test new'>

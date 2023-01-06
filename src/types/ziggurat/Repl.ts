@@ -137,7 +137,7 @@ export const longSteps = {
     tas: '%scry', 
     spec: '[payload=[who=@p mold-name=@t care=@tas app=@tas =path] expected=@t]',
     default: { 
-      payload: { who: '', "mold-name": '', care: '', app: '', path: '', }, 
+      payload: { who: '~zod', "mold-name": '@', care: 'gx', app: 'ziggurat', path: '/', }, 
       expected: '' }},
   rsub: {
     name: 'Read Subscription', 
