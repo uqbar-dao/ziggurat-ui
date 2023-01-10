@@ -80,7 +80,7 @@ export interface TestReadSubscriptionStep extends TestBaseStep {
 }
 
 export interface TestWaitStep extends TestBaseStep {
-  until: number
+  until: string
 }
 
 export interface TestCustomReadStep extends TestBaseStep {
@@ -158,7 +158,7 @@ export const longSteps = {
   'wait': {
     name: 'Wait',
     spec: '[until=@dr]',
-    default: { type: 'wait', until: 0, }},
+    default: { type: 'wait', until: '~s0', }},
   'dbug': {
     name: 'Dbug',  
     spec: '[payload=[who=@p mold-name=@t app=@tas] expected=@t]',
@@ -168,8 +168,8 @@ export const longSteps = {
       expected: '' }},
   'custom-read': {
     name: 'Custom Read', 
-    spec: '[payload=[who=@p to=@p app=@tas =path] expected=@t]',
-    default: { type: 'custom-read', tag: '', payload: '', expected: '', }},
+    spec: '[tag=@tas payload=@t expected=@t]',
+    default: { type: 'custom-read', tag: 'sumtag', payload: '', expected: '', }},
   'poke': {
     name: 'Poke', 
     spec: '[payload=[who=@p to=@p app=@tas mark=@tas payload=@t] expected=(list test-read-step)]',

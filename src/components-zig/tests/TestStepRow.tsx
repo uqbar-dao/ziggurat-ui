@@ -33,13 +33,13 @@ const Expectation: React.FC<ExpectationProps> = ({ test, step, stepIndex, expect
     }
   }
 
-  return <Row className="expectation" style={{ marginTop: expectationIndex > 0 ? '0.5em' : 0 }}>
+  return <Row className="expectation" style={{ marginTop: expectationIndex > 0 ? '0.5em' : 0, alignItems: 'flex-start' }}>
     <Col>
       {Object.entries(step).reverse().map(([key, val], i) => <Field name={key} key={i}>
         {key === 'type' ? <Text>expectation: {val}</Text>
-        : !Boolean(val) ? <Input onChange={() => {}} placeholder='none' defaultValue={val as any} /> 
+        : (typeof val === 'string' || !Boolean(val)) ? <Input onChange={() => {}} placeholder='none' defaultValue={val as any} /> 
         : <Col>{Object.entries(val as any).map(([_key, _val], k) => <Field key={k} name={_key}>
-          <Input  onChange={() => {}} defaultValue={_val as any} />
+          <Input placeholder='none' onChange={() => {}} defaultValue={_val as any} />
         </Field>)}</Col>}
       </Field>)}
     </Col>
@@ -92,29 +92,26 @@ const TestStepRow: React.FC<TestStepProps> = ({ test, step, index, ...props }) =
     }
   }
 
+  const onMoveTestStep = async (targetIndex: number, sourceIndex: number) => {
+    setLoading('Moving test step...')
+    try {
+      [test.test_steps[targetIndex], test.test_steps[sourceIndex]] = [test.test_steps[sourceIndex], test.test_steps[targetIndex]]
+      await updateTest(test.id, test.name, test.test_imports, convertSteps(test.test_steps))
+    } catch (e) {
+      debugger
+    } finally {
+      setLoading()
+    }
+  }
+
   return (<Col className={classNames('test-step')} {...props}>
     <Row style={{ flexGrow: 1, marginLeft: '-1em' }}>
       <Text className="mr1">{index+1}.</Text>
-      {<Dropdown value={longSteps[step.type]?.name || 'Unknown'} toggleOpen={() => setIsStepTypeOpen(!isStepTypeOpen)} open={isStepTypeOpen}>
-        {testSteps.map(stepKey => <option key={stepKey} value={stepKey} onClick={() =>{
-          setIsStepTypeOpen(!isStepTypeOpen)
-          setTests(tests.map(t => ({ ...t, steps: t.name === test.name ?
-            test.test_steps.map((innerStep, i) => (i === index) ?
-              { type: stepKey, text: '' }
-              : innerStep)
-            : t.test_steps })))
-        }}>{longSteps[stepKey].name}</option>)}
-      </Dropdown>}
+      <Text>{longSteps[step.type]?.name || 'Unknown'}</Text>
       <Row className='buttons'>
-        <Button onClick={() => {
-          [test.test_steps[index-1], test.test_steps[index]] = [test.test_steps[index], test.test_steps[index-1]]
-          setTests(tests)
-        }} variant='slim' iconOnly icon={<FaArrowUp />} 
+        <Button onClick={() => onMoveTestStep(index-1, index)} variant='slim' iconOnly icon={<FaArrowUp />} 
         style={{ visibility: (index > 0) ? 'visible' : 'hidden' }} />
-        <Button onClick={() => {
-          [test.test_steps[index+1], test.test_steps[index]] = [test.test_steps[index], test.test_steps[index+1]]
-          setTests(tests)
-        }} variant='slim' iconOnly icon={<FaArrowDown />} 
+        <Button onClick={() => onMoveTestStep(index+1, index)} variant='slim' iconOnly icon={<FaArrowDown />} 
         style={{ visibility: (index < test.test_steps.length - 1) ? 'visible' : 'hidden' }}  />
         <Button variant='slim' iconOnly icon={<FaRegTrashAlt />} onClick={() => onRemoveStep()} />
       </Row>
@@ -133,9 +130,10 @@ const TestStepRow: React.FC<TestStepProps> = ({ test, step, index, ...props }) =
           </Dropdown>
         </Field>
         <Divider className="mt1" />
-      </Col> : !Boolean(val) ? <Input onChange={() => {}}  defaultValue={val as any} /> 
+      </Col> 
+      : (typeof val === 'string' || !Boolean(val)) ? <Input onChange={() => {}} placeholder='none' defaultValue={val as any} /> 
       : <Col>{Object.entries(val as any).map(([_key, _val], k) => <Field key={k} name={_key}>
-        <Input  onChange={() => {}} defaultValue={_val as any} />
+        <Input placeholder="none" onChange={() => {}} defaultValue={_val as any} />
       </Field>)}</Col>}
     </Field>)}
     <Divider />

@@ -6,6 +6,7 @@ import { ProjectUpdate } from "../../types/ziggurat/Project";
 import { mapFilesToFolders } from "../../utils/project";
 import { TestResultUpdate } from "../../types/ziggurat/TestData";
 import { BETestStep, TestReadStep, TestStep } from "../../types/ziggurat/Repl";
+import { filter } from "jszip";
 
 export const handleProjectUpdate = (get: GetState<ZigguratStore>, set: SetState<ZigguratStore>, project: string) => (update: ProjectUpdate) => {
   console.log('UPDATE FOR:', {project, update})
@@ -75,8 +76,19 @@ export const handleProjectUpdate = (get: GetState<ZigguratStore>, set: SetState<
     }
   }
 
+  if (update.type === 'test-results') {
+    set({ loading: '' })
+  }
+
+  const forbiddenIds: string[] = []
+  if (update.type === 'delete-test') {
+    forbiddenIds.push(update.test_id)
+  }
+
   // pretty gross having these duplicated...  need to fix it.
-  const tests = Object.entries(oldP.tests).map(([id, test]) => ({ 
+  const tests = Object.entries(oldP.tests)
+  .filter(([id, _]) => forbiddenIds.indexOf(id) === -1)
+  .map(([id, test]) => ({ 
     ...test, id,
     imports: test.test_imports,
     steps: test.test_steps
@@ -121,7 +133,7 @@ export const handleProjectUpdate = (get: GetState<ZigguratStore>, set: SetState<
   }
 }
 
-export const convertExpectations = (steps: TestReadStep[]) => steps.map(step => ({ [step.type]: step as TestStep }))
+const convertExpectations = (steps: TestReadStep[]) => steps.map(step => ({ [step.type]: step as TestStep }))
 
 export const convertSteps = (steps: TestStep[]) => steps.map(step => {
   if ('expected' in step && Array.isArray(step.expected)) {

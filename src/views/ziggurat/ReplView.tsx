@@ -26,10 +26,12 @@ import { TestImport } from '../../components-zig/tests/TestImport'
 import { TestImports } from '../../components-zig/tests/TestImports'
 import { TestSteps } from '../../components-zig/tests/TestSteps'
 import { convertSteps } from '../../stores/subscriptions/project'
+import { HexNum } from '@uqbar/wallet-ui'
+import { TestDisplay } from '../../components-zig/tests/TestDisplay'
 
 
 const ReplView = () => {
-  const { zigguratTitleBase, tests, addTest, setTests, updateTest, ships, getShips, setShips, startShips, stopShips, views, setViews, pokes, setPokes, scries, setScries, events, setEvents, projects, currentProject, setLoading } = useZigguratStore()
+  const { zigguratTitleBase, tests, addTest, deleteTest, setTests, updateTest, runTest, ships, getShips, setShips, startShips, stopShips, views, setViews, pokes, setPokes, scries, setScries, events, setEvents, projects, currentProject, setLoading } = useZigguratStore()
 
   const [tabs, setTabs] = useState<Tab[]>([
     { name: 'tests', active: true },
@@ -71,22 +73,7 @@ const ReplView = () => {
 
   const activeShip = useMemo(() => ships.find(s => s.active), [ships])
   
-  const onAddImport = async (test: RTest, face: string, path: string) => {
-    if (Object.keys(test.test_imports).indexOf(face) > -1) { 
-      alert('Cannot import the same face twice.')
-      return
-    }
 
-    try {
-      setLoading(`Adding import '${face}: ${path}'...`)
-      await updateTest(test.id, test.name, { ...test.test_imports, [face]: path }, convertSteps(test.test_steps))
-    } catch (e) {
-      const msg = 'Error adding import. Please ensure the file path is correct.'
-      alert(msg)
-    } finally {
-      setLoading()
-    }
-  }
 
   const onAddTest = async () => {
     if (!Boolean(newTest)) return
@@ -101,6 +88,8 @@ const ReplView = () => {
       setNewTest('')
     }
   }
+
+  
 
   useDocumentTitle(`${zigguratTitleBase} REPL`)
   return (<>
@@ -238,36 +227,7 @@ const ReplView = () => {
           : <Text className='mt1'>Select a virtualship on the left to view events information.</Text>
           : <></> }
           {tabs.find(t => t.name === 'tests')?.active && <Card className='tab-body tests' title='tests'>
-            {tests.map((test, i) => <Col key={i} className='test'>
-              <Field name='Name'>
-                <Input value={test.name} onChange={(e) => setTests(tests.map(t => ({ ...t,
-                  name: (t.name === test.name ? e.currentTarget.value : t.name)
-                })))} />
-              </Field>
-              <Field name='File' className='w100'>
-                <Text>Import steps from file:</Text>
-                <Dropdown value={test.test_steps_file === '/' ? 'None (use manual steps)' : test.test_steps_file} open={Boolean(test.filePathDropOpen)}
-                  style={{ marginLeft: 'auto' }}
-                  toggleOpen={() => setTests(tests.map(t => ({ ...t, 
-                    filePathDropOpen: t.name === test.name ? !t.filePathDropOpen : false })))}>
-                  <option onClick={(e) => {
-                      console.log(e)
-                      setTests(tests.map(t => ({ ...t, 
-                        filePathDropOpen: false,
-                        filePath: t.name === test.name ? undefined : t.test_steps_file
-                    })))}}
-                    key={'null'}>None (use manual steps)</option>
-                  {projects[currentProject]?.dir.map(file => <option key={file}
-                    onClick={(e) => {
-                      setTests(tests.map(t => ({ ...t, 
-                        filePathDropOpen: false,
-                        filePath: t.name === test.name ? e.currentTarget.value : t.test_steps_file
-                    })))}} value={file}>{file}</option>)}
-                </Dropdown>
-              </Field>
-              <TestImports onAddImport={onAddImport} test={test} />
-              {(test.test_steps_file=== '/') && <TestSteps test={test} />}
-            </Col>)}
+            {tests.map((test, i) => <TestDisplay test={test} key={i} />)}
             <Divider />
             <Row className='test new'>
               <Input placeholder='name' value={newTest} onChange={(e) => setNewTest(e.currentTarget.value)} />

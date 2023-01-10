@@ -74,7 +74,7 @@ export interface ZigguratStore {
   addTestExpectation: (testId: string, expectations: TestItemInput) => Promise<void>
   deleteTest: (testId: string) => Promise<void>
   updateTest: (testId: string, name: string | undefined, imports: Imports, steps: BETestStep[]) => Promise<void>
-  runTest: (payload: RunTestPayload) => Promise<void>
+  runTest: (id: string) => Promise<void>
   runTests: (payload: RunTestPayload[]) => Promise<void>
   deployContract: (project: string, address: string, location: string, town: string, rate: number, bud: number, upgradable: boolean) => Promise<void>
   publishGallApp: (project: string, title: string, info: string, color: string, image: string, version: number[], website: string, license: string) => Promise<void>
@@ -441,7 +441,7 @@ ${path}
     },
     deleteTest: async (testId: string) => {
       const project = get().currentProject
-      const json = { project, action: { "delete-test": { id: testId } } }
+      const json = { project, action: { "delete-test": { id: testId } }, 'request-id': 12121212 }
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
     },
     updateTest: async (testId: string, name: string | undefined, imports: Imports, steps: BETestStep[]) => {
@@ -454,19 +454,17 @@ ${path}
         throw 'Error saving tests.'
       }
     },
-    runTest: async (payload: RunTestPayload) => {
+    runTest: async (id: string) => {
       const project = get().currentProject
-      const json = { project, action: { "run-test": payload } }
+      const json = { project, action: { "run-test": { id } }, 'request-id': 121212 }
       console.log('RUNNING TEST:', json)
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
-      console.log('DONE')
     },
     runTests: async (payload: RunTestPayload[]) => {
       const project = get().currentProject
       const json = { project, action: { "run-tests": payload } }
       console.log('RUNNING TESTS:', json)
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
-      console.log('DONE')
     },
     deployContract: async (project: string, address: string, location: string, town: string, rate: number, bud: number, upgradable: boolean) => {
       // address is the public key address of the user's wallet
