@@ -1,100 +1,144 @@
-import { FaArrowDown, FaArrowUp, FaGripVertical, FaRegTrashAlt } from "react-icons/fa"
+import { FaArrowDown, FaArrowUp, FaRegTrashAlt } from "react-icons/fa"
 import Button from "../../components/form/Button"
 import Col from "../../components/spacing/Col"
 import Entry from "../../components/spacing/Entry"
 import Row from "../../components/spacing/Row"
 import Text from '../../components/text/Text'
 import Input from '../../components/form/Input'
-import { longSteps, SmallTestStep, StringTestStep, Test, TestStep, testSteps } from "../../types/ziggurat/Repl"
+import { BETestStep, longSteps, readSteps, StringTestStep, Test, TestReadStep, TestStep, testSteps, TestWriteStep } from "../../types/ziggurat/Repl"
 import useZigguratStore from "../../stores/zigguratStore"
 import Field from "../../components/spacing/Field"
 import Dropdown from "../../components/popups/Dropdown"
 import { useState } from "react"
-import TextArea from "../../components/form/TextArea"
+import classNames from "classnames"
+import Divider from "../../components/spacing/Divider"
+import { convertSteps } from "../../stores/subscriptions/project"
 
+interface ExpectationProps extends React.HTMLAttributes<HTMLDivElement> {
+  test: Test
+  step: TestStep
+  stepIndex: number
+  expectationIndex: number
+}
 
+const Expectation: React.FC<ExpectationProps> = ({ test, step, stepIndex, expectationIndex }) => {
+  const { updateTest } = useZigguratStore()
+  
+  const onRemoveExpectation = async () => {
+    try {
+      (test.test_steps[stepIndex] as TestWriteStep).expected.splice(expectationIndex, 1)
+      await updateTest(test.id, test.name, test.test_imports, convertSteps(test.test_steps))
+    } catch (e) {
+      debugger
+    }
+  }
+
+  return <Row className="expectation" style={{ marginTop: expectationIndex > 0 ? '0.5em' : 0 }}>
+    <Col>
+      {Object.entries(step).reverse().map(([key, val], i) => <Field name={key} key={i}>
+        {key === 'type' ? <Text>expectation: {val}</Text>
+        : !Boolean(val) ? <Input onChange={() => {}} placeholder='none' defaultValue={val as any} /> 
+        : <Col>{Object.entries(val as any).map(([_key, _val], k) => <Field key={k} name={_key}>
+          <Input  onChange={() => {}} defaultValue={_val as any} />
+        </Field>)}</Col>}
+      </Field>)}
+    </Col>
+    <Row className='buttons'>
+      <Button variant='slim' iconOnly icon={<FaRegTrashAlt />} onClick={() => onRemoveExpectation()} />
+    </Row>
+  </Row>
+
+}
+  
 interface TestStepProps extends React.HTMLAttributes<HTMLDivElement> {
-  test: Test,
-  step: SmallTestStep,
+  test: Test
+  step: TestStep
   index: number
 }
 
-const determineTestStepType = (step: TestStep) => {
-  if ('until' in step) {
-    return { isRead: true, type: 'wait'}
-  } 
-
-  if (typeof step.payload === 'string') {
-    if (Array.isArray(step.expected)) {
-      return { isRead: false, type: 'writ'}
-    } 
-    return { isRead: true, type: 'read'}
-  }
-  
-  if ('care' in step.payload) {
-    return { isRead: true, type: 'scry'}
-  }
-
-  if ('mold-name' in step.payload) {
-    return { isRead: true, type: 'dbug'}
-  }
-
-  if ('mark' in step.payload) {
-    return { isRead: false, type: 'poke'}
-  }
-
-  if ('to' in step.payload) {
-    if (Array.isArray(step.expected)) {
-      return { isRead: false, type: 'subs'}
-    }
-    return { isRead: true, type: 'rsub'}
-  }
-
-  return { isRead: false, type: 'dojo'}
-}
-
 const TestStepRow: React.FC<TestStepProps> = ({ test, step, index, ...props }) => {
-  const stepType = Object.keys(step)[0] as StringTestStep
-  const text = JSON.stringify((step as any)[stepType])
+  const { tests, setTests, updateTest, setLoading } = useZigguratStore()
+  const [isStepTypeOpen, setIsStepTypeOpen] = useState(false)
+  const [isExpectTypeOpen, setIsExpectTypeOpen] = useState(false)
 
-  const { tests, setTests } = useZigguratStore()
-  const [isOpen, setIsOpen] = useState(false)
+  const onRemoveStep = async () => {
+    setLoading('Removing test step...')
+    try {
+      test.test_steps.splice(index, 1)
+      await updateTest(test.id, test.name, test.test_imports, convertSteps(test.test_steps))
+    } catch (e) {
+      debugger
+      alert('Error removing step.')
+    } finally {
+      setLoading()
+    }
+  }
 
-  return (<Col className='test-step' {...props}>
-      <Row style={{ flexGrow: 1 }}>
-        <Text className="mr1">{index+1}.</Text>
-        {<Dropdown value={longSteps[stepType].name || 'Unknown'} toggleOpen={() => setIsOpen(!isOpen)} open={isOpen}>
-          {testSteps.map(stepKey => <option key={stepKey} value={stepKey} onClick={() =>{
-            setIsOpen(!isOpen)
-            setTests(tests.map(t => ({ ...t, steps: t.name === test.name ?
-              test.test_steps.map((innerStep, i) => (i === index) ?
-                { type: stepKey, text: '' }
-                : innerStep)
-              : t.test_steps })))
-          }}>{longSteps[stepKey].name}</option>)}
-        </Dropdown>}
-        <Row className='buttons'>
-          <Button onClick={() => {
-            [test.test_steps[index-1], test.test_steps[index]] = [test.test_steps[index], test.test_steps[index-1]]
-            setTests(tests)
-          }} variant='slim' iconOnly icon={<FaArrowUp />} 
-          style={{ visibility: (index > 0) ? 'visible' : 'hidden' }} />
-          <Button onClick={() => {
-            [test.test_steps[index+1], test.test_steps[index]] = [test.test_steps[index], test.test_steps[index+1]]
-            setTests(tests)
-          }} variant='slim' iconOnly icon={<FaArrowDown />} 
-          style={{ visibility: (index < test.test_steps.length - 1) ? 'visible' : 'hidden' }}  />
-          <Button variant='slim' iconOnly icon={<FaRegTrashAlt />} onClick={() => setTests(tests.map(t => ({
-            ...t, steps: t.name === test.name ? t.test_steps.filter(s => s.text !== step.text) : t.test_steps
-          })))} />
-        </Row>
+  const addExpectation = async (expectationStepType: StringTestStep) => {
+    try {
+      if (('expected' in step)) {
+        if (!Array.isArray(step.expected)) return
+        step.expected.push(longSteps[expectationStepType].default as TestReadStep)
+        test.test_steps[index] = step
+        setLoading(`Adding ${longSteps[expectationStepType].name} expectation to step ${index+1}...`)
+        await updateTest(test.id, test.name, test.test_imports, convertSteps(test.test_steps))
+      }
+    } catch {
+      debugger
+      alert('Error adding step to test.')
+    } finally {
+      setLoading()
+      setIsExpectTypeOpen(false)
+    }
+  }
+
+  return (<Col className={classNames('test-step')} {...props}>
+    <Row style={{ flexGrow: 1, marginLeft: '-1em' }}>
+      <Text className="mr1">{index+1}.</Text>
+      {<Dropdown value={longSteps[step.type]?.name || 'Unknown'} toggleOpen={() => setIsStepTypeOpen(!isStepTypeOpen)} open={isStepTypeOpen}>
+        {testSteps.map(stepKey => <option key={stepKey} value={stepKey} onClick={() =>{
+          setIsStepTypeOpen(!isStepTypeOpen)
+          setTests(tests.map(t => ({ ...t, steps: t.name === test.name ?
+            test.test_steps.map((innerStep, i) => (i === index) ?
+              { type: stepKey, text: '' }
+              : innerStep)
+            : t.test_steps })))
+        }}>{longSteps[stepKey].name}</option>)}
+      </Dropdown>}
+      <Row className='buttons'>
+        <Button onClick={() => {
+          [test.test_steps[index-1], test.test_steps[index]] = [test.test_steps[index], test.test_steps[index-1]]
+          setTests(tests)
+        }} variant='slim' iconOnly icon={<FaArrowUp />} 
+        style={{ visibility: (index > 0) ? 'visible' : 'hidden' }} />
+        <Button onClick={() => {
+          [test.test_steps[index+1], test.test_steps[index]] = [test.test_steps[index], test.test_steps[index+1]]
+          setTests(tests)
+        }} variant='slim' iconOnly icon={<FaArrowDown />} 
+        style={{ visibility: (index < test.test_steps.length - 1) ? 'visible' : 'hidden' }}  />
+        <Button variant='slim' iconOnly icon={<FaRegTrashAlt />} onClick={() => onRemoveStep()} />
       </Row>
+    </Row>
 
-      <TextArea value={text} containerStyle={{ margin: '0.5em' }} 
-      placeholder={longSteps[stepType].spec} onChange={(e) => {
-        test.test_steps[index].text = e.currentTarget.value
-        setTests(tests)
-      }}/>
+    {Object.entries(step).reverse().map(([key, val], keyIndex) => <Field name={key} key={keyIndex}>
+      {key === 'type' ? val 
+      : Array.isArray(val) ? <Col>
+        {val.map((expectationStep, j) => <Expectation test={test} step={expectationStep} expectationIndex={j} stepIndex={index} key={j} />)}
+        {val.length === 0 && <Text className="italic">no expectations</Text>}
+        <Field name='add'>
+          <Dropdown value={'Select step type...'} open={Boolean(isExpectTypeOpen)} toggleOpen={() => setIsExpectTypeOpen(!isExpectTypeOpen)}>
+            {readSteps.map(s => <option key={s} onClick={() => addExpectation(s)}>
+              {longSteps[s].name}
+            </option>)}
+          </Dropdown>
+        </Field>
+        <Divider className="mt1" />
+      </Col> : !Boolean(val) ? <Input onChange={() => {}}  defaultValue={val as any} /> 
+      : <Col>{Object.entries(val as any).map(([_key, _val], k) => <Field key={k} name={_key}>
+        <Input  onChange={() => {}} defaultValue={_val as any} />
+      </Field>)}</Col>}
+    </Field>)}
+    <Divider />
   </Col>)
 }
 

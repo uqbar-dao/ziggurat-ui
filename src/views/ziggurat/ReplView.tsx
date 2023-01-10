@@ -18,13 +18,14 @@ import TestStepRow from '../../components-zig/tests/TestStepRow'
 import Text from '../../components/text/Text'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
 import useZigguratStore from '../../stores/zigguratStore'
-import { Tab, Poke as RPoke, Scry as RScry, Test as RTest, Event as REvent, Ship as RShip, TestReadStep, TestWriteStep, TestStep, TestWaitStep, TestReadSubscriptionStep, StringTestStep, TestDbugStep, TestScryStep, TestDojoStep, TestCustomReadStep, TestPokeStep, TestSubscribeStep, TestCustomWriteStep, readSteps, longSteps, writeSteps, SmallTestStep } from '../../types/ziggurat/Repl'
+import { Tab, Poke as RPoke, Scry as RScry, Test as RTest, Event as REvent, Ship as RShip, TestReadStep, TestWriteStep, TestStep, TestWaitStep, TestReadSubscriptionStep, StringTestStep, TestDbugStep, TestScryStep, TestDojoStep, TestCustomReadStep, TestPokeStep, TestSubscribeStep, TestCustomWriteStep, readSteps, longSteps, writeSteps } from '../../types/ziggurat/Repl'
 
 import './ReplView.scss'
 import Form from '../../components/form/Form'
 import { TestImport } from '../../components-zig/tests/TestImport'
 import { TestImports } from '../../components-zig/tests/TestImports'
 import { TestSteps } from '../../components-zig/tests/TestSteps'
+import { convertSteps } from '../../stores/subscriptions/project'
 
 
 const ReplView = () => {
@@ -78,11 +79,10 @@ const ReplView = () => {
 
     try {
       setLoading(`Adding import '${face}: ${path}'...`)
-      await updateTest(test.id, test.name, { ...test.test_imports, [face]: path }, test.test_steps)
+      await updateTest(test.id, test.name, { ...test.test_imports, [face]: path }, convertSteps(test.test_steps))
     } catch (e) {
       const msg = 'Error adding import. Please ensure the file path is correct.'
       alert(msg)
-      throw msg
     } finally {
       setLoading()
     }
@@ -133,20 +133,42 @@ const ReplView = () => {
               {Object.keys(ship.apps).map(k => <Text small ml1 key={k}>%{k}</Text>)}
             </Col> : <></>}
           </Card>)}
-          {Boolean(ships.length) && <Divider/>}
+          {Boolean(ships.length > 0) && <Button onClick={async () => {
+            if (!window.confirm(`Are you sure you want to stop ${ships.length} ships?
+              You can start them again later.`)) 
+              return
+
+            try {
+              setLoading(`Stopping ships...`)
+              await stopShips(currentProject)
+              setShips([])
+            } catch (e) {
+              alert('Error stopping ships.')
+              debugger
+            } finally {
+              setLoading()
+            }
+          }}> Stop all ships </Button>}
+          {Boolean(ships.length) && <Divider className='mt1'/>}
           <Card className='ship mt1' style={{ overflow: 'hidden' }} title='Start ships'>
             {newShips.map((ship, i) => <Row between key={i}>
               <Text className='new-ship'>{ship}</Text>
               <Button icon={<FaTimes/>} iconOnly variant='slim'
                 onClick={() => setNewShips(newShips.filter(s => s !== ship))} />
             </Row>)}
-            <Input placeholder='~dev' value={newShip}
+            <Row>
+              <Input placeholder='~dev' style={{ width: '90%' }} value={newShip}
               onChange={(e) => setNewShip(e.currentTarget.value)}
               onKeyUp={(e) => {
                 if (e.key !== 'Enter') return
                 setNewShips([...newShips, newShip])
                 setNewShip('')
               }} />
+              <Button variant='slim' disabled={!Boolean(newShip)} onClick={() => {
+                setNewShips([...newShips, newShip])
+                setNewShip('')
+              }} iconOnly icon={<FaPlus />} />
+            </Row>
             <Button disabled={!Boolean(newShips.length)} variant='slim' fullWidth
               style={{marginTop: '0.5em'}} onClick={async () => {
                 const sigNames = newShips.map(s => s[0] == '~' ? s : '~' + s)
@@ -164,22 +186,6 @@ const ReplView = () => {
                   })))
                 }
             }}> Start {newShips.length} ship(s) </Button>
-            {Boolean(ships.length > 0) && <Button variant='slim' onClick={async () => {
-              if (!window.confirm(`Are you sure you want to stop ${ships.length} ships?
-                You can start them again later.`)) 
-                return
-
-              try {
-                setLoading(`Stopping ships...`)
-                await stopShips(currentProject)
-                setShips([])
-              } catch (e) {
-                alert('Error stopping ships.')
-                debugger
-              } finally {
-                setLoading()
-              }
-            }} fullWidth style={{marginTop: '0.5em'}}> Stop all ships </Button>}
           </Card>
         </Card>
 
@@ -248,19 +254,19 @@ const ReplView = () => {
                       console.log(e)
                       setTests(tests.map(t => ({ ...t, 
                         filePathDropOpen: false,
-                        filePath: t.name === test.name ? undefined : t.test_steps_file 
+                        filePath: t.name === test.name ? undefined : t.test_steps_file
                     })))}}
                     key={'null'}>None (use manual steps)</option>
                   {projects[currentProject]?.dir.map(file => <option key={file}
                     onClick={(e) => {
                       setTests(tests.map(t => ({ ...t, 
                         filePathDropOpen: false,
-                        filePath: t.name === test.name ? e.currentTarget.value : t.test_steps_file 
+                        filePath: t.name === test.name ? e.currentTarget.value : t.test_steps_file
                     })))}} value={file}>{file}</option>)}
                 </Dropdown>
               </Field>
               <TestImports onAddImport={onAddImport} test={test} />
-              {(test.test_steps_file === '/') && <TestSteps test={test} />}
+              {(test.test_steps_file=== '/') && <TestSteps test={test} />}
             </Col>)}
             <Divider />
             <Row className='test new'>

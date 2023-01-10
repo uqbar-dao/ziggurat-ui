@@ -4,8 +4,9 @@ import Col from "../../components/spacing/Col";
 import Divider from "../../components/spacing/Divider";
 import Field from "../../components/spacing/Field";
 import Text from '../../components/text/Text'
+import { convertSteps } from "../../stores/subscriptions/project";
 import useZigguratStore from "../../stores/zigguratStore";
-import { longSteps, readSteps, StringTestStep, writeSteps } from "../../types/ziggurat/Repl";
+import { longSteps, readSteps, StringTestStep, TestStep, writeSteps } from "../../types/ziggurat/Repl";
 import { Test } from "../../types/ziggurat/Repl";
 import TestStepRow from "./TestStepRow";
 
@@ -20,7 +21,7 @@ export const TestSteps: React.FC<TestStepsProps> = ({ test, ...props }) => {
   const addStepToTest = async (test: Test, step: StringTestStep) => {
     setLoading(`Adding ${longSteps[step].name} to test...`)
     try {
-      await updateTest(test.id, test.name, test.test_imports, [...test.test_steps, { [step]: longSteps[step].default } ])
+      await updateTest(test.id, test.name, test.test_imports, convertSteps([...test.test_steps, (longSteps[step].default as TestStep)]))
     } catch {
       alert('Error adding step to test.')
     } finally {

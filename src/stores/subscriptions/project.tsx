@@ -2,9 +2,10 @@ import { GetState, SetState } from "zustand";
 import { toast } from 'react-toastify';
 import { generateState, } from "../../utils/project";
 import { ZigguratStore } from "../zigguratStore";
-import { ProjectUpdate, ProjectUpdateMessage } from "../../types/ziggurat/Project";
+import { ProjectUpdate } from "../../types/ziggurat/Project";
 import { mapFilesToFolders } from "../../utils/project";
 import { TestResultUpdate } from "../../types/ziggurat/TestData";
+import { BETestStep, TestReadStep, TestStep } from "../../types/ziggurat/Repl";
 
 export const handleProjectUpdate = (get: GetState<ZigguratStore>, set: SetState<ZigguratStore>, project: string) => (update: ProjectUpdate) => {
   console.log('UPDATE FOR:', {project, update})
@@ -38,71 +39,53 @@ export const handleProjectUpdate = (get: GetState<ZigguratStore>, set: SetState<
 
   const updateTypes = [ 'projects', 'project', 'state', 'dir', 'dashboard', 'new-project', 'add-test', 'edit-test', 'compile-contract', 'delete-test', 'run-queue', 'test-results', 'project-names', 'add-custom-step', 'delete-custom-step', 'add-town-sequencer', 'delete-town-sequencer', 'add-user-file', 'delete-user-file', 'custom-step-compiled', 'add-app-to-dashboard', 'delete-app-from-dashboard', ]
 
-  updateTypes.forEach(ut => {
-    if (ut in update) {
-      console.log(`UPDATE IS TYPE ${ut}`)
-    } 
-  })
+  console.log(`UPDATE IS TYPE ${update.type}`)
 
   const newProjects = { ...get().projects }
-  const toastErrors: { path: string, error: string }[] = []
+  const unprocessedErrors: { path: string, error: string }[] = []
 
-  const keys = Object.keys(update)
-  keys.forEach(key => {
-    if ((update[key] as ProjectUpdateMessage)?.level === 'error') {
-      const m = {error: (update[key] as ProjectUpdateMessage)?.message, path: '/'}
-      m && toastErrors.push(m)
-    }
-  })
-
-  if ('project' in update) {
-    const p = update.project.project
-    newProjects[project] = {
-      ...(newProjects[project] || {}),
-      ...p,
-      folder: mapFilesToFolders(project, p.dir, get().projects[project]),
-      state: p.state ? generateState(p) : {},
-    }
-
-    if (p.errors?.length) {toastErrors.push(...p.errors)}
+  if (update.level === 'error') {
+    unprocessedErrors.push({error: update.message, path: '/'})
   }
 
-  if ('add-test' in update) {
+  const oldP = newProjects[project]
+
+  if (update.project) {
     newProjects[project] = {
-      ...(newProjects[project] || {}),
-      tests: {
-        ...newProjects[project].tests,
-        [update["add-test"].test_id]: {
-          ...update["add-test"].data.test,
-          id: update["add-test"].test_id
-        }
-      }
+      ...(oldP || {}),
+      ...update.project,
+      folder: update.project.dir ?
+      mapFilesToFolders(project, update.project.dir, get().projects[project])
+      : oldP.folder,
+      state: update.project.state ? generateState(update.project) : oldP.state,
     }
   }
 
-  if ('edit-test' in update) {
-    newProjects[project] = {
-      ...(newProjects[project] || {}),
-      tests: {
-        ...newProjects[project].tests,
-        [update["edit-test"].test_id]: {
-          ...update["edit-test"].data.test,
-          id: update["edit-test"].test_id
-        }
-      }
+  if (update.type === 'add-test') {
+    newProjects[project].tests[update.test_id] = {
+      ...update.data.test,
+      id: update.test_id
     }
   }
 
-  const tests = Object.entries(newProjects[project].tests).map(([id, test]) => ({ 
+  if (update.type === 'edit-test') {
+    newProjects[project].tests[update.test_id] = {
+      ...update.data.test,
+      id: update.test_id
+    }
+  }
+
+  // pretty gross having these duplicated...  need to fix it.
+  const tests = Object.entries(oldP.tests).map(([id, test]) => ({ 
     ...test, id,
-    imports: Object.entries(test.test_imports).map(([f, p]) => ({ face: f, path: p })) ,
-    steps: []
+    imports: test.test_imports,
+    steps: test.test_steps
   }))
   set({ projects: newProjects, tests })
 
   const { toastMessages } = get()
-  if (toastErrors.length) {
-    const errors = toastErrors.map(e => ({
+  if (unprocessedErrors.length) {
+    const errors = unprocessedErrors.map(e => ({
       project,
       message: e.error,
       id: toast.error(
@@ -137,3 +120,18 @@ export const handleProjectUpdate = (get: GetState<ZigguratStore>, set: SetState<
     })
   }
 }
+
+export const convertExpectedSteps = (steps: TestReadStep[]) => steps.map(step => ({ [step.type]: step as TestStep }))
+
+export const convertSteps = (steps: TestStep[]) => steps.map(step => {
+  if ('expected' in step && Array.isArray(step.expected)) {
+    return {
+      [step.type]: {
+        ...step,
+        expected: convertExpectedSteps(step.expected)
+      } as any as TestStep
+    }
+  }
+
+  return { [step.type]: step }
+})

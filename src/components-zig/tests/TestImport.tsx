@@ -5,6 +5,7 @@ import Input from "../../components/form/Input";
 import Dropdown from "../../components/popups/Dropdown";
 import Row from "../../components/spacing/Row";
 import Text from '../../components/text/Text'
+import { convertSteps } from "../../stores/subscriptions/project";
 import useZigguratStore from "../../stores/zigguratStore";
 import { Test } from "../../types/ziggurat/Repl";
 import { Imports } from "../../types/ziggurat/TestData";
@@ -30,7 +31,7 @@ export const TestImport: React.FC<TestImportProps> = ({ test, face, path, ...pro
       [face]: undefined,
       [finalFace]: file.replace(/\/hoon$/g, '') }
     try {
-      await updateTest(test.id, test.name, nimports, test.test_steps)
+      await updateTest(test.id, test.name, nimports, convertSteps(test.test_steps))
     } catch {
       alert('Error updating import. Does the file exist?')
     } finally {
@@ -42,7 +43,7 @@ export const TestImport: React.FC<TestImportProps> = ({ test, face, path, ...pro
     const nimports: Imports = { ...test.test_imports, [newFace]: undefined }
     try {
       setLoading(`Deleting import ${newFace}...`)
-      await updateTest(test.id, test.name, nimports, test.test_steps)
+      await updateTest(test.id, test.name, nimports, convertSteps(test.test_steps))
     } catch {
       alert('Error deleting import.')
     } finally {

@@ -22,8 +22,8 @@ export const generateTests = (p: Project) =>
   {} as Tests)
 
 
-export const generateProjects = (rawProjects: { projects: { projects: { [key: string]: Project } } }, existingProjects: Projects) => {
-  const raws = rawProjects.projects.projects
+export const generateProjects = (rawProjects: { projects: { [key: string]: Project  } }, existingProjects: Projects) => {
+  const raws = rawProjects.projects
   return Object.keys(raws).reduce((acc, key) => {
     const p = raws[key]
     acc[key] = {
@@ -34,9 +34,7 @@ export const generateProjects = (rawProjects: { projects: { projects: { [key: st
       tests: generateTests(p as Project),
       folder: mapFilesToFolders(key, (p as Project).dir, existingProjects[key] as Project),
       modifiedFiles: new Set<string>(),
-      // interfaces: generateMolds(p as Project),
     }
-    debugger
     return acc
   }, {} as Projects)
 }

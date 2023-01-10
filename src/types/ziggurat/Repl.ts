@@ -39,7 +39,17 @@ export interface Event {
   type: string
   data: string
 }
-export interface TestScryStep {
+
+export type StringTestStep = 'scry' | 'read-subscription' | 'wait' | 'dbug' | 'custom-read' | 'poke' | 'subscribe' | 'dojo' | 'custom-write' 
+export const readSteps: StringTestStep[] = ['scry', 'read-subscription', 'wait', 'dbug', 'custom-read']
+export const writeSteps: StringTestStep[] = ['poke', 'subscribe', 'dojo', 'custom-write']
+export const testSteps = [...readSteps, ...writeSteps]
+
+export interface TestBaseStep { 
+  type: StringTestStep
+}
+
+export interface TestScryStep extends TestBaseStep {
   payload: {
     who: string
     "mold-name": string
@@ -50,7 +60,7 @@ export interface TestScryStep {
   expected: string
 }
 
-export interface TestDbugStep {
+export interface TestDbugStep extends TestBaseStep {
   payload: {
     who: string
     "mold-name": string
@@ -59,7 +69,7 @@ export interface TestDbugStep {
   expected: string
 }
 
-export interface TestReadSubscriptionStep {
+export interface TestReadSubscriptionStep extends TestBaseStep {
   payload: {
     who: string
     to: string
@@ -69,11 +79,11 @@ export interface TestReadSubscriptionStep {
   expected: string
 }
 
-export interface TestWaitStep {
+export interface TestWaitStep extends TestBaseStep {
   until: number
 }
 
-export interface TestCustomReadStep {
+export interface TestCustomReadStep extends TestBaseStep {
   tag: string
   payload: string
   expected: string
@@ -81,7 +91,7 @@ export interface TestCustomReadStep {
 
 export type TestReadStep = TestScryStep | TestDbugStep | TestReadSubscriptionStep | TestWaitStep | TestCustomReadStep
 
-export interface TestDojoStep {
+export interface TestDojoStep extends TestBaseStep {
   payload: {
     who: string
     payload: string
@@ -89,7 +99,7 @@ export interface TestDojoStep {
   expected: TestReadStep[]
 }
 
-export interface TestPokeStep {
+export interface TestPokeStep extends TestBaseStep {
   payload: {
     who: string
     to: string
@@ -100,7 +110,7 @@ export interface TestPokeStep {
   expected: TestReadStep[]
 }
 
-export interface TestSubscribeStep {
+export interface TestSubscribeStep extends TestBaseStep {
   payload: {
     who: string
     to: string
@@ -110,7 +120,7 @@ export interface TestSubscribeStep {
   expected: TestReadStep[]
 }
 
-export interface TestCustomWriteStep {
+export interface TestCustomWriteStep extends TestBaseStep {
   tag: string
   payload: string
   expected: TestReadStep[]
@@ -118,81 +128,71 @@ export interface TestCustomWriteStep {
 
 export type TestWriteStep = TestDojoStep | TestPokeStep | TestSubscribeStep | TestCustomWriteStep
 export type TestStep = TestReadStep | TestWriteStep
-
+export type BETestStep = { [key: string]: TestStep }
 export interface Test {
   id: string
   name?: string
   test_steps_file?: string
   test_imports: { [key: string]: string | undefined }
-  test_steps: SmallTestStep[]
+  test_steps: TestStep[]
   expanded?: boolean
   filePathDropOpen?: boolean
   newStepOpen?: boolean
 }
 
-
 export const longSteps = {
-  scry: {
+  'scry': {
     name: 'Scry', 
-    tas: '%scry', 
     spec: '[payload=[who=@p mold-name=@t care=@tas app=@tas =path] expected=@t]',
     default: { 
+      type: 'scry',
       payload: { who: '~zod', "mold-name": '@', care: 'gx', app: 'ziggurat', path: '/', }, 
       expected: '' }},
-  rsub: {
+  'read-subscription': {
     name: 'Read Subscription', 
-    tas: '%read-subscription',
     spec: '[payload=[who=@p to=@p app=@tas =path] expected=@t]',
     default: { 
-      payload: { who: '', to: '', app: '', path: '', }, 
+      type: 'read-subscription',
+      payload: { who: '~zod', to: '~nec', app: 'ziggurat', path: '/', }, 
       expected: '' }},
-  wait: {
+  'wait': {
     name: 'Wait',
-    tas: '%wait', 
     spec: '[until=@dr]',
-    default: { until: 0, }},
-  dbug: {
+    default: { type: 'wait', until: 0, }},
+  'dbug': {
     name: 'Dbug',  
-    tas: '%dbug',
     spec: '[payload=[who=@p mold-name=@t app=@tas] expected=@t]',
     default: { 
-      payload: { who: '', "mold-name": '', app: '', }, 
+      type: 'dbug',
+      payload: { who: '~zod', "mold-name": '@', app: 'ziggurat', }, 
       expected: '' }},
-  read: {
+  'custom-read': {
     name: 'Custom Read', 
-    tas: '%custom-read',
     spec: '[payload=[who=@p to=@p app=@tas =path] expected=@t]',
-    default: { tag: '', payload: '', expected: '', }},
-  poke: {
+    default: { type: 'custom-read', tag: '', payload: '', expected: '', }},
+  'poke': {
     name: 'Poke', 
-    tas: '%poke',
     spec: '[payload=[who=@p to=@p app=@tas mark=@tas payload=@t] expected=(list test-read-step)]',
     default: { 
-      payload: { who: '', to: '', app: '', mark: '', payload: '', }, 
+      type: 'poke',
+      payload: { who: '~zod', to: '~nec', app: 'ziggurat', mark: 'hoon', payload: '1', }, 
       expected: [] }},
-  subs: {
+  'subscribe': {
     name: 'Subscribe', 
-    tas: '%subscribe',
     spec: '[payload=[who=@p to=@p app=@tas =path] expected=(list test-read-step)]',
     default: { 
-      payload: { who: '', to: '', app: '', path: '', }, 
+      type: 'subscribe',
+      payload: { who: '~zod', to: '~nec', app: 'ziggurat', path: '/', }, 
       expected: [] }},
-  dojo: {
+  'dojo': {
     name: 'Dojo', 
-    tas: '%dojo',
     spec: '[payload=[who=@p payload=@t] expected=(list test-read-step)]',
     default: {
-      payload: { who: '', payload: '' },
+      type: 'dojo',
+      payload: { who: '~zod', payload: '(add 2 2)' },
       expected: [] }},
-  writ: {
+  'custom-write': {
     name: 'Custom Write', 
-    tas: '%custom-write',
     spec: '[tag=@tas payload=@t expected=(list test-read-step)]',
-    default: { tag: '', payload: '', expected: [] }},
+    default: { type: 'custom-write', tag: '', payload: '(add 2 2)', expected: [] }},
 }
-
-export const readSteps: StringTestStep[] = ['scry', 'rsub', 'wait', 'dbug', 'read']
-export const writeSteps: StringTestStep[] = ['poke', 'subs', 'dojo', 'writ']
-export const testSteps = [...readSteps, ...writeSteps]
-export type StringTestStep = 'scry' | 'rsub' | 'wait' | 'read' | 'poke' | 'subs' | 'dbug' | 'dojo' | 'writ'
-export type SmallTestStep = { type: StringTestStep, text: string }

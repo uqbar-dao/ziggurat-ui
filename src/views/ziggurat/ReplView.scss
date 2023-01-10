@@ -164,6 +164,15 @@
             //     visibility: visible;
             //   }
             // }
+
+            .expectation {
+              background-color: colors.$laffron;
+              padding: 0.5em;
+
+              input {
+                max-width: 128px;
+              }
+            }
           }
 
           .imports {

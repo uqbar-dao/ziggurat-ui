@@ -19,7 +19,7 @@ import { genRanHex } from "../utils/number";
 import { handleEndpointUpdate } from "./subscriptions/endpoint";
 import { DownloadedFile } from "../views/ziggurat/NewProjectView";
 import { Projects } from "../types/ziggurat/Project";
-import { Poke, Scry, Ship, View, Event, Test, testSteps } from "../types/ziggurat/Repl";
+import { Poke, Scry, Ship, View, Event, Test, testSteps, StringTestStep, TestStep, BETestStep } from "../types/ziggurat/Repl";
 
 export interface ZigguratStore {
   zigguratTitleBase: string
@@ -73,7 +73,7 @@ export interface ZigguratStore {
   addTest: (name: string, imports: { [key: string]: string }, steps: any[]) => Promise<void>
   addTestExpectation: (testId: string, expectations: TestItemInput) => Promise<void>
   deleteTest: (testId: string) => Promise<void>
-  updateTest: (testId: string, name: string | undefined, imports: Imports, steps: any[]) => Promise<void>
+  updateTest: (testId: string, name: string | undefined, imports: Imports, steps: BETestStep[]) => Promise<void>
   runTest: (payload: RunTestPayload) => Promise<void>
   runTests: (payload: RunTestPayload[]) => Promise<void>
   deployContract: (project: string, address: string, location: string, town: string, rate: number, bud: number, upgradable: boolean) => Promise<void>
@@ -444,7 +444,7 @@ ${path}
       const json = { project, action: { "delete-test": { id: testId } } }
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
     },
-    updateTest: async (testId: string, name: string | undefined, imports: Imports, steps: any[]) => {
+    updateTest: async (testId: string, name: string | undefined, imports: Imports, steps: BETestStep[]) => {
       const project = get().currentProject
       const json = { project, 'request-id': 1212, action: { "edit-test": { id: testId, name, 'test-imports': imports, 'test-steps': steps } } }
       console.log('UPDATING TEST:', json)

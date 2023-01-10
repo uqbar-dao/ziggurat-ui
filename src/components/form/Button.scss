@@ -47,6 +47,10 @@ button.button {
       background-color: colors.$midnightpurp;
       transform: scale(1);
     }
+
+    &.fullWidth{
+      width: 99%;
+    }
   }
 
   &.small {
