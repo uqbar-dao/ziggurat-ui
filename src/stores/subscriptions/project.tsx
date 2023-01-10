@@ -121,14 +121,14 @@ export const handleProjectUpdate = (get: GetState<ZigguratStore>, set: SetState<
   }
 }
 
-export const convertExpectedSteps = (steps: TestReadStep[]) => steps.map(step => ({ [step.type]: step as TestStep }))
+export const convertExpectations = (steps: TestReadStep[]) => steps.map(step => ({ [step.type]: step as TestStep }))
 
 export const convertSteps = (steps: TestStep[]) => steps.map(step => {
   if ('expected' in step && Array.isArray(step.expected)) {
     return {
       [step.type]: {
         ...step,
-        expected: convertExpectedSteps(step.expected)
+        expected: convertExpectations(step.expected)
       } as any as TestStep
     }
   }
