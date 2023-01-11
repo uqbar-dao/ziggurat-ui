@@ -76,6 +76,9 @@ export interface ZigguratStore {
   deleteTest: (testId: string) => Promise<void>
   dirtifyTest: (id: string) => void
   updateTest: (testId: string, name: string | undefined, imports: Imports, steps: BETestStep[]) => Promise<void>
+  queueTest: (testId: string) => Promise<void>
+  runTestQueue: () => Promise<void>
+  clearTestQueue: () => Promise<void>
   runTest: (id: string) => Promise<void>
   runTests: (payload: RunTestPayload[]) => Promise<void>
   deployContract: (project: string, address: string, location: string, town: string, rate: number, bud: number, upgradable: boolean) => Promise<void>
@@ -446,6 +449,21 @@ ${path}
       const dt = get().dirtyTests
       if (dt.includes(id)) return
       set({ dirtyTests: [...dt, id] })
+    },
+    queueTest: async (testId: string) => {
+      const project = get().currentProject
+      const json = { project, action: { 'queue-test': { id: testId } }, 'request-id': 1212121212 }
+      const result = await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
+    },
+    runTestQueue: async () => {
+      const project = get().currentProject
+      const json = { project, action: { 'run-queue': null }, 'request-id': 121212121212 }
+      const result = await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
+    },
+    clearTestQueue: async () => {
+      const project = get().currentProject
+      const json = { project, action: { 'clear-queue': null }, 'request-id': 12121212121212 }
+      const result = await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
     },
     deleteTest: async (testId: string) => {
       const project = get().currentProject

@@ -11,4 +11,13 @@
   padding: 12px 16px;
   max-height: 75vh;
   overflow: auto;
+
+  &.smallTitle {
+    .header {
+      .text {
+        font-size: medium;
+        font-weight: 400;
+      }
+    }
+  }
 }

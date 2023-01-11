@@ -5,21 +5,20 @@ import Text from "../../components/text/Text"
 import Button from "../../components/form/Button"
 import Field from "../../components/spacing/Field"
 import Input from "../../components/form/Input"
-import { FaRegTrashAlt, FaPlay, FaRegSave } from "react-icons/fa"
+import { FaRegTrashAlt, FaPlay, FaRegSave, FaRegPlusSquare, FaSave } from "react-icons/fa"
 import { Test as RTest } from "../../types/ziggurat/Repl"
 import useZigguratStore from "../../stores/zigguratStore"
 import { convertSteps } from "../../stores/subscriptions/project"
 import Dropdown from "../../components/popups/Dropdown"
 import { TestImports } from "./TestImports"
 import { TestSteps } from "./TestSteps"
-import { useState } from "react"
 
 interface TestDisplayProps {
   test: RTest
 }
 
 export const TestDisplay: React.FC<TestDisplayProps> = ({ test, ...props }) => {
-  const { setLoading, updateTest, deleteTest, runTest, setTests, dirtyTests, tests, projects, currentProject, } = useZigguratStore()
+  const { setLoading, updateTest, deleteTest, runTest, queueTest, setTests, dirtyTests, tests, projects, currentProject, } = useZigguratStore()
 
   const onAddImport = async (test: RTest, face: string, path: string) => {
     if (Object.keys(test.test_imports).indexOf(face) > -1) { 
@@ -65,17 +64,6 @@ export const TestDisplay: React.FC<TestDisplayProps> = ({ test, ...props }) => {
     }
   }
 
-  const onRunTest = async (id: string) => {
-    setLoading('Running test...')
-    try {
-      const result = await runTest(id)
-    } catch {
-      debugger
-    } finally {
-      // await test run completion, do not set loading
-    }
-  }
-
   const onSaveTest = async () => {
     setLoading('Saving test...')
     try {
@@ -88,12 +76,35 @@ export const TestDisplay: React.FC<TestDisplayProps> = ({ test, ...props }) => {
     }
   }
 
+  const onRunTest = async (id: string) => {
+    setLoading('Running test...')
+    try {
+      const result = await runTest(id)
+    } catch {
+      debugger
+    } finally {
+      // await test run completion, do not set loading
+    }
+  }
+  
+   const onQueueTest = async (id: string) => {
+    setLoading('Queueing test...')
+    try {
+      const result = await queueTest(id)
+    } catch (e) {
+      debugger
+    } finally {
+      setLoading()
+    }
+  }
+  
   return (<Col className='test' {...props}>
   <Row>
     <HexNum num={test.id} displayNum={test.name} />
     <Row className='buttons'>
       <Button variant='slim' icon={<FaRegTrashAlt />} iconOnly onClick={() => onDeleteTest(test.id)} />
-      {dirtyTests.includes(test.id) && <Button variant='slim' icon={<FaRegSave />} iconOnly onClick={() => onSaveTest()} />}
+      <Button variant='slim' icon={<FaRegPlusSquare />} iconOnly onClick={() => onQueueTest(test.id)} disabled={dirtyTests.includes(test.id)} />
+      {dirtyTests.includes(test.id) && <Button variant='slim' icon={<FaSave />} iconOnly onClick={() => onSaveTest()} />}
       {!dirtyTests.includes(test.id) && <Button variant='slim' icon={<FaPlay />} iconOnly onClick={() => onRunTest(test.id)} />}
     </Row>
   </Row>
@@ -117,8 +128,9 @@ export const TestDisplay: React.FC<TestDisplayProps> = ({ test, ...props }) => {
         filePathDropOpen: false,
         filePath: t.name === test.name ? undefined : t.test_steps_file
     })))}} key={'null'}>None (use manual steps)</option>
-    {projects[currentProject]?.dir.map(file => <option key={file}
-      onClick={(e) => {
+    {projects[currentProject]?.dir
+      .filter(file => file.endsWith('/hoon'))
+      .map(file => <option key={file} onClick={(e) => {
         setTests(tests.map(t => ({ ...t, 
           filePathDropOpen: false,
           filePath: t.name === test.name ? e.currentTarget.value : t.test_steps_file

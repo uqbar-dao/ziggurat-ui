@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import { useMemo, useState } from 'react'
-import { FaChevronDown, FaChevronRight, FaPlay, FaPlus, FaRegEye, FaRegHandPointer, FaRegTrashAlt, FaTimes } from 'react-icons/fa'
+import { FaChevronDown, FaChevronRight, FaPlus, FaRegEye, FaRegHandPointer, FaRegTrashAlt, FaTimes } from 'react-icons/fa'
 import Card from '../../components-indexer/card/Card'
 import Checkbox from '../../components-zig/forms/Checkbox'
 import { OpenFileHeader } from '../../components-zig/nav/OpenFileHeader'
@@ -11,28 +11,21 @@ import Col from '../../components/spacing/Col'
 import Container from '../../components/spacing/Container'
 import Divider from '../../components/spacing/Divider'
 import Entry from '../../components/spacing/Entry'
-import Field from '../../components/spacing/Field'
 import Row from '../../components/spacing/Row'
 import Json from '../../components/text/Json'
-import TestStepRow from '../../components-zig/tests/TestStepRow'
 import Text from '../../components/text/Text'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
 import useZigguratStore from '../../stores/zigguratStore'
-import { Tab, Poke as RPoke, Scry as RScry, Test as RTest, Event as REvent, Ship as RShip, TestReadStep, TestWriteStep, TestStep, TestWaitStep, TestReadSubscriptionStep, StringTestStep, TestDbugStep, TestScryStep, TestDojoStep, TestCustomReadStep, TestPokeStep, TestSubscribeStep, TestCustomWriteStep, readSteps, longSteps, writeSteps } from '../../types/ziggurat/Repl'
-
-import './ReplView.scss'
-import Form from '../../components/form/Form'
-import { TestImport } from '../../components-zig/tests/TestImport'
-import { TestImports } from '../../components-zig/tests/TestImports'
-import { TestSteps } from '../../components-zig/tests/TestSteps'
-import { convertSteps } from '../../stores/subscriptions/project'
-import { HexNum } from '@uqbar/wallet-ui'
+import { Tab, Poke as RPoke, Scry as RScry } from '../../types/ziggurat/Repl'
 import { TestDisplay } from '../../components-zig/tests/TestDisplay'
 import { useNavigate } from 'react-router-dom'
 
+import './ReplView.scss'
+import { MiniTest } from '../../components-zig/tests/MiniTest'
+import TestStepRow from '../../components-zig/tests/TestStepRow'
 
 const ReplView = () => {
-  const { zigguratTitleBase, tests, addTest, deleteTest, setTests, updateTest, runTest, ships, getShips, setShips, startShips, stopShips, views, setViews, pokes, setPokes, scries, setScries, events, setEvents, projects, currentProject, setLoading } = useZigguratStore()
+  const { zigguratTitleBase, tests, addTest, ships, getShips, setShips, startShips, stopShips, views, setViews, pokes, setPokes, scries, setScries, events, currentProject, setLoading } = useZigguratStore()
   const nav = useNavigate()
 
   if (!currentProject) {
@@ -101,87 +94,98 @@ const ReplView = () => {
     <OpenFileHeader />
     <Container className='repl-view'>
       <Row>
-        <Card className='ships' title='Virtual Ships'>
-          {!Boolean(ships.length) && <Text className='mt1'>No virtualships yet.</Text> }
-          {ships.map((ship, i) => <Card
-              onClick={() => setShips(ships.map(s => ({ ...s, active: ship.name === s.name })))}
-              className={classNames('ship', { mt1: !i, active: ship.active })} key={i}>
-            <Row>
-              <Button onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  setShips(ships.map(s => ({ ...s, expanded: (ship.name === s.name) ? (!s.expanded) : s.expanded })))}
-                } style={{ alignSelf: 'flex-start', marginRight: '0.5em' }} variant='unstyled' iconOnly 
-                icon={ship.expanded ? <FaChevronDown /> : <FaChevronRight />} />
-              <Text small bold> {ship.name} </Text>
-              {/* {ship.expanded && <Button style={{ marginLeft: 'auto', alignSelf: 'flex-start' }} variant='unstyled' iconOnly icon={<FaRegTrashAlt />} 
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  if (window.confirm('Are you sure you want to delete fakeship ' + ship.name + '?'))
-                    setShips(ships.filter(s => s.name !== ship.name))
-                }} />} */}
-            </Row>
-            {ship.expanded ? <Col>
-              <Text small> Agents: </Text>
-              {Object.keys(ship.apps).map(k => <Text small ml1 key={k}>%{k}</Text>)}
-            </Col> : <></>}
-          </Card>)}
-          {Boolean(ships.length > 0) && <Button onClick={async () => {
-            if (!window.confirm(`Are you sure you want to stop ${ships.length} ships?
-              You can start them again later.`)) 
-              return
+        <Col className='ships-queue'>
+          <Card className='ships smallTitle' title='Virtual Ships'>
+            {!Boolean(ships.length) && <Text className='mt1'>No virtualships yet.</Text> }
+            {ships.map((ship, i) => <Card
+                onClick={() => setShips(ships.map(s => ({ ...s, active: ship.name === s.name })))}
+                className={classNames('ship', { mt1: !i, active: ship.active })} key={i}>
+              <Row>
+                <Button onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    setShips(ships.map(s => ({ ...s, expanded: (ship.name === s.name) ? (!s.expanded) : s.expanded })))}
+                  } style={{ alignSelf: 'flex-start', marginRight: '0.5em' }} variant='unstyled' iconOnly 
+                  icon={ship.expanded ? <FaChevronDown /> : <FaChevronRight />} />
+                <Text small bold> {ship.name} </Text>
+                {/* {ship.expanded && <Button style={{ marginLeft: 'auto', alignSelf: 'flex-start' }} variant='unstyled' iconOnly icon={<FaRegTrashAlt />} 
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    if (window.confirm('Are you sure you want to delete fakeship ' + ship.name + '?'))
+                      setShips(ships.filter(s => s.name !== ship.name))
+                  }} />} */}
+              </Row>
+              {ship.expanded ? <Col>
+                <Text small> Agents: </Text>
+                {Object.keys(ship.apps).map(k => <Text small ml1 key={k}>%{k}</Text>)}
+              </Col> : <></>}
+            </Card>)}
+            {Boolean(ships.length > 0) && <Button onClick={async () => {
+              if (!window.confirm(`Are you sure you want to stop ${ships.length} ships?
+                You can start them again later.`)) 
+                return
 
-            try {
-              setLoading(`Stopping ships...`)
-              await stopShips(currentProject)
-              setShips([])
-            } catch (e) {
-              alert('Error stopping ships.')
-              debugger
-            } finally {
-              setLoading()
-            }
-          }}> Stop all ships </Button>}
-          {Boolean(ships.length) && <Divider className='mt1'/>}
-          <Card className='ship mt1' style={{ overflow: 'hidden' }} title='Start ships'>
-            {newShips.map((ship, i) => <Row between key={i}>
-              <Text className='new-ship'>{ship}</Text>
-              <Button icon={<FaTimes/>} iconOnly variant='slim'
-                onClick={() => setNewShips(newShips.filter(s => s !== ship))} />
-            </Row>)}
-            <Row>
-              <Input placeholder='~dev' style={{ width: '90%' }} value={newShip}
-              onChange={(e) => setNewShip(e.currentTarget.value)}
-              onKeyUp={(e) => {
-                if (e.key !== 'Enter') return
-                setNewShips([...newShips, newShip])
-                setNewShip('')
-              }} />
-              <Button variant='slim' disabled={!Boolean(newShip)} onClick={() => {
-                setNewShips([...newShips, newShip])
-                setNewShip('')
-              }} iconOnly icon={<FaPlus />} />
-            </Row>
-            <Button disabled={!Boolean(newShips.length)} variant='slim' fullWidth
-              style={{marginTop: '0.5em'}} onClick={async () => {
-                const sigNames = newShips.map(s => s[0] == '~' ? s : '~' + s)
-                try {
-                  setLoading(`Starting ${sigNames.join (', ')} (this may take a while)...`)
-                  const result = await startShips(currentProject, sigNames)
-                } catch (e) {
-                  alert(`Error starting ${sigNames.join(', ')}. Please check ship names for typos.`)
-                  debugger
-                } finally {
-                  setNewShips([])
-                  setLoading(undefined)
-                  setShips((await getShips()).ships.map((ship, j) => ({ 
-                    name: ship, active: (ships[j])?.active, apps: [] 
-                  })))
-                }
-            }}> Start {newShips.length} ship(s) </Button>
+              try {
+                setLoading(`Stopping ships...`)
+                await stopShips(currentProject)
+                setShips([])
+              } catch (e) {
+                alert('Error stopping ships.')
+                debugger
+              } finally {
+                setLoading()
+              }
+            }}> Stop all ships </Button>}
+            {Boolean(ships.length) && <Divider className='mt1'/>}
+            <Card className='ship mt1 smallTitle' style={{ overflow: 'hidden' }} title='Start ships'>
+              {newShips.map((ship, i) => <Row between key={i}>
+                <Text className='new-ship'>{ship}</Text>
+                <Button icon={<FaTimes/>} iconOnly variant='slim'
+                  onClick={() => setNewShips(newShips.filter(s => s !== ship))} />
+              </Row>)}
+              <Row>
+                <Input placeholder='~dev' style={{ width: '90%' }} value={newShip}
+                onChange={(e) => setNewShip(e.currentTarget.value)}
+                onKeyUp={(e) => {
+                  if (e.key !== 'Enter') return
+                  setNewShips([...newShips, newShip])
+                  setNewShip('')
+                }} />
+                <Button variant='slim' disabled={!Boolean(newShip)} onClick={() => {
+                  setNewShips([...newShips, newShip])
+                  setNewShip('')
+                }} iconOnly icon={<FaPlus />} />
+              </Row>
+              <Button disabled={!Boolean(newShips.length)} variant='slim' fullWidth
+                style={{marginTop: '0.5em'}} onClick={async () => {
+                  const sigNames = newShips.map(s => s[0] == '~' ? s : '~' + s)
+                  try {
+                    setLoading(`Starting ${sigNames.join (', ')} (this may take a while)...`)
+                    const result = await startShips(currentProject, sigNames)
+                  } catch (e) {
+                    alert(`Error starting ${sigNames.join(', ')}. Please check ship names for typos.`)
+                    debugger
+                  } finally {
+                    setNewShips([])
+                    setLoading(undefined)
+                    setShips((await getShips()).ships.map((ship, j) => ({ 
+                      name: ship, active: (ships[j])?.active, apps: [] 
+                    })))
+                  }
+              }}> Start {newShips.length} ship(s) </Button>
+            </Card>
           </Card>
-        </Card>
+          <Card className='queue mt1 smallTitle' title='Test Queue'>
+            {tests.map((test, i) => <Row className='test' key={test.id}>
+              <Text className='mr1'>{i+1}.</Text>
+              <Text>{test.name}</Text>
+              <Row className='buttons' style={{ marginLeft: 'auto' }}>
+                <Button variant='slim' iconOnly icon={<FaTimes />} />
+              </Row>
+            </Row>)}
+          </Card>
+        </Col>
 
         <Col className='mid'>
           <Row className='tabs'>
@@ -195,10 +199,12 @@ const ReplView = () => {
           {tabs.find(t => t.name === 'state')?.active ? activeShip
           ? <Card className='tab-body state' title={`state: ${activeShip.name}`}>
             <Row between className='states-views'>
-              <Col className='states'>
-                <Json json={activeShip!.apps} />
+              <Col className='states wrap'>
+                {views.map((view, i) => <Card className='smallTitle' key={i} style={{ display: view.active ? 'inherit' : 'none' }} title={view.name}>
+                  <Text>highly relevant view information</Text>
+                </Card>)}
               </Col>
-              <Col className='views'>
+              <Col className='views ml1'>
                 <Text bold style={{marginTop:16}}>Views</Text>
                 {views.map(view => <Checkbox key={view.name} label={view.name} className='view' isSelected={view.active} 
                   onCheckboxChange={() => setViews(views.map(v => ({ 
@@ -251,7 +257,7 @@ const ReplView = () => {
 
         <Col className='pokes-scries'>
           <Entry style={{paddingTop: 0}}>
-            <Card title='Pokes'>
+            <Card title='Pokes' className='smallTitle'>
               {!Boolean(pokes.length) && <Text className='mt1'>No saved pokes yet.</Text> }
               {pokes.map((poke,i) => <Col key={i} className='poke'>
                 <Row className='w100'>
@@ -304,7 +310,7 @@ const ReplView = () => {
             </Card>
           </Entry>
           <Entry>
-            <Card title='Scries'>
+            <Card title='Scries' className='smallTitle'>
               {!Boolean(scries.length) && <Text className='mt1'>No saved scries yet.</Text> }
               {scries.map((scry,i) => <Col key={i} className='scry'>
                 <Row className='w100'>
@@ -347,8 +353,8 @@ const ReplView = () => {
             </Card>
           </Entry>
           <Entry>
-            <Card title='Tests'>
-              {tests.map((test, i) => <Card key={i}>{test.name}</Card>)}
+            <Card title='Tests' className='smallTitle'>
+              {tests.map((test, i) => <MiniTest test={test} className='test' key={i} />)}
               {!Boolean(tests.length) && <Text>No tests yet.</Text>}
             </Card>
           </Entry>

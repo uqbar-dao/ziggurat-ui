@@ -1,46 +1,52 @@
 @use '../../styles/colors.scss' as colors;
 
 .repl-view {
-  .ships {
-    flex-basis: 20%;
+  .ships-queue {
     align-self: flex-start;
 
-    .header {
-      .text {
-        font-size: medium;
-        font-weight: 400;
+    .ships {
+      flex-basis: 20%;
+      align-self: flex-start;
+      
+      .ship {
+        background: colors.$uq-vlightpurple;
+        border-color: transparent;
+        box-shadow: none;
+        cursor: pointer;
+        opacity: 0.8;
+        max-width: 16em;
+        padding: 0.5em;
+        margin-bottom: 1em;
+
+        &:hover {
+          opacity: 1;
+        }
+
+        &.active {
+          opacity: 1;
+          background: white;
+          border-color: black;
+        }
+      }
+
+      .input-container {
+        .input {
+          border: none;
+          border-radius: 4px;
+        }
       }
     }
-    
-    .ship {
-      background: colors.$uq-vlightpurple;
-      border-color: transparent;
-      box-shadow: none;
-      cursor: pointer;
-      opacity: 0.8;
-      max-width: 16em;
-      padding: 0.5em;
-      margin-bottom: 1em;
 
-      &:hover {
-        opacity: 1;
-      }
-
-      &.active {
-        opacity: 1;
-        background: white;
-        border-color: black;
-      }
-    }
-
-    .input-container {
-      .input {
-        border: none;
-        border-radius: 4px;
+    .queue {
+      .test {
+        margin-top: 0.5em;
+        padding: 0.25em 0.5em;
+        box-shadow: 1px 1px 1px colors.$medium-gray;
+        background-color: colors.$laffron;
       }
     }
   }
-  
+
   .mid {
     flex-basis: 60%;
     margin: 0 1em;
@@ -79,7 +85,12 @@
         .states-views {
           flex-grow: 1;
           
+          .states {
+            flex-basis: 67%;
+          }
+          
           .views {
+            flex-basis: 33%;
             align-self: flex-start;
             max-width: 256px;
           }
@@ -167,7 +178,8 @@
             // }
 
             .expectation {
-              background-color: colors.$laffron;
+              border-left: 2px solid colors.$saffron;
+              background-color: colors.$washed-gray;
               padding: 0.5em;
 
               input {
@@ -219,16 +231,9 @@
 
     .card {
       overflow: visible;
-
-      .header {
-        .text {
-          font-size: medium;
-          font-weight: 400;
-        }
-      }
     }
     
-    .poke, .scry {
+    .poke, .scry, .test {
       margin-top: 0.5em;
       padding: 0.25em 0.5em;
       box-shadow: 1px 1px 1px colors.$medium-gray;
@@ -249,8 +254,6 @@
 
       .buttons {
         margin-left: auto;
-        
-      
       }
 
 
@@ -311,7 +314,7 @@
     }
 
     .test {
-      background: colors.$laffron;
+      background: colors.$cornsilk;
     }
   }
 }
