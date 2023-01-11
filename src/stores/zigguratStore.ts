@@ -43,6 +43,7 @@ export interface ZigguratStore {
   scries: Scry[]
   events: Event[]
   tests: Test[]
+  dirtyTests: string[]
   setLoading: (loading?: string) => void
   init: () => Promise<Projects>
   getAccounts: () => Promise<void>
@@ -73,6 +74,7 @@ export interface ZigguratStore {
   addTest: (name: string, imports: { [key: string]: string }, steps: any[]) => Promise<void>
   addTestExpectation: (testId: string, expectations: TestItemInput) => Promise<void>
   deleteTest: (testId: string) => Promise<void>
+  dirtifyTest: (id: string) => void
   updateTest: (testId: string, name: string | undefined, imports: Imports, steps: BETestStep[]) => Promise<void>
   runTest: (id: string) => Promise<void>
   runTests: (payload: RunTestPayload[]) => Promise<void>
@@ -126,6 +128,7 @@ const useZigguratStore = create<ZigguratStore>(persist<ZigguratStore>(
     scries: [],
     events: [],
     tests: [],
+    dirtyTests: [],
     setLoading: (loading?: string) => set({ loading }),
     init: async () => {
       const projects = await get().getProjects()
@@ -439,6 +442,11 @@ ${path}
       } } } }
       await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
     },
+    dirtifyTest: (id: string) => {
+      const dt = get().dirtyTests
+      if (dt.includes(id)) return
+      set({ dirtyTests: [...dt, id] })
+    },
     deleteTest: async (testId: string) => {
       const project = get().currentProject
       const json = { project, action: { "delete-test": { id: testId } }, 'request-id': 12121212 }
@@ -450,6 +458,8 @@ ${path}
       console.log('UPDATING TEST:', json)
       try {
         await api.poke({ app: 'ziggurat', mark: 'ziggurat-action', json })
+        const oldDirties = get().dirtyTests
+        set({ dirtyTests: oldDirties.filter(od => od !== testId) })
       } catch (e) {
         throw 'Error saving tests.'
       }

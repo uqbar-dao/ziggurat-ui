@@ -31,7 +31,7 @@ export const TestSteps: React.FC<TestStepsProps> = ({ test, ...props }) => {
   }
 
 
-  return (<><Field name='Steps' className='mt1'>
+  return (<><Field name='Steps' className='mt1' {...props}>
     <Col className='w100'>
       {Boolean(test.test_steps.length) 
         ? test.test_steps.map((step, j) => <TestStepRow index={j} test={test} step={step} key={j} />)

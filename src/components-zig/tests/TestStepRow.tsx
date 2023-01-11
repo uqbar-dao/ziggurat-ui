@@ -5,7 +5,7 @@ import Entry from "../../components/spacing/Entry"
 import Row from "../../components/spacing/Row"
 import Text from '../../components/text/Text'
 import Input from '../../components/form/Input'
-import { BETestStep, longSteps, readSteps, StringTestStep, Test, TestReadStep, TestStep, testSteps, TestWriteStep } from "../../types/ziggurat/Repl"
+import { BETestStep, longSteps, readSteps, StringTestStep, Test, TestBaseStep, TestReadStep, TestStep, testSteps, TestWriteStep } from "../../types/ziggurat/Repl"
 import useZigguratStore from "../../stores/zigguratStore"
 import Field from "../../components/spacing/Field"
 import Dropdown from "../../components/popups/Dropdown"
@@ -22,24 +22,39 @@ interface ExpectationProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const Expectation: React.FC<ExpectationProps> = ({ test, step, stepIndex, expectationIndex }) => {
-  const { updateTest } = useZigguratStore()
+  const { updateTest, dirtifyTest } = useZigguratStore()
   
   const onRemoveExpectation = async () => {
     try {
       (test.test_steps[stepIndex] as TestWriteStep).expected.splice(expectationIndex, 1)
       await updateTest(test.id, test.name, test.test_imports, convertSteps(test.test_steps))
     } catch (e) {
+      alert('Error removing expectation.')
       debugger
+    } finally {
+      //
     }
+  }
+
+  const onModifyStepValue = (steppe: any, keyye: string, valle: string) => {
+    dirtifyTest(test.id)
+    steppe[keyye] = valle;
+    (test.test_steps[stepIndex] as TestWriteStep).expected[expectationIndex] = steppe
+  }
+
+  const onModifyInnerStepValue = (steppe: any, keyye: string, innerKey: string, valle: string) => {
+    dirtifyTest(test.id)
+    steppe[keyye][innerKey] = valle;
+    (test.test_steps[stepIndex] as TestWriteStep).expected[expectationIndex] = steppe
   }
 
   return <Row className="expectation" style={{ marginTop: expectationIndex > 0 ? '0.5em' : 0, alignItems: 'flex-start' }}>
     <Col>
       {Object.entries(step).reverse().map(([key, val], i) => <Field name={key} key={i}>
         {key === 'type' ? <Text>expectation: {val}</Text>
-        : (typeof val === 'string' || !Boolean(val)) ? <Input onChange={() => {}} placeholder='none' defaultValue={val as any} /> 
+        : (typeof val === 'string' || !Boolean(val)) ? <Input onChange={(e) => onModifyStepValue(step, key, e.currentTarget.value)} placeholder='none' defaultValue={val as any} /> 
         : <Col>{Object.entries(val as any).map(([_key, _val], k) => <Field key={k} name={_key}>
-          <Input placeholder='none' onChange={() => {}} defaultValue={_val as any} />
+          <Input placeholder='none' onChange={(e) => onModifyInnerStepValue(step, key, _key, e.currentTarget.value)} defaultValue={_val as any} />
         </Field>)}</Col>}
       </Field>)}
     </Col>
@@ -50,15 +65,14 @@ const Expectation: React.FC<ExpectationProps> = ({ test, step, stepIndex, expect
 
 }
   
-interface TestStepProps extends React.HTMLAttributes<HTMLDivElement> {
+interface TestStepRowProps extends React.HTMLAttributes<HTMLDivElement> {
   test: Test
   step: TestStep
   index: number
 }
 
-const TestStepRow: React.FC<TestStepProps> = ({ test, step, index, ...props }) => {
-  const { tests, setTests, updateTest, setLoading } = useZigguratStore()
-  const [isStepTypeOpen, setIsStepTypeOpen] = useState(false)
+const TestStepRow: React.FC<TestStepRowProps> = ({ test, step, index, ...props }) => {
+  const { dirtifyTest, updateTest, setLoading } = useZigguratStore()
   const [isExpectTypeOpen, setIsExpectTypeOpen] = useState(false)
 
   const onRemoveStep = async () => {
@@ -99,9 +113,22 @@ const TestStepRow: React.FC<TestStepProps> = ({ test, step, index, ...props }) =
       await updateTest(test.id, test.name, test.test_imports, convertSteps(test.test_steps))
     } catch (e) {
       debugger
+      alert('Error moving test step.')
     } finally {
       setLoading()
     }
+  }
+
+  const onModifyStepValue = (steppe: any, keyye: string, valle: string) => {
+    dirtifyTest(test.id)
+    steppe[keyye] = valle
+    test.test_steps[index] = steppe
+  }
+
+  const onModifyInnerStepValue = (steppe: any, keyye: string, innerKey: string, valle: string) => {
+    dirtifyTest(test.id)
+    steppe[keyye][innerKey] = valle
+    test.test_steps[index] = steppe
   }
 
   return (<Col className={classNames('test-step')} {...props}>
@@ -117,23 +144,20 @@ const TestStepRow: React.FC<TestStepProps> = ({ test, step, index, ...props }) =
       </Row>
     </Row>
 
-    {Object.entries(step).reverse().map(([key, val], keyIndex) => <Field name={key} key={keyIndex}>
-      {key === 'type' ? val 
-      : Array.isArray(val) ? <Col>
+    {Object.entries(step).reverse().map(([key, val], keyIndex) => key === 'type' ? <span key={keyIndex}></span>
+      : <Field name={key} key={keyIndex}>
+      {Array.isArray(val) ? <Col>
         {val.map((expectationStep, j) => <Expectation test={test} step={expectationStep} expectationIndex={j} stepIndex={index} key={j} />)}
         {val.length === 0 && <Text className="italic">no expectations</Text>}
         <Field name='add'>
           <Dropdown value={'Select step type...'} open={Boolean(isExpectTypeOpen)} toggleOpen={() => setIsExpectTypeOpen(!isExpectTypeOpen)}>
-            {readSteps.map(s => <option key={s} onClick={() => addExpectation(s)}>
-              {longSteps[s].name}
-            </option>)}
-          </Dropdown>
-        </Field>
-        <Divider className="mt1" />
-      </Col> 
-      : (typeof val === 'string' || !Boolean(val)) ? <Input onChange={() => {}} placeholder='none' defaultValue={val as any} /> 
+            {readSteps.map(s => <option key={s} onClick={() => addExpectation(s)}> {longSteps[s].name} </option>)}
+          </Dropdown> </Field>
+        <Divider className="mt1" /> </Col> 
+      : (typeof val === 'string' || !Boolean(val)) ? 
+        <Input placeholder='none' onChange={(e) => onModifyStepValue(step, key, e.currentTarget.value)} defaultValue={val as any} /> 
       : <Col>{Object.entries(val as any).map(([_key, _val], k) => <Field key={k} name={_key}>
-        <Input placeholder="none" onChange={() => {}} defaultValue={_val as any} />
+        <Input placeholder="none" onChange={(e) => onModifyInnerStepValue(step, key, _key, e.currentTarget.value)} defaultValue={_val as any} />
       </Field>)}</Col>}
     </Field>)}
     <Divider />

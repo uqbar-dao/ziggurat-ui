@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React from 'react';
 import { FaChevronDown } from 'react-icons/fa';
 import Col from '../spacing/Col';
@@ -21,7 +22,7 @@ const Dropdown = ({
   ...props
 }: DropdownProps) => {
   return (
-    <div {...props} className={`dropdown ${className} ${unstyled ? 'unstyled' : ''}`}>
+    <div {...props} className={classNames('dropdown', className, { unstyled })}>
       {open && <div className='close-background' onClick={toggleOpen} />}
       <div className={`selector ${open ? 'open' : ''}`} onClick={toggleOpen}>
         {value}

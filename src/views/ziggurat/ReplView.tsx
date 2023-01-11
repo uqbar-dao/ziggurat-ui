@@ -28,10 +28,16 @@ import { TestSteps } from '../../components-zig/tests/TestSteps'
 import { convertSteps } from '../../stores/subscriptions/project'
 import { HexNum } from '@uqbar/wallet-ui'
 import { TestDisplay } from '../../components-zig/tests/TestDisplay'
+import { useNavigate } from 'react-router-dom'
 
 
 const ReplView = () => {
   const { zigguratTitleBase, tests, addTest, deleteTest, setTests, updateTest, runTest, ships, getShips, setShips, startShips, stopShips, views, setViews, pokes, setPokes, scries, setScries, events, setEvents, projects, currentProject, setLoading } = useZigguratStore()
+  const nav = useNavigate()
+
+  if (!currentProject) {
+    nav('/')
+  }
 
   const [tabs, setTabs] = useState<Tab[]>([
     { name: 'tests', active: true },
@@ -40,7 +46,6 @@ const ReplView = () => {
     { name: 'dojo', active: false },
   ])
   
-  const blankShip = { name: '', apps: {}, expanded: true, active: false }
   const blankPoke = { ship: '', data: '' }
   const blankScry = { ship: '', data: '', app: '' }
 

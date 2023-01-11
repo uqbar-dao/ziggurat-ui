@@ -5,20 +5,21 @@ import Text from "../../components/text/Text"
 import Button from "../../components/form/Button"
 import Field from "../../components/spacing/Field"
 import Input from "../../components/form/Input"
-import { FaRegTrashAlt, FaPlay } from "react-icons/fa"
+import { FaRegTrashAlt, FaPlay, FaRegSave } from "react-icons/fa"
 import { Test as RTest } from "../../types/ziggurat/Repl"
 import useZigguratStore from "../../stores/zigguratStore"
 import { convertSteps } from "../../stores/subscriptions/project"
 import Dropdown from "../../components/popups/Dropdown"
 import { TestImports } from "./TestImports"
 import { TestSteps } from "./TestSteps"
+import { useState } from "react"
 
 interface TestDisplayProps {
   test: RTest
 }
 
 export const TestDisplay: React.FC<TestDisplayProps> = ({ test, ...props }) => {
-  const { setLoading, updateTest, deleteTest, runTest, setTests, tests, projects, currentProject, } = useZigguratStore()
+  const { setLoading, updateTest, deleteTest, runTest, setTests, dirtyTests, tests, projects, currentProject, } = useZigguratStore()
 
   const onAddImport = async (test: RTest, face: string, path: string) => {
     if (Object.keys(test.test_imports).indexOf(face) > -1) { 
@@ -36,7 +37,8 @@ export const TestDisplay: React.FC<TestDisplayProps> = ({ test, ...props }) => {
       setLoading()
     }
   }
-const onDeleteTest = async (id: string) => {
+  
+  const onDeleteTest = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this test?')) {
       return
     }
@@ -74,12 +76,25 @@ const onDeleteTest = async (id: string) => {
     }
   }
 
+  const onSaveTest = async () => {
+    setLoading('Saving test...')
+    try {
+      const result = await updateTest(test.id, test.name, test.test_imports, convertSteps(test.test_steps))
+    } catch (e) {
+      debugger
+      alert ('Error saving test.')
+    } finally {
+      setLoading()
+    }
+  }
+
   return (<Col className='test' {...props}>
   <Row>
     <HexNum num={test.id} displayNum={test.name} />
     <Row className='buttons'>
       <Button variant='slim' icon={<FaRegTrashAlt />} iconOnly onClick={() => onDeleteTest(test.id)} />
-      <Button variant='slim' icon={<FaPlay/>} iconOnly onClick={() => onRunTest(test.id)} />
+      {dirtyTests.includes(test.id) && <Button variant='slim' icon={<FaRegSave />} iconOnly onClick={() => onSaveTest()} />}
+      {!dirtyTests.includes(test.id) && <Button variant='slim' icon={<FaPlay />} iconOnly onClick={() => onRunTest(test.id)} />}
     </Row>
   </Row>
   <Field name='Name'>
